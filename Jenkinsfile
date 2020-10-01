@@ -2,7 +2,7 @@ pipeline {
 
     environment { 
 
-        registry = "YourDockerhubAccount/YourRepository" 
+        registry = "than97/pvpkg" 
 
         registryCredential = '9a70e374-ebc8-4705-a7dd-d358c5549519' 
 
