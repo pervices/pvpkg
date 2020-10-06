@@ -19,7 +19,7 @@ RUN git clone https://aur.archlinux.org/yay-bin.git && \
     makepkg --noconfirm --syncdeps --rmdeps --install --clean
 RUN git clone https://aur.archlinux.org/python2-cheetah.git && \
     cd python2-cheetah && \
-    makepkg --noconfirm --syncdeps --rmdeps --install --clean
+    makepkg --noconfirm --syncdeps --install --clean
 RUN yay -Sy --noconfirm \
    $(pacman --deptest $(source ./PKGBUILD && echo ${depends[@]} ${makedepends[@]}))
 RUN makepkg 
