@@ -1,7 +1,5 @@
 FROM archlinux
 
-
-
 # makepkg cannot (and should not) be run as root:
 RUN useradd -m notroot
 
@@ -16,5 +14,8 @@ RUN echo "notroot ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/notroot
 USER notroot
 WORKDIR home/notroot
 COPY PKGBUILD /home/notroot/PKGBUILD
+RUN git clone https://aur.archlinux.org/yay-bin.git && \
+    cd yay-bin && \
+    makepkg --noconfirm --syncdeps --rmdeps --install --clean
 RUN makepkg
 RUN sudo pacman -U --noconfirm *.pkg.tar.xz
