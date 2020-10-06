@@ -17,7 +17,8 @@ COPY PKGBUILD /home/notroot/PKGBUILD
 RUN git clone https://aur.archlinux.org/yay-bin.git && \
     cd yay-bin && \
     makepkg --noconfirm --syncdeps --rmdeps --install --clean
+RUN pacman -S python2-cheetah
 RUN yay -Sy --noconfirm \
     $(pacman --deptest $(source ./PKGBUILD && echo ${depends[@]} ${makedepends[@]}))
 RUN makepkg
-RUN sudo pacman -U --noconfirm *.pkg.tar.xz
+RUN pacman -U --noconfirm *.pkg.tar.xz
