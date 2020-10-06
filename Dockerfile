@@ -15,6 +15,6 @@ RUN echo "notroot ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/notroot
 # Continue execution (and CMD) as notroot:
 USER notroot
 WORKDIR home/notroot
-COPY PKGBUILD /PKGBUILD
+COPY PKGBUILD /home/notroot/PKGBUILD
 RUN makepkg
 RUN sudo pacman -U --noconfirm *.pkg.tar.xz
