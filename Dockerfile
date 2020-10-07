@@ -20,5 +20,4 @@ RUN git clone https://aur.archlinux.org/yay-bin.git && \
 RUN gpg --keyserver ipv4.pool.sks-keyservers.net --recv-key 330239C1C4DAFEE1
 RUN yay -Sy --noconfirm \
    $(pacman --deptest $(source ./PKGBUILD && echo ${depends[@]} ${makedepends[@]}))
-RUN makepkg 
-RUN pacman -U --noconfirm *.pkg.tar.xz
+RUN makepkg --noconfirm --install
