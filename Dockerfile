@@ -18,6 +18,6 @@ RUN git clone https://aur.archlinux.org/yay-bin.git && \
     cd yay-bin && \
     makepkg --noconfirm --syncdeps --rmdeps --install --clean
 RUN yay -Sy --noconfirm \
-   $(pacman --deptest $(source ./PKGBUILD && echo ${depends[@]} ${makedepends[@]}))
+   $(pacman --deptest $(source ./PKGBUILD && echo ${depends[@]} ${makedepends[@]} ${optdepends[@]}))
 RUN makepkg 
 RUN pacman -U --noconfirm *.pkg.tar.xz
