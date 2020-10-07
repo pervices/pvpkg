@@ -10,7 +10,7 @@ url="http://www.pervices.com"
 license=('GPL')
 # depends=('boost-libs' 'orc' 'libusbx' 'python2')
 # makedepends=('cmake' 'boost' 'python2-cheetah')
-depends=('boost-libs' 'orc' 'libusb')
+depends=('boost-libs' 'orc' 'libusb' 'libusbx' 'python2')
 optdepends=('python: usrp utils')
 makedepends=('cmake' 'boost' 'python-mako' 'python-cheetah3')
 
