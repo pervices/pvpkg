@@ -14,12 +14,11 @@ RUN echo "notroot ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/notroot
 USER notroot
 WORKDIR home/notroot
 COPY PKGBUILD /home/notroot/PKGBUILD
-RUN mkdir .gnupg && \
-    touch .gnupg/gpg.conf && \
-    echo "keyserver-options auto-key-retrieve" > .gnupg/gpg.conf
 RUN git clone https://aur.archlinux.org/yay-bin.git && \
     cd yay-bin && \
     makepkg --noconfirm --syncdeps --rmdeps --install --clean
+RUN gpg --keyserver ipv4.pool.sks-keyservers.net --recv-key 330239C1C4DAFEE1
+RUN yay -S python2-mako
 RUN yay -Sy --noconfirm \
    $(pacman --deptest $(source ./PKGBUILD && echo ${depends[@]} ${makedepends[@]}))
 RUN makepkg 
