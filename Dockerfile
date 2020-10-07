@@ -14,6 +14,9 @@ RUN echo "notroot ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/notroot
 USER notroot
 WORKDIR home/notroot
 COPY PKGBUILD /home/notroot/PKGBUILD
+RUN mkdir .gnupg && \
+    touch .gnupg/gpg.conf && \
+    echo "keyserver-options auto-key-retrieve" > .gnupg/gpg.conf
 RUN git clone https://aur.archlinux.org/yay-bin.git && \
     cd yay-bin && \
     makepkg --noconfirm --syncdeps --rmdeps --install --clean
