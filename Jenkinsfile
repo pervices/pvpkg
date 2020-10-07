@@ -30,7 +30,8 @@ pipeline {
             steps { 
 
                 script { 
-
+                   
+                    docker login --username than97 --password-stdin < ~/my_password
                     docker.withRegistry( '', registryCredential ) { 
 
                         dockerImage.push() 
