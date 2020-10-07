@@ -12,7 +12,7 @@ license=('GPL')
 # makedepends=('cmake' 'boost' 'python2-cheetah')
 depends=('boost-libs' 'orc' 'libusb' 'libusbx' 'python2')
 optdepends=('python: usrp utils')
-makedepends=('cmake' 'boost' 'python-mako' 'python-cheetah3')
+makedepends=('cmake' 'boost' 'python-mako' 'python2-mako' 'python-cheetah3')
 
 provides=('libuhd')
 conflicts=('libuhd')
