@@ -31,7 +31,7 @@ pipeline {
 
                 script { 
                    
-                    sh "cat ~/my_password.txt | docker login --username than97 --password-stdin"
+      
                     docker.withRegistry( '', registryCredential ) { 
 
                         dockerImage.push() 
