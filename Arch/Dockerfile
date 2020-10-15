@@ -15,7 +15,7 @@ USER notroot
 WORKDIR home/notroot
 RUN git clone https://github.com/than97/pvpkg.git
 WORKDIR home/notroot/pvpkg/Arch
-RUN mv home/notroot/Arch/PKGBUILD home/notroot/PKGBUILD
+RUN mv PKGBUILD ../../
 RUN git clone https://aur.archlinux.org/yay-bin.git && \
     cd yay-bin && \
     makepkg --noconfirm --syncdeps --rmdeps --install --clean
