@@ -13,8 +13,7 @@ RUN echo "notroot ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/notroot
 # Continue execution (and CMD) as notroot:
 USER notroot
 WORKDIR home/notroot
-RUN git clone https://github.com/than97/pvpkg.git
-WORKDIR home/notroot/pvpkg/Arch
+RUN wget https://raw.githubusercontent.com/than97/pvpkg/master/Arch/PKGBUILD
 RUN mv PKGBUILD ../../
 RUN git clone https://aur.archlinux.org/yay-bin.git && \
     cd yay-bin && \
