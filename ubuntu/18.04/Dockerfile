@@ -6,7 +6,6 @@ RUN apt-get -y install cmake
 WORKDIR /home
 RUN git clone https://github.com/pervices/uhd.git
 WORKDIR /home/uhd/host
-RUN ls
 RUN cmake ..
 RUN make -j8
 RUN sudo make install
