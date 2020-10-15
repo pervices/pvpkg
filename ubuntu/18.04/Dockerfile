@@ -2,6 +2,7 @@ FROM ubuntu:18.04
 
 RUN apt update
 RUN apt-get -y install git 
+RUN apt-get -y install cmake
 RUN git clone https://github.com/pervices/uhd.git
 RUN cd bin
 
