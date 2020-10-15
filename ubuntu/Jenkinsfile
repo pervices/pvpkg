@@ -18,11 +18,12 @@ pipeline {
             steps { 
 
                 script { 
-                  dir("${env.WORKSPACE}/Arch") {
+                  dir("${env.WORKSPACE}/ubuntu") {
                   sh "pwd"
-}
+
                     dockerImage = docker.build registry + ":$BUILD_NUMBER" 
                 }
+               }
             } 
 
         }
