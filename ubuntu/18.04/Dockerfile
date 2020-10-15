@@ -3,7 +3,7 @@ FROM ubuntu:18.04
 RUN apt update
 RUN apt-get -y install git 
 RUN apt-get -y install cmake
-RUN apt-get -y build-essential
+RUN apt-get -y install build-essential
 WORKDIR /home
 RUN git clone https://github.com/pervices/uhd.git
 RUN mkdir uhdlib
