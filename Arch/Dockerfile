@@ -14,7 +14,7 @@ RUN echo "notroot ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/notroot
 USER notroot
 WORKDIR home/notroot
 RUN git clone https://github.com/than97/pvpkg.git
-RUN ls
+RUN mv home/notroot/pvpkg/Arch/PKGBUILD home/notroot/PKGBUILD
 RUN git clone https://aur.archlinux.org/yay-bin.git && \
     cd yay-bin && \
     makepkg --noconfirm --syncdeps --rmdeps --install --clean
