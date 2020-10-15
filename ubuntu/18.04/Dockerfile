@@ -5,7 +5,7 @@ RUN apt-get -y install git
 RUN apt-get -y install cmake
 RUN apt-get -y install build-essential
 RUN apt-get -y install python
-RUN apt-get -y install boost-libs
+RUN apt-get -y install libboost-all-dev
 
 
 WORKDIR /home
