@@ -4,10 +4,7 @@ RUN apt update
 RUN apt-get -y install git 
 RUN apt-get -y install cmake
 RUN git clone https://github.com/pervices/uhd.git
-RUN cd bin
-
+RUN pwd
 RUN cmake ..
-
 RUN make -j8
-
 RUN sudo make install
