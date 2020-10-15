@@ -6,6 +6,7 @@ RUN apt-get -y install cmake
 RUN apt-get -y install build-essential
 RUN apt-get -y install python
 RUN apt-get -y install libboost-all-dev
+RUN apt-get -y install python-mako
 
 
 WORKDIR /home
