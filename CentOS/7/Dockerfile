@@ -1,11 +1,14 @@
 FROM centos:7
 
 RUN yum update
+RUN yum -y install wget
 RUN yum -y install git 
 RUN yum -y install cmake
 RUN yum -y install gcc gcc-c++ make glibc-devel
 RUN yum -y install python
-RUN yum -y install boost boost-thread boost-devel
+# RUN yum -y install boost boost-thread boost-devel
+RUN wget http://repo.enetres.net/enetres.repo -O /etc/yum.repos.d/enetres.repo
+RUN yum -y install boost-devel
 RUN yum -y install python-mako
 RUN yum -y install libusb libusbx
 RUN yum -y install orc
