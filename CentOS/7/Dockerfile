@@ -3,7 +3,7 @@ FROM centos:7
 RUN yum update
 RUN yum -y install git 
 RUN yum -y install cmake
-RUN yum -y install build-essential
+RUN yum -y install gcc gcc-c++ make glibc-devel
 RUN yum -y install python
 RUN yum -y install libboost-all-dev
 RUN yum -y install python-mako
