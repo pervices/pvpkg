@@ -1,6 +1,6 @@
 FROM ubuntu:20.04
 
-RUN ENV DEBIAN_FRONTEND=noninteractive
+ENV DEBIAN_FRONTEND=noninteractive
 RUN apt update
 RUN apt-get -y install git 
 RUN apt-get -y install cmake
