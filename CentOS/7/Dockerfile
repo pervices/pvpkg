@@ -5,8 +5,8 @@ RUN yum -y install git
 RUN yum -y install cmake
 RUN yum -y install gcc gcc-c++ make glibc-devel
 RUN yum -y install python
-RUN yum -y install http://springdale.princeton.edu/data/springdale/7/x86_64/os/Computational/boost160-1.60.0-7.sdl7.3.src.rpm 
-RUN yum -y install python-mako
+RUN yum -y install yum-plugin-downloadonly
+RUN yum -y install --downloadonly http://springdale.princeton.edu/data/springdale/7/x86_64/os/Computational/boost160-1.60.0-7.sdl7.3.x86_64.rpm
 RUN yum -y install libusb libusbx
 RUN yum -y install orc
 RUN yum -y install python-cheetah
