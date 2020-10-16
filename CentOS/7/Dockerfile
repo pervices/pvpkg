@@ -2,14 +2,20 @@ FROM centos:7
 
 RUN yum update
 RUN yum -y install git 
+RUN yum -y install wget
+RUN yum -y install tar
 RUN yum -y install cmake
 RUN yum -y install gcc gcc-c++ make glibc-devel
 RUN yum -y install python
-RUN yum -y install yum-plugin-downloadonly
-RUN yum -y install --downloadonly http://springdale.princeton.edu/data/springdale/7/x86_64/os/Computational/boost160-1.60.0-7.sdl7.3.x86_64.rpm
+RUN wget https://dl.bintray.com/boostorg/release/1.64.0/source/boost_1_64_0.tar.gz
+
 RUN yum -y install libusb libusbx
 RUN yum -y install orc
 RUN yum -y install python-cheetah
+RUN tar -xzf boost_1_*
+RUN cd boost_1_*
+RUN ./bootstrap.sh --prefix=/opt/boost
+RUN ./b2 install --prefix=/opt/boost --with=all
 
 
 WORKDIR /home
