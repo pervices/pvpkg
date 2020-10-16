@@ -2,20 +2,14 @@ FROM centos:7
 
 RUN yum update
 RUN yum -y install git 
-RUN yum -y install wget
-RUN yum -y install tar
 RUN yum -y install cmake
 RUN yum -y install gcc gcc-c++ make glibc-devel
 RUN yum -y install python
-RUN wget https://dl.bintray.com/boostorg/release/1.64.0/source/boost_1_64_0.tar.gz
-
+RUN yum install http://repo.okay.com.mx/centos/7/x86_64/release/okay-release-1-1.noarch.rpm
+RUN yum install yum install boost166-devel
 RUN yum -y install libusb libusbx
 RUN yum -y install orc
 RUN yum -y install python-cheetah
-RUN tar -xzf boost_1_*
-RUN cd boost_1_*
-RUN ./bootstrap.sh --prefix=/opt/boost
-RUN ./b2 install --prefix=/opt/boost --with=all
 
 
 WORKDIR /home
