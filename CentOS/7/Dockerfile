@@ -5,8 +5,8 @@ RUN yum -y install git
 RUN yum -y install cmake
 RUN yum -y install gcc gcc-c++ make glibc-devel
 RUN yum -y install python
-RUN yum install http://repo.okay.com.mx/centos/7/x86_64/release/okay-release-1-1.noarch.rpm
-RUN yum install yum install boost166-devel
+RUN yum -y install http://repo.okay.com.mx/centos/7/x86_64/release/okay-release-1-1.noarch.rpm
+RUN yum -y install yum install boost166-devel
 RUN yum -y install libusb libusbx
 RUN yum -y install orc
 RUN yum -y install python-cheetah
