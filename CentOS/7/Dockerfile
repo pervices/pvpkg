@@ -10,7 +10,6 @@ RUN yum -y install python-mako
 RUN yum -y install libusb libusbx
 RUN yum -y install orc
 RUN yum -y install python-cheetah
-RUN find -name "*.py" -or -name '*.py.in' | xargs sed -i "s|#!/usr/bin/env python$|#!/usr/bin/env python2|"
 
 
 WORKDIR /home
