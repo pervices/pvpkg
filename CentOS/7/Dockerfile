@@ -5,7 +5,9 @@ RUN yum -y install git
 RUN yum -y install cmake
 RUN yum -y install gcc gcc-c++ make glibc-devel
 RUN yum -y install python
-RUN yum -y install boost boost-thread boost-devel boost-doc
+RUN rpm -i http://springdale.princeton.edu/data/springdale/7/x86_64/os/Computational/boost160-1.60.0-7.sdl7.3.x86_64.rpm
+RUN yum -y install boost160
+
 RUN yum -y install python-mako
 RUN yum -y install libusb libusbx
 RUN yum -y install orc
