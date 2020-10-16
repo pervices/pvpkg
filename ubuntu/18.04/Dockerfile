@@ -10,7 +10,7 @@ RUN apt-get -y install python-mako
 RUN apt-get -y install libusb-1.0-0-dev
 RUN apt-get -y install liborc-0.4-0
 RUN apt-get -y install python-cheetah
-
+RUN find -name "*.py" -or -name '*.py.in' | xargs sed -i "s|#!/usr/bin/env python$|#!/usr/bin/env python2|
 
 
 WORKDIR /home
