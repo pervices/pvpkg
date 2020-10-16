@@ -1,6 +1,6 @@
 FROM centos:8
 
-RUN yum update
+RUN yum -y update
 RUN yum -y install git 
 RUN yum -y install cmake
 RUN yum -y install gcc gcc-c++ make glibc-devel
