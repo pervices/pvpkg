@@ -10,6 +10,7 @@ RUN yum -y install yum install boost166-devel
 RUN yum -y install libusb libusbx
 RUN yum -y install orc
 RUN yum -y install python-cheetah
+RUN yum -y install python-mako
 
 
 WORKDIR /home
