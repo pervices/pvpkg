@@ -5,7 +5,7 @@ RUN yum -y install git
 RUN yum -y install cmake
 RUN yum -y install gcc gcc-c++ make glibc-devel
 RUN yum -y install python
-RUN yum -y install libboost-all-dev
+RUN yum -y install boost boost-thread boost-devel
 RUN yum -y install python-mako
 RUN yum -y install libusb-1.0-0-dev
 RUN yum -y install liborc-0.4-0

@@ -5,7 +5,7 @@ RUN apt-get -y install git
 RUN apt-get -y install cmake
 RUN apt-get -y install build-essential
 RUN apt-get -y install python
-RUN apt-get -y install boost boost-thread boost-devel
+RUN apt-get -y install libboost-all-dev
 RUN apt-get -y install python-mako
 RUN apt-get -y install libusb-1.0-0-dev
 RUN apt-get -y install liborc-0.4-0
