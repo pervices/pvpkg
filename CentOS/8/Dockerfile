@@ -4,12 +4,12 @@ RUN yum -y update
 RUN yum -y install git 
 RUN yum -y install cmake
 RUN yum -y install gcc gcc-c++ make glibc-devel
-RUN yum -y install python3
+RUN yum -y install python2
 RUN yum -y install boost-devel
 RUN yum -y install libusb libusbx
 RUN yum -y install orc
 # RUN yum -y install python3-cheetah
-RUN yum -y install python3-mako
+RUN yum -y install python-mako
 
 
 WORKDIR /home
