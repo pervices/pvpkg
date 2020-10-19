@@ -10,6 +10,7 @@ RUN yum -y install libusb libusbx
 RUN yum -y install orc
 # RUN yum -y install python3-cheetah
 RUN yum -y install python3-mako
+RUN cd /usr/bin
 RUN ls
 
 WORKDIR /home
