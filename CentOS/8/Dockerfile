@@ -10,13 +10,15 @@ RUN yum -y install libusb libusbx
 RUN yum -y install orc
 # RUN yum -y install python3-cheetah
 RUN yum -y install python3-mako
-
+RUN ls
 
 WORKDIR /home
 RUN git clone https://github.com/pervices/uhd.git
 RUN mkdir uhdlib
 WORKDIR /home/uhdlib
 RUN cmake \
+#-DPYTHON_INCLUDE_DIR=$
+#-DPYTHON_LIBRARY=$
     -DCMAKE_INSTALL_PREFIX=/usr/ \
            -DENABLE_EXAMPLES=ON \
            -DENABLE_UTILS=ON \
