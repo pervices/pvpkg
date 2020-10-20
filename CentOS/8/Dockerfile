@@ -13,7 +13,7 @@ RUN pip2 install mako
 RUN pip2 install cheetah
 RUN pip2 install numpy
 RUN pip2 install requests
-RUN pip2 install libgps
+RUN pip2 install gps
 
 WORKDIR /home
 RUN git clone https://github.com/pervices/uhd.git
