@@ -4,8 +4,7 @@ RUN yum -y update
 RUN yum -y install git 
 RUN yum -y install cmake
 RUN yum -y install gcc gcc-c++ make glibc-devel
-RUN yum -y install python2
-RUN yum -y install pip
+RUN yum -y install python2-pip
 RUN yum -y install boost-devel
 RUN yum -y install libusb libusbx
 RUN yum -y install orc
