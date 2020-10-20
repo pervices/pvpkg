@@ -19,7 +19,7 @@ RUN mkdir uhdlib
 WORKDIR /home/uhdlib
 RUN cmake \
 -DPYTHON_INCLUDE_DIR=usr/bin/python3.6 \
-#-DPYTHON_LIBRARY=$(python -c "import distutils.sysconfig as sysconfig; print(sysconfig.get_config_var('LIBDIR'))") \
+-DPYTHON_EXECUTABLE=usr/bin/python3.6 \
     -DCMAKE_INSTALL_PREFIX=/usr/ \
            -DENABLE_EXAMPLES=ON \
            -DENABLE_UTILS=ON \
