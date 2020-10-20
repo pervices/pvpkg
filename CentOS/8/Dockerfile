@@ -6,13 +6,14 @@ RUN yum -y install cmake
 RUN yum -y install gcc gcc-c++ make glibc-devel
 RUN yum -y install python2-pip
 RUN yum -y install boost-devel
-RUN yum -y install libusb libusbx libgps
+RUN yum -y install libusb libusbx
 RUN yum -y install orc
 # RUN yum -y install python3-cheetah
 RUN pip2 install mako
 RUN pip2 install cheetah
 RUN pip2 install numpy
 RUN pip2 install requests
+RUN pip2 instal libgps
 
 WORKDIR /home
 RUN git clone https://github.com/pervices/uhd.git
