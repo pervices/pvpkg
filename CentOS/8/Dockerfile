@@ -10,7 +10,7 @@ RUN yum -y install libusb libusbx
 RUN yum -y install orc
 # RUN yum -y install python3-cheetah
 RUN yum -y install python3-mako
-
+RUN pip install mako
 
 WORKDIR /home
 RUN git clone https://github.com/pervices/uhd.git
