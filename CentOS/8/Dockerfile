@@ -4,7 +4,7 @@ RUN yum -y update
 RUN yum -y install git 
 RUN yum -y install cmake
 RUN yum -y install gcc gcc-c++ make glibc-devel
-RUN yum -y install python3
+RUN yum -y install python2
 RUN yum -y install boost-devel
 RUN yum -y install libusb libusbx
 RUN yum -y install orc
@@ -18,8 +18,8 @@ RUN git clone https://github.com/pervices/uhd.git
 RUN mkdir uhdlib
 WORKDIR /home/uhdlib
 RUN cmake \
--DPYTHON_INCLUDE_DIR=usr/bin/python3.6 \
--DPYTHON_EXECUTABLE=usr/bin/python3.6 \
+#-DPYTHON_INCLUDE_DIR=usr/bin/python3.6 \
+#-DPYTHON_EXECUTABLE=usr/bin/python3.6 \
     -DCMAKE_INSTALL_PREFIX=/usr/ \
            -DENABLE_EXAMPLES=ON \
            -DENABLE_UTILS=ON \
