@@ -9,8 +9,8 @@ RUN yum -y install boost-devel
 RUN yum -y install libusb libusbx
 RUN yum -y install orc
 # RUN yum -y install python3-cheetah
-RUN yum -y install python3-mako
 RUN pip2 install mako
+RUN pip2 install cheetah
 
 WORKDIR /home
 RUN git clone https://github.com/pervices/uhd.git
