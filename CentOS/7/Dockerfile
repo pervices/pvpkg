@@ -10,7 +10,7 @@ RUN yum update && \
  yum -y install libusb libusbx  && \
  yum -y install orc  && \
  yum -y install python-cheetah  && \
- yum -y install python-mako  && \
+ yum -y install python-mako
 
 
 WORKDIR /home
