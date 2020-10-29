@@ -1,21 +1,21 @@
 FROM centos:7
 
-RUN yum update
-RUN yum -y install git 
-RUN yum -y install cmake
-RUN yum -y install gcc gcc-c++ make glibc-devel
-RUN yum -y install python
-RUN yum -y install http://repo.okay.com.mx/centos/7/x86_64/release/okay-release-1-1.noarch.rpm
-RUN yum -y install yum install boost166-devel
-RUN yum -y install libusb libusbx
-RUN yum -y install orc
-RUN yum -y install python-cheetah
-RUN yum -y install python-mako
+RUN yum update && \
+ yum -y install git  && \
+ yum -y install cmake  && \
+ yum -y install gcc gcc-c++ make glibc-devel  && \
+ yum -y install python  && \
+ yum -y install http://repo.okay.com.mx/centos/7/x86_64/release/okay-release-1-1.noarch.rpm  && \
+ yum -y install yum install boost166-devel  && \
+ yum -y install libusb libusbx  && \
+ yum -y install orc  && \
+ yum -y install python-cheetah  && \
+ yum -y install python-mako  && \
 
 
 WORKDIR /home
-RUN git clone https://github.com/pervices/uhd.git
-RUN mkdir uhdlib
+RUN git clone https://github.com/pervices/uhd.git && \
+ mkdir uhdlib
 WORKDIR /home/uhdlib
 RUN cmake \
     -DCMAKE_INSTALL_PREFIX=/usr/ \
@@ -36,6 +36,6 @@ RUN cmake \
 	   -DENABLE_OCTOCLOCK=OFF \
 	   -DENABLE_DOXYGEN=OFF \
 	   -DENABLE_USB=OFF \
-         /home/uhd/host
-RUN make -j4
-RUN make install
+         /home/uhd/host && \
+make -j4 && \
+ make install
