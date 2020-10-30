@@ -13,9 +13,9 @@ RUN yum update && \
  yum -y install python-cheetah  && \
  yum -y install python-mako && \
  yum -y install doxygen && \
-pip install --upgrade pip && \
- pip install numpy && \
-pip install requests 
+pip3 install --upgrade pip && \
+ pip3 install numpy && \
+pip3 install requests 
 
 
 
