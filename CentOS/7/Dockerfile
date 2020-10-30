@@ -10,11 +10,11 @@ RUN yum update && \
  yum -y install yum install boost166-devel  && \
  yum -y install libusb libusbx  && \
  yum -y install orc  && \
- python -m pip3 install Cheetah3  && \
- python -m pip3 install Mako && \
+ python3 -m pip install Cheetah3  && \
+ python3 -m pip install Mako && \
  yum -y install doxygen && \
- python -m pip3 install numpy && \
-python -m pip3 install requests 
+ python3 -m pip install numpy && \
+python3 -m pip install requests 
 
 
 
