@@ -47,6 +47,7 @@ RUN cmake \
 	   -DENABLE_USB=OFF \
         -DPYTHON_EXECUTABLE=/usr/bin/python3 \
         -DRUNTIME_PYTHON_EXECUTABLE=/usr/bin/python3 \
+        -Boost_INCLUDE_DIRS=/usr/lib64 \
          /home/uhd/host && \
 make -j4 && \
  make install
