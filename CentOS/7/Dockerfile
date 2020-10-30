@@ -13,6 +13,7 @@ RUN yum update && \
  python3 -m pip install Cheetah3  && \
  python3 -m pip install Mako && \
  yum -y install doxygen && \
+ yum -y install boost-python && \
  python3 -m pip install numpy && \
 python3 -m pip install requests 
 
