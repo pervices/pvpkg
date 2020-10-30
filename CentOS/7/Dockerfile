@@ -5,17 +5,18 @@ RUN yum update && \
  yum -y install cmake  && \
  yum -y install gcc gcc-c++ make glibc-devel  && \
  yum -y install epel-release && \
- yum -y install python-pip  && \
+ yum -y install python-dev python-tk python-lxml python-six python-pip  && \
  yum -y install http://repo.okay.com.mx/centos/7/x86_64/release/okay-release-1-1.noarch.rpm  && \
  yum -y install yum install boost166-devel  && \
  yum -y install libusb libusbx  && \
  yum -y install orc  && \
  yum -y install python-cheetah  && \
  yum -y install python-mako && \
+ yum -y install doxygen && \
 pip install --upgrade pip && \
  pip install numpy && \
-pip install requests && \
-pip install gps
+pip install requests 
+
 
 
 
