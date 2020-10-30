@@ -12,6 +12,7 @@ RUN yum update && \
  yum -y install orc  && \
  yum -y install python-cheetah  && \
  yum -y install python-mako && \
+pip install --upgrade pip && \
  pip install numpy && \
 pip install requests && \
 pip install gps
