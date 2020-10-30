@@ -42,6 +42,8 @@ RUN cmake \
 	   -DENABLE_OCTOCLOCK=OFF \
 	   -DENABLE_DOXYGEN=OFF \
 	   -DENABLE_USB=OFF \
+        -DPYTHON_EXECUTABLE=/usr/bin/python3 \
+        -DRUNTIME_PYTHON_EXECUTABLE=/usr/bin/python3 \
          /home/uhd/host && \
 make -j4 && \
  make install
