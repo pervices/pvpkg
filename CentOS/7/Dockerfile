@@ -12,6 +12,7 @@ RUN yum update && \
  yum -y install orc  && \
  python3 -m pip install Cheetah3  && \
  python3 -m pip install Mako && \
+ python3 -m pip install pybind11 &&\
  yum -y install doxygen && \
  yum -y install boost-python && \
  python3 -m pip install numpy && \
