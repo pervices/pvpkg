@@ -7,7 +7,7 @@ dnf -y --enablerepo=PowerTools install doxygen && \
  yum -y install cmake && \
  yum -y install epel-release && \
  yum -y install gcc-c++ make && \
- yum -y install python3-pip && \
+ yum -y install python3-pip python3-libs && \
  yum -y install libusb libusbx && \
  yum -y install orc && \
  pip3 install mako && \
@@ -21,8 +21,6 @@ RUN git clone https://github.com/pervices/uhd.git && \
 mkdir uhdlib
 WORKDIR /home/uhdlib
 RUN cmake \
-#-DPYTHON_INCLUDE_DIR=usr/bin/python2.7\
-#-DPYTHON_EXECUTABLE=usr/bin/python2.7 \
     -DCMAKE_INSTALL_PREFIX=/usr/ \
            -DENABLE_PYTHON3=ON \
            -DENABLE_EXAMPLES=ON \
