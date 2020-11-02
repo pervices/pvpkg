@@ -14,7 +14,8 @@ pip3 install mako && \
 pip3  install Cheetah3 && \
 pip3  install  requests && \
 pip3  install numpy && \
-find -name "*.py" -or -name '*.py.in' | xargs sed -i "s|#!/usr/bin/env python$|#!/usr/bin/env python3|"
+pip3 install pybind11 && \
+find -name "*.py" -or -name '*.py.in' | xargs sed -i "s|#!/usr/bin/env python$|#!/usr/bin/env python3|" 
 
 
 WORKDIR /home
