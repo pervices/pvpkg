@@ -5,13 +5,16 @@ RUN apt update && \
 apt-get -y install git && \
 apt-get -y install cmake && \
 apt-get -y install build-essential && \
- apt-get -y install python && \
+ apt-get -y install python3.6 python3-pip && \
  apt-get -y install libboost-all-dev && \
-apt-get -y install python-mako && \
+apt-get -y install doxygen && \
+pip3 install python-mako && \
  apt-get -y install libusb-1.0-0-dev && \
  apt-get -y install liborc-0.4-0 && \
- apt-get -y install python-cheetah && \
-find -name "*.py" -or -name '*.py.in' | xargs sed -i "s|#!/usr/bin/env python$|#!/usr/bin/env python2|"
+pip3 -y install Cheetah3 && \
+pip3 -y install  requests && \
+pip3 -y install numpy
+#find -name "*.py" -or -name '*.py.in' | xargs sed -i "s|#!/usr/bin/env python$|#!/usr/bin/env python2|"
 
 
 WORKDIR /home
@@ -20,6 +23,7 @@ mkdir uhdlib
 WORKDIR /home/uhdlib
 RUN cmake \
     -DCMAKE_INSTALL_PREFIX=/usr/ \
+           -DENABLE_PYTHON3=ON \
            -DENABLE_EXAMPLES=ON \
            -DENABLE_UTILS=ON \
            -DENABLE_TESTS=OFF \

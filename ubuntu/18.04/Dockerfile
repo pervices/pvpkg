@@ -9,6 +9,7 @@ RUN apt update && \
  pip3 install mako && \
  apt-get -y install libusb-1.0-0-dev && \
  apt-get -y install liborc-0.4-0 && \
+ apt-get -y install doxygen && \
 pip3 install Cheetah3 && \
 pip3 install numpy && \
 pip3 install requests
