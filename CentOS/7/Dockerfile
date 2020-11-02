@@ -5,7 +5,8 @@ RUN yum update && \
  yum -y install cmake  && \
  yum -y install gcc gcc-c++ make glibc-devel  && \
  yum -y install epel-release && \
- yum -y install python3-devel.x86_64 &&\
+ yum -y install boost-python36 && \
+ yum -y install python3-devel &&\
  #yum -y install http://repo.okay.com.mx/centos/7/x86_64/release/okay-release-1-1.noarch.rpm  && \
 # yum -y install yum install boost166-devel  && \
  yum -y install  boost boost-thread boost-devel && \
@@ -13,7 +14,6 @@ RUN yum update && \
  yum -y install orc  && \
  python3 -m pip install Cheetah3  && \
  python3 -m pip install Mako && \
- python3 -m pip install pybind11 &&\
  yum -y install doxygen && \
  python3 -m pip install numpy && \
 python3 -m pip install requests 
@@ -47,7 +47,7 @@ RUN cmake \
 	   -DENABLE_USB=OFF \
         -DPYTHON_EXECUTABLE=/usr/bin/python3 \
         -DRUNTIME_PYTHON_EXECUTABLE=/usr/bin/python3 \
-        -Boost_INCLUDE_DIRS=/usr/lib64 \
+        -BOOST_INCLUDE_DIRS=/usr/lib64 \
          /home/uhd/host && \
 make -j4 && \
  make install
