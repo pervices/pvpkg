@@ -1,27 +1,31 @@
 FROM centos:8
 
 RUN yum -y update && \
+ dnf --enablerepo=PowerTools install boost-python3-devel
  yum -y install git && \
  yum -y install cmake && \
+ yum -y install epel-release && \
  yum -y install gcc gcc-c++ make glibc-devel && \
- yum -y install python2-pip && \
+ yum -y install python3-pip && \
 yum -y install boost-devel && \
  yum -y install libusb libusbx && \
  yum -y install orc && \
- pip2 install mako && \
- pip2 install cheetah && \
- pip2 install numpy && \
-pip2 install requests && \
-pip2 install gps
+ yum -y install doxygen && \
+ pip3 install mako && \
+ pip3 install cheetah && \
+ pip3 install numpy && \
+pip3 install requests && \
+
 
 WORKDIR /home
 RUN git clone https://github.com/pervices/uhd.git && \
 mkdir uhdlib
 WORKDIR /home/uhdlib
 RUN cmake \
--DPYTHON_INCLUDE_DIR=usr/bin/python2.7\
--DPYTHON_EXECUTABLE=usr/bin/python2.7 \
+#-DPYTHON_INCLUDE_DIR=usr/bin/python2.7\
+#-DPYTHON_EXECUTABLE=usr/bin/python2.7 \
     -DCMAKE_INSTALL_PREFIX=/usr/ \
+           -DENABLE_PYTHON3=ON \
            -DENABLE_EXAMPLES=ON \
            -DENABLE_UTILS=ON \
            -DENABLE_TESTS=OFF \
