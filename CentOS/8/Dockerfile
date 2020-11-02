@@ -2,6 +2,7 @@ FROM centos:8
 
 RUN yum -y update && \
  dnf -y --enablerepo=PowerTools install boost-python3-devel && \
+dnf -y --enablerepo=PowerTools install doxygen && \
  yum -y install git && \
  yum -y install cmake && \
  yum -y install epel-release && \
@@ -9,7 +10,6 @@ RUN yum -y update && \
  yum -y install python3-pip && \
  yum -y install libusb libusbx && \
  yum -y install orc && \
- yum -y install doxygen && \
  pip3 install mako && \
  pip3 install cheetah && \
  #pip3 install numpy && \
