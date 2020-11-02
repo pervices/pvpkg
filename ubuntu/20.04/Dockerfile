@@ -43,7 +43,7 @@ RUN cmake \
 	   -DENABLE_OCTOCLOCK=OFF \
 	   -DENABLE_DOXYGEN=OFF \
 	   -DENABLE_USB=OFF \
-           -DBoost_LIBRARY_DIRS=/usr/include/x86_64-linux-gnu \
+           -DBOOST_PYTHON_LIBRARY=/usr/include/x86_64-linux-gnu/libboost_python38.so \
          /home/uhd/host && \
 make -j4 && \
 make install
