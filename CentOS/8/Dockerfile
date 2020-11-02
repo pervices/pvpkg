@@ -7,7 +7,7 @@ dnf -y --enablerepo=PowerTools install doxygen && \
  yum -y install cmake && \
  yum -y install epel-release && \
  yum -y install gcc-c++ make && \
- yum -y install python3-pip python3-libs && \
+ yum -y install python3-pip  python36-devel && \
  yum -y install libusb libusbx && \
  yum -y install orc && \
  pip3 install mako && \
