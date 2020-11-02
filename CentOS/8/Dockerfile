@@ -11,7 +11,7 @@ dnf -y --enablerepo=PowerTools install doxygen && \
  yum -y install libusb libusbx && \
  yum -y install orc && \
  pip3 install mako && \
- pip3 install cheetah && \
+ pip3 install Cheetah3 && \
  #pip3 install numpy && \
 pip3 install requests 
 
