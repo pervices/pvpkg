@@ -6,7 +6,7 @@ RUN yum update && \
  yum -y install gcc gcc-c++ make glibc-devel  && \
  yum -y install epel-release && \
  yum -y install boost-python36 boost-python36-devel && \
- yum -y install python3-devel python3-libs &&\
+ yum -y install python3-devel &&\
  yum -y install  boost boost-thread boost-devel && \
  yum -y install libusb libusbx  && \
  yum -y install orc  && \
@@ -43,8 +43,6 @@ RUN cmake \
 	   -DENABLE_OCTOCLOCK=OFF \
 	   -DENABLE_DOXYGEN=OFF \
 	   -DENABLE_USB=OFF \
-        -DPYTHON_EXECUTABLE=/usr/bin/python3 \
-        -DRUNTIME_PYTHON_EXECUTABLE=/usr/bin/python3 \
          /home/uhd/host && \
 make -j4 && \
  make install
