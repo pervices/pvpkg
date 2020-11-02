@@ -6,9 +6,7 @@ RUN yum update && \
  yum -y install gcc gcc-c++ make glibc-devel  && \
  yum -y install epel-release && \
  yum -y install boost-python36 boost-python36-devel && \
- yum -y install python3-devel &&\
- #yum -y install http://repo.okay.com.mx/centos/7/x86_64/release/okay-release-1-1.noarch.rpm  && \
- #yum -y install yum install boost166-devel  && \
+ yum -y install python3-devel python3-libs &&\
  yum -y install  boost boost-thread boost-devel && \
  yum -y install libusb libusbx  && \
  yum -y install orc  && \
