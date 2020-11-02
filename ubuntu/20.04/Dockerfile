@@ -16,7 +16,8 @@ pip3  install  requests && \
 pip3  install numpy && \
 pip3 install pybind11 && \
 find -name "*.py" -or -name '*.py.in' | xargs sed -i "s|#!/usr/bin/env python$|#!/usr/bin/env python3|" 
-
+WORKDIR /usr/lib/x86_64-linux-gnu
+RUN ls
 
 WORKDIR /home
 RUN git clone https://github.com/pervices/uhd.git && \
@@ -42,6 +43,7 @@ RUN cmake \
 	   -DENABLE_OCTOCLOCK=OFF \
 	   -DENABLE_DOXYGEN=OFF \
 	   -DENABLE_USB=OFF \
+           -Boost_PYTHON3_LIBRARY=/usr/include \
          /home/uhd/host && \
 make -j4 && \
 make install
