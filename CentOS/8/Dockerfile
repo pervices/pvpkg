@@ -1,20 +1,19 @@
 FROM centos:8
 
 RUN yum -y update && \
- dnf --enablerepo=PowerTools install boost-python3-devel && \
+ dnf -y --enablerepo=PowerTools install boost-python3-devel && \
  yum -y install git && \
  yum -y install cmake && \
  yum -y install epel-release && \
- yum -y install gcc gcc-c++ make glibc-devel && \
+ yum -y install gcc-c++ make && \
  yum -y install python3-pip && \
-yum -y install boost-devel && \
  yum -y install libusb libusbx && \
  yum -y install orc && \
  yum -y install doxygen && \
  pip3 install mako && \
  pip3 install cheetah && \
- pip3 install numpy && \
-pip3 install requests && \
+ #pip3 install numpy && \
+pip3 install requests 
 
 
 WORKDIR /home
