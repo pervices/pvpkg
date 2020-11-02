@@ -1,7 +1,7 @@
 FROM centos:8
 
 RUN yum -y update && \
- dnf --enablerepo=PowerTools install boost-python3-devel
+ dnf --enablerepo=PowerTools install boost-python3-devel && \
  yum -y install git && \
  yum -y install cmake && \
  yum -y install epel-release && \
