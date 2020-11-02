@@ -43,7 +43,7 @@ RUN cmake \
 	   -DENABLE_OCTOCLOCK=OFF \
 	   -DENABLE_DOXYGEN=OFF \
 	   -DENABLE_USB=OFF \
-           -Boost_LIBRARY_DIRS=/usr/include/x86_64-linux-gnu \
+           -DBoost_LIBRARY_DIRS=/usr/include/x86_64-linux-gnu \
          /home/uhd/host && \
 make -j4 && \
 make install
