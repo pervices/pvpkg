@@ -13,8 +13,8 @@ pip3 install mako && \
  apt-get -y install liborc-0.4-0 && \
 pip3  install Cheetah3 && \
 pip3  install  requests && \
-pip3  install numpy
-#find -name "*.py" -or -name '*.py.in' | xargs sed -i "s|#!/usr/bin/env python$|#!/usr/bin/env python2|"
+pip3  install numpy && \
+find -name "*.py" -or -name '*.py.in' | xargs sed -i "s|#!/usr/bin/env python$|#!/usr/bin/env python3|"
 
 
 WORKDIR /home
