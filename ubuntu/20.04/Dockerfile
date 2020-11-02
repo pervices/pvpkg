@@ -8,7 +8,7 @@ apt-get -y install build-essential && \
  apt-get -y install python3.6 python3-pip && \
  apt-get -y install libboost-all-dev && \
 apt-get -y install doxygen && \
-pip3 install python-mako && \
+pip3 install mako && \
  apt-get -y install libusb-1.0-0-dev && \
  apt-get -y install liborc-0.4-0 && \
 pip3 -y install Cheetah3 && \
