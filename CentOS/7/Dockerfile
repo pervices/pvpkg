@@ -27,6 +27,7 @@ WORKDIR /home/uhdlib
 RUN cmake \
     -DCMAKE_INSTALL_PREFIX=/usr/ \
            -DENABLE_PYTHON3=ON \
+            -DBoost_INCLUDE_DIR=/usr/include/boost169 \
            -DENABLE_EXAMPLES=ON \
            -DENABLE_UTILS=ON \
            -DENABLE_TESTS=OFF \
