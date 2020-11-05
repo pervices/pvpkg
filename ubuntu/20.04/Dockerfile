@@ -6,7 +6,7 @@ apt-get -y install git && \
 apt-get -y install cmake && \
 apt-get -y install build-essential && \
  apt-get -y install python3-dev python3-pip && \
- apt-get -y install libboost-all-dev && \
+ apt-get -y install libboost-all-dev libboost-python-dev && \
 apt-get -y install doxygen && \
 pip3 install mako && \
  apt-get -y install libusb-1.0-0-dev && \
@@ -19,8 +19,8 @@ pip3 install docutils && \
 pip3 install ruamel.yaml && \
 pip3 install setuptools && \
 find -name "*.py" -or -name '*.py.in' | xargs sed -i "s|#!/usr/bin/env python$|#!/usr/bin/env python3|" 
-WORKDIR /usr/lib/x86_64-linux-gnu
-RUN ls
+#WORKDIR /usr/lib/x86_64-linux-gnu
+#RUN ls
 
 WORKDIR /home
 RUN git clone https://github.com/pervices/uhd.git && \
@@ -46,7 +46,6 @@ RUN cmake \
 	   -DENABLE_OCTOCLOCK=OFF \
 	   -DENABLE_DOXYGEN=OFF \
 	   -DENABLE_USB=OFF \
-           -DBOOST_PYTHON_LIBRARY=/usr/include/x86_64-linux-gnu/libboost_python38.so \
          /home/uhd/host && \
 make -j4 && \
 make install
