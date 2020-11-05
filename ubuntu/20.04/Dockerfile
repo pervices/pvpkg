@@ -6,7 +6,7 @@ apt-get -y install git && \
 apt-get -y install cmake && \
 apt-get -y install build-essential && \
  apt-get -y install python3-dev python3-pip && \
- apt-get -y install libboost-all-dev libboost-python-dev && \
+ apt-get -y install libboost1.67-all-dev  && \
 apt-get -y install doxygen && \
 pip3 install mako && \
  apt-get -y install libusb-1.0-0-dev && \
@@ -18,7 +18,7 @@ pip3 install pybind11 && \
 pip3 install docutils && \
 pip3 install ruamel.yaml && \
 pip3 install setuptools && \
-find -name "*.py" -or -name '*.py.in' | xargs sed -i "s|#!/usr/bin/env python$|#!/usr/bin/env python38|" 
+find -name "*.py" -or -name '*.py.in' | xargs sed -i "s|#!/usr/bin/env python$|#!/usr/bin/env python3|" 
 #WORKDIR /usr/lib/x86_64-linux-gnu
 #RUN ls
 
@@ -30,7 +30,7 @@ RUN cmake \
     -DCMAKE_INSTALL_PREFIX=/usr/ \
 -D Boost_NO_BOOST_CMAKE:BOOL=0 \
            -DENABLE_PYTHON3=ON \
-            -DBOOST_PYTHON_COMPONENT=python38 \
+           -DBOOST_PYTHON_COMPONENT=python38 \
            -DENABLE_EXAMPLES=ON \
            -DENABLE_UTILS=ON \
            -DENABLE_TESTS=OFF \
