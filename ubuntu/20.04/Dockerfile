@@ -28,6 +28,7 @@ mkdir uhdlib
 WORKDIR /home/uhdlib
 RUN cmake \
     -DCMAKE_INSTALL_PREFIX=/usr/ \
+-D Boost_NO_BOOST_CMAKE:BOOL=0 \
            -DENABLE_PYTHON3=ON \
            -DENABLE_EXAMPLES=ON \
            -DENABLE_UTILS=ON \
