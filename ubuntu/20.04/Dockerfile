@@ -31,6 +31,7 @@ RUN cmake \
 -D Boost_NO_BOOST_CMAKE:BOOL=0 \
            -DENABLE_PYTHON3=ON \
             -DBOOST_PYTHON_COMPONENT=python38 \
+-DBoost_NO_BOOST_CMAKE \
            -DENABLE_EXAMPLES=ON \
            -DENABLE_UTILS=ON \
            -DENABLE_TESTS=OFF \
