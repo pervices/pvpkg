@@ -14,9 +14,11 @@ RUN yum update && \
  python3 -m pip install Mako && \
  yum -y install doxygen && \
  python3 -m pip install numpy && \
-python3 -m pip install requests 
-
-
+python3 -m pip install requests && \
+python3 -m pip install pybind11 && \
+python3 -m pip install docutils && \ 
+python3 -m pip install ruamel.yaml && \ 
+python3 -m pip install setuptools
 
 
 WORKDIR /home
