@@ -17,7 +17,7 @@ pip3  install numpy && \
 pip3 install pybind11 && \
 pip3 install docutils && \
 pip3 install ruamel.yam1 && \
-pip3 install setuptools
+pip3 install setuptools && \
 find -name "*.py" -or -name '*.py.in' | xargs sed -i "s|#!/usr/bin/env python$|#!/usr/bin/env python3|" 
 WORKDIR /usr/lib/x86_64-linux-gnu
 RUN ls
