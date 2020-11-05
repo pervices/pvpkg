@@ -11,7 +11,7 @@ RUN yum update && \
  #yum -y install yum install boost166-devel  && \
  yum -y install libusb libusbx  && \
 yum -y install centos-release-scl-rh && \
-yum -y install rh-mariadb101-boost-devel && \
+#yum -y install rh-mariadb101-boost-devel && \
 yum -y install rh-mariadb101-boost-python && \
  yum -y install orc  && \
  python3 -m pip install Cheetah3  && \
