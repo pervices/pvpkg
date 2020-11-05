@@ -5,7 +5,7 @@ RUN apt update && \
 apt-get -y install git && \
 apt-get -y install cmake && \
 apt-get -y install build-essential && \
- apt-get -y install python3.6 python3-pip && \
+ apt-get -y install python3-devel python3-pip && \
  apt-get -y install libboost-all-dev && \
 apt-get -y install doxygen && \
 pip3 install mako && \
