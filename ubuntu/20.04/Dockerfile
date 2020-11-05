@@ -18,7 +18,7 @@ pip3 install pybind11 && \
 pip3 install docutils && \
 pip3 install ruamel.yaml && \
 pip3 install setuptools && \
-find -name "*.py" -or -name '*.py.in' | xargs sed -i "s|#!/usr/bin/env python$|#!/usr/bin/env python3|" 
+find -name "*.py" -or -name '*.py.in' | xargs sed -i "s|#!/usr/bin/env python$|#!/usr/bin/env python38|" 
 #WORKDIR /usr/lib/x86_64-linux-gnu
 #RUN ls
 
@@ -31,7 +31,6 @@ RUN cmake \
 -D Boost_NO_BOOST_CMAKE:BOOL=0 \
            -DENABLE_PYTHON3=ON \
             -DBOOST_PYTHON_COMPONENT=python38 \
--DBoost_NO_BOOST_CMAKE=TRUE \
            -DENABLE_EXAMPLES=ON \
            -DENABLE_UTILS=ON \
            -DENABLE_TESTS=OFF \
