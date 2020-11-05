@@ -29,7 +29,7 @@ RUN cmake \
     -DCMAKE_INSTALL_PREFIX=/usr/ \
            -DENABLE_PYTHON3=ON \
            -DPYTHON_LIBRARY=/usr/lib64/libpython3.6m.so \
-            -DLIB_SUFFIX=64
+            -DLIB_SUFFIX=64 \
            -DENABLE_EXAMPLES=ON \
            -DENABLE_UTILS=ON \
            -DENABLE_TESTS=OFF \
