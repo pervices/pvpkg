@@ -14,7 +14,7 @@ pip3 install mako && \
 pip3  install Cheetah3 && \
 pip3  install  requests && \
 pip3  install numpy && \
-pip3 install pybind11 && \
+pip3 install pybind11-dev && \
 pip3 install docutils && \
 pip3 install ruamel.yaml && \
 pip3 install setuptools && \
