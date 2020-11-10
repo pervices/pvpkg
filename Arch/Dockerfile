@@ -21,7 +21,7 @@ gpg --keyserver ipv4.pool.sks-keyservers.net --recv-key 330239C1C4DAFEE1 && \
  yay -Sy --noconfirm \
    $(pacman --deptest $(source ./PKGBUILD && echo ${depends[@]} ${makedepends[@]})) && \
 makepkg --noconfirm --install
-RUN pacman -Sy --noconfirm libgmp-dev swig  \
+RUN yay -Sy --noconfirm libgmp-dev swig  \
  python-sphinx python-lxml libfftw3-dev \
 libsdl1.2-dev libgsl-dev libqwt-qt5-dev libqt5opengl5-dev python-pyqt5 \
 liblog4cpp5-dev libzmq3-dev python-yaml python-click python-click-plugins \
