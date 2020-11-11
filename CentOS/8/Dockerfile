@@ -1,7 +1,7 @@
 FROM centos:8
 
 RUN yum -y update && \
- RUN dnf -y --enablerepo=PowerTools install boost-python3-devel && \
+ dnf -y --enablerepo=PowerTools install boost-python3-devel && \
 dnf -y --enablerepo=PowerTools install doxygen python3-sphinx SDL2-devel && \
  yum -y install git && \
  yum -y install cmake && \
