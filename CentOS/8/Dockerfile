@@ -1,11 +1,11 @@
 FROM centos:8
 
 #RUN yum -y update && \
- #dnf -y --enablerepo=PowerTools install boost-python3-devel && \
-#dnf -y --enablerepo=PowerTools install doxygen && \
+ RUN dnf -y --enablerepo=PowerTools install boost-python3-devel && \
+dnf -y --enablerepo=PowerTools install doxygen python3-sphinx SDL2-devel && \
  #yum -y install git && \
  #yum -y install cmake && \
- RUN yum -y install epel-release 
+ yum -y install epel-release 
  #yum -y install gcc-c++ make && \
  #yum -y install python3-pip  python36-devel && \
  #yum -y install libusb libusbx && \
@@ -44,8 +44,8 @@ WORKDIR /home
  #make -j4 && \
  #make install
 
-RUN yum -y install git cmake g++ libboost-all-dev libgmp-dev swig python3-numpy \
-python3-mako python3-sphinx python3-lxml doxygen libfftw3-dev \
-libsdl1.2-dev libgsl-dev libqwt-qt5-dev libqt5opengl5-dev python3-pyqt5 \
-liblog4cpp5-dev libzmq3-dev python3-yaml python3-click python3-click-plugins \
-python3-zmq python3-scipy python3-gi python3-gi-cairo gobject-introspection gir1.2-gtk-3.0
+RUN yum -y install gmp-devel swig \
+python3-lxml fftw-devel \
+gsl-devel qwt-qt5-devel python3-pyqt5-sip \
+log4cpp5 zeromq-devel python3-yaml python3-click python3-click-plugins \
+python3-zmq python3-scipy python3-gobject-base python3-cairo gobject-introspection gtk3
