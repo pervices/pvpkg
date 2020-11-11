@@ -5,7 +5,7 @@ FROM centos:8
 #dnf -y --enablerepo=PowerTools install doxygen && \
  #yum -y install git && \
  #yum -y install cmake && \
- RUN yum -y install epel-release && \
+ RUN yum -y install epel-release 
  #yum -y install gcc-c++ make && \
  #yum -y install python3-pip  python36-devel && \
  #yum -y install libusb libusbx && \
