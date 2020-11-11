@@ -43,3 +43,5 @@ RUN cmake \
          /home/uhd/host && \
  make -j4 && \
  make install
+
+RUN yum -y install gnuradio
