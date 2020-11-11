@@ -47,5 +47,5 @@ WORKDIR /home
 RUN yum -y install gmp-devel swig \
 python3-lxml fftw-devel \
 gsl-devel qwt-qt5-devel python3-pyqt5-sip \
-log4cpp5 zeromq-devel python3-yaml python3-click python3-click-plugins \
+log4cpp-devel zeromq-devel python3-yaml python3-click python3-click-plugins \
 python3-zmq python3-scipy python3-gobject-base python3-cairo gobject-introspection gtk3
