@@ -2,7 +2,7 @@ FROM centos:8
 
 RUN yum -y update && \
  dnf -y --enablerepo=PowerTools install boost-python3-devel && \
-dnf -y --enablerepo=PowerTools install doxygen python3-sphinx SDL2-devel && \
+dnf -y --enablerepo=PowerTools install doxygen python3-sphinx SDL-devel && \
  yum -y install git && \
  yum -y install cmake && \
  yum -y install epel-release && \
@@ -47,7 +47,7 @@ make -j4 && \
 RUN yum -y install gmp-devel swig \
 python3-lxml fftw-devel \
 gsl-devel qwt-qt5-devel python3-pyqt5-sip \
-log4cpp-devel zeromq-devel python3-yaml python3-click python3-click-plugins \
+log4cpp-devel zeromq-devel czmq python3-yaml python3-click python3-click-plugins \
 python3-zmq python3-scipy python3-gobject gobject-introspection gtk3 && \
 pip3 install git+https://github.com/pyqtgraph/pyqtgraph@develop && \
 pip3 install scipy 
