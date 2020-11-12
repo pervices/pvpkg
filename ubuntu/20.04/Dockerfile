@@ -56,7 +56,7 @@ RUN apt -y install libgmp-dev swig  \
  python3-sphinx python3-lxml libfftw3-dev \
 libsdl1.2-dev libgsl-dev libqwt-qt5-dev libqt5opengl5-dev python3-pyqt5 \
 liblog4cpp5-dev libzmq3-dev python3-yaml python3-click python3-click-plugins \
-python3-zmq python3-scipy python3-gi python3-gi-cairo gobject-introspection gir1.2-gtk-3.0  python3-pybind11
+python3-zmq python3-scipy python3-gi python3-gi-cairo gobject-introspection gir1.2-gtk-3.0  python3-pybind11 libsndfile1-dev
 WORKDIR /home
 RUN git clone --recursive https://github.com/gnuradio/volk.git
 WORKDIR volk
