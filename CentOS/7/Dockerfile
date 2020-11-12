@@ -30,6 +30,7 @@ WORKDIR /home/uhdlib
 RUN cmake \
     -DCMAKE_INSTALL_PREFIX=/usr/ \
            -DENABLE_EXAMPLES=ON \
+           -DENABLE_PYTHON_API=ON \
            -DENABLE_UTILS=ON \
            -DENABLE_TESTS=OFF \
            -DENABLE_E100=OFF \
