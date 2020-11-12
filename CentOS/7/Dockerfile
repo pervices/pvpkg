@@ -6,12 +6,12 @@ RUN yum -y update && \
  yum -y install gcc gcc-c++ make glibc-devel  && \
  yum -y install epel-release && \
  #yum -y install boost-python36 boost-python36-devel && \
- yum -y install python3-devel &&\
+ yum -y install python2-devel &&\
  yum -y install http://repo.okay.com.mx/centos/7/x86_64/release/okay-release-1-1.noarch.rpm  && \
- yum -y install boost166-devel  && \
+ yum -y install boost166-devel boost166-python2 && \
  yum -y install libusb libusbx  && \
  yum -y install orc  && \
- python3 -m pip install Cheetah3  && \
+ python3 -m pip install Cheetah  && \
  python3 -m pip install Mako && \
  yum -y install doxygen && \
  python3 -m pip install numpy && \
