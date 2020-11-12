@@ -14,11 +14,11 @@ RUN yum -y update && \
  python3 -m pip install Cheetah  && \
  python3 -m pip install Mako && \
  yum -y install doxygen && \
- python3 -m pip install numpy && \
-python3 -m pip install requests && \
-python3 -m pip install pybind11 && \
-python3 -m pip install docutils && \
-python3 -m pip install ruamel.yaml
+yum -y install python-numpy && \
+ yum -y install python-requests && \
+yum -y install python-pybind11 && \
+yum -y install python-docutils && \
+yum -y install python-ruamel.yaml
 
 
 
