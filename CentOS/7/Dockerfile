@@ -14,7 +14,7 @@ RUN yum -y update && \
  yum -y install python-cheetah  && \
 yum -y install python-mako && \
  yum -y install doxygen && \
-yum -y install python-numpy && \
+yum -y install numpy && \
  yum -y install python-requests && \
 yum -y install python-pybind11 && \
 yum -y install python-docutils && \
