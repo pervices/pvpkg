@@ -1,6 +1,6 @@
 FROM centos:7
 
-RUN yum update && \
+RUN yum -y update && \
  yum -y install git  && \
  yum -y install cmake  && \
  yum -y install gcc gcc-c++ make glibc-devel  && \
