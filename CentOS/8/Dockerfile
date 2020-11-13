@@ -49,7 +49,6 @@ python3-lxml fftw-devel \
 gsl-devel qwt-qt5-devel python3-pyqt5-sip \
 log4cpp-devel zeromq czmq python3-yaml python3-click python3-click-plugins \
 python3-zmq python3-scipy python3-gobject gobject-introspection gtk3 && \
-yum -y install cert-forensics-tools-release && \
 pip3 install git+https://github.com/pyqtgraph/pyqtgraph@develop && \
 pip3 install scipy 
 #echo 'export PYTHONPATH=/usr/local/lib/python3/dist-packages:usr/local/lib/python2.7/site-packages:$PYTHONPATH' >> ~/.bashrc
