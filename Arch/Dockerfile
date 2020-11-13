@@ -3,42 +3,38 @@ FROM archlinux
 # makepkg cannot (and should not) be run as root:
 RUN useradd -m notroot && \
 
-pacman -Sy --noconfirm archlinux-keyring && \
+pacman -Sy --noconfirm archlinux-keyring boost-libs orc libusb python && \
     pacman -Sy --noconfirm base-devel git && \
-    pacman -Syu --noconfirm && \
-pacman -Syu --noconfirm wget && \
- echo "notroot ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/notroot
+    pacman -Sy --noconfirm cmake make boost doxygen gcc gcc-c++ glibc-devel python-numpy python-requests python-docutils python-mako python-cheetah3 && \
+pacman -Sy --noconfirm wget && \
+ #echo "notroot ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/notroot
 
-# Continue execution (and CMD) as notroot:
-USER notroot
-WORKDIR home/notroot
-RUN wget https://raw.githubusercontent.com/than97/pvpkg/master/Arch/PKGBUILD &&\
-ls && \
- git clone https://aur.archlinux.org/yay-bin.git && \
-    cd yay-bin && \
-    makepkg --noconfirm --syncdeps --rmdeps --install --clean && \
-gpg --keyserver ipv4.pool.sks-keyservers.net --recv-key 330239C1C4DAFEE1 && \
- yay -Sy --noconfirm \
-   $(pacman --deptest $(source ./PKGBUILD && echo ${depends[@]} ${makedepends[@]})) && \
-makepkg --noconfirm --install
-RUN yay -Sy --noconfirm swig  \
- python-sphinx python-lxml \
- python-pyqt5 \
- python-yaml python-click python-click-plugins \
- python-scipy  gobject-introspection && \
-git clone --recursive https://github.com/gnuradio/volk.git
-WORKDIR volk
-RUN mkdir build
-WORKDIR build
-RUN cmake -DCMAKE_BUILD_TYPE=Release -DPYTHON_EXECUTABLE=/usr/bin/python3 ../ && \
-make && \
-make install
 WORKDIR /home
-RUN git clone https://github.com/gnuradio/gnuradio.git
-WORKDIR gnuradio
-RUN mkdir build
-WORKDIR build
-RUN cmake -DCMAKE_BUILD_TYPE=Release -DPYTHON_EXECUTABLE=/usr/bin/python3 ../ && \
-make && \
-make install
+RUN git clone https://github.com/pervices/uhd.git && \
+mkdir uhdlib
+WORKDIR /home/uhdlib
+RUN cmake \
+    -DCMAKE_INSTALL_PREFIX=/usr/ \
+           -DENABLE_PYTHON3=ON \
+           -DENABLE_EXAMPLES=ON \
+          -DENABLE_UTILS=ON \
+          -DENABLE_TESTS=OFF \
+           -DENABLE_E100=OFF \
+	   -DENABLE_N230=OFF \
+	   -DENABLE_N300=OFF \
+	   -DENABLE_E320=OFF \
+	   -DENABLE_USRP1=OFF \
+	   -DENABLE_USER2=OFF \
+	   -DENABLE_B200=OFF \
+	   -DENABLE_X300=OFF \
+       -DENABLE_CRIMSON_TNG=ON \
+       -DENABLE_CYAN_16T=OFF \
+      -DENABLE_CYAN_64T=OFF \
+	   -DENABLE_OCTOCLOCK=OFF \
+	   -DENABLE_DOXYGEN=OFF \
+	   -DENABLE_USB=OFF \
+        /home/uhd/host && \
+make -j4 && \
+ make install
+
 
