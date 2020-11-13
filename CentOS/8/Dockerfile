@@ -47,10 +47,9 @@ make -j4 && \
 RUN yum -y install gmp-devel swig \
 python3-lxml fftw-devel \
 gsl-devel qwt-qt5-devel python3-pyqt5-sip \
-log4cpp-devel czmq python3-yaml python3-click python3-click-plugins \
+log4cpp-devel zeromq czmq python3-yaml python3-click python3-click-plugins \
 python3-zmq python3-scipy python3-gobject gobject-introspection gtk3 && \
-dnf -y --enablerepo=PowerTools install CERT-Forensics-Tools && \
-dnf -y --enablerepo=forensics install zeromq && \
+yum -y install cert-forensics-tools-release && \
 pip3 install git+https://github.com/pyqtgraph/pyqtgraph@develop && \
 pip3 install scipy 
 #echo 'export PYTHONPATH=/usr/local/lib/python3/dist-packages:usr/local/lib/python2.7/site-packages:$PYTHONPATH' >> ~/.bashrc
