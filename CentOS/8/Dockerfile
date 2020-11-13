@@ -63,6 +63,8 @@ mkdir build
 WORKDIR build
 RUN git pull --recurse-submodules=on && \
 git submodule update --init && \
-cmake .. && \
+cmake \
+-DZEROMQ_INCLUDE_DIRS=/usr/lib64/libzmq.so.5.2.3 \
+ .. && \
 make  && \
 make install
