@@ -5,7 +5,7 @@ RUN useradd -m notroot && \
 
 pacman -Sy --noconfirm archlinux-keyring boost-libs orc python && \
     pacman -Sy --noconfirm base-devel git && \
-    pacman -Sy --noconfirm cmake make boost doxygen gcc gcc-c++ glibc-devel python-numpy python-requests python-docutils python-mako python-cheetah3 && \
+    pacman -Sy --noconfirm cmake make boost doxygen gcc glibc python-setuptools python-numpy python-requests python-docutils python-mako python-cheetah3 && \
 pacman -Sy --noconfirm wget && \
  #echo "notroot ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/notroot
 
