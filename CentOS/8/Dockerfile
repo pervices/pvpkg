@@ -49,7 +49,6 @@ python3-lxml fftw-devel \
 gsl-devel qwt-qt5-devel python3-pyqt5-sip \
 log4cpp-devel czmq python3-yaml python3-click python3-click-plugins \
 python3-zmq python3-scipy python3-gobject gobject-introspection gtk3 && \
-yum -y install centos-release-scl-rh && \
 dnf -y config-manager --set-enabled PowerTools && \
 yum -y install CERT-Forensics-Tools && \
 dnf -y --enablerepo=forensics install zeromq && \
