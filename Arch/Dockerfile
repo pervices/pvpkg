@@ -21,7 +21,7 @@ WORKDIR libuhd
 RUN wget https://raw.githubusercontent.com/than97/pvpkg/master/Arch/PKGBUILD && \
  ls && \
 git clone https://aur.archlinux.org/yay-bin.git && \
-    #cd yay-bin && \
+    cd yay-bin && \
     makepkg --noconfirm --syncdeps --rmdeps --install --clean && \
 gpg --keyserver ipv4.pool.sks-keyservers.net --recv-key 330239C1C4DAFEE1 && \
  yay -Sy --noconfirm \
@@ -30,7 +30,7 @@ gpg --keyserver ipv4.pool.sks-keyservers.net --recv-key 330239C1C4DAFEE1 && \
 
 WORKDIR gnuradio
 RUN wget https://raw.githubusercontent.com/than97/pvpkg/master/Arch/GnuRadio/PKGBUILD && \
-    #cd yay-bin && \
+    cd yay-bin && \
     makepkg --noconfirm --syncdeps --rmdeps --install --clean && \
 gpg --keyserver ipv4.pool.sks-keyservers.net --recv-key 330239C1C4DAFEE1 && \
  yay -Sy --noconfirm \
