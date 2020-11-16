@@ -15,7 +15,6 @@ mkdir uhdlib
 WORKDIR /home/uhdlib
 RUN cmake \
     -DCMAKE_INSTALL_PREFIX=/usr/ \
-           -DENABLE_PYTHON3=ON \
            -DENABLE_EXAMPLES=ON \
           -DENABLE_UTILS=ON \
           -DENABLE_TESTS=OFF \
