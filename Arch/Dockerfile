@@ -28,10 +28,11 @@ gpg --keyserver ipv4.pool.sks-keyservers.net --recv-key 330239C1C4DAFEE1 && \
    $(pacman --deptest $(source ./PKGBUILD && echo ${depends[@]} ${makedepends[@]})) && \
  makepkg --noconfirm --install
 
-USER notroot
 WORKDIR home/notroot
 WORKDIR gnuradio
 RUN wget https://raw.githubusercontent.com/than97/pvpkg/master/Arch/GnuRadio/PKGBUILD && \
+git clone https://aur.archlinux.org/yay-bin.git && \
+    cd yay-bin && \
     makepkg --noconfirm --syncdeps --rmdeps --install --clean && \
 gpg --keyserver ipv4.pool.sks-keyservers.net --recv-key 330239C1C4DAFEE1 && \
  yay -Sy --noconfirm \
