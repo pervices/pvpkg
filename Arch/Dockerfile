@@ -15,6 +15,8 @@ pacman -Sy --noconfirm archlinux-keyring && \
 # Continue execution (and CMD) as notroot:
 USER notroot
 WORKDIR home/notroot
+RUN mkdir libuhd
+WORKDIR libuhd
 RUN wget https://raw.githubusercontent.com/than97/pvpkg/master/Arch/PKGBUILD && \
  ls && \
 git clone https://aur.archlinux.org/yay-bin.git && \
@@ -25,6 +27,9 @@ gpg --keyserver ipv4.pool.sks-keyservers.net --recv-key 330239C1C4DAFEE1 && \
    $(pacman --deptest $(source ./PKGBUILD && echo ${depends[@]} ${makedepends[@]})) && \
  makepkg --noconfirm --install
 
+WORKDIR home/notroot
+RUN mkdir gnuradio
+WORKDIR gnuradio
 RUN wget https://raw.githubusercontent.com/than97/pvpkg/master/Arch/GnuRadio/PKGBUILD && \
     makepkg --noconfirm --syncdeps --rmdeps --install --clean && \
 gpg --keyserver ipv4.pool.sks-keyservers.net --recv-key 330239C1C4DAFEE1 && \
