@@ -3,7 +3,7 @@ FROM archlinux
 # makepkg cannot (and should not) be run as root:
 RUN useradd -m notroot && \
 
-pacman -Sy --noconfirm archlinux-keyring boost-libs orc python && \
+pacman -Sy --noconfirm archlinux-keyring boost-libs orc python2 && \
     pacman -Sy --noconfirm base-devel git && \
     pacman -Sy --noconfirm cmake make boost boost-libs doxygen gcc glibc python-setuptools python-numpy python-requests python-docutils python-mako  && \
 pacman -Sy --noconfirm wget
