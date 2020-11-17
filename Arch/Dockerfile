@@ -25,8 +25,8 @@ RUN mkdir gnuradio
 #gpg --keyserver ipv4.pool.sks-keyservers.net --recv-key 330239C1C4DAFEE1 
  #RUN yay -Syyu --noconfirm 
  #RUN yay -Sy --noconfirm \
-   $(pacman --deptest $(source ./PKGBUILD && echo ${depends[@]} ${makedepends[@]})) && \
- makepkg --noconfirm --install
+  # $(pacman --deptest $(source ./PKGBUILD && echo ${depends[@]} ${makedepends[@]})) && \
+ #makepkg --noconfirm --install
 
 WORKDIR gnuradio
 RUN wget https://raw.githubusercontent.com/than97/pvpkg/master/Arch/GnuRadio/PKGBUILD && \
