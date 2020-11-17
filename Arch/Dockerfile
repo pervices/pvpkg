@@ -14,10 +14,10 @@ pacman -Sy --noconfirm archlinux-keyring && \
 
 # Continue execution (and CMD) as notroot:
 USER notroot
-WORKDIR home/notroot
+WORKDIR $HOME
 RUN mkdir libuhd && \
 mkdir gnuradio
-WORKDIR libuhd
+WORKDIR $HOME/libuhd
 RUN wget https://raw.githubusercontent.com/than97/pvpkg/master/Arch/UHD/PKGBUILD && \
 git clone https://aur.archlinux.org/yay-bin.git && \
     cd yay-bin && \
@@ -28,7 +28,7 @@ RUN yay -Sy --noconfirm \
    $(pacman --deptest $(source ./PKGBUILD && echo ${depends[@]} ${makedepends[@]})) && \
  makepkg --noconfirm --install
 
-WORKDIR home/notroot/gnuradio
+WORKDIR $HOME/gnuradio
 RUN wget https://raw.githubusercontent.com/than97/pvpkg/master/Arch/GnuRadio/PKGBUILD && \
 git clone https://aur.archlinux.org/yay-bin.git && \
     cd yay-bin && \
