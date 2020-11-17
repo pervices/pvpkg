@@ -15,9 +15,6 @@ pacman -Sy --noconfirm archlinux-keyring && \
 # Continue execution (and CMD) as notroot:
 USER notroot
 WORKDIR home/notroot
-RUN mkdir libuhd && \
-mkdir gnuradio
-WORKDIR home/notroot//libuhd
 RUN wget https://raw.githubusercontent.com/than97/pvpkg/master/Arch/UHD/PKGBUILD && \
 git clone https://aur.archlinux.org/yay-bin.git && \
     cd yay-bin && \
