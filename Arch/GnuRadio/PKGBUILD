@@ -11,8 +11,8 @@ pkgdesc="General purpose DSP and SDR toolkit, with drivers for usrp and fcd."
 arch=('i686' 'x86_64')
 url="https://github.com/gnuradio/gnuradio"
 license=('GPL')
-depends=('fftw' 'python2-numpy' 'cppunit' 'gsl' 'blas' 'guile' 'boost-libs>=1.53' 'libusbx' 'portaudio' 'libuhd' 'zeromq' 'gmp' 'thrift' )
-makedepends=('git' 'boost' 'cmake' 'python2-lxml' 'python2-cheetah' 'glu' 'swig'
+depends=('fftw' 'python2-numpy' 'cppunit' 'gsl' 'blas' 'guile' 'boost-libs>=1.53' 'portaudio' 'libuhd' 'zeromq' 'gmp' 'thrift' )
+makedepends=('git' 'boost' 'cmake' 'python2-lxml' 'python2-cheetah' 'glu' 'swig' 'python2-markdown'
     'pygtk' 'wxpython' 'python2-pyqwt' 'qwtplot3d')
 optdepends=('boost: gr_modtool'
             'swig: gr_modtool'
