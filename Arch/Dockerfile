@@ -16,7 +16,8 @@ pacman -Sy --noconfirm archlinux-keyring && \
 USER notroot
 WORKDIR home/notroot
 RUN mkdir libuhd
-WORKDIR libuhdRUN wget https://raw.githubusercontent.com/than97/pvpkg/master/Arch/UHD/PKGBUILD && \
+WORKDIR libuhd
+RUN wget https://raw.githubusercontent.com/than97/pvpkg/master/Arch/UHD/PKGBUILD && \
 git clone https://aur.archlinux.org/yay-bin.git && \
     cd yay-bin && \
     makepkg --noconfirm --syncdeps --rmdeps --install --clean && \
