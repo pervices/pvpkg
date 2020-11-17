@@ -9,7 +9,7 @@ arch=('x86_64' 'i686')
 url="http://www.pervices.com"
 license=('GPL')
 depends=('boost-libs' 'orc' 'libusb' 'libusbx' 'python2')
-makedepends=('cmake' 'boost' 'gcc' 'doxygen' 'python2-numpy' 'python2-requests' 'python-docutils' 'python2-mako' 'python-cheetah3')
+makedepends=('cmake' 'boost' 'doxygen' 'python2-numpy' 'python2-requests' 'python-docutils' 'python2-mako' 'python-cheetah3')
 
 provides=('libuhd')
 conflicts=('libuhd')
