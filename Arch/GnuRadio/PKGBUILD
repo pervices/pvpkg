@@ -31,7 +31,6 @@ optdepends=('boost: gr_modtool'
 _gitbranch='v3.7.13.4'
 source=("git://github.com/gnuradio/gnuradio.git#tag="$_gitbranch)
 
-_gitbranch_volk='v3.7.13.4'
 
 md5sums=('SKIP')
 conflicts=('gnuradio' 'gnuradio-companion')
@@ -48,9 +47,9 @@ build() {
     cd $srcdir/$_gitname
 
     #Build volk
-    git submodule init
-    git pull --recurse-submodules=on origin $_gitbranch_volk
-    git submodule update
+   #git submodule init
+   #git pull --recurse-submodules=on origin $_gitbranch_volk
+   #git submodule update
 
     sed -i -e "s|GR_PKG_LIBEXEC_DIR|GR_RUNTIME_DIR|" grc/scripts/freedesktop/CMakeLists.txt
     #sed -i -e "s|/qwt$|/qwt5|" -e "s| qwt | qwt5 |" cmake/Modules/FindQwt.cmake
@@ -68,7 +67,7 @@ build() {
         -DENABLE_GRC=ON \
         -DENABLE_GR_WXGUI=ON \
         -DENABLE_GR_QTGUI=ON \
-        -DENABLE_INTERNAL_VOLK=ON \
+        -DENABLE_INTERNAL_VOLK=OFF \
         -DCMAKE_INSTALL_PREFIX=/usr \
         -DGR_PYTHON_DIR=/usr/lib/python3.8/site-packages \
         -DQWT_LIBRARIES=/usr/lib/libqwt.so -Wno-dev ../
