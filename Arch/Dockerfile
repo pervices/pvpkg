@@ -29,7 +29,7 @@ RUN yay -Syyu --noconfirm
  makepkg --noconfirm --install
 
 WORKDIR ../gnuradio
-RUN wget -nc https://raw.githubusercontent.com/than97/pvpkg/master/Arch/GnuRadio/PKGBUILD && \
+RUN wget -d https://raw.githubusercontent.com/than97/pvpkg/master/Arch/GnuRadio/PKGBUILD && \
 git clone https://aur.archlinux.org/yay-bin.git && \
     cd yay-bin && \
    makepkg --noconfirm --syncdeps --rmdeps --install --clean && \
