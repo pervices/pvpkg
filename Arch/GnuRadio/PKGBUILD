@@ -1,11 +1,7 @@
-# Maintainer: David Birks <david@tellus.space>
-# Contributor: Dominik Heidler <dheidler@gmail.com>
-# Contributor: Kyle Keen <keenerd@gmail.com>
-# Contributor:	Jonatan Sastre <jsastreh [ at ] hotmail.com>
-# Further modified by Per Vices Corporation
+
 pkgname=gnuradio-git
 _gitname=gnuradio
-pkgver=v3.7.13.4
+pkgver=v3.8.0.0.734.g912d48596
 pkgrel=1
 pkgdesc="General purpose DSP and SDR toolkit, with drivers for usrp and fcd."
 arch=('i686' 'x86_64')
@@ -13,25 +9,8 @@ url="https://github.com/gnuradio/gnuradio"
 license=('GPL')
 depends=('fftw' 'python' 'python-numpy' 'python-mako' 'python-click' 'python-click-plugins' 'python-pyqt5' 'python-gobject' 'cppunit' 'gsl' 'blas' 'guile' 'boost-libs>=1.54' 'libusb' 'portaudio' 'libuhd' 'zeromq' 'libvolk' 'log4cpp')
 makedepends=('git' 'boost' 'cmake' 'python-cairo' 'python-yaml' 'python-cheetah3' 'glu' 'pybind11' 'qwt' 'python-sphinx')
-optdepends=('boost: gr_modtool'
-            'swig: gr_modtool'
-            'cmake: gr_modtool'
-            'pkgconfig: libuhd'
-            'python2-cheetah: grc'
-            'python2-lxml: grc'
-            'pygtk: grc'
-            'wxpython: grc'
-            'python2-opengl: grc'
-            'python2-pyqwt: grc'
-            'qwtplot3d: grc'
-            'python2-numarray: grc')
-#_gitbranch='maint-3.7'
-#source=("git://github.com/gnuradio/gnuradio.git#branch="$_gitbranch)
-#NOTE: _gitbranch is also used by 
-_gitbranch='v3.7.13.4'
-source=("git://github.com/gnuradio/gnuradio.git#tag="$_gitbranch)
-
-
+optdepends=('python-lxml: Some GRC modules use lxml optionally for improved performance')
+source=("git+https://github.com/gnuradio/gnuradio.git")
 md5sums=('SKIP')
 conflicts=('gnuradio' 'gnuradio-companion')
 provides=('gnuradio' 'gnuradio-companion')
@@ -42,38 +21,21 @@ pkgver() {
 }
 
 build() {
-
-    echo export path
-    cd $srcdir/$_gitname
-
-    #Build volk
-   #git submodule init
-   #git pull --recurse-submodules=on origin $_gitbranch_volk
-   #git submodule update
+    cd "$srcdir/$_gitname"
 
     sed -i -e "s|GR_PKG_LIBEXEC_DIR|GR_RUNTIME_DIR|" grc/scripts/freedesktop/CMakeLists.txt
-    #sed -i -e "s|/qwt$|/qwt5|" -e "s| qwt | qwt5 |" cmake/Modules/FindQwt.cmake
-   # sed -i -e "s| sphinx-build$| sphinx-build2|" cmake/Modules/FindSphinx.cmake
-    
     msg "Starting build."
-
-    cd "$srcdir/$_gitname/"
     mkdir -p build
-    cd "$srcdir/$_gitname/build"
-    
-    pwd
-    
+    cd build
     cmake \
         -DENABLE_GRC=ON \
-        -DENABLE_GR_WXGUI=ON \
         -DENABLE_GR_QTGUI=ON \
         -DENABLE_INTERNAL_VOLK=OFF \
+        -DENABLE_GR_CTRLPORT=OFF \
         -DCMAKE_INSTALL_PREFIX=/usr \
         -DGR_PYTHON_DIR=/usr/lib/python3.8/site-packages \
         -DQWT_LIBRARIES=/usr/lib/libqwt.so -Wno-dev ../
-
-    make -j 5
-
+    make
 }
 
 check() {
