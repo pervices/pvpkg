@@ -9,7 +9,9 @@ pipeline {
         dockerImage = '' 
     }
 //TODO: use citests agents to build and test repo
-    agent citests 
+    agent {
+	label 'citests'
+    }
 
     stages { 
 
