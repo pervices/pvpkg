@@ -63,7 +63,7 @@ WORKDIR volk
 RUN mkdir build
 WORKDIR build
 RUN cmake -DCMAKE_BUILD_TYPE=Release -DPYTHON_EXECUTABLE=/usr/bin/python3 ../ && \
-make && \
+make -j4 && \
 make install
 WORKDIR /home
 RUN git clone https://github.com/gnuradio/gnuradio.git
@@ -71,6 +71,6 @@ WORKDIR gnuradio
 RUN mkdir build
 WORKDIR build
 RUN cmake -DCMAKE_BUILD_TYPE=Release -DPYTHON_EXECUTABLE=/usr/bin/python3 ../ && \
-make && \
+make -j4 && \
 make install
 
