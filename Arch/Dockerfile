@@ -36,5 +36,6 @@ yay -Syyu --noconfirm &&\
  yay -Sy --noconfirm \
   $(pacman --deptest $(source ./PKGBUILD && echo ${depends[@]} ${makedepends[@]})) && \
  makepkg --noconfirm --install
-RUN uhd_find_devices --args="type=usrp2"
+RUN uhd_fft --args="addr=192.168.10.2"
+
 
