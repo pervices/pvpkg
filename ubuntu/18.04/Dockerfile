@@ -64,4 +64,4 @@ git submodule update --init && \
 cmake .. && \
 make -j $(nproc --all) && \
 make install
-RUN uhd_find_devices
+RUN uhd_usrp_probe --args “addr=192.168.10.2”
