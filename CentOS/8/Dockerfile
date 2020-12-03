@@ -69,5 +69,6 @@ make -j4 && \
 make install
 RUN ping 192.168.10.2 -c 5 && \
 ping 10.10.10.2 -c 5 && \
-ping 10.10.11.2 -c 5
+ping 10.10.11.2 -c 5 && \
+uhd_fft --args="addr=192.168.10.2"
 
