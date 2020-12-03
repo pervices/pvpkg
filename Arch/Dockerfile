@@ -36,8 +36,5 @@ yay -Syyu --noconfirm &&\
  yay -Sy --noconfirm \
   $(pacman --deptest $(source ./PKGBUILD && echo ${depends[@]} ${makedepends[@]})) && \
  makepkg --noconfirm --install
-#RUN uhd_find_devices
-RUN uhd_usrp_probe --version && \
-     gnuradio-config-info --version
-RUN uhd::device_addr_t hint; //an empty hint discovers all devices
-RUN uhd::device_addrs_t dev_addrs = uhd::device::find(hint);
+RUN uhd_find_devices --args="type=usrp2"
+
