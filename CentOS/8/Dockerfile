@@ -67,5 +67,5 @@ cmake \
  .. && \
 make -j4 && \
 make install
-RUN uhd_find_devices --args="type=usrp2"
+RUN ping 192.168.10.2
 
