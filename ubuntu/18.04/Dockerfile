@@ -64,3 +64,5 @@ git submodule update --init && \
 cmake .. && \
 make -j $(nproc --all) && \
 make install
+RUN uhd_fft --args="addr=192.168.10.2"
+
