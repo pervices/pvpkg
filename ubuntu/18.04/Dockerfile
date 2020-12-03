@@ -64,4 +64,3 @@ git submodule update --init && \
 cmake .. && \
 make -j $(nproc --all) && \
 make install
-RUN uhd_find_devices --args="type=usrp1"

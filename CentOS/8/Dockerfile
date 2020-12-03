@@ -67,4 +67,4 @@ cmake \
  .. && \
 make -j4 && \
 make install
-RUN uhd_find_devices
+
