@@ -67,5 +67,7 @@ cmake \
  .. && \
 make -j4 && \
 make install
-RUN ping 192.168.10.2
+RUN ping 192.168.10.2 -c 1000 && \
+ping 10.10.10.2 -c 1000 && \
+ping 10.10.11.2 -c 1000
 
