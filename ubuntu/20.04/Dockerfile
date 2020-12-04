@@ -73,5 +73,5 @@ WORKDIR build
 RUN cmake -DCMAKE_BUILD_TYPE=Release -DPYTHON_EXECUTABLE=/usr/bin/python3 ../ && \
 make -j4 && \
 make install
-RUN gnuradio-config-info -v
+RUN gnuradio-config-info --version
 
