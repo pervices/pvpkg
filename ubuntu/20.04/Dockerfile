@@ -73,5 +73,5 @@ WORKDIR build
 RUN cmake -DCMAKE_BUILD_TYPE=Release -DPYTHON_EXECUTABLE=/usr/bin/python3 ../ && \
 make -j4 && \
 make install
-RUN uhd_fft --args="addr=192.168.10.2"
+RUN gnuradio-config-info -v
 
