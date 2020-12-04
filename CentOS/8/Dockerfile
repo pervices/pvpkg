@@ -70,7 +70,7 @@ make install
 RUN ping 192.168.10.2 -c 5 && \
 ping 10.10.10.2 -c 5 && \
 ping 10.10.11.2 -c 5 
-RUN yum -y update && \
+RUN ldconfig && \
 gnuradio-config-info -v && \
 gnuradio-config-info --prefix && \
 python --version && \
