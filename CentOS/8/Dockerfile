@@ -51,10 +51,10 @@ log4cpp-devel zeromq czmq python3-yaml python3-click python3-click-plugins \
 python3-zmq python3-scipy python3-gobject gobject-introspection gtk3 && \
 pip3 install git+https://github.com/pyqtgraph/pyqtgraph@develop && \
 pip3 install scipy && \
-echo 'export PYTHONPATH=/usr/local/lib/python3/dist-packages:usr/local/lib/python2.7/site-packages:$PYTHONPATH' >> ~/.bashrc && \
-echo 'export LD_LIBRARY_PATH=/user/local/lib:$LD_LIBRARY_PATH' >> ~/.bashrc && \
-echo 'export PYTHONPATH=/usr/local/lib/python3/dist-packages:usr/local/lib/python2.7/site-packages:$PYTHONPATH' >> ~/.profile && \
-echo 'export LD_LIBRARY_PATH=/user/local/lib:$LD_LIBRARY_PATH' >> ~/.profile 
+#echo 'export PYTHONPATH=/usr/local/lib/python3/dist-packages:usr/local/lib/python2.7/site-packages:$PYTHONPATH' >> ~/.bashrc && \
+#echo 'export LD_LIBRARY_PATH=/user/local/lib:$LD_LIBRARY_PATH' >> ~/.bashrc && \
+#echo 'export PYTHONPATH=/usr/local/lib/python3/dist-packages:usr/local/lib/python2.7/site-packages:$PYTHONPATH' >> ~/.profile && \
+#echo 'export LD_LIBRARY_PATH=/user/local/lib:$LD_LIBRARY_PATH' >> ~/.profile 
 WORKDIR /home
 RUN git clone --recursive https://github.com/gnuradio/gnuradio
 WORKDIR gnuradio
@@ -71,9 +71,7 @@ RUN ping 192.168.10.2 -c 5 && \
 ping 10.10.10.2 -c 5 && \
 ping 10.10.11.2 -c 5 
 RUN ldconfig && \
-gnuradio-config-info --prefix && \
-python --version && \
-echo $PYTHONPATH
+export PYTHONPATH=/usr/local/lib64/python3.6/site-packages
 
 
 
