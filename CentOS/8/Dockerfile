@@ -71,7 +71,6 @@ RUN ping 192.168.10.2 -c 5 && \
 ping 10.10.10.2 -c 5 && \
 ping 10.10.11.2 -c 5 
 RUN ldconfig && \
-gnuradio-config-info -v && \
 gnuradio-config-info --prefix && \
 python --version && \
 echo $PYTHONPATH
