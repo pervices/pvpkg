@@ -73,7 +73,7 @@ RUN ping 192.168.10.2 -c 5 && \
 ping 10.10.10.2 -c 5 && \
 ping 10.10.11.2 -c 5 
 RUN ldconfig && \
-#export PYTHONPATH=/usr/local/lib64/python3.6/site-packages && \
+export PYTHONPATH=/usr/local/lib64/python3.6/site-packages && \
 uhd_fft --args="addr=192.168.10.2"
 
 
