@@ -50,7 +50,9 @@ RUN cmake \
 	   -DENABLE_USB=OFF \
          /home/uhd/host && \
 make -j4 && \
-make install
+make test && \
+make install && \
+ldconfig
 
 RUN apt -y install libgmp-dev swig  \
  python3-sphinx python3-lxml libfftw3-dev \
@@ -72,6 +74,7 @@ RUN mkdir build
 WORKDIR build
 RUN cmake -DCMAKE_BUILD_TYPE=Release -DPYTHON_EXECUTABLE=/usr/bin/python3 ../ && \
 make -j4 && \
+make test && \
 make install
 RUN ldconfig && \
 uhd_fft --args="addr=192.168.10.2"

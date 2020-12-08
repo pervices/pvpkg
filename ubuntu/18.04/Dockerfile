@@ -42,7 +42,9 @@ RUN cmake \
 	   -DENABLE_USB=OFF \
          /home/uhd/host && \
  make -j4 && \
- make install
+make test && \
+ make install && \
+ldconfig
 
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt -y install libgmp-dev swig python3-sphinx python3-lxml libfftw3-dev libsdl1.2-dev libgsl-dev libqwt-qt5-dev libqt5opengl5-dev \
@@ -63,6 +65,8 @@ RUN git pull --recurse-submodules=on && \
 git submodule update --init && \
 cmake .. && \
 make -j $(nproc --all) && \
-make install
-RUN gnuradio-config-info -v
+make test && \
+make install && \
+ldconfig
+
 

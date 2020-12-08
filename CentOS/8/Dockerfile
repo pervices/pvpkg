@@ -42,7 +42,6 @@ RUN cmake \
 	   -DENABLE_USB=OFF \
         /home/uhd/host && \
 make -j4 && \
-make test && \
 make install && \
 ldconfig
 
@@ -70,8 +69,9 @@ git submodule update --init && \
 cmake \
  .. && \
 make -j4 && \
-make test && \
-make install 
+ctest -E qtgui && \
+make install && \
+ldconfig
 #RUN ping 192.168.10.2 -c 5 && \
 #ping 10.10.10.2 -c 5 && \
 #ping 10.10.11.2 -c 5 
