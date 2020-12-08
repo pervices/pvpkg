@@ -33,6 +33,7 @@ RUN cmake \
            -DBOOST_PYTHON_COMPONENT=python38 \
            -DENABLE_EXAMPLES=ON \
            -DENABLE_UTILS=ON \
+           -DENABLE_TESTS=OFF \
            -DENABLE_E100=OFF \
 	   -DENABLE_N230=OFF \
 	   -DENABLE_N300=OFF \
