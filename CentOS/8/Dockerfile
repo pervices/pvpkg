@@ -42,7 +42,9 @@ RUN cmake \
 	   -DENABLE_USB=OFF \
         /home/uhd/host && \
 make -j4 && \
- make install
+make test && \
+make install && \
+ldconfig
 
 RUN yum -y install gmp-devel swig \
 python3-lxml fftw-devel \
@@ -68,13 +70,13 @@ git submodule update --init && \
 cmake \
  .. && \
 make -j4 && \
-make install
-RUN ping 192.168.10.2 -c 5 && \
-ping 10.10.10.2 -c 5 && \
-ping 10.10.11.2 -c 5 
-RUN ldconfig && \
-#export PYTHONPATH=/usr/local/lib64/python3.6/site-packages && \
-uhd_fft --args="addr=192.168.10.2"
+make test && \
+make install && \
+ldconfig
+#RUN ping 192.168.10.2 -c 5 && \
+#ping 10.10.10.2 -c 5 && \
+#ping 10.10.11.2 -c 5 
+
 
 
 
