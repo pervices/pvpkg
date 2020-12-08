@@ -70,9 +70,9 @@ git submodule update --init && \
 cmake \
  .. && \
 make -j4 && \
-make test && \
 make install && \
-ldconfig
+ldconfig && \
+xvfb-run ctest -V -R qa_qtgui
 #RUN ping 192.168.10.2 -c 5 && \
 #ping 10.10.10.2 -c 5 && \
 #ping 10.10.11.2 -c 5 
