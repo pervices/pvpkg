@@ -54,7 +54,7 @@ log4cpp-devel zeromq czmq python3-yaml python3-click python3-click-plugins \
 python3-zmq python3-scipy python3-gobject gobject-introspection gtk3 swig && \
 pip3 install git+https://github.com/pyqtgraph/pyqtgraph@develop && \
 pip3 install scipy && \
-pip3 install PyQt5==5.14 && \
+pip3 install PyQt5==5.13.2 && \
 echo 'export PYTHONPATH=/usr/local/lib/python3.6/dist-packages:usr/local/lib/python2.7/site-packages:$PYTHONPATH' >> ~/.bashrc && \
 echo 'export LD_LIBRARY_PATH=/user/local/lib:$LD_LIBRARY_PATH' >> ~/.bashrc && \
 echo 'export PYTHONPATH=/usr/local/lib/python3.6/dist-packages:usr/local/lib/python2.7/site-packages:$PYTHONPATH' >> ~/.profile && \
@@ -70,9 +70,8 @@ git submodule update --init && \
 cmake \
  .. && \
 make -j4 && \
-make install && \
-ldconfig && \
-xvfb-run ctest -V -R qa_qtgui
+make test && \
+make install 
 #RUN ping 192.168.10.2 -c 5 && \
 #ping 10.10.10.2 -c 5 && \
 #ping 10.10.11.2 -c 5 
