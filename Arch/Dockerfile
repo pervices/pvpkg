@@ -29,8 +29,8 @@ RUN yay -Syyu --noconfirm
  makepkg --noconfirm --install
 
 WORKDIR ../gnuradio
-RUN wget -v https://raw.githubusercontent.com/pervices/pvpkg/master/Arch/GnuRadio/PKGBUILD && \
-   makepkg --noconfirm --syncdeps --rmdeps --install --clean && \
+RUN wget https://raw.githubusercontent.com/pervices/pvpkg/master/Arch/GnuRadio/PKGBUILD && \
+   makepkg --noconfirm --syncdeps --install --clean && \
 gpg --keyserver ipv4.pool.sks-keyservers.net --recv-key CB9387521E1EE0127DA804843FDBB55084CC5D84 &&\
 yay -Syyu --noconfirm &&\
  yay -Sy --noconfirm \

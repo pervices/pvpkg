@@ -30,7 +30,7 @@ build() {
     cmake \
         -DENABLE_GRC=ON \
         -DENABLE_GR_QTGUI=ON \
-        -DENABLE_INTERNAL_VOLK=OFF \
+        -DENABLE_INTERNAL_VOLK=ON \
         -DENABLE_GR_CTRLPORT=OFF \
         -DCMAKE_INSTALL_PREFIX=/usr \
         -DGR_PYTHON_DIR=/usr/lib/python3.8/site-packages \
@@ -40,7 +40,7 @@ build() {
 
 check() {
     cd "$srcdir/$_gitname/build"
-    make test
+    #make test
 }
 
 package() {
