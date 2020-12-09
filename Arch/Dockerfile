@@ -18,7 +18,7 @@ WORKDIR home/notroot
 RUN mkdir libuhd
 RUN mkdir gnuradio
 WORKDIR libuhd
-RUN wget -nv -v -d https://raw.githubusercontent.com/pervices/pvpkg/master/Arch/UHD/PKGBUILD && \
+RUN wget -v -d https://raw.githubusercontent.com/pervices/pvpkg/master/Arch/UHD/PKGBUILD && \
 git clone https://aur.archlinux.org/yay-bin.git && \
   cd yay-bin && \
   makepkg --noconfirm --syncdeps --rmdeps --install --clean && \

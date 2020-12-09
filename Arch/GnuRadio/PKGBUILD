@@ -33,7 +33,7 @@ build() {
         -DENABLE_INTERNAL_VOLK=ON \
         -DENABLE_GR_CTRLPORT=OFF \
         -DCMAKE_INSTALL_PREFIX=/usr \
-        -DGR_PYTHON_DIR=/usr/lib/python3.9/site-packages \
+        -DGR_PYTHON_3=OFF \
         -DQWT_LIBRARIES=/usr/lib/libqwt.so -Wno-dev ../
     make
 }
