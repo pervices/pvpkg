@@ -18,7 +18,7 @@ WORKDIR home/notroot
 RUN mkdir libuhd
 RUN mkdir gnuradio
 WORKDIR libuhd
-RUN wget -nv https://raw.githubusercontent.com/pervices/pvpkg/master/Arch/UHD/PKGBUILD && \
+RUN wget https://raw.githubusercontent.com/pervices/pvpkg/master/Arch/UHD/PKGBUILD && \
 git clone https://aur.archlinux.org/yay-bin.git && \
   cd yay-bin && \
   makepkg --noconfirm --syncdeps --rmdeps --install --clean && \
@@ -29,7 +29,7 @@ RUN yay -Syyu --noconfirm
  makepkg --noconfirm --install
 
 WORKDIR ../gnuradio
-RUN wget -nv -v https://raw.githubusercontent.com/pervices/pvpkg/master/Arch/GnuRadio/PKGBUILD &&  \
+RUN wget https://raw.githubusercontent.com/pervices/pvpkg/master/Arch/GnuRadio/PKGBUILD &&  \
   makepkg --noconfirm --syncdeps --rmdeps --install --clean && gpg --keyserver ipv4.pool.sks-keyservers.net --recv-key CB9387521E1EE0127DA804843FDBB55084CC5D84 && \
 yay -Syyu --noconfirm && \
  yay -Sy --noconfirm   $(pacman --deptest $(source ./PKGBUILD && echo ${depends[@]} ${makedepends[@]})) && \
