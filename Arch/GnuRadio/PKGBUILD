@@ -40,7 +40,7 @@ build() {
 
 check() {
     cd "$srcdir/$_gitname/build"
-    #make test
+    make test
 }
 
 package() {

@@ -65,7 +65,7 @@ RUN git pull --recurse-submodules=on && \
 git submodule update --init && \
 cmake .. && \
 make -j $(nproc --all) && \
-ctest -V && \
+ctest -E qtgui && \ && \
 make install && \
 ldconfig
 
