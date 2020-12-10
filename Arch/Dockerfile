@@ -17,14 +17,18 @@ USER notroot
 WORKDIR home/notroot
 RUN mkdir libuhd
 RUN mkdir gnuradio
-WORKDIR libuhd
-RUN wget -v -d https://raw.githubusercontent.com/pervices/pvpkg/master/Arch/UHD/PKGBUILD && \
-git clone https://aur.archlinux.org/yay-bin.git && \
+RUN git clone https://aur.archlinux.org/yay-bin.git && \
   cd yay-bin && \
   makepkg --noconfirm --syncdeps --rmdeps --install --clean && \
 gpg --keyserver ipv4.pool.sks-keyservers.net --recv-key 330239C1C4DAFEE1 
 RUN yay -Syyu --noconfirm 
- RUN yay -Sy --noconfirm \
+RUN wget https://raw.githubusercontent.com/pervices/pvpkg/master/Arch/PKGBUILD && \
+yay -Sy --noconfirm \
+ $(pacman --deptest $(source ./PKGBUILD && echo ${depends[@]} ${makedepends[@]})) && \
+ makepkg --noconfirm --install
+WORKDIR libuhd
+RUN wget -v -d https://raw.githubusercontent.com/pervices/pvpkg/master/Arch/UHD/PKGBUILD && \
+yay -Sy --noconfirm \
    $(pacman --deptest $(source ./PKGBUILD && echo ${depends[@]} ${makedepends[@]})) && \
  makepkg --noconfirm --install
 
