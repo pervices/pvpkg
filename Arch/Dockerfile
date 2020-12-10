@@ -8,8 +8,9 @@ pacman -Sy --noconfirm archlinux-keyring && \
     pacman -Sy --noconfirm base-devel git && \
     pacman -Syu --noconfirm && \
  pacman -Syu --noconfirm wget && \
-sed -i '1s/^/[extra]\n/' /etc/pacman.conf && \
-sed -i '2s/^/Include = /etc/pacman.d/mirrorlist\n/' /etc/pacman.conf && \
+echo -n "Include = /etc/pacman.d/mirrorlist" | cat - /etc/pacman.conf > /tmp/filename.tmp && \
+echo -n "[extra]" | cat - /etc/pacman.conf > /tmp/filename.tmp && \
+mv /tmp/filename.tmp /etc/pacman.conf && \
 pacman -Syu --noconfirm boost-libs && \
 # Allow notroot to run stuff as root (to install dependencies):
  echo "notroot ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/notroot
