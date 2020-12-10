@@ -60,6 +60,7 @@ build() {
         cmake \
            -DCMAKE_INSTALL_PREFIX=/usr/ \
            -DPYTHON_EXECUTABLE=/usr/bin/python3 \
+           -DENABLE_PYTHON3=ON \
            -DENABLE_EXAMPLES=ON \
            -DENABLE_UTILS=ON \
            -DENABLE_DPDK=OFF \
