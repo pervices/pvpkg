@@ -20,8 +20,8 @@ RUN git clone https://aur.archlinux.org/yay-bin.git && \
   cd yay-bin && \
   makepkg --noconfirm --syncdeps --rmdeps --install --clean && \
 gpg --keyserver ipv4.pool.sks-keyservers.net --recv-key 330239C1C4DAFEE1 && \
-yay -Syyu --noconfirm && \
-pacman -syyU --noconfirm https://sourceforge.net/projects/boost/files/boost/1.72.0/boost_1_72_0.tar.gz/download
+yay -Syyu --noconfirm
+RUN pacman -SyyU --noconfirm https://sourceforge.net/projects/boost/files/boost/1.72.0/boost_1_72_0.tar.gz/download
 
 
 WORKDIR libuhd
