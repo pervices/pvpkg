@@ -19,12 +19,11 @@ RUN mkdir gnuradio
 RUN git clone https://aur.archlinux.org/yay-bin.git && \
   cd yay-bin && \
   makepkg --noconfirm --syncdeps --rmdeps --install --clean && \
-gpg --keyserver ipv4.pool.sks-keyservers.net --recv-key 330239C1C4DAFEE1 
-RUN yay -Syyu --noconfirm 
-RUN wget https://raw.githubusercontent.com/pervices/pvpkg/master/Arch/PKGBUILD && \
-yay -Sy --noconfirm \
- $(pacman --deptest $(source ./PKGBUILD && echo ${depends[@]} ${makedepends[@]})) && \
- makepkg --noconfirm --syncdeps --install
+gpg --keyserver ipv4.pool.sks-keyservers.net --recv-key 330239C1C4DAFEE1 && \
+yay -Syu --noconfirm downgrade 
+RUN yay -Syyu --noconfirm && \
+downgrade boost-libs
+
 WORKDIR libuhd
 RUN wget -v -d -nv https://raw.githubusercontent.com/pervices/pvpkg/master/Arch/UHD/PKGBUILD && \
 yay -Sy --noconfirm \
