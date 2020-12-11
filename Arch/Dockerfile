@@ -24,7 +24,7 @@ RUN yay -Syyu --noconfirm
 RUN wget https://raw.githubusercontent.com/pervices/pvpkg/master/Arch/PKGBUILD && \
 yay -Sy --noconfirm \
  $(pacman --deptest $(source ./PKGBUILD && echo ${depends[@]} ${makedepends[@]})) && \
- makepkg --noconfirm --install
+ makepkg --noconfirm --syncdeps --install
 WORKDIR libuhd
 RUN wget -v -d https://raw.githubusercontent.com/pervices/pvpkg/master/Arch/UHD/PKGBUILD && \
 yay -Sy --noconfirm \
