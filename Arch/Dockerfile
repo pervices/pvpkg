@@ -7,11 +7,9 @@ pacman -Sy --noconfirm archlinux-keyring && \
     pacman -Sy --noconfirm base-devel git && \
     pacman -Syu --noconfirm && \
  pacman -Syu --noconfirm wget && \
+gpg --recv-keys 25db3956a8d58187ac7a0702cc917e9bab47ff90baafc35e4e789dca1ce5f423
 wget https://dl.bintray.com/boostorg/release/1.72.0/source/boost_1_72_0.tar.gz.asc && \
 wget https://dl.bintray.com/boostorg/release/1.72.0/source/boost_1_72_0.tar.gz && \
-wget https://dl.bintray.com/boostorg/release/1.72.0/source/boost_1_72_0.tar.gz.json.asc && \
-gpg boost_1_72_0.tar.gz.asc && \
-gpg --verify boost_1_72_0.tar.gz.asc boost_1_72_0.tar.gz && \
 pacman -Syu --noconfirm boost_1_72_0.tar.gz && \
 # Allow notroot to run stuff as root (to install dependencies):
  echo "notroot ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/notroot
