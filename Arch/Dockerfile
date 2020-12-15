@@ -7,7 +7,8 @@ pacman -Sy --noconfirm archlinux-keyring && \
     pacman -Sy --noconfirm base-devel git && \
     pacman -Syu --noconfirm && \
  pacman -Syu --noconfirm wget 
-RUN gpg --verify "sha256":"c66e88d5786f2ca4dbebb14e06b566fb642a1a6947ad8cc9091f9f445134143f" && \
+RUN wget https://dl.bintray.com/boostorg/release/1.72.0/source/boost_1_72_0.tar.gz.json && \
+gpg --verify boost_1_72_0.tar.gz.json && \
 wget https://dl.bintray.com/boostorg/release/1.72.0/source/boost_1_72_0.tar.gz.asc && \
 wget https://dl.bintray.com/boostorg/release/1.72.0/source/boost_1_72_0.tar.gz && \
 pacman -Syu --noconfirm boost_1_72_0.tar.gz && \
