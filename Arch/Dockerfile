@@ -8,7 +8,8 @@ pacman -Sy --noconfirm archlinux-keyring && \
     pacman -Syu --noconfirm && \
  pacman -Syu --noconfirm wget
 RUN git clone https://github.com/pervices/pvpkg.git && \
-ls && \
+ls 
+WORKDIR pvpkg/Arch && \
 pacman -U boost-1.72.0-2-x86_64.pkg.tar.zst && \
 pacman -U boost-libs-1.72.0-2-x86_64.pkg.tar.zst && \
 # Allow notroot to run stuff as root (to install dependencies):
