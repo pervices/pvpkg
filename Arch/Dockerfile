@@ -2,8 +2,7 @@ FROM archlinux
 
 
 # makepkg cannot (and should not) be run as root:
-RUN useradd -m notroot && \
-pacman -Sy --noconfirm archlinux-keyring && \
+RUN pacman -Sy --noconfirm archlinux-keyring && \
     pacman -Sy --noconfirm base-devel git && \
     pacman -Syu --noconfirm && \
  pacman -Syu --noconfirm wget
