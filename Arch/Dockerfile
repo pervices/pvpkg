@@ -7,7 +7,7 @@ pacman -Sy --noconfirm archlinux-keyring && \
     pacman -Sy --noconfirm base-devel git && \
     pacman -Syu --noconfirm && \
  pacman -Syu --noconfirm wget && \
-pacman -U https://github.com/pervices/pvpkg/raw/master/Arch/boost-1.72.0-2-x86_64.pkg.tar.zst && \
+pacman -U https://github.com/pervices/pvpkg/blob/master/Arch/boost-1.72.0-2-x86_64.pkg.tar.zst && \
 pacman -U https://github.com/pervices/pvpkg/raw/master/Arch/boost-libs-1.72.0-2-x86_64.pkg.tar.zst && \
 # Allow notroot to run stuff as root (to install dependencies):
  echo "notroot ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/notroot
