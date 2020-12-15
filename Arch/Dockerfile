@@ -19,8 +19,6 @@ ls
 # Continue execution (and CMD) as notroot:
 USER notroot
 WORKDIR home/notroot
-RUN mkdir libuhd
-RUN mkdir gnuradio
 RUN git clone https://aur.archlinux.org/yay-bin.git && \
   cd yay-bin && \
   makepkg --noconfirm --syncdeps --rmdeps --install --clean && \
