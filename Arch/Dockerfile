@@ -13,9 +13,11 @@ WORKDIR pvpkg/Arch && \
 pacman -U --verbose boost-1.72.0-2-x86_64.pkg.tar.zst && \
 pacman -U boost-libs-1.72.0-2-x86_64.pkg.tar.zst && \
 # Allow notroot to run stuff as root (to install dependencies):
- echo "notroot ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/notroot
-# Continue execution (and CMD) as notroot:
 WORKDIR ../..
+RUN useradd -m notroot && \
+ echo "notroot ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/notroot && \
+ls
+# Continue execution (and CMD) as notroot:
 USER notroot
 WORKDIR home/notroot
 RUN mkdir libuhd
