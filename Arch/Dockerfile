@@ -10,13 +10,13 @@ pacman -Sy --noconfirm archlinux-keyring && \
 RUN git clone https://github.com/pervices/pvpkg.git && \
 ls 
 WORKDIR pvpkg/Arch && \
-pacman -U boost-1.72.0-2-x86_64.pkg.tar.zst && \
+pacman -U --verbose boost-1.72.0-2-x86_64.pkg.tar.zst && \
 pacman -U boost-libs-1.72.0-2-x86_64.pkg.tar.zst && \
 # Allow notroot to run stuff as root (to install dependencies):
  echo "notroot ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/notroot
 # Continue execution (and CMD) as notroot:
 USER notroot
-WORKDIR home/notroot
+WORKDIR ../../home/notroot
 RUN mkdir libuhd
 RUN mkdir gnuradio
 RUN git clone https://aur.archlinux.org/yay-bin.git && \
