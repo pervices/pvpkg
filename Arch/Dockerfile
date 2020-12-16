@@ -19,7 +19,7 @@ git clone https://github.com/pervices/pvpkg.git && \
 #cd pvpkg/Arch && \
 #sudo pacman -U --noconfirm boost-1.72.0-2-x86_64.pkg.tar.zst && \
 #sudo pacman -U --noconfirm boost-libs-1.72.0-2-x86_64.pkg.tar.zst && \
- wget https://raw.githubusercontent.com/pervices/pvpkg/master/Arch/UHD/PKGBUILD && \
+sudo wget https://raw.githubusercontent.com/pervices/pvpkg/master/Arch/UHD/PKGBUILD && \
 yay -Sy --noconfirm \
    $(pacman --deptest $(source ./PKGBUILD && echo ${depends[@]} ${makedepends[@]})) && \
  makepkg --noconfirm --syncdeps --install --needed
