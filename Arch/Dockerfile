@@ -15,11 +15,11 @@ RUN git clone https://aur.archlinux.org/yay-bin.git && \
 cd yay-bin && \
   makepkg --noconfirm --syncdeps --rmdeps --install --clean && \
 gpg --keyserver ipv4.pool.sks-keyservers.net --recv-key 330239C1C4DAFEE1 && \
-yay -Syyu --noconfirm && \
+yay -Syyu --noconfirm 
 RUN git clone https://github.com/pervices/pvpkg.git && \
 ls 
-WORKDIR libuhd && \
-yay -Sy --noconfirm \
+WORKDIR libuhd 
+RUN yay -Sy --noconfirm \
    $(pacman --deptest $(source ./PKGBUILD && echo ${depends[@]} ${makedepends[@]})) && \
  makepkg --noconfirm --syncdeps --install --needed
 WORKDIR pvpkg/Arch && \
