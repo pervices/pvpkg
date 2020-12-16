@@ -11,8 +11,8 @@ RUN pacman -Sy --noconfirm archlinux-keyring && \
 # Continue execution (and CMD) as notroot:
 USER notroot
 WORKDIR home/notroot
-RUN git clone https://aur.archlinux.org/yay-bin.git 
-WORKDIR yay-bin && \
+RUN git clone https://aur.archlinux.org/yay-bin.git && \
+cd yay-bin && \
   makepkg --noconfirm --syncdeps --rmdeps --install --clean && \
 gpg --keyserver ipv4.pool.sks-keyservers.net --recv-key 330239C1C4DAFEE1 && \
 yay -Syyu --noconfirm
