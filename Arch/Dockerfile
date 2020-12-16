@@ -17,7 +17,7 @@ cd yay-bin && \
 gpg --keyserver ipv4.pool.sks-keyservers.net --recv-key 330239C1C4DAFEE1 && \
 yay -Syyu --noconfirm
 WORKDIR libuhd
-RUN wget -v -d -nv https://raw.githubusercontent.com/pervices/pvpkg/master/Arch/UHD/PKGBUILD && \
+RUN wget https://raw.githubusercontent.com/pervices/pvpkg/master/Arch/UHD/PKGBUILD && \
 yay -Sy --noconfirm \
    $(pacman --deptest $(source ./PKGBUILD && echo ${depends[@]} ${makedepends[@]})) && \
  makepkg --noconfirm --syncdeps --install --needed
