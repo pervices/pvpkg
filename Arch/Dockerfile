@@ -18,6 +18,7 @@ gpg --keyserver ipv4.pool.sks-keyservers.net --recv-key 330239C1C4DAFEE1 && \
 yay -Syyu --noconfirm 
 RUN git clone https://github.com/pervices/pvpkg.git && \
 cd pvpkg/Arch && \
+echo "notroot ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/notroot && \
 pacman -Syu --noconfirm boost-1.72.0-2-x86_64.pkg.tar.zst && \
 pacman -Syu --noconfirm boost-libs-1.72.0-2-x86_64.pkg.tar.zst
 RUN yay -Sy --noconfirm \
