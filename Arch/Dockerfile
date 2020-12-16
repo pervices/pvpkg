@@ -15,8 +15,8 @@ cd yay-bin && \
   makepkg --noconfirm --syncdeps --rmdeps --install --clean && \
 gpg --keyserver ipv4.pool.sks-keyservers.net --recv-key 330239C1C4DAFEE1 && \
 yay -Syyu --noconfirm && \
- sudo git clone https://github.com/pervices/pvpkg.git && \
-pacman -Syu --noconfirm boost-1.72.0-2-x86_64.pkg.tar.zst && \
+git clone https://github.com/pervices/pvpkg.git && \
+sudo pacman -Syu --noconfirm boost-1.72.0-2-x86_64.pkg.tar.zst && \
 pacman -Syu --noconfirm boost-libs-1.72.0-2-x86_64.pkg.tar.zst && \
  wget https://raw.githubusercontent.com/pervices/pvpkg/master/Arch/UHD/PKGBUILD && \
 yay -Sy --noconfirm \
