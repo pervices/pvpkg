@@ -15,14 +15,13 @@ RUN git clone https://aur.archlinux.org/yay-bin.git && \
 cd yay-bin && \
   makepkg --noconfirm --syncdeps --rmdeps --install --clean && \
 gpg --keyserver ipv4.pool.sks-keyservers.net --recv-key 330239C1C4DAFEE1 && \
-yay -Syyu --noconfirm
-WORKDIR libuhd
-RUN wget https://raw.githubusercontent.com/pervices/pvpkg/master/Arch/UHD/PKGBUILD && \
+yay -Syyu --noconfirm && \
+RUN git clone https://github.com/pervices/pvpkg.git && \
+ls 
+WORKDIR libuhd && \
 yay -Sy --noconfirm \
    $(pacman --deptest $(source ./PKGBUILD && echo ${depends[@]} ${makedepends[@]})) && \
  makepkg --noconfirm --syncdeps --install --needed
-RUN git clone https://github.com/pervices/pvpkg.git && \
-ls 
 WORKDIR pvpkg/Arch && \
 pacman -U --verbose boost-1.72.0-2-x86_64.pkg.tar.zst && \
 pacman -U boost-libs-1.72.0-2-x86_64.pkg.tar.zst && \
