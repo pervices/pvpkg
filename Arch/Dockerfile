@@ -21,6 +21,7 @@ git clone https://github.com/pervices/pvpkg.git
 #sudo pacman -U --noconfirm boost-libs-1.72.0-2-x86_64.pkg.tar.zst 
 WORKDIR libuhd
 RUN sudo wget https://raw.githubusercontent.com/pervices/pvpkg/master/Arch/UHD/PKGBUILD && \
+sudo chown -R notroot /home/notroot/libuhd && \
 yay -Sy --noconfirm \
    $(pacman --deptest $(source ./PKGBUILD && echo ${depends[@]} ${makedepends[@]})) && \
  makepkg --noconfirm --syncdeps --install --needed
