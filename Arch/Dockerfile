@@ -30,7 +30,8 @@ RUN sudo wget https://raw.githubusercontent.com/pervices/pvpkg/master/Arch/GnuRa
 sudo chown -R notroot /home/notroot/gnuradio && \
   makepkg --noconfirm --syncdeps --rmdeps --install --clean && gpg --keyserver ipv4.pool.sks-keyservers.net --recv-key CB9387521E1EE0127DA804843FDBB55084CC5D84 && \
 yay -Syyu --noconfirm && \
- yay -Sy --noconfirm   $(pacman --deptest $(source ./PKGBUILD && echo ${depends[@]} ${makedepends[@]})) && \
-makepkg --noconfirm --install
+ yay -Sy --noconfirm\
+$(pacman --deptest $(source ./PKGBUILD && echo ${depends[@]} ${makedepends[@]})) && \
+makepkg --noconfirm --install --needed --syncdeps
 
 
