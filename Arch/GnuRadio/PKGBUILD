@@ -38,10 +38,6 @@ build() {
     make
 }
 
-check() {
-    cd "$srcdir/$_gitname/build"
-    make test
-}
 
 package() {
     cd "$srcdir/$_gitname/grc/scripts/freedesktop"
