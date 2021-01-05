@@ -19,8 +19,7 @@ git clone https://github.com/pervices/pvpkg.git && \
 cd pvpkg/Arch && \
 sudo pacman -U --noconfirm boost-libs-1.72.0-2-x86_64.pkg.tar.zst && \ 
 sudo pacman -U --noconfirm boost-1.72.0-2-x86_64.pkg.tar.zst && \
-sudo pacman -U --noconfirm libx11-1.7.0-1-x86_64.pkg.tar.zst && \
-sudo pacman -U --noconfirm mesa-20.2.3-1-x86_64.pkg.tar.zst
+sudo pacman -U --noconfirm libx11-1.7.0-1-x86_64.pkg.tar.zst
 
 WORKDIR libuhd
 RUN sudo wget https://raw.githubusercontent.com/pervices/pvpkg/master/Arch/UHD/PKGBUILD && \
