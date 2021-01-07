@@ -24,7 +24,7 @@ sudo pacman -U --noconfirm boost-libs-1.69.0-1-x86_64.pkg.tar.xz && \
 sudo pacman -U --noconfirm boost-1.69.0-1-x86_64.pkg.tar.xz && \
 sudo pacman -U --noconfirm libx11-1.7.0-1-x86_64.pkg.tar.zst && \
 # building icu63, which UHD will not build without
-yay -Sy --noconfirm\
+yay -Sy --noconfirm \
 $(pacman --verbose --deptest $(source ./PKGBUILD && echo ${depends[@]} ${makedepends[@]})) && \
 makepkg --noconfirm --install --needed --syncdeps
 
@@ -41,7 +41,7 @@ RUN sudo wget https://raw.githubusercontent.com/pervices/pvpkg/master/Arch/GnuRa
 sudo chown -R notroot /home/notroot/gnuradio && \
   makepkg --noconfirm --syncdeps --rmdeps --install --clean && gpg --keyserver ipv4.pool.sks-keyservers.net --recv-key CB9387521E1EE0127DA804843FDBB55084CC5D84 && \
 yay -Syyu --noconfirm && \
- yay -Sy --noconfirm\
+ yay -Sy --noconfirm \
 $(pacman --verbose --deptest $(source ./PKGBUILD && echo ${depends[@]} ${makedepends[@]})) && \
 makepkg --noconfirm --install --needed --syncdeps
 
