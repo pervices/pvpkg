@@ -35,7 +35,7 @@ build() {
         -DCMAKE_INSTALL_PREFIX=/usr \
         -DGR_PYTHON_3=OFF \
         -DQWT_LIBRARIES=/usr/lib/libqwt.so -Wno-dev ../
-    make
+    make -j4
 }
 
 
