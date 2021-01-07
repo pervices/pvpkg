@@ -1,5 +1,5 @@
 FROM ubuntu:18.04
-
+# install necessary components for UHD; install some Python components using pip
 RUN apt update && \
  apt-get -y install git && \
  apt-get -y install cmake && \
@@ -15,7 +15,7 @@ pip3 install numpy && \
 pip3 install requests
  #find -name "*.py" -or -name '*.py.in' | xargs sed -i "s|#!/usr/bin/env python$|#!/usr/bin/env python2|"
 
-
+# install UHD using cmake, specifying Python3 in options
 WORKDIR /home
 RUN git clone https://github.com/pervices/uhd.git && \
  mkdir uhdlib
@@ -46,7 +46,10 @@ make test && \
  make install && \
 ldconfig
 
+# set environemnt to non-interactive to stop input prompts that occurred on certain instructions
 ENV DEBIAN_FRONTEND=noninteractive
+
+# install necessary packages for GnuRadio; specify LIBRARYPATH and PYTHONPATH as follows
 RUN apt -y install libgmp-dev swig python3-sphinx python3-lxml libfftw3-dev libsdl1.2-dev libgsl-dev libqwt-qt5-dev libqt5opengl5-dev \
  python3-pyqt5 liblog4cpp5-dev libzmq3-dev python3-yaml python3-click python3-click-plugins python3-zmq python3-scipy python3-gi-cairo gir1.2-pango-1.0 libgtk-3-dev && \
 pip3 install git+https://github.com/pyqtgraph/pyqtgraph@develop && \
@@ -55,6 +58,8 @@ pip3 install scipy
 #echo 'export LD_LIBRARY_PATH=/user/local/lib:$LD_LIBRARY_PATH' >> ~/.bashrc
 #echo 'export PYTHONPATH=/usr/local/lib/python3/dist-packages:usr/local/lib/python2.7/site-packages:$PYTHONPATH' >> ~/.profile
 #echo 'export LD_LIBRARY_PATH=/user/local/lib:$LD_LIBRARY_PATH' >> ~/.profile
+
+# build GnuRadio from Github
 WORKDIR /home
 RUN git clone --recursive https://github.com/gnuradio/gnuradio
 WORKDIR gnuradio

@@ -1,5 +1,5 @@
 FROM centos:8
-
+# install necessary packages for UHD; necessary to enable powertools repo for some components, as well as pip installing python-related components
 RUN yum -y update && \
  dnf -y --enablerepo=powertools install boost-python3-devel && \
 dnf -y --enablerepo=powertools install doxygen python3-sphinx SDL-devel && \
@@ -15,7 +15,7 @@ dnf -y --enablerepo=powertools install doxygen python3-sphinx SDL-devel && \
  pip3 install numpy && \
 pip3 install requests 
 
-
+# install UHD using cmake, with Python 3 enabled
 WORKDIR /home
 RUN git clone https://github.com/pervices/uhd.git && \
 mkdir uhdlib
@@ -45,6 +45,7 @@ make -j4 && \
 make install && \
 ldconfig
 
+# install necessary packages for GnuRadio; ensure version of PyQt5 is set to 5.13.2 to prevent issues; specify LIBRARYPATH and PYTHONPATH as follows
 RUN yum -y install gmp-devel swig \
 python3-lxml fftw-devel \
 gsl-devel qwt-qt5-devel \
@@ -58,6 +59,8 @@ echo 'export PYTHONPATH=/usr/local/lib/python3.6/dist-packages:usr/local/lib/pyt
 echo 'export LD_LIBRARY_PATH=/user/local/lib:$LD_LIBRARY_PATH' >> ~/.bashrc && \
 echo 'export PYTHONPATH=/usr/local/lib/python3.6/dist-packages:usr/local/lib/python2.7/site-packages:$PYTHONPATH' >> ~/.profile && \
 echo 'export LD_LIBRARY_PATH=/user/local/lib:$LD_LIBRARY_PATH' >> ~/.profile 
+
+# build GnuRadio from Github
 WORKDIR /home
 RUN git clone --recursive https://github.com/gnuradio/gnuradio
 WORKDIR gnuradio

@@ -1,6 +1,9 @@
 FROM ubuntu:20.04
 
+# set environemnt to non-interactive to stop input prompts that occurred on certain instructions
 ENV DEBIAN_FRONTEND=noninteractive
+
+# install necessary components for UHD; install some Python components using pip; use version 1.67 of boost to prevent issues
 RUN apt update && \
 apt-get -y install git && \
 apt-get -y install cmake && \
@@ -22,6 +25,7 @@ find -name "*.py" -or -name '*.py.in' | xargs sed -i "s|#!/usr/bin/env python$|#
 #WORKDIR /usr/lib/x86_64-linux-gnu
 #RUN ls
 
+# install UHD using cmake, specifying Boost and Python options shown
 WORKDIR /home
 RUN git clone https://github.com/pervices/uhd.git && \
 mkdir uhdlib
@@ -54,12 +58,15 @@ make test && \
 make install && \
 ldconfig
 
+# install necessary packages for GnuRadio
 RUN apt -y install libgmp-dev swig  \
  python3-sphinx python3-lxml libfftw3-dev \
 libsdl1.2-dev libgsl-dev libqwt-qt5-dev libqt5opengl5-dev  \
 liblog4cpp5-dev libzmq3-dev python3-yaml python3-click python3-click-plugins \
 python3-zmq python3-scipy python3-gi python3-gi-cairo gobject-introspection gir1.2-gtk-3.0  python3-pybind11 libsndfile1-dev && \
 pip3 install pyqt5
+
+# install volk and gnuradio separately, as is required for the most recent Ubuntu 20.04 version; specify Python3 in cmake as shown
 WORKDIR /home
 RUN git clone --recursive https://github.com/gnuradio/volk.git
 WORKDIR volk
