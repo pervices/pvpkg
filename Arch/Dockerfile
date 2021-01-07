@@ -2,7 +2,7 @@ FROM archlinux
 # makepkg cannot (and should not) be run as root, so a dummy user is created:
 RUN useradd -m notroot && \
 # the Archlinux keyring, git, wget are installed for later use, as well as the base-devel package group
-pacman -Sy --noconfirm archlinux-keyring icu && \
+pacman -Sy --noconfirm archlinux-keyring&& \
     pacman -Sy --noconfirm base-devel git && \
     pacman -Syu --noconfirm && \
  pacman -Syu --noconfirm wget && \
@@ -22,7 +22,11 @@ git clone https://github.com/pervices/pvpkg.git && \
 cd pvpkg/Arch  && \
 sudo pacman -U --noconfirm boost-libs-1.69.0-1-x86_64.pkg.tar.xz && \ 
 sudo pacman -U --noconfirm boost-1.69.0-1-x86_64.pkg.tar.xz && \
-sudo pacman -U --noconfirm libx11-1.7.0-1-x86_64.pkg.tar.zst
+sudo pacman -U --noconfirm libx11-1.7.0-1-x86_64.pkg.tar.zst && \
+# building icu63, which UHD will not build without
+yay -Sy --noconfirm\
+$(pacman --verbose --deptest $(source ./PKGBUILD && echo ${depends[@]} ${makedepends[@]})) && \
+makepkg --noconfirm --install --needed --syncdeps
 
 WORKDIR libuhd
 # use wget to collect UHD PKGBUILD from Github, and create the package with the dependencies speified from the PKGBUILD; sudo chown command allows user notroot to build in this directory
