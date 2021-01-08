@@ -46,6 +46,7 @@ $(pacman --deptest $(source ./PKGBUILD && echo ${depends[@]} ${makedepends[@]}))
 makepkg --noconfirm --install --needed
 RUN sudo ping 192.168.10.2 -c 5 && \
 sudo ping 10.10.10.2 -c 5 && \
-sudo ping 10.10.11.2 -c 5 
+sudo ping 10.10.11.2 -c 5 && \
+sudo uhd_fft --args="addr=192.168.10.2"
 
 
