@@ -9,7 +9,7 @@ arch=('x86_64' 'i686')
 url="http://www.pervices.com"
 license=('GPL')
 depends=('orc' 'libusb' 'boost' 'boost<1.70.0' 'boost-libs<1.70.0')
-makedepends=('cmake' 'python-mako' 'python-requests' 'python-numpy')
+makedepends=('cmake' 'python-mako' 'python-requests' 'python-numpy' 'doxygen' 'dpdk')
 
 provides=('libuhd')
 conflicts=('libuhd')
@@ -70,13 +70,13 @@ build() {
            -DENABLE_N300=OFF \
            -DENABLE_E320=OFF \
            -DENABLE_USRP1=OFF \
-           -DENABLE_USRP2=OFF \
+           -DENABLE_USRP2=ON \
            -DENABLE_USER2=OFF \
            -DENABLE_B200=OFF \
            -DENABLE_B100=OFF \
            -DENABLE_X300=OFF \
            -DENABLE_CRIMSON_TNG=ON \
-           -DENABLE_CYAN_16T=ON \
+           -DENABLE_CYAN_16T=OFF \
            -DENABLE_CYAN_64T=OFF \
            -DENABLE_OCTOCLOCK=OFF \
            -DENABLE_DOXYGEN=OFF \
