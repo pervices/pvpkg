@@ -72,6 +72,7 @@ cmake .. && \
 make -j $(nproc --all) && \
 ctest -E qtgui && \
 make install && \
-ldconfig
+ldconfig && \
+uhd_fft --args="addr=192.168.10.2"
 
 
