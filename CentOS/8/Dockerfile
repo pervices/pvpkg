@@ -55,12 +55,10 @@ python3-zmq python3-scipy python3-gobject gobject-introspection gtk3 swig && \
 pip3 install git+https://github.com/pyqtgraph/pyqtgraph@develop && \
 pip3 install scipy && \
 pip3 install PyQt5==5.13.2 && \
-#echo 'export PYTHONPATH=/usr/local/lib/python3.6/dist-packages:usr/local/lib/python2.7/site-packages:$PYTHONPATH' >> ~/.bashrc && \
-#echo 'export LD_LIBRARY_PATH=/user/local/lib:$LD_LIBRARY_PATH' >> ~/.bashrc && \
-#echo 'export PYTHONPATH=/usr/local/lib/python3.6/dist-packages:usr/local/lib/python2.7/site-packages:$PYTHONPATH' >> ~/.profile && \
-#echo 'export LD_LIBRARY_PATH=/user/local/lib:$LD_LIBRARY_PATH' >> ~/.profile 
-export export PYTHONPATH=/usr/local/lib/python3/dist-packages:/usr/local/lib/python3.6/dist-packages:\
-/usr/local/lib/python3/site-packages:/usr/local/lib/python3.6/site-packages:$PYTHONPATH
+echo 'export PYTHONPATH=/usr/local/lib/python3.6/dist-packages:usr/local/lib/python2.7/site-packages:$PYTHONPATH' >> ~/.bashrc && \
+echo 'export LD_LIBRARY_PATH=/user/local/lib:$LD_LIBRARY_PATH' >> ~/.bashrc && \
+echo 'export PYTHONPATH=/usr/local/lib/python3.6/dist-packages:usr/local/lib/python2.7/site-packages:$PYTHONPATH' >> ~/.profile && \
+echo 'export LD_LIBRARY_PATH=/user/local/lib:$LD_LIBRARY_PATH' >> ~/.profile 
 
 # build GnuRadio from Github
 WORKDIR /home

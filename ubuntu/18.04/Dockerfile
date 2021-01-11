@@ -56,7 +56,6 @@ pip3 install git+https://github.com/pyqtgraph/pyqtgraph@develop && \
 pip3 install scipy 
 
 
-
 # build GnuRadio from Github
 WORKDIR /home
 RUN git clone --recursive https://github.com/gnuradio/gnuradio
@@ -69,6 +68,6 @@ git submodule update --init && \
 cmake .. && \
 make -j $(nproc --all) && \
 make install && \
-uhd_fft --args="addr=192.168.10.2"
+uhd_find_devices
 
 
