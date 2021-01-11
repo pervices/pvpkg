@@ -84,7 +84,6 @@ RUN mkdir build
 WORKDIR build
 RUN cmake -DCMAKE_BUILD_TYPE=Release -DPYTHON_EXECUTABLE=/usr/bin/python3 ../ && \
 make -j4 && \
-ctest -V && \
 make install
 RUN ldconfig && \
 uhd_fft --args="addr=192.168.10.2"
