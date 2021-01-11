@@ -86,5 +86,5 @@ RUN cmake -DCMAKE_BUILD_TYPE=Release -DPYTHON_EXECUTABLE=/usr/bin/python3 ../ &&
 make -j4 && \
 make install
 RUN ldconfig && \
-uhd_fft --args="addr=192.168.10.2"
+uhd_find_devices
 
