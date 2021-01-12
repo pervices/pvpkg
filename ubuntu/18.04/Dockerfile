@@ -69,7 +69,8 @@ cmake .. && \
 make -j $(nproc --all) && \
 make install && \
 uhd_find_devices --args="addr=192.168.10.2" && \
-uhd_usrp_probe 
+uhd_usrp_probe --args=name= FPGA
+
 
 
 
