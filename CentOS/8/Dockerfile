@@ -78,7 +78,7 @@ RUN ping 192.168.10.2 -c 5 && \
 ping 10.10.10.2 -c 5 && \
 ping 10.10.11.2 -c 5 && \
 uhd_find_devices --args="addr=192.168.10.2" && \
-uhd_usrp_probe --arg="addr=192.168.10.2"
+uhd_usrp_probe
 
 
 
