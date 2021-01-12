@@ -68,6 +68,6 @@ git submodule update --init && \
 cmake .. && \
 make -j $(nproc --all) && \
 make install && \
-uhd_find_devices
+uhd_find_devices --args="addr=192.168.10.2"
 
 
