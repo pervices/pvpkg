@@ -86,4 +86,6 @@ RUN cmake -DCMAKE_BUILD_TYPE=Release -DPYTHON_EXECUTABLE=/usr/bin/python3 ../ &&
 make -j4 && \
 make install
 RUN ldconfig && \
-uhd_find_devices --args="addr=192.168.10.2"
+uhd_find_devices --args="addr=192.168.10.2" && \
+uhd_usrp_probe --arg="addr=192.168.10.2"
+

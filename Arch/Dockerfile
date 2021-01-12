@@ -47,6 +47,7 @@ makepkg --noconfirm --install --needed
 RUN sudo ping 192.168.10.2 -c 5 && \
 sudo ping 10.10.10.2 -c 5 && \
 sudo ping 10.10.11.2 -c 5 && \
-sudo uhd_find_devices
+sudo uhd_find_devices --args="addr=192.168.10.2" && \
+sudo uhd_usrp_probe --arg="addr=192.168.10.2"
 
 
