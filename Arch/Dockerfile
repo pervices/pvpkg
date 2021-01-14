@@ -49,8 +49,7 @@ sudo ping 10.10.10.2 -c 5 && \
 sudo ping 10.10.11.2 -c 5 && \
 sudo uhd_find_devices --args="addr=192.168.10.2" && \
 sudo ip addr show && \
-sudo netstat -anlp | grep :3306 | grep TIME_WAIT -wc && \
-sudo netstat -nat | awk {'print $5'} | cut -d ":" -f1 | sort | uniq -c | sort -n && \
+sudo iptables -L && \
 sudo uhd_usrp_probe --args="addr=192.168.10.2"
 
 
