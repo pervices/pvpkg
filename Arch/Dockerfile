@@ -31,7 +31,7 @@ gpg --keyserver ipv4.pool.sks-keyservers.net --recv-key 330239C1C4DAFEE1
 
 WORKDIR libuhd
 # use wget to collect UHD PKGBUILD from Github, and create the package with the dependencies speified from the PKGBUILD; sudo chown command allows user notroot to build in this directory
-RUN sudo wget https://raw.githubusercontent.com/pervices/pvpkg/master/Arch/UHD/PKGBUILD && \
+RUN sudo wget -v https://raw.githubusercontent.com/pervices/pvpkg/master/Arch/UHD/PKGBUILD && \
 sudo chown -R notroot /home/notroot/libuhd && \
 yay -Sy --noconfirm \
    $(pacman --deptest $(source ./PKGBUILD && echo ${depends[@]} ${makedepends[@]})) && \
@@ -48,7 +48,6 @@ RUN sudo ping 192.168.10.2 -c 5 && \
 sudo ping 10.10.10.2 -c 5 && \
 sudo ping 10.10.11.2 -c 5 && \
 sudo uhd_find_devices --args="addr=192.168.10.2" && \
-sudo uhd_images_downloader && \
 sudo uhd_usrp_probe --args="addr=192.168.10.2"
 
 
