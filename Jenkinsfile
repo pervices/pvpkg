@@ -78,9 +78,9 @@ pipeline {
                   //                     dockerImageUbuntu2004 = docker.build registry + ":$BUILD_NUMBER" 
               //  }
               // }
-         //   } 
+         //  } 
 
-      }
+     // }
 
        }
       }
@@ -96,9 +96,9 @@ pipeline {
                     docker.withRegistry( '', registryCredential ) { 
 
                         dockerImageArch.push() 
-                        dockerImageCentos8.push() 
-                        dockerImageUbuntu1804.push() 
-                        dockerImageUbuntu2004.push() 
+                       // dockerImageCentos8.push() 
+                       // dockerImageUbuntu1804.push() 
+                       // dockerImageUbuntu2004.push() 
                     }
 
                 } 
