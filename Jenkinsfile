@@ -41,46 +41,46 @@ pipeline {
 
               }
 
-               stage('CentOS 8') { 
+              // stage('CentOS 8') { 
 
-                   steps { 
+                //   steps { 
 
-                       script { 
-                              dir("${env.WORKSPACE}/CentOS/8") {
+                      // script { 
+                     //         dir("${env.WORKSPACE}/CentOS/8") {
                                       dockerImageCentos8 = docker.build registry + ":$BUILD_NUMBER" 
-                       }
-                      }
-                     } 
+                     //  }
+                   //   }
+                  //   } 
 
-              }
+           //   }
 
 
 
-                stage('Ubuntu 18.04') { 
+               // stage('Ubuntu 18.04') { 
 
-                   steps { 
+                //   steps { 
 
-                      script { 
-                              dir("${env.WORKSPACE}/ubuntu/18.04") {
-                                      dockerImageUbuntu1804 = docker.build registry + ":$BUILD_NUMBER" 
-                        }
-                       }
-                      } 
+                  //    script { 
+                   //           dir("${env.WORKSPACE}/ubuntu/18.04") {
+                    //                  dockerImageUbuntu1804 = docker.build registry + ":$BUILD_NUMBER" 
+                     //   }
+                   //    }
+              //        } 
 
-             }
+      //       }
              
-                stage('Ubuntu 20.04') { 
+              //  stage('Ubuntu 20.04') { 
 
-                    steps { 
+                //    steps { 
 
-                       script { 
-                              dir("${env.WORKSPACE}/ubuntu/20.04") {
-                                       dockerImageUbuntu2004 = docker.build registry + ":$BUILD_NUMBER" 
-                }
-               }
-            } 
+                   //    script { 
+                  //            dir("${env.WORKSPACE}/ubuntu/20.04") {
+                  //                     dockerImageUbuntu2004 = docker.build registry + ":$BUILD_NUMBER" 
+              //  }
+              // }
+         //   } 
 
-        }
+      //  }
 
        }
       }
