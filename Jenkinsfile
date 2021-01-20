@@ -31,6 +31,7 @@ pipeline {
 
                        script { 
                               dir("${env.WORKSPACE}/Arch") {
+                                      docker network create -d bridge my-network
                     		      dockerImageArch = docker.build registry + ":$BUILD_NUMBER" 
                   	}
 		       //Test with pvtests
