@@ -31,7 +31,7 @@ pipeline {
 
                        script { 
                               dir("${env.WORKSPACE}/Arch") {
-                    		      dockerImageArch = docker.build -P registry + ":$BUILD_NUMBER" 
+                    		      dockerImageArch = docker.build registry + ":$BUILD_NUMBER" 
                   	}
 		       //Test with pvtests
 
