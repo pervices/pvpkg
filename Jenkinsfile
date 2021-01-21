@@ -31,7 +31,7 @@ pipeline {
 
                        script { 
                               dir("${env.WORKSPACE}/Arch") {
-                    		      dockerImageArch = docker.build(registry + ":$BUILD_NUMBER", --network host) 
+                    		      dockerImageArch = docker.build(registry + ":$BUILD_NUMBER", "--network host" .) 
                   	}
 		       //Test with pvtests
 
