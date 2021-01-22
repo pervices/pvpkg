@@ -36,7 +36,7 @@ sudo chown -R notroot /home/notroot/libuhd && \
 yay -Sy --noconfirm \
    $(pacman --deptest $(source ./PKGBUILD && echo ${depends[@]} ${makedepends[@]})) && \
  makepkg --noconfirm --syncdeps --install --needed
-RUN ls
+RUN cd .. && ls
 CMD test-only.sh
 WORKDIR ../gnuradio
 # use wget to collect GnuRadio PKGBUILD from Github, and create the package with the dependencies speified from the PKGBUILD; sudo chown command allows user notroot to build in this directory
