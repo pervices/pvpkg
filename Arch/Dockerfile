@@ -22,9 +22,9 @@ git clone https://github.com/pervices/pvpkg.git && \
 cd pvpkg/Arch  && \
 sudo pacman -U --noconfirm boost-libs-1.69.0-1-x86_64.pkg.tar.xz && \ 
 sudo pacman -U --noconfirm boost-1.69.0-1-x86_64.pkg.tar.xz && \
-sudo pacman -U --noconfirm libx11-1.7.0-1-x86_64.pkg.tar.zst && \
-cd .. && ls
-RUN ./test-only.sh && \
+sudo pacman -U --noconfirm libx11-1.7.0-1-x86_64.pkg.tar.zst
+RUN ls && \
+ ./test-only.sh && \
 # building icu63, which UHD will not build without
 git clone https://aur.archlinux.org/icu63.git && \
 cd icu63 && \
