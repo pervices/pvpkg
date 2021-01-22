@@ -69,7 +69,7 @@ cmake .. && \
 make -j $(nproc --all) && \
 make install 
 RUN uhd_find_devices --args="addr=192.168.10.2" && \
-uhd_usrp_probe --args="serial=001"
+uhd_usrp_probe --args="addr=192.168.10.2"
 
 
 

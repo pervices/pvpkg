@@ -47,7 +47,7 @@ pipeline {
 
                        script { 
                              dir("${env.WORKSPACE}/CentOS/8") {
-                                     dockerImageCentos8 = docker.build registry + ":$BUILD_NUMBER" 
+                                     dockerImageCentos8 = docker.build(registry + ":$BUILD_NUMBER", "--network host .") 
                        }
                      }
                     } 
@@ -62,7 +62,7 @@ pipeline {
 
                       script { 
                              dir("${env.WORKSPACE}/ubuntu/18.04") {
-                                     dockerImageUbuntu1804 = docker.build registry + ":$BUILD_NUMBER" 
+                                     dockerImageUbuntu1804 = docker.build(registry + ":$BUILD_NUMBER", "--network host .") 
                         }
                        }
                      } 
@@ -75,7 +75,7 @@ pipeline {
 
                       script { 
                               dir("${env.WORKSPACE}/ubuntu/20.04") {
-                                       dockerImageUbuntu2004 = docker.build registry + ":$BUILD_NUMBER" 
+                                       dockerImageUbuntu2004 = docker.build(registry + ":$BUILD_NUMBER", "--network host .") 
                 }
                }
            } 
