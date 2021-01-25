@@ -37,7 +37,8 @@ RUN sudo chown -R notroot /home/notroot/libuhd && \
 sudo wget https://raw.githubusercontent.com/pervices/pvpkg/master/Arch/UHD/PKGBUILD && \
 yay -Sy --noconfirm \
    $(pacman --deptest $(source ./PKGBUILD && echo ${depends[@]} ${makedepends[@]})) && \
- makepkg --noconfirm --syncdeps --install --needed
+ makepkg --noconfirm --syncdeps --install --needed && \
+pwd
 RUN /home/notroot/yay-bin/pvpkg/Arch/test-only.sh 
 WORKDIR ../gnuradio
 # use wget to collect GnuRadio PKGBUILD from Github, and create the package with the dependencies speified from the PKGBUILD; sudo chown command allows user notroot to build in this directory
