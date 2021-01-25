@@ -20,9 +20,6 @@ yay -Syyu --noconfirm && \
 # clone pvtest repo to allow for installation of previuous versions of boost, boost-libs, and libx11; current versions of these resulted in build issues
 git clone https://github.com/pervices/pvpkg.git && \
 cd pvpkg/Arch  && \
-sudo chown -R notroot /home/notroot/yay-bin/pvpkg/Arch && \
-chmod +x test-only.sh && \
-chmod +x variables.sh && \
 sudo pacman -U --noconfirm boost-libs-1.69.0-1-x86_64.pkg.tar.xz && \ 
 sudo pacman -U --noconfirm boost-1.69.0-1-x86_64.pkg.tar.xz && \
 sudo pacman -U --noconfirm libx11-1.7.0-1-x86_64.pkg.tar.zst && \
@@ -38,7 +35,10 @@ sudo wget https://raw.githubusercontent.com/pervices/pvpkg/master/Arch/UHD/PKGBU
 yay -Sy --noconfirm \
    $(pacman --deptest $(source ./PKGBUILD && echo ${depends[@]} ${makedepends[@]})) && \
  makepkg --noconfirm --syncdeps --install --needed && \
-pwd
+mv /home/notroot/yay-bin/pvpkg/Arch/test-only.sh /home/notroot/yay-bin/pvpkg/Arch/variables.sh /home/notroot/libuhd && \
+chmod +x test-only.sh && \
+chmod +x variables.sh
+
 RUN /home/notroot/yay-bin/pvpkg/Arch/test-only.sh 
 WORKDIR ../gnuradio
 # use wget to collect GnuRadio PKGBUILD from Github, and create the package with the dependencies speified from the PKGBUILD; sudo chown command allows user notroot to build in this directory
