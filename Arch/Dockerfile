@@ -5,6 +5,7 @@ RUN useradd -m notroot && \
 pacman -Sy --noconfirm archlinux-keyring&& \
     pacman -Sy --noconfirm base-devel git && \
     pacman -Syu --noconfirm && \
+ pacman -Sy --noconfirm inetutils && \
  pacman -Syu --noconfirm wget && \
 # Allow notroot to run stuff as root (to install dependencies):
  echo "notroot ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/notroot 
@@ -34,12 +35,13 @@ RUN sudo chown -R notroot /home/notroot/libuhd && \
 sudo wget https://raw.githubusercontent.com/pervices/pvpkg/master/Arch/UHD/PKGBUILD && \
 yay -Sy --noconfirm \
    $(pacman --deptest $(source ./PKGBUILD && echo ${depends[@]} ${makedepends[@]})) && \
- makepkg --noconfirm --syncdeps --install --needed && \
-mv /home/notroot/yay-bin/pvpkg/Arch/test-only.sh /home/notroot/yay-bin/pvpkg/Arch/variables.sh /home/notroot/libuhd && \
+ makepkg --noconfirm --syncdeps --install --needed 
+WORKDIR /home/notroot/yay-bin/pvpkg/Arch && \
+mv test-only.sh variables.sh /home/notroot/libuhd 
+WORKDIR /home/notroot/libuhd && \
 chmod +x test-only.sh && \
 chmod +x variables.sh
-
-RUN /home/notroot/yay-bin/pvpkg/Arch/test-only.sh 
+RUN ./test-only.sh 
 WORKDIR ../gnuradio
 # use wget to collect GnuRadio PKGBUILD from Github, and create the package with the dependencies speified from the PKGBUILD; sudo chown command allows user notroot to build in this directory
 RUN sudo wget https://raw.githubusercontent.com/pervices/pvpkg/master/Arch/GnuRadio/PKGBUILD &&  \
