@@ -42,7 +42,7 @@ echo ":: Configuring environment - UHD should eventually do this automatically."
 
 for i in $(seq 1 $NUMER_OF_EN_DEVICES)
 do
-	NAME=$(ip addr -a | grep enp | awk '{print $1}' | cut -d ':' -f1 | sed -n ${i}p)
+	NAME=$(ip addr | grep enp | awk '{print $1}' | cut -d ':' -f1 | sed -n ${i}p)
 	IP_INTERNAL=$(ip addr $NAME | grep $PV_INT | awk '{print $2}')
 	IP_HOST=$(ip addr $NAME | grep $PV_HOST | awk '{print $2}')
 	IP_SFP0=$(ip addr $NAME | grep $SFP0 | awk '{print $2}')
