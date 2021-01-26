@@ -38,10 +38,9 @@ yay -Sy --noconfirm \
  makepkg --noconfirm --syncdeps --install --needed && pwd && ls && pwd
 WORKDIR /home/notroot/yay-bin/pvpkg/Arch
 RUN mv test-only.sh variables.sh /home/notroot/libuhd 
-WORKDIR /home/notroot/libuhd && \
-chmod +x test-only.sh && \
+WORKDIR /home/notroot/libuhd
+RUN chmod +x test-only.sh && \
 chmod +x variables.sh 
-RUN cd .. && ls
 RUN ./test-only.sh 
 WORKDIR ../gnuradio
 # use wget to collect GnuRadio PKGBUILD from Github, and create the package with the dependencies speified from the PKGBUILD; sudo chown command allows user notroot to build in this directory
