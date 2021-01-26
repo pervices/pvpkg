@@ -27,18 +27,18 @@ DUT_DATA_IP_ADDR2=10.10.11.2
 
 echo ":: Starting preparation work"
 
-#cd .. &&
-#mkdir -p pkg-archive && touch 1.xz && mv *.xz pkg-archive/ && sync &&
-#echo $USER"@"$HOST | sudo -S rm -fv /usr/bin/usrp2_card_burner /usr/lib/uhd/utils/usrp2_card_burner.py /usr/lib/uhd/utils/usrp2_recovery.py &&
-#makepkg &&
-#echo $USER"@"$HOST | sudo -S pacman -U --noconfirm *.pkg.tar.xz &&
-#cp src/uhd/host/build/examples/test_tx_trigger tests/ && 
-#mv *.pkg.tar.xz pkg-archive/ && sync && cd scripts &&
+cd .. &&
+mkdir -p pkg-archive && touch 1.xz && mv *.xz pkg-archive/ && sync &&
+echo $USER"@"$HOST | sudo -S rm -fv /usr/bin/usrp2_card_burner /usr/lib/uhd/utils/usrp2_card_burner.py /usr/lib/uhd/utils/usrp2_recovery.py &&
+makepkg &&
+echo $USER"@"$HOST | sudo -S pacman -U --noconfirm *.pkg.tar.xz &&
+cp src/uhd/host/build/examples/test_tx_trigger tests/ && 
+mv *.pkg.tar.xz pkg-archive/ && sync && cd scripts &&
 
-#echo ":: Configuring environment - UHD should eventually do this automatically."
+echo ":: Configuring environment - UHD should eventually do this automatically."
 
-#echo $USER"@"$HOST | sudo -S sysctl -w net.core.rmem_max=50000000 &&
-#echo $USER"@"$HOST | sudo -S sysctl -w net.core.wmem_max=2500000 &&
+echo $USER"@"$HOST | sudo -S sysctl -w net.core.rmem_max=50000000 &&
+echo $USER"@"$HOST | sudo -S sysctl -w net.core.wmem_max=2500000 &&
 
 for i in $(seq 1 $NUMER_OF_EN_DEVICES)
 do
