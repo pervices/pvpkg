@@ -14,7 +14,7 @@ TEST_RESULTS=()
 RETURN=0
 HOST=$(hostname)
 USER=$(whoami)
-NUMER_OF_EN_DEVICES=$(ifconfig -a | grep enp | wc -l)
+NUMER_OF_EN_DEVICES=$(ip addr | grep enp | wc -l)
 PV_HOST=192.168.10.
 PV_INT=192.168.128.
 SFP0=10.10.11.10
@@ -37,16 +37,16 @@ mv *.pkg.tar.xz pkg-archive/ && sync && cd scripts &&
 
 echo ":: Configuring environment - UHD should eventually do this automatically."
 
-echo $USER"@"$HOST | sudo -S sysctl -w net.core.rmem_max=50000000 &&
-echo $USER"@"$HOST | sudo -S sysctl -w net.core.wmem_max=2500000 &&
+#echo $USER"@"$HOST | sudo -S sysctl -w net.core.rmem_max=50000000 &&
+#echo $USER"@"$HOST | sudo -S sysctl -w net.core.wmem_max=2500000 &&
 
 for i in $(seq 1 $NUMER_OF_EN_DEVICES)
 do
-	NAME=$(ifconfig -a | grep enp | awk '{print $1}' | cut -d ':' -f1 | sed -n ${i}p)
-	IP_INTERNAL=$(ifconfig $NAME | grep $PV_INT | awk '{print $2}')
-	IP_HOST=$(ifconfig $NAME | grep $PV_HOST | awk '{print $2}')
-	IP_SFP0=$(ifconfig $NAME | grep $SFP0 | awk '{print $2}')
-	IP_SFP1=$(ifconfig $NAME | grep $SFP1 | awk '{print $2}')
+	NAME=$(ip addr -a | grep enp | awk '{print $1}' | cut -d ':' -f1 | sed -n ${i}p)
+	IP_INTERNAL=$(ip addr $NAME | grep $PV_INT | awk '{print $2}')
+	IP_HOST=$(ip addr $NAME | grep $PV_HOST | awk '{print $2}')
+	IP_SFP0=$(ip addr $NAME | grep $SFP0 | awk '{print $2}')
+	IP_SFP1=$(ip addr $NAME | grep $SFP1 | awk '{print $2}')
 
 	if [ -n "$IP_INTERNAL" ]
 	then
