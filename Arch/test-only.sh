@@ -35,10 +35,10 @@ echo ":: Starting preparation work"
 #cp src/uhd/host/build/examples/test_tx_trigger tests/ && 
 #mv *.pkg.tar.xz pkg-archive/ && sync && cd scripts &&
 
-echo ":: Configuring environment - UHD should eventually do this automatically."
+#echo ":: Configuring environment - UHD should eventually do this automatically."
 
-echo $USER"@"$HOST | sudo -S sysctl -w net.core.rmem_max=50000000 &&
-echo $USER"@"$HOST | sudo -S sysctl -w net.core.wmem_max=2500000 &&
+#echo $USER"@"$HOST | sudo -S sysctl -w net.core.rmem_max=50000000 &&
+#echo $USER"@"$HOST | sudo -S sysctl -w net.core.wmem_max=2500000 &&
 
 for i in $(seq 1 $NUMER_OF_EN_DEVICES)
 do
