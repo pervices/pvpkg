@@ -43,8 +43,12 @@ mv tests /home/notroot/libuhd
 WORKDIR /home/notroot/libuhd
 RUN chmod +x test-only.sh && \
 chmod +x variables.sh && \
-chmod +x tests
+chmod +x tests 
+WORKDIR /home/notroot/libuhd/tests
+RUN 2to3 . -w
+WORKDIR /home/notroot/libuhd
 RUN ls && \
+
 sudo ./test-only.sh 
 WORKDIR ../gnuradio
 # use wget to collect GnuRadio PKGBUILD from Github, and create the package with the dependencies speified from the PKGBUILD; sudo chown command allows user notroot to build in this directory
