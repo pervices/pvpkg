@@ -40,13 +40,7 @@ yay -Sy --noconfirm \
 WORKDIR /home/notroot/yay-bin/pvpkg/Arch
 RUN mv test-only.sh variables.sh /home/notroot/libuhd && \
 mv tests /home/notroot/libuhd
-WORKDIR /home/notroot/libuhd
-RUN chmod +x test-only.sh && \
-chmod +x variables.sh && \
-chmod +x tests 
-RUN ls && \
-sudo ./test-only.sh 
-WORKDIR ../gnuradio
+WORKDIR /home/notroot/gnuradio
 # use wget to collect GnuRadio PKGBUILD from Github, and create the package with the dependencies speified from the PKGBUILD; sudo chown command allows user notroot to build in this directory
 RUN sudo wget https://raw.githubusercontent.com/pervices/pvpkg/master/Arch/GnuRadio/PKGBUILD &&  \
 sudo chown -R notroot /home/notroot/gnuradio && \
@@ -58,7 +52,12 @@ RUN sudo ping 192.168.10.2 -c 5 && \
 sudo ping 10.10.10.2 -c 5 && \
 sudo ping 10.10.11.2 -c 5 && \
 sudo uhd_find_devices --args="addr=192.168.10.2" && \
-sudo uhd_usrp_probe --args="addr=192.168.10.2"
-
+sudo uhd_usrp_probe --args="addr=192.168.10.2" 
+WORKDIR /home/notroot/libuhd
+RUN chmod +x test-only.sh && \
+chmod +x variables.sh && \
+chmod +x tests 
+RUN ls && \
+sudo ./test-only.sh 
 
 
