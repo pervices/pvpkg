@@ -24,7 +24,7 @@ def main(iterations):
 
     # Assert area is increasing per channel.
     for area in areas:
-        print area
+        print(area)
         assert area == sorted(area)
 
 

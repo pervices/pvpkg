@@ -20,7 +20,7 @@ def gpio_write(csrc, pins, mask, time):
 
 def main():
 
-    csrc = crimson.get_src_c(range(4), 20e6, 15e6, 0.0) # Does not matter if sink or source is used here.
+    csrc = crimson.get_src_c(list(range(4)), 20e6, 15e6, 0.0) # Does not matter if sink or source is used here.
     pins = 0x0
     all = 0xFFFFFFFFFFFFFFFF; # 64bit.
     for second in range(1, 128, 1):

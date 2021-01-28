@@ -14,7 +14,7 @@ def main():
     """
 
     # Crimson TNG setup.
-    channels = range(4)
+    channels = list(range(4))
     sample_rate = 20e6
     sample_count = int(sample_rate)
 

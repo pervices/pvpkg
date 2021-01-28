@@ -27,8 +27,8 @@ def test(it):
         real_coherency = sigproc.lag(real, reals[0], it["sample_rate"], it["wave_freq"])
         imag_coherency = sigproc.lag(imag, imags[0], it["sample_rate"], it["wave_freq"])
 
-        print "channel %2d: real coherency %f" % (ch, real_coherency)
-        print "channel %2d: imag coherency %f" % (ch, imag_coherency)
+        print("channel %2d: real coherency %f" % (ch, real_coherency))
+        print("channel %2d: imag coherency %f" % (ch, imag_coherency))
 
         thresh = 0.05
 

@@ -6,8 +6,8 @@ from scipy import signal
 
 def dump(vsnk):
 
-    sample_count = xrange(len(vsnk[0].data()))
-    channels = xrange(len(vsnk))
+    sample_count = range(len(vsnk[0].data()))
+    channels = range(len(vsnk))
 
     for sample in sample_count:
         for channel in channels:

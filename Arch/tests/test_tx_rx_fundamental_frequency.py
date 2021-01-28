@@ -23,7 +23,7 @@ def test(it):
         like_real = float(it["wave_freq"]) / fund_real
         like_imag = float(it["wave_freq"]) / fund_imag
 
-        print "channel %2d: real %10.0f Hz (%8.5f) :: imag %10.0f Hz (%8.5f)" % (ch, fund_real, like_real, fund_imag, like_imag)
+        print("channel %2d: real %10.0f Hz (%8.5f) :: imag %10.0f Hz (%8.5f)" % (ch, fund_real, like_real, fund_imag, like_imag))
 
         try:
             assert like_real > 0.95 and like_real < 1.05 and like_imag > 0.95 and like_imag < 1.05

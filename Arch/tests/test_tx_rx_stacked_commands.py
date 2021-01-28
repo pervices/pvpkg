@@ -18,7 +18,7 @@ def test(it):
     # Stacked commands vsnk channel extensions and must be indexed manually with sample_count.
     for ch, channel in enumerate(vsnk):
 
-        print "channel %d" % ch
+        print("channel %d" % ch)
         areas = []
         for i, frame in enumerate(rx_stack):
 
@@ -33,7 +33,7 @@ def test(it):
             # Area likeness is relative to gold standard (first stack frame).
             likeness = area / areas[0]
 
-            print "\tframe %d: aboslute area: likeness %f" % (i, likeness)
+            print("\tframe %d: aboslute area: likeness %f" % (i, likeness))
 
             try:
                 assert likeness > 0.5 and likeness < 1.5

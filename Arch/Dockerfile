@@ -18,7 +18,7 @@ cd yay-bin && \
   makepkg --noconfirm --syncdeps --rmdeps --install --clean && \
 gpg --keyserver ipv4.pool.sks-keyservers.net --recv-key 330239C1C4DAFEE1 && \
 yay -Syyu --noconfirm && \
-pwd && pwd && pwd && ls && ls && \
+ls && pwd && pwd && ls && ls && \
 # clone pvtest repo to allow for installation of previuous versions of boost, boost-libs, and libx11; current versions of these resulted in build issues
 git clone https://github.com/pervices/pvpkg.git && \
 cd pvpkg/Arch  && \
@@ -44,11 +44,7 @@ WORKDIR /home/notroot/libuhd
 RUN chmod +x test-only.sh && \
 chmod +x variables.sh && \
 chmod +x tests 
-WORKDIR /home/notroot/libuhd/tests
-RUN 2to3 . -w
-WORKDIR /home/notroot/libuhd
 RUN ls && \
-
 sudo ./test-only.sh 
 WORKDIR ../gnuradio
 # use wget to collect GnuRadio PKGBUILD from Github, and create the package with the dependencies speified from the PKGBUILD; sudo chown command allows user notroot to build in this directory

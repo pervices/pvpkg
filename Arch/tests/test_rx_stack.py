@@ -10,7 +10,7 @@ import time
 def main():
 
     # Crimson TNG Setup.
-    channels = range(4)
+    channels = list(range(4))
     sample_rate = 20e6
     sample_count = 4096
 
@@ -55,7 +55,7 @@ def main():
     # Poll for incoming RX commands and print the length of the vector sink.
     for second in range(end):
         for channel in channels:
-            print "%d: %d" % (second, len(vsnk[channel].data()))
+            print("%d: %d" % (second, len(vsnk[channel].data())))
         time.sleep(1.0)
 
     # Cleanup and validate.

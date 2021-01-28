@@ -3,7 +3,7 @@ from gnuradio import blocks
 from gnuradio import uhd
 from gnuradio import gr
 
-import crimson
+from . import crimson
 import threading
 import time
 

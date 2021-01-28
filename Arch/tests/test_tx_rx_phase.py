@@ -21,7 +21,7 @@ def test(it):
 
         lag = sigproc.lag(real, imag, it["sample_rate"], it["wave_freq"])
 
-        print "channel %2d: lag %f" % (ch, lag)
+        print("channel %2d: lag %f" % (ch, lag))
 
         try:
             assert lag > 0.20 and lag < 0.30 # About PI/4 (90 Degrees)

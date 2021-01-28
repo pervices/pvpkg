@@ -3,9 +3,9 @@ import sys
 
 def hi_band_wave_sweep():
 
-    print sys._getframe().f_code.co_name
+    print(sys._getframe().f_code.co_name)
 
-    channels = range(4)
+    channels = list(range(4))
     sample_count = 256
     tx_gain = 25
     rx_gain = 25
@@ -16,9 +16,9 @@ def hi_band_wave_sweep():
 
 def lo_band_wave_sweep():
 
-    print sys._getframe().f_code.co_name
+    print(sys._getframe().f_code.co_name)
 
-    channels = range(4)
+    channels = list(range(4))
     sample_count = 256
     tx_gain = 25
     rx_gain = 25
@@ -30,9 +30,9 @@ def lo_band_wave_sweep():
 
 def lo_band_quick():
 
-    print sys._getframe().f_code.co_name
+    print(sys._getframe().f_code.co_name)
 
-    channels = range(4)
+    channels = list(range(4))
     wave_freq = 1000000
     sample_count = 1000
     tx_gain = 25
@@ -44,9 +44,9 @@ def lo_band_quick():
 
 def lo_band_basic():
 
-    print sys._getframe().f_code.co_name
+    print(sys._getframe().f_code.co_name)
 
-    channels = range(4)
+    channels = list(range(4))
     wave_freq = 1000000
     sample_count = 256
     tx_gain = 25
@@ -58,9 +58,9 @@ def lo_band_basic():
 
 def hi_band_basic():
 
-    print sys._getframe().f_code.co_name
+    print(sys._getframe().f_code.co_name)
 
-    channels = range(4)
+    channels = list(range(4))
     wave_freq = 1000000
     sample_count = 256
     tx_gain = 25
@@ -72,9 +72,9 @@ def hi_band_basic():
 
 def lo_band_gain_rx(channels):
 
-    print sys._getframe().f_code.co_name
+    print(sys._getframe().f_code.co_name)
 
-    channels = range(channels)
+    channels = list(range(channels))
     wave_freq = 1000000
     sample_count = 1000
     center_freq = 15000000
@@ -86,9 +86,9 @@ def lo_band_gain_rx(channels):
 
 def lo_band_gain_tx(channels):
 
-    print sys._getframe().f_code.co_name
+    print(sys._getframe().f_code.co_name)
 
-    channels = range(channels)
+    channels = list(range(channels))
     wave_freq = 1000000
     sample_count = 1000
     center_freq = 15000000
@@ -100,9 +100,9 @@ def lo_band_gain_tx(channels):
 
 def hi_band_gain_tx(channels):
 
-    print sys._getframe().f_code.co_name
+    print(sys._getframe().f_code.co_name)
 
-    channels = range(channels)
+    channels = list(range(channels))
     wave_freq = 1000000
     sample_count = 1000
     center_freq = 2000000000
@@ -114,9 +114,9 @@ def hi_band_gain_tx(channels):
 
 def hi_band_gain_rx(channels):
 
-    print sys._getframe().f_code.co_name
+    print(sys._getframe().f_code.co_name)
 
-    channels = range(channels)
+    channels = list(range(channels))
     wave_freq = 1000000
     sample_count = 1000
     center_freq = 2000000000
@@ -128,6 +128,6 @@ def hi_band_gain_rx(channels):
 
 def dump(iteration):
 
-    for key, value in iteration.iteritems():
-        print "%20s : %r" % (key, value)
+    for key, value in iteration.items():
+        print("%20s : %r" % (key, value))
 
