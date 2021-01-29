@@ -48,7 +48,7 @@ RUN sudo chown -R notroot /home/notroot/gnuradio && \
  #yay -Sy --noconfirm \
 #$(pacman --deptest $(source ./PKGBUILD && echo ${depends[@]} ${makedepends[@]})) && \
 #makepkg --noconfirm --install --needed
-sudo pacman -Sy --noconfirm gnuradio
+sudo pacman -Sy --noconfirm --needed gnuradio
 RUN sudo ping 192.168.10.2 -c 5 && \
 sudo ping 10.10.10.2 -c 5 && \
 sudo ping 10.10.11.2 -c 5 && \
