@@ -1,6 +1,6 @@
 from gnuradio import analog
 from gnuradio import blocks
-import uhd
+from gnuradio import uhd
 from gnuradio import gr
 
 from . import crimson

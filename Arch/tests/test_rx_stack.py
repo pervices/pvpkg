@@ -1,5 +1,5 @@
 from gnuradio import blocks
-import uhd
+from gnuradio import uhd
 from gnuradio import gr
 
 from common import crimson
