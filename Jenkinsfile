@@ -49,7 +49,7 @@ pipeline {
 
                        script { 
                               dir("${env.WORKSPACE}/ArchPython2") {
-                    		      dockerImageArch = docker.build(registry + ":$BUILD_NUMBER", "--network host .") 
+                    		      dockerImageArchPython2 = docker.build(registry + ":$BUILD_NUMBER", "--network host .") 
                   	}
 		       //Test with pvtests
 
@@ -115,6 +115,7 @@ pipeline {
                     docker.withRegistry( '', registryCredential ) { 
 
                         dockerImageArch.push() 
+                        dockerImageArch.psuh()
                         dockerImageCentos8.push() 
                         dockerImageUbuntu1804.push() 
                         dockerImageUbuntu2004.push() 
