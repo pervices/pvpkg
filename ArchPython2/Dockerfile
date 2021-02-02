@@ -30,6 +30,7 @@ git clone https://aur.archlinux.org/icu63.git && \
 cd icu63 && \
  makepkg --noconfirm --syncdeps --rmdeps --install --clean && \
 gpg --keyserver ipv4.pool.sks-keyservers.net --recv-key 330239C1C4DAFEE1 
+WORKDIR /home/notroot/libuhd
 WORKDIR /home/notroot/yay-bin/pvpkg/ArchPython2/UHD 
 RUN sudo chown -R notroot /home/notroot/yay-bin/pvpkg/ArchPython2/UHD && \
 mv PKGBUILD /home/notroot/libuhd
