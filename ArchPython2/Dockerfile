@@ -35,14 +35,13 @@ ls
 RUN cd .. && ls && pwd
 WORKDIR /home/notroot/libuhd && \
 ls
-WORKDIR /home/notroot/yay-bin/pvpkg/ArchPython2/UHD && \
+WORKDIR /home/notroot/yay-bin/pvpkg/ArchPython2 && \
 ls
 RUN sudo chown -R notroot /home/notroot/yay-bin/pvpkg/ArchPython2/UHD && \
 sudo mv PKGBUILD /home/notroot/libuhd
 WORKDIR /home/notroot/libuhd
 # use wget to collect UHD PKGBUILD from Github, and create the package with the dependencies speified from the PKGBUILD; sudo chown command allows user notroot to build in this directory
-RUN sudo wget -v https://raw.githubusercontent.com/pervices/pvpkg/master/ArchPython2/UHD/PKGBUILD && \
-yay -Sy --noconfirm \
+RUN yay -Sy --noconfirm \
    $(pacman --deptest $(source ./PKGBUILD && echo ${depends[@]} ${makedepends[@]})) && \
  makepkg --noconfirm --syncdeps --install --needed && pwd && ls && pwd
 WORKDIR /home/notroot/yay-bin/pvpkg/ArchPython2
