@@ -29,12 +29,12 @@ _gitname="uhd"
 
 pkgver() {
     #If we have already downloaded the repo, then use its HEAD for the package version. Otherwise, simply use the current date.
-    cd ${srcdir}
-    if [ -d ${_gitname} ]; then
-        cd ${_gitname} && echo -n `date +%Y%m%d`git. && git describe --long | sed -E 's/([^-]*-g)/r\1/;s/-/./g'
-    else
-        date --utc +%Y%m%d%H%M 
-    fi
+cd ${srcdir}
+if [ -d ${_gitname} ]; then
+cd ${_gitname} && echo -n `date +%Y%m%d`git. && git describe --long | sed -E 's/([^-]*-g)/r\1/;s/-/./g'
+else
+date --utc +%Y%m%d%H%M 
+fi
 }
 
 build() {
