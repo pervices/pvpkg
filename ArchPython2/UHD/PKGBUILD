@@ -8,8 +8,8 @@ pkgdesc="Alternative USRP Hardware Driver (UHD) userspace driver for Per Vices C
 arch=('x86_64' 'i686')
 url="http://www.pervices.com"
 license=('GPL')
-depends=('boost-libs<1.70' 'orc' 'libusb' 'python2')
-makedepends=('cmake' 'boost<1.70' 'python2-cheetah' 'python2-numpy' 'python2-mako' 'python-requests' python-retrying' 'python-scipy')
+depends=('boost-libs<1.70.0' 'boost<1.70.0' 'orc' 'libusb' 'python2')
+makedepends=('cmake' 'python2-cheetah' 'python2-numpy' 'python2-mako' 'python-requests' python-retrying' 'python-scipy')
 
 provides=('libuhd')
 conflicts=('libuhd')
@@ -26,16 +26,6 @@ md5sums=('SKIP')
 sha1sums=('SKIP')
 
 _gitname="uhd"
-
-pkgver() {
-    #If we have already downloaded the repo, then use its HEAD for the package version. Otherwise, simply use the current date.
-cd ${srcdir}
-if [ -d ${_gitname} ]; then
-cd ${_gitname} && echo -n `date +%Y%m%d`git. && git describe --long | sed -E 's/([^-]*-g)/r\1/;s/-/./g'
-else
-date --utc +%Y%m%d%H%M 
-fi
-}
 
 build() {
 
