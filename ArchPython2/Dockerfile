@@ -33,7 +33,7 @@ gpg --keyserver ipv4.pool.sks-keyservers.net --recv-key 330239C1C4DAFEE1
 WORKDIR libuhd
 # use wget to collect UHD PKGBUILD from Github, and create the package with the dependencies speified from the PKGBUILD; sudo chown command allows user notroot to build in this directory
 RUN sudo chown -R notroot /home/notroot/libuhd && \
-sudo wget https://raw.githubusercontent.com/pervices/pvpkg/master/ArchPython2/UHD/PKGBUILD && \
+sudo wget -v https://raw.githubusercontent.com/pervices/pvpkg/master/ArchPython2/UHD/PKGBUILD && \
 yay -Sy --noconfirm \
    $(pacman --deptest $(source ./PKGBUILD && echo ${depends[@]} ${makedepends[@]})) && \
  makepkg --noconfirm --syncdeps --install --needed && pwd && ls && pwd
