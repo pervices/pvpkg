@@ -7,6 +7,7 @@ pipeline {
         registryCredential = '85454c7d-a176-4e4c-94c2-d415e42a4cc3' 
 
         dockerImageArch = '' 
+        dockerImageArchPython2= ''
         dockerImageCentos8 = '' 
         dockerImageUbuntu1804 = '' 
         dockerImageUbuntu2004 = '' 
@@ -40,6 +41,24 @@ pipeline {
                   } 
 
               }
+
+                stage('ArchLinux Python2') { 
+
+                  steps { 
+		      //Build Image
+
+                       script { 
+                              dir("${env.WORKSPACE}/Arch Python2") {
+                    		      dockerImageArch = docker.build(registry + ":$BUILD_NUMBER", "--network host .") 
+                  	}
+		       //Test with pvtests
+
+		      //If passed, save UHD package.
+                      }
+                  } 
+
+              }
+
 
                stage('CentOS 8') { 
 

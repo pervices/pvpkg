@@ -18,7 +18,6 @@ cd yay-bin && \
   makepkg --noconfirm --syncdeps --rmdeps --install --clean && \
 gpg --keyserver ipv4.pool.sks-keyservers.net --recv-key 330239C1C4DAFEE1 && \
 yay -Syyu --noconfirm && \
-ls && ls && ls &&  \
 # clone pvtest repo to allow for installation of previuous versions of boost, boost-libs, and libx11; current versions of these resulted in build issues
 git clone https://github.com/pervices/pvpkg.git && \
 cd pvpkg/Arch  && \
@@ -33,23 +32,22 @@ gpg --keyserver ipv4.pool.sks-keyservers.net --recv-key 330239C1C4DAFEE1
 WORKDIR libuhd
 # use wget to collect UHD PKGBUILD from Github, and create the package with the dependencies speified from the PKGBUILD; sudo chown command allows user notroot to build in this directory
 RUN sudo chown -R notroot /home/notroot/libuhd && \
-sudo wget https://raw.githubusercontent.com/pervices/pvpkg/master/Arch/UHD/PKGBUILD && \
+sudo wget https://raw.githubusercontent.com/pervices/pvpkg/master/Arch Python2/UHD/PKGBUILD && \
 yay -Sy --noconfirm \
    $(pacman --deptest $(source ./PKGBUILD && echo ${depends[@]} ${makedepends[@]})) && \
  makepkg --noconfirm --syncdeps --install --needed && pwd && ls && pwd
-WORKDIR /home/notroot/yay-bin/pvpkg/Arch
+WORKDIR /home/notroot/yay-bin/pvpkg/Arch Python2
 RUN mv test-only.sh variables.sh /home/notroot/libuhd && \
 mv tests /home/notroot/libuhd
 WORKDIR /home/notroot/gnuradio
-# use wget to collect GnuRadio PKGBUILD from Github, and create the package with the dependencies speified from the PKGBUILD; sudo chown command allows user notroot to build in this directory
-RUN sudo wget https://raw.githubusercontent.com/pervices/pvpkg/master/Arch/GnuRadio/PKGBUILD &&  \ 
+# use wget to collect GnuRadio PKGBUILD from Github, and create the package with the dependencies specified from the PKGBUILD; sudo chown command allows user notroot to build in this directory
+RUN sudo wget https://raw.githubusercontent.com/pervices/pvpkg/master/Arch Python2/GNURadio/PKGBUILD &&  \ 
 ls && \
 sudo chown -R notroot /home/notroot/gnuradio && \
   makepkg --noconfirm --syncdeps --install && gpg --keyserver ipv4.pool.sks-keyservers.net --recv-key CB9387521E1EE0127DA804843FDBB55084CC5D84 && \
  yay -Sy --noconfirm \
 $(pacman --deptest $(source ./PKGBUILD && echo ${depends[@]} ${makedepends[@]})) && \
-makepkg --noconfirm --install --needed && \
-sleep 10000
+makepkg --noconfirm --install --needed
 RUN sudo ping 192.168.10.2 -c 5 && \
 sudo ping 10.10.10.2 -c 5 && \
 sudo ping 10.10.11.2 -c 5 && \
