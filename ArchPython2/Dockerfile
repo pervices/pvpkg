@@ -35,7 +35,7 @@ ls
 RUN cd .. && ls && pwd
 WORKDIR /home/notroot/libuhd && \
 ls
-WORKDIR /home/notroot/yay-bin/pvpkg/ArchPython2 && \
+WORKDIR /home/notroot/yay-bin/pvpkg && \
 ls
 RUN sudo chown -R notroot /home/notroot/yay-bin/pvpkg/ArchPython2/UHD && \
 sudo mv PKGBUILD /home/notroot/libuhd
