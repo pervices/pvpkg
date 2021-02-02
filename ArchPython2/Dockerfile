@@ -31,6 +31,7 @@ cd icu63 && \
 gpg --keyserver ipv4.pool.sks-keyservers.net --recv-key 330239C1C4DAFEE1 && \
 cd .. && \
 ls
+RUN cd .. && ls && pwd
 WORKDIR /home/notroot/libuhd && \
 ls
 WORKDIR /home/notroot/yay-bin/pvpkg/ArchPython2/UHD && \
