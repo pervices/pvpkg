@@ -31,7 +31,7 @@ cd icu63 && \
  makepkg --noconfirm --syncdeps --rmdeps --install --clean && \
 gpg --keyserver ipv4.pool.sks-keyservers.net --recv-key 330239C1C4DAFEE1 
 WORKDIR /home/notroot/libuhd
-WORKDIR /home/notroot/yay-bin/pvpkg
+WORKDIR /home/notroot/yay-bin/pvpkg/ArchPython2/UHD
 RUN sudo chown -R notroot /home/notroot/yay-bin/pvpkg/ArchPython2/UHD && \
 sudo mv PKGBUILD /home/notroot/libuhd
 WORKDIR /home/notroot/libuhd
@@ -39,7 +39,7 @@ WORKDIR /home/notroot/libuhd
 RUN yay -Sy --noconfirm \
    $(pacman --deptest $(source ./PKGBUILD && echo ${depends[@]} ${makedepends[@]})) && \
  makepkg --noconfirm --syncdeps --install --needed && pwd && ls && pwd
-WORKDIR /home/notroot/yay-bin/pvpkg/ArchPython2/UHD
+WORKDIR /home/notroot/yay-bin/pvpkg/ArchPython2
 RUN mv test-only.sh variables.sh /home/notroot/libuhd && \
 mv tests /home/notroot/libuhd
 WORKDIR /home/notroot/gnuradio
