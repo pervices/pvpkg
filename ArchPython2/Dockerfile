@@ -20,7 +20,7 @@ gpg --keyserver ipv4.pool.sks-keyservers.net --recv-key 330239C1C4DAFEE1 && \
 yay -Syyu --noconfirm && \
 # clone pvtest repo to allow for installation of previuous versions of boost, boost-libs, and libx11; current versions of these resulted in build issues
 git clone https://github.com/pervices/pvpkg.git && \
-cd pvpkg && ls && pwd  && \
+cd pvpkg && ls && pwd && pwd && \
 cd Arch && \
 sudo pacman -U --noconfirm boost-libs-1.69.0-1-x86_64.pkg.tar.xz && \ 
 sudo pacman -U --noconfirm boost-1.69.0-1-x86_64.pkg.tar.xz && \
@@ -50,7 +50,7 @@ mv tests /home/notroot/libuhd
 WORKDIR /home/notroot/gnuradio
 # use wget to collect GnuRadio PKGBUILD from Github, and create the package with the dependencies specified from the PKGBUILD; sudo chown command allows user notroot to build in this directory
 RUN sudo wget 'https://raw.githubusercontent.com/pervices/pvpkg/master/ArchPython2/GNURadio/PKGBUILD' &&  \ 
-ls && \
+ls && pwd && \
 sudo chown -R notroot /home/notroot/gnuradio && \
   makepkg --noconfirm --syncdeps --install && gpg --keyserver ipv4.pool.sks-keyservers.net --recv-key CB9387521E1EE0127DA804843FDBB55084CC5D84 && \
  yay -Sy --noconfirm \
