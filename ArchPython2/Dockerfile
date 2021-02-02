@@ -11,7 +11,6 @@ pacman -Sy --noconfirm archlinux-keyring&& \
  echo "notroot ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/notroot 
 # Continue execution (and CMD) as notroot:
 USER notroot
-RUN ls
 WORKDIR home/notroot
 # install yay for later use in install
 RUN git clone https://aur.archlinux.org/yay-bin.git && \
@@ -20,7 +19,6 @@ cd yay-bin && \
 gpg --keyserver ipv4.pool.sks-keyservers.net --recv-key 330239C1C4DAFEE1 && \
 yay -Syyu --noconfirm && \
 # clone pvtest repo to allow for installation of previuous versions of boost, boost-libs, and libx11; current versions of these resulted in build issues
-ls && \
 git clone https://github.com/pervices/pvpkg.git && \
 cd pvpkg/Arch  && \
 sudo pacman -U --noconfirm boost-libs-1.69.0-1-x86_64.pkg.tar.xz && \ 
@@ -30,7 +28,9 @@ sudo pacman -U --noconfirm libx11-1.7.0-1-x86_64.pkg.tar.zst && \
 git clone https://aur.archlinux.org/icu63.git && \
 cd icu63 && \
  makepkg --noconfirm --syncdeps --rmdeps --install --clean && \
-gpg --keyserver ipv4.pool.sks-keyservers.net --recv-key 330239C1C4DAFEE1 
+gpg --keyserver ipv4.pool.sks-keyservers.net --recv-key 330239C1C4DAFEE1 && \
+cd .. && \
+ls
 WORKDIR /home/notroot/libuhd && \
 ls
 WORKDIR /home/notroot/yay-bin/pvpkg/ArchPython2/UHD && \
