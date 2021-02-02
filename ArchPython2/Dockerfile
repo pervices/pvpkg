@@ -37,7 +37,7 @@ sudo wget https://raw.githubusercontent.com/pervices/pvpkg/master/ArchPython2/UH
 yay -Sy --noconfirm \
    $(pacman --deptest $(source ./PKGBUILD && echo ${depends[@]} ${makedepends[@]})) && \
  makepkg --noconfirm --syncdeps --install --needed && pwd && ls && pwd
-WORKDIR /home/notroot/yay-bin/pvpkg/Arch Python2
+WORKDIR /home/notroot/yay-bin/pvpkg/ArchPython2
 RUN mv test-only.sh variables.sh /home/notroot/libuhd && \
 mv tests /home/notroot/libuhd
 WORKDIR /home/notroot/gnuradio
