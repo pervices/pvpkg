@@ -20,6 +20,7 @@ cd yay-bin && \
 gpg --keyserver ipv4.pool.sks-keyservers.net --recv-key 330239C1C4DAFEE1 && \
 yay -Syyu --noconfirm && \
 # clone pvtest repo to allow for installation of previuous versions of boost, boost-libs, and libx11; current versions of these resulted in build issues
+ls && \
 git clone https://github.com/pervices/pvpkg.git && \
 cd pvpkg/Arch  && \
 sudo pacman -U --noconfirm boost-libs-1.69.0-1-x86_64.pkg.tar.xz && \ 
@@ -30,8 +31,10 @@ git clone https://aur.archlinux.org/icu63.git && \
 cd icu63 && \
  makepkg --noconfirm --syncdeps --rmdeps --install --clean && \
 gpg --keyserver ipv4.pool.sks-keyservers.net --recv-key 330239C1C4DAFEE1 
-WORKDIR /home/notroot/libuhd
-WORKDIR /home/notroot/yay-bin/pvpkg/ArchPython2/UHD 
+WORKDIR /home/notroot/libuhd && \
+ls
+WORKDIR /home/notroot/yay-bin/pvpkg/ArchPython2/UHD && \
+ls
 RUN sudo chown -R notroot /home/notroot/yay-bin/pvpkg/ArchPython2/UHD && \
 sudo mv PKGBUILD /home/notroot/libuhd
 WORKDIR /home/notroot/libuhd
