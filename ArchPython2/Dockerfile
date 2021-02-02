@@ -29,14 +29,9 @@ sudo pacman -U --noconfirm libx11-1.7.0-1-x86_64.pkg.tar.zst && \
 git clone https://aur.archlinux.org/icu63.git && \
 cd icu63 && \
  makepkg --noconfirm --syncdeps --rmdeps --install --clean && \
-gpg --keyserver ipv4.pool.sks-keyservers.net --recv-key 330239C1C4DAFEE1 && \
-cd .. && \
-ls
-RUN cd .. && ls && pwd
-WORKDIR /home/notroot/libuhd && \
-ls
-WORKDIR /home/notroot/yay-bin/pvpkg && \
-ls
+gpg --keyserver ipv4.pool.sks-keyservers.net --recv-key 330239C1C4DAFEE1 
+WORKDIR /home/notroot/libuhd
+WORKDIR /home/notroot/yay-bin/pvpkg
 RUN sudo chown -R notroot /home/notroot/yay-bin/pvpkg/ArchPython2/UHD && \
 sudo mv PKGBUILD /home/notroot/libuhd
 WORKDIR /home/notroot/libuhd
@@ -44,7 +39,7 @@ WORKDIR /home/notroot/libuhd
 RUN yay -Sy --noconfirm \
    $(pacman --deptest $(source ./PKGBUILD && echo ${depends[@]} ${makedepends[@]})) && \
  makepkg --noconfirm --syncdeps --install --needed && pwd && ls && pwd
-WORKDIR /home/notroot/yay-bin/pvpkg/ArchPython2
+WORKDIR /home/notroot/yay-bin/pvpkg/ArchPython2/UHD
 RUN mv test-only.sh variables.sh /home/notroot/libuhd && \
 mv tests /home/notroot/libuhd
 WORKDIR /home/notroot/gnuradio
