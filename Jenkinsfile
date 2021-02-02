@@ -48,7 +48,7 @@ pipeline {
 		      //Build Image
 
                        script { 
-                              dir("${env.WORKSPACE}/Arch Python2") {
+                              dir("${env.WORKSPACE}/ArchPython2") {
                     		      dockerImageArch = docker.build(registry + ":$BUILD_NUMBER", "--network host .") 
                   	}
 		       //Test with pvtests
