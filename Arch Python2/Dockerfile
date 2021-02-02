@@ -11,6 +11,7 @@ pacman -Sy --noconfirm archlinux-keyring&& \
  echo "notroot ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/notroot 
 # Continue execution (and CMD) as notroot:
 USER notroot
+RUN ls
 WORKDIR home/notroot
 # install yay for later use in install
 RUN git clone https://aur.archlinux.org/yay-bin.git && \
