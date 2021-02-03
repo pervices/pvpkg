@@ -8,7 +8,7 @@ arch=('i686' 'x86_64')
 url="https://github.com/gnuradio/gnuradio"
 license=('GPL')
 depends=('fftw' 'python2-numpy' 'cppunit' 'gsl' 'blas' 'guile' 'boost-libs>=1.53' 'libusb' 'portaudio' 'libuhd' 'zeromq' 'gmp' 'thrift')
-makedepends=('git' 'boost' 'cmake' 'python2-lxml' 'python-cheetah3' 'glu' 'swig' 'wxpython' 'gtk2')
+makedepends=('git' 'boost' 'cmake' 'python2-lxml' 'glu' 'swig' 'wxpython')
 optdepends=('python-lxml: Some GRC modules use lxml optionally for improved performance')
 source=("git+https://github.com/gnuradio/gnuradio.git")
 md5sums=('SKIP')
