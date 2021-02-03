@@ -28,6 +28,9 @@ build() {
     mkdir -p build
     cd build
     cmake \
+        -DPYTHON_EXECUTABLE=$(which python2) \
+        -DPYTHON_INCLUDE_DIR=$(echo /usr/include/python2*) \
+        -DPYTHON_LIBRARY=$(echo /usr/lib/libpython2.*.so) \
         -DENABLE_GRC=ON \
         -DENABLE_GR_QTGUI=ON \
         -DENABLE_INTERNAL_VOLK=ON \
