@@ -22,11 +22,9 @@ pkgver() {
 
 build() {
     cd "$srcdir/$_gitname"
-echo 'export PYTHONPATH=/usr/local/lib/python3/dist-packages:usr/local/lib/python2.7/site-packages:$PYTHONPATH' >> ~/.bashrc
-echo 'export LD_LIBRARY_PATH=/user/local/lib:$LD_LIBRARY_PATH' >> ~/.bashrc
-echo 'export PYTHONPATH=/usr/local/lib/python3/dist-packages:usr/local/lib/python2.7/site-packages:$PYTHONPATH' >> ~/.profile
-echo 'export LD_LIBRARY_PATH=/user/local/lib:$LD_LIBRARY_PATH' >> ~/.profile
+ find -name "*.py" -or -name '*.py.in' | xargs sed -i "s|#!/usr/bin/env python$|#!/usr/bin/env python2|"
     sed -i -e "s|GR_PKG_LIBEXEC_DIR|GR_RUNTIME_DIR|" grc/scripts/freedesktop/CMakeLists.txt
+    sed -i 's/python$/python2/' python/*.py
     msg "Starting build."
     mkdir -p build
     cd build
@@ -39,7 +37,6 @@ echo 'export LD_LIBRARY_PATH=/user/local/lib:$LD_LIBRARY_PATH' >> ~/.profile
         -DENABLE_INTERNAL_VOLK=ON \
         -DENABLE_GR_CTRLPORT=OFF \
         -DCMAKE_INSTALL_PREFIX=/usr \
-        -DGR_PYTHON_3=OFF \
         -DQWT_LIBRARIES=/usr/lib/libqwt.so -Wno-dev ../
     make -j4
 }
