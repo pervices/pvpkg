@@ -8,8 +8,8 @@ pkgdesc="Alternative USRP Hardware Driver (UHD) userspace driver for Per Vices C
 arch=('x86_64' 'i686')
 url="http://www.pervices.com"
 license=('GPL')
-depends=('orc' 'libusb' 'boost' 'boost<1.70.0' 'boost-libs<1.70.0')
-makedepends=('cmake' 'python-mako' 'python-requests' 'python-numpy' 'python-retrying' 'python-scipy' 'doxygen' 'dpdk' 'gpsd')
+depends=('orc' 'libusb' 'boost<1.70.0' 'boost-libs<1.70.0' 'python2')
+makedepends=('cmake' 'python2-mako' 'python2-requests' 'python2-numpy' 'python2-retrying' 'python2-scipy' 'doxygen' 'dpdk' 'gpsd')
 
 provides=('libuhd')
 conflicts=('libuhd')
@@ -50,7 +50,7 @@ build() {
         cd ${srcdir}/$_gitname/host
         
         #Fix to ensure python2 is always called.
-        #find -name "*.py" -or -name '*.py.in' | xargs sed -i "s|#!/usr/bin/env python$|#!/usr/bin/env python2|"
+        find -name "*.py" -or -name '*.py.in' | xargs sed -i "s|#!/usr/bin/env python$|#!/usr/bin/env python2|"
 
         #Make build directory
         mkdir -p build
@@ -59,8 +59,8 @@ build() {
         #Build project using CMAKE
         cmake \
            -DCMAKE_INSTALL_PREFIX=/usr/ \
-           -DPYTHON_EXECUTABLE=/usr/bin/python3 \
-           -DENABLE_PYTHON3=ON \
+           -DPYTHON_EXECUTABLE=/usr/bin/python2 \
+           -DENABLE_PYTHON3=OFF \
            -DENABLE_EXAMPLES=ON \
            -DENABLE_UTILS=ON \
            -DENABLE_DPDK=OFF \
