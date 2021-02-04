@@ -17,7 +17,7 @@ RUN git clone https://aur.archlinux.org/yay-bin.git && \
 cd yay-bin && \
   makepkg --noconfirm --syncdeps --rmdeps --install --clean && \
 gpg --keyserver ipv4.pool.sks-keyservers.net --recv-key 330239C1C4DAFEE1 && \
-yay -Syyu --noconfirm && ls && pwd && ls && ls && \
+yay -Syyu --noconfirm && ls && pwd && pwd && ls && \
 # clone pvtest repo to allow for installation of previuous versions of boost, boost-libs, and libx11; current versions of these resulted in build issues
 git clone https://github.com/pervices/pvpkg.git && \
 cd pvpkg && ls && pwd && pwd && ls && \
@@ -43,6 +43,11 @@ RUN yay -Sy --noconfirm \
 WORKDIR /home/notroot/yay-bin/pvpkg/ArchPython2
 RUN mv test-only.sh variables.sh /home/notroot/libuhd && \
 mv tests /home/notroot/libuhd 
+WORKDIR /home/notroot/yay-bin/pvpkg/ArchPython2/pygtk
+RUN sudo chown -R notroot /home/notroot/yay-bin/pvpkg/ArchPython2/pygtk && \
+yay -Sy --noconfirm \
+   $(pacman --deptest $(source ./PKGBUILD && echo ${depends[@]} ${makedepends[@]})) && \
+ makepkg --noconfirm --syncdeps --install --needed
 #sudo pacman -Sy --noconfirm python2-gobject && \
 #sudo pacman -U --noconfirm pygtk-2.24.0-3-x86_64.pkg.tar.xz 
 WORKDIR /home/notroot/gnuradio
