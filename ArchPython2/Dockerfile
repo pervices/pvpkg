@@ -17,8 +17,8 @@ RUN git clone https://aur.archlinux.org/yay-bin.git && \
 cd yay-bin && \
   makepkg --noconfirm --syncdeps --rmdeps --install --clean && \
 gpg --keyserver ipv4.pool.sks-keyservers.net --recv-key 330239C1C4DAFEE1 && \
-yay -Syyu --noconfirm 
-RUN ls && pwd && pwd && ls && \
+yay -Syyu --noconfirm && \
+ls && pwd && pwd && ls && \
 # clone pvtest repo to allow for installation of previuous versions of boost, boost-libs, and libx11; current versions of these resulted in build issues
 git clone https://github.com/pervices/pvpkg.git && \
 cd pvpkg && ls && pwd && pwd && ls && \
@@ -38,27 +38,27 @@ sudo wget https://raw.githubusercontent.com/pervices/pvpkg/master/ArchPython2/UH
 yay -Sy --noconfirm \
    $(pacman --deptest $(source ./PKGBUILD && echo ${depends[@]} ${makedepends[@]})) && \
  makepkg --noconfirm --syncdeps --install --needed && pwd && ls && pwd
-WORKDIR /home/notroot/yay-bin/pvpkg/ArchPython2
-RUN sudo chown -R notroot /home/notroot/yay-bin/pvpkg/ArchPython2 && \
+WORKDIR /home/notroot/pvpkg/ArchPython2
+RUN sudo chown -R notroot /home/notroot/pvpkg/ArchPython2 && \
  mv test-only.sh variables.sh /home/notroot/libuhd && \
 mv tests /home/notroot/libuhd 
-WORKDIR /home/notroot/yay-bin/pvpkg/ArchPython2/pygtk
-RUN sudo chown -R notroot /home/notroot/yay-bin/pvpkg/ArchPython2/pygtk && \
+WORKDIR /home/notroot/pvpkg/ArchPython2/pygtk
+RUN sudo chown -R notroot /home/notroot/pvpkg/ArchPython2/pygtk && \
 yay -Sy --noconfirm \
    $(pacman --deptest $(source ./PKGBUILD && echo ${depends[@]} ${makedepends[@]})) && \
  makepkg --noconfirm --syncdeps --install --needed
-WORKDIR /home/notroot/yay-bin/pvpkg/ArchPython2/pyqt4
-RUN sudo chown -R notroot /home/notroot/yay-bin/pvpkg/ArchPython2/pyqt4 && \
+WORKDIR /home/notroot/pvpkg/ArchPython2/pyqt4
+RUN sudo chown -R notroot /home/notroot/pvpkg/ArchPython2/pyqt4 && \
 yay -Sy --noconfirm \
    $(pacman --deptest $(source ./PKGBUILD && echo ${depends[@]} ${makedepends[@]})) && \
  makepkg --noconfirm --syncdeps --install --needed
-WORKDIR /home/notroot/yay-bin/pvpkg/ArchPython2/qt4
-RUN sudo chown -R notroot /home/notroot/yay-bin/pvpkg/ArchPython2/qt4 && \
+WORKDIR /home/notroot/pvpkg/ArchPython2/qt4
+RUN sudo chown -R notroot /home/notroot/pvpkg/ArchPython2/qt4 && \
 yay -Sy --noconfirm \
    $(pacman --deptest $(source ./PKGBUILD && echo ${depends[@]} ${makedepends[@]})) && \
  makepkg --noconfirm --syncdeps --install --needed
-WORKDIR /home/notroot/yay-bin/pvpkg/ArchPython2/qwt-qt4
-RUN sudo chown -R notroot /home/notroot/yay-bin/pvpkg/ArchPython2/qwt-qt4 && \
+WORKDIR /home/notroot/pvpkg/ArchPython2/qwt-qt4
+RUN sudo chown -R notroot /home/notroot/pvpkg/ArchPython2/qwt-qt4 && \
 yay -Sy --noconfirm \
    $(pacman --deptest $(source ./PKGBUILD && echo ${depends[@]} ${makedepends[@]})) && \
  makepkg --noconfirm --syncdeps --install --needed
