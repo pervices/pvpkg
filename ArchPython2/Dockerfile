@@ -39,26 +39,26 @@ yay -Sy --noconfirm \
    $(pacman --deptest $(source ./PKGBUILD && echo ${depends[@]} ${makedepends[@]})) && \
  makepkg --noconfirm --syncdeps --install --needed && pwd && ls && pwd
 WORKDIR /home/notroot/yay-bin/pvpkg/ArchPython2
-RUN ls && sudo chown -R notroot /home/notroot/pvpkg/ArchPython2 && \
+RUN ls && sudo chown -R notroot /home/notroot/yay-bin/pvpkg/ArchPython2 && \
  mv test-only.sh variables.sh /home/notroot/libuhd && \
 mv tests /home/notroot/libuhd 
-WORKDIR /home/notroot/pvpkg/ArchPython2/pygtk
-RUN sudo chown -R notroot /home/notroot/pvpkg/ArchPython2/pygtk && \
+WORKDIR /home/notroot/yay-bin/pvpkg/ArchPython2/pygtk
+RUN sudo chown -R notroot /home/notroot/yay-bin/pvpkg/ArchPython2/pygtk && \
 yay -Sy --noconfirm \
    $(pacman --deptest $(source ./PKGBUILD && echo ${depends[@]} ${makedepends[@]})) && \
  makepkg --noconfirm --syncdeps --install --needed
-WORKDIR /home/notroot/pvpkg/ArchPython2/pyqt4
-RUN sudo chown -R notroot /home/notroot/pvpkg/ArchPython2/pyqt4 && \
+WORKDIR /home/notroot/yay-bin/pvpkg/ArchPython2/pyqt4
+RUN sudo chown -R notroot /home/notroot/yay-bin/pvpkg/ArchPython2/pyqt4 && \
 yay -Sy --noconfirm \
    $(pacman --deptest $(source ./PKGBUILD && echo ${depends[@]} ${makedepends[@]})) && \
  makepkg --noconfirm --syncdeps --install --needed
-WORKDIR /home/notroot/pvpkg/ArchPython2/qt4
-RUN sudo chown -R notroot /home/notroot/pvpkg/ArchPython2/qt4 && \
+WORKDIR /home/notroot/yay-bin/pvpkg/ArchPython2/qt4
+RUN sudo chown -R notroot /home/notroot/yay-bin/pvpkg/ArchPython2/qt4 && \
 yay -Sy --noconfirm \
    $(pacman --deptest $(source ./PKGBUILD && echo ${depends[@]} ${makedepends[@]})) && \
  makepkg --noconfirm --syncdeps --install --needed
-WORKDIR /home/notroot/pvpkg/ArchPython2/qwt-qt4
-RUN sudo chown -R notroot /home/notroot/pvpkg/ArchPython2/qwt-qt4 && \
+WORKDIR /home/notroot/yay-bin/pvpkg/ArchPython2/qwt-qt4
+RUN sudo chown -R notroot /home/notroot/yay-bin/pvpkg/ArchPython2/qwt-qt4 && \
 yay -Sy --noconfirm \
    $(pacman --deptest $(source ./PKGBUILD && echo ${depends[@]} ${makedepends[@]})) && \
  makepkg --noconfirm --syncdeps --install --needed
