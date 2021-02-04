@@ -57,7 +57,7 @@ echo 'export PYTHONPATH=/usr/local/lib/python3/dist-packages:usr/local/lib/pytho
 echo 'export LD_LIBRARY_PATH=/user/local/lib:$LD_LIBRARY_PATH' >> ~/.profile && \
 pip2 install Cheetah 
 # use wget to collect GnuRadio PKGBUILD from Github, and create the package with the dependencies specified from the PKGBUILD; sudo chown command allows user notroot to build in this directory
-RUN sudo wget -v -v 'https://raw.githubusercontent.com/pervices/pvpkg/master/ArchPython2/GNURadio/PKGBUILD' &&  \ 
+RUN sudo wget -v -v -nv 'https://raw.githubusercontent.com/pervices/pvpkg/master/ArchPython2/GNURadio/PKGBUILD' &&  \ 
 pwd && ls && ls && \
 sudo chown -R notroot /home/notroot/gnuradio && \
   makepkg --noconfirm --syncdeps --install && gpg --keyserver ipv4.pool.sks-keyservers.net --recv-key CB9387521E1EE0127DA804843FDBB55084CC5D84 && \
