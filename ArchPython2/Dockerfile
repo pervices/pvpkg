@@ -44,7 +44,7 @@ WORKDIR /home/notroot/yay-bin/pvpkg/ArchPython2
 RUN mv test-only.sh variables.sh /home/notroot/libuhd && \
 mv tests /home/notroot/libuhd && \
 sudo pacman -Sy --noconfirm python2-gobject && \
-sudo pacman -U --noconfirm pygtk-2.24.0-3-x86_64.pkg.tar.xz 
+sudo pacman -S --noconfirm pygtk-2.24.0-3-x86_64.pkg.tar.xz 
 WORKDIR /home/notroot/gnuradio
 RUN echo 'export PYTHONPATH=/usr/local/lib/python3/dist-packages:usr/local/lib/python2.7/site-packages:$PYTHONPATH' >> ~/.bashrc && \
 echo 'export LD_LIBRARY_PATH=/user/local/lib:$LD_LIBRARY_PATH' >> ~/.bashrc && \
