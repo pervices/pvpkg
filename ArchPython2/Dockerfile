@@ -49,9 +49,7 @@ yay -Sy --noconfirm \
  makepkg --noconfirm --syncdeps --install --needed
 WORKDIR /home/notroot/yay-bin/pvpkg/ArchPython2/pyqt4
 RUN sudo chown -R notroot /home/notroot/yay-bin/pvpkg/ArchPython2/pyqt4 && \
-yay -Sy --noconfirm \
-   $(pacman --deptest $(source ./PKGBUILD && echo ${depends[@]} ${makedepends[@]})) && \
- makepkg --noconfirm --syncdeps --install --needed
+yay -S python-pyqt4
 WORKDIR /home/notroot/yay-bin/pvpkg/ArchPython2/qt4
 RUN sudo chown -R notroot /home/notroot/yay-bin/pvpkg/ArchPython2/qt4 && \
 yay -Sy --noconfirm \
