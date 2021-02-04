@@ -30,15 +30,12 @@ sudo pacman -U --noconfirm libx11-1.7.0-1-x86_64.pkg.tar.zst && \
 git clone https://aur.archlinux.org/icu63.git && \
 cd icu63 && \
  makepkg --noconfirm --syncdeps --rmdeps --install --clean && \
-gpg --keyserver ipv4.pool.sks-keyservers.net --recv-key 330239C1C4DAFEE1 
+gpg --keyserver ipv4.pool.sks-keyservers.net --recv-key 330239C1C4DAFEE1
 WORKDIR /home/notroot/libuhd
-RUN sudo chown -R notroot /home/notroot/libuhd
-WORKDIR /home/notroot/yay-bin/pvpkg/ArchPython2/UHD
-RUN sudo chown -R notroot /home/notroot/yay-bin/pvpkg/ArchPython2/UHD && \
-sudo mv PKGBUILD /home/notroot/libuhd
-WORKDIR /home/notroot/libuhd
+RUN sudo chown -R notroot /home/notroot/libuhd && \
+sudo wget https://raw.githubusercontent.com/pervices/pvpkg/master/ArchPython2/UHD/PKGBUILD && \
 # use wget to collect UHD PKGBUILD from Github, and create the package with the dependencies speified from the PKGBUILD; sudo chown command allows user notroot to build in this directory
-RUN yay -Sy --noconfirm \
+yay -Sy --noconfirm \
    $(pacman --deptest $(source ./PKGBUILD && echo ${depends[@]} ${makedepends[@]})) && \
  makepkg --noconfirm --syncdeps --install --needed && pwd && ls && pwd
 WORKDIR /home/notroot/yay-bin/pvpkg/ArchPython2
