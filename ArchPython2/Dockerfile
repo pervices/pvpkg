@@ -39,7 +39,7 @@ yay -Sy --noconfirm \
    $(pacman --deptest $(source ./PKGBUILD && echo ${depends[@]} ${makedepends[@]})) && \
  makepkg --noconfirm --syncdeps --install --needed && pwd && ls && pwd
 WORKDIR /home/notroot/yay-bin/pvpkg/ArchPython2
-RUN mv test-only.sh variables.sh /home/notroot/libuhd && \
+RUN ls && mv test-only.sh variables.sh /home/notroot/libuhd && \
 mv tests /home/notroot/libuhd 
 WORKDIR /home/notroot/yay-bin/pvpkg/ArchPython2/pygtk
 RUN sudo chown -R notroot /home/notroot/yay-bin/pvpkg/ArchPython2/pygtk && \
