@@ -18,7 +18,7 @@ cd yay-bin && \
   makepkg --noconfirm --syncdeps --rmdeps --install --clean && \
 gpg --keyserver ipv4.pool.sks-keyservers.net --recv-key 330239C1C4DAFEE1 && \
 yay -Syyu --noconfirm && \
-ls && pwd && pwd && ls && pwd && ls && pwd && pwd && \
+ls && pwd && pwd && ls && pwd && ls && pwd && pwd && ls && \
 # clone pvtest repo to allow for installation of previuous versions of boost, boost-libs, and libx11; current versions of these resulted in build issues
 git clone https://github.com/pervices/pvpkg.git && \
 cd pvpkg && ls && pwd && pwd && ls && \
@@ -50,7 +50,12 @@ yay -Sy --noconfirm \
 WORKDIR /home/notroot/yay-bin/pvpkg/ArchPython2/pyqt4
 RUN sudo chown -R notroot /home/notroot/yay-bin/pvpkg/ArchPython2/pyqt4 && \
 #yay -S --noconfirm python-pyqt4 && \
-sudo pacman -S --noconfirm sip4 && \
+tar -zxvf sip-4.19.24.tar.gz && \
+cd sip-4.19.24 && \
+python2 configure.py --sip-module PyQt4.sip --no-dist-info --no-tools && \
+make && \
+make install && \
+cd .. && \
 tar -zxvf PyQt4_gpl_x11-4.12.3.tar.gz && \
 cd PyQt4_gpl_x11-4.12.3 && \
 python2 configure.py && \
