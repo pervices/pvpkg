@@ -50,16 +50,16 @@ yay -Sy --noconfirm \
 WORKDIR /home/notroot/yay-bin/pvpkg/ArchPython2/pyqt4
 RUN sudo chown -R notroot /home/notroot/yay-bin/pvpkg/ArchPython2/pyqt4 && \
 yay -S --noconfirm python-pyqt4
-WORKDIR /home/notroot/yay-bin/pvpkg/ArchPython2/qt4
-RUN sudo chown -R notroot /home/notroot/yay-bin/pvpkg/ArchPython2/qt4 && \
-yay -Sy --noconfirm \
-   $(pacman --deptest $(source ./PKGBUILD && echo ${depends[@]} ${makedepends[@]})) && \
- makepkg --noconfirm --syncdeps --install --needed
-WORKDIR /home/notroot/yay-bin/pvpkg/ArchPython2/qwt-qt4
-RUN sudo chown -R notroot /home/notroot/yay-bin/pvpkg/ArchPython2/qwt-qt4 && \
-yay -Sy --noconfirm \
-   $(pacman --deptest $(source ./PKGBUILD && echo ${depends[@]} ${makedepends[@]})) && \
- makepkg --noconfirm --syncdeps --install --needed
+#WORKDIR /home/notroot/yay-bin/pvpkg/ArchPython2/qt4
+#RUN sudo chown -R notroot /home/notroot/yay-bin/pvpkg/ArchPython2/qt4 && \
+#yay -Sy --noconfirm \
+ #  $(pacman --deptest $(source ./PKGBUILD && echo ${depends[@]} ${makedepends[@]})) && \
+# makepkg --noconfirm --syncdeps --install --needed
+#WORKDIR /home/notroot/yay-bin/pvpkg/ArchPython2/qwt-qt4
+#RUN sudo chown -R notroot /home/notroot/yay-bin/pvpkg/ArchPython2/qwt-qt4 && \
+#yay -Sy --noconfirm \
+ #  $(pacman --deptest $(source ./PKGBUILD && echo ${depends[@]} ${makedepends[@]})) && \
+ #makepkg --noconfirm --syncdeps --install --needed
 #sudo pacman -Sy --noconfirm python2-gobject && \
 #sudo pacman -U --noconfirm pygtk-2.24.0-3-x86_64.pkg.tar.xz 
 WORKDIR /home/notroot/gnuradio
