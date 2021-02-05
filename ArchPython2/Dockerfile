@@ -52,6 +52,7 @@ RUN sudo chown -R notroot /home/notroot/yay-bin/pvpkg/ArchPython2/pyqt4 && \
 #yay -S --noconfirm python-pyqt4 && \
 sudo pacman -S --noconfirm sip4 && \
 tar -zxvf PyQt4_gpl_x11-4.12.3.tar.gz && \
+cd PyQt4_gpl_x11-4.12.3 && \
 python configure-ng.py && \
 make && \
 make install
