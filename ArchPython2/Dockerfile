@@ -50,7 +50,7 @@ yay -Sy --noconfirm \
 WORKDIR /home/notroot/yay-bin/pvpkg/ArchPython2/pyqt4
 RUN sudo chown -R notroot /home/notroot/yay-bin/pvpkg/ArchPython2/pyqt4 && \
 #yay -S --noconfirm python-pyqt4 && \
-yay - --noconfirm qt4 && \
+yay -S --noconfirm qt4 && \
 tar -zxvf sip-4.19.24.tar.gz && \
 cd sip-4.19.24 && \
 #sudo python2 configure.py --sip-module PyQt4.sip --no-dist-info --no-tools && \
