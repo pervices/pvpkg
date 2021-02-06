@@ -59,9 +59,8 @@ sudo make && \
 sudo make install && \
 cd .. && \
 tar -zxvf PyQt4_gpl_x11-4.12.3.tar.gz && \
-cd PyQt4_gpl_x11-4.12.3 
-RUN sleep 1000 && \
-python2 configure.py && \
+cd PyQt4_gpl_x11-4.12.3 && \
+python2 configure.py --qmake /usr/lib/qt4/bin/qmake && \
 make && \
 make install
 #WORKDIR /home/notroot/yay-bin/pvpkg/ArchPython2/qt4
