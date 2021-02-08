@@ -12,7 +12,7 @@ sudo pacman -Sy --noconfirm inetutils && \
 USER notroot
 WORKDIR /home/notroot
 # install yay for later use in install
-RUN udo chown -R notroot /home/notroot && \
+RUN sudo chown -R notroot /home/notroot && \
 git clone https://aur.archlinux.org/yay-bin.git && \
 cd yay-bin && \
   makepkg --noconfirm --syncdeps --rmdeps --install --clean && \
