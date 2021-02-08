@@ -2,10 +2,10 @@ FROM archlinux
 # makepkg cannot (and should not) be run as root, so a dummy user is created:
 RUN useradd -m notroot && \
 # the Archlinux keyring, git, wget are installed for later use, as well as the base-devel package group
-pacman -Sy --noconfirm archlinux-keyring&& \
+ pacman -Sy archlinux-keyring --noconfirm && pacman -Syyu --noconfirm
    pacman -Sy --noconfirm base-devel git && \
-sudo pacman -Sy --noconfirm inetutils && \
- sudo pacman -Syu --noconfirm wget && \
+ pacman -Sy --noconfirm inetutils && \
+pacman -Syu --noconfirm wget && \
 # Allow notroot to run stuff as root (to install dependencies):
  echo "notroot ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/notroot 
 # Continue execution (and CMD) as notroot:
