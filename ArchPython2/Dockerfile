@@ -14,7 +14,8 @@ WORKDIR /home/notroot
 # install yay for later use in install
 RUN git clone https://aur.archlinux.org/yay-bin.git
 WORKDIR /home/notroot/yay-bin
-RUN makepkg --noconfirm --syncdeps --rmdeps --install --clean && \
+RUN sudo chown -R notroot /home/notroot/yay-bin && \
+makepkg --noconfirm --syncdeps --rmdeps --install --clean && \
 gpg --keyserver ipv4.pool.sks-keyservers.net --recv-key 330239C1C4DAFEE1 && \
 yay -Syyu --noconfirm && \
 ls && pwd && pwd && ls && pwd && ls && pwd && pwd && ls && \
