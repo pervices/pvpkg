@@ -15,7 +15,7 @@ WORKDIR /home/notroot
 RUN sudo chown -R notroot /home/notroot && \
 git clone https://aur.archlinux.org/yay-bin.git && \
 cd yay-bin && \
-  makepkg --noconfirm --syncdeps --rmdeps --install --clean && \
+  sudo makepkg --noconfirm --syncdeps --rmdeps --install --clean && \
 gpg --keyserver ipv4.pool.sks-keyservers.net --recv-key 330239C1C4DAFEE1 && \
 yay -Syyu --noconfirm && \
 ls && pwd && pwd && ls && pwd && ls && pwd && pwd && ls && \
