@@ -12,7 +12,8 @@ sudo pacman -Sy --noconfirm inetutils && \
 USER notroot
 WORKDIR /home/notroot
 # install yay for later use in install
-RUN git clone https://aur.archlinux.org/yay-bin.git && \
+RUN udo chown -R notroot /home/notroot && \
+git clone https://aur.archlinux.org/yay-bin.git && \
 cd yay-bin && \
   makepkg --noconfirm --syncdeps --rmdeps --install --clean && \
 gpg --keyserver ipv4.pool.sks-keyservers.net --recv-key 330239C1C4DAFEE1 && \
