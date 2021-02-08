@@ -16,7 +16,7 @@ RUN git clone https://aur.archlinux.org/yay-bin.git
 WORKDIR /home/notroot/yay-bin
 RUN sudo chown -R notroot /home/notroot/yay-bin && \
 sudo sed -i 's/\tif \[\[ -r $MAKEPKG_CONF \]\]; then/\tif \[\[ -f $MAKEPKG_CONF \]\]; then/' /usr/share/makepkg/util/config.sh && \
-makepkg --noconfirm --syncdeps --rmdeps --install --clean && \
+sudo makepkg --noconfirm --syncdeps --rmdeps --install --clean && \
 gpg --keyserver ipv4.pool.sks-keyservers.net --recv-key 330239C1C4DAFEE1 && \
 yay -Syyu --noconfirm && \
 ls && pwd && pwd && ls && pwd && ls && pwd && pwd && ls && \
