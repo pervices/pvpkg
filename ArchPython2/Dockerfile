@@ -11,11 +11,10 @@ pacman -Sy --noconfirm wget && \
 USER notroot
 WORKDIR /home/notroot
 # install yay for later use in install
-RUN git clone https://aur.archlinux.org/yay-bin.git 
-WORKDIR yay-bin
-RUN makepkg --noconfirm --syncdeps --rmdeps --install --clean && \
+RUN git clone https://aur.archlinux.org/yay-bin.git && \
+cd yay-bin && \
+makepkg --noconfirm --syncdeps --rmdeps --install --clean && \
 gpg --keyserver ipv4.pool.sks-keyservers.net --recv-key 330239C1C4DAFEE1 && \
-yay -Syyu --noconfirm && \
 # clone pvtest repo to allow for installation of previuous versions of boost, boost-libs, and libx11; current versions of these resulted in build issues
 git clone https://github.com/pervices/pvpkg.git && \
 cd pvpkg && cd Arch && \ 
@@ -78,8 +77,7 @@ echo 'export PYTHONPATH=/usr/local/lib/python3/dist-packages:usr/local/lib/pytho
 echo 'export LD_LIBRARY_PATH=/user/local/lib:$LD_LIBRARY_PATH' >> ~/.profile && \
 pip2 install Cheetah 
 # use wget to collect GnuRadio PKGBUILD from Github, and create the package with the dependencies specified from the PKGBUILD; sudo chown command allows user notroot to build in this directory
-RUN sudo wget -nv -v -nv 'https://raw.githubusercontent.com/pervices/pvpkg/master/ArchPython2/GNURadio/PKGBUILD' &&  \ 
-pwd && ls && ls && \
+RUN sudo wget 'https://raw.githubusercontent.com/pervices/pvpkg/master/ArchPython2/GNURadio/PKGBUILD' &&  \ 
 sudo chown -R notroot /home/notroot/gnuradio && \
   makepkg --noconfirm --syncdeps --install && gpg --keyserver ipv4.pool.sks-keyservers.net --recv-key CB9387521E1EE0127DA804843FDBB55084CC5D84 && \
  yay -Sy --noconfirm \
