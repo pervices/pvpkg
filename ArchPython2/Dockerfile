@@ -2,8 +2,10 @@ FROM archlinux
 # makepkg cannot (and should not) be run as root, so a dummy user is created:
 RUN useradd -m notroot && \
 # the Archlinux keyring, git, wget are installed for later use, as well as the base-devel package group
+pacman key --refresh && pacman-key --populate && \ 
+pacman -Suy --noconfirm && \
  pacman -Sy archlinux-keyring --noconfirm && pacman -Syyu --noconfirm && \
-  sudo pacman -Sy --noconfirm base-devel git && \
+ pacman -Sy --noconfirm base-devel git && \
  sudo pacman -Sy --noconfirm inetutils && \
 sudo pacman -Syu --noconfirm wget && \
 # Allow notroot to run stuff as root (to install dependencies):
@@ -13,8 +15,8 @@ USER notroot
 WORKDIR /home/notroot
 # install yay for later use in install
 RUN git clone https://aur.archlinux.org/yay-bin.git 
-WORKDIR yay-bin && \
-chmod 777 /home/notroot/yay-bin && \
+WORKDIR yay-bin
+RUN chmod 777 /home/notroot/yay-bin && \
 sudo sed -i 's/\tif \[\[ -r $MAKEPKG_CONF \]\]; then/\tif \[\[ -f $MAKEPKG_CONF \]\]; then/' /usr/share/makepkg/util/config.sh 
 RUN sleep 10000 && \
 makepkg --noconfirm --syncdeps --rmdeps --install --clean && \
