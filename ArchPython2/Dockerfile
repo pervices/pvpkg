@@ -4,18 +4,18 @@ RUN useradd -m notroot && \
 # the Archlinux keyring, git, wget are installed for later use, as well as the base-devel package group
  pacman -Sy archlinux-keyring --noconfirm && pacman -Syyu --noconfirm && \
    pacman -Sy --noconfirm base-devel git && \
- pacman -Sy --noconfirm inetutils && \
-pacman -Syu --noconfirm wget && \
+ sudo pacman -Sy --noconfirm inetutils && \
+sudo pacman -Syu --noconfirm wget && \
 # Allow notroot to run stuff as root (to install dependencies):
  echo "notroot ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/notroot 
 # Continue execution (and CMD) as notroot:
 USER notroot
 WORKDIR /home/notroot
 # install yay for later use in install
-RUN git clone https://aur.archlinux.org/yay-bin.git && \
-cd yay-bin && \
+RUN git clone https://aur.archlinux.org/yay-bin.git 
+WORKDIR yay-bin && \
 chmod 777 /home/notroot/yay-bin && \
-# sudo sed -i 's/\tif \[\[ -r $MAKEPKG_CONF \]\]; then/\tif \[\[ -f $MAKEPKG_CONF \]\]; then/' /usr/share/makepkg/util/config.sh && \
+sudo sed -i 's/\tif \[\[ -r $MAKEPKG_CONF \]\]; then/\tif \[\[ -f $MAKEPKG_CONF \]\]; then/' /usr/share/makepkg/util/config.sh && \
 makepkg --noconfirm --syncdeps --rmdeps --install --clean && \
 gpg --keyserver ipv4.pool.sks-keyservers.net --recv-key 330239C1C4DAFEE1 && \
 yay -Syyu --noconfirm && \
