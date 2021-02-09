@@ -1,8 +1,7 @@
-FROM archlinux:base-devel-20210110.0.13332
+FROM archlinux:base-devel-20210131.0.14634
 # makepkg cannot (and should not) be run as root, so a dummy user is created:
 RUN useradd -m notroot && \
 # the Archlinux keyring, git, wget are installed for later use, as well as the base-devel package group
-pacman -Suy --noconfirm && \
 pacman -Sy --noconfirm git && \
  pacman -Sy --noconfirm inetutils && \
 pacman -Syu --noconfirm wget && \
