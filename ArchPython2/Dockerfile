@@ -4,7 +4,7 @@ RUN useradd -m notroot && \
 # the Archlinux keyring, git, wget are installed for later use, as well as the base-devel package group
 pacman -Sy --noconfirm git && \
  pacman -Sy --noconfirm inetutils && \
-pacman -Syu --noconfirm wget && \
+pacman -Sy --noconfirm wget && \
 # Allow notroot to run stuff as root (to install dependencies):
  echo "notroot ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/notroot 
 # Continue execution (and CMD) as notroot:
