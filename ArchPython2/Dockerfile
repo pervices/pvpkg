@@ -7,7 +7,7 @@ pacman-key --init && \
 pacman-key --populate archlinux && \
 pacman -Suy --noconfirm && \
  pacman -Sy archlinux-keyring --noconfirm && pacman -Syyu --noconfirm && \
- pacman -Sy --noconfirm base-devel && \
+sudo pacman -Sy --noconfirm base-devel && \
 sudo pacman -Sy --noconfirm git && \
  sudo pacman -Sy --noconfirm inetutils && \
 sudo pacman -Syu --noconfirm wget && \
