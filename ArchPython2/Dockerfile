@@ -1,13 +1,11 @@
-FROM archlinux:base-devel
-RUN sleep 10000
+FROM archlinux:base-devel-20210110.0.13332
 # makepkg cannot (and should not) be run as root, so a dummy user is created:
 RUN useradd -m notroot && \
 # the Archlinux keyring, git, wget are installed for later use, as well as the base-devel package group
-
-sudo pacman -Suy --noconfirm && \
-sudo pacman -Sy --noconfirm git && \
-sudo pacman -Sy --noconfirm inetutils && \
-sudo pacman -Syu --noconfirm wget && \
+pacman -Suy --noconfirm && \
+pacman -Sy --noconfirm git && \
+ pacman -Sy --noconfirm inetutils && \
+pacman -Syu --noconfirm wget && \
 # Allow notroot to run stuff as root (to install dependencies):
  echo "notroot ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/notroot 
 # Continue execution (and CMD) as notroot:
@@ -16,17 +14,13 @@ WORKDIR /home/notroot
 # install yay for later use in install
 RUN git clone https://aur.archlinux.org/yay-bin.git 
 WORKDIR yay-bin
-RUN chmod 777 /home/notroot/yay-bin && \
-sudo sed -i 's/\tif \[\[ -r $MAKEPKG_CONF \]\]; then/\tif \[\[ -f $MAKEPKG_CONF \]\]; then/' /usr/share/makepkg/util/config.sh 
 RUN sleep 10000 && \
 makepkg --noconfirm --syncdeps --rmdeps --install --clean && \
 gpg --keyserver ipv4.pool.sks-keyservers.net --recv-key 330239C1C4DAFEE1 && \
 yay -Syyu --noconfirm && \
-ls && pwd && pwd && ls && pwd && ls && pwd && pwd && ls && \
 # clone pvtest repo to allow for installation of previuous versions of boost, boost-libs, and libx11; current versions of these resulted in build issues
 git clone https://github.com/pervices/pvpkg.git && \
-cd pvpkg && ls && pwd && pwd && ls && \
-cd Arch && \ 
+cd pvpkg && cd Arch && \ 
 sudo pacman -U --noconfirm boost-libs-1.69.0-1-x86_64.pkg.tar.xz && \ 
 sudo pacman -U --noconfirm boost-1.69.0-1-x86_64.pkg.tar.xz && \
 sudo pacman -U --noconfirm libx11-1.7.0-1-x86_64.pkg.tar.zst && \
