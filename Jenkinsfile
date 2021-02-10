@@ -42,22 +42,22 @@ pipeline {
 
               }
 
-                stage('ArchLinux Python2') { 
+               # stage('ArchLinux Python2') { 
 
-                  steps { 
+                 # steps { 
 		      //Build Image
 
-                       script { 
-                              dir("${env.WORKSPACE}/ArchPython2") {
-                    		      dockerImageArchPython2 = docker.build(registry + ":$BUILD_NUMBER", "--network host .") 
-                  	}
+                   #    script { 
+                    #          dir("${env.WORKSPACE}/ArchPython2") {
+                   # 		      dockerImageArchPython2 = docker.build(registry + ":$BUILD_NUMBER", "--network host .") 
+                  #	}
 		       //Test with pvtests
 
 		      //If passed, save UHD package.
-                      }
-                  } 
+                  #    }
+                 # } 
 
-              }
+             # }
 
 
                stage('CentOS 8') { 

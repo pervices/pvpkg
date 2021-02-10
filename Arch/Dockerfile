@@ -1,12 +1,11 @@
-FROM archlinux
+FROM archlinux:base-devel-20210131.0.14634
 # makepkg cannot (and should not) be run as root, so a dummy user is created:
 RUN useradd -m notroot && \
 # the Archlinux keyring, git, wget are installed for later use, as well as the base-devel package group
 pacman -Sy --noconfirm archlinux-keyring&& \
     pacman -Sy --noconfirm base-devel git && \
-    pacman -Syu --noconfirm && \
  pacman -Sy --noconfirm inetutils && \
- pacman -Syu --noconfirm wget && \
+ pacman -Sy --noconfirm wget && \
 # Allow notroot to run stuff as root (to install dependencies):
  echo "notroot ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/notroot 
 # Continue execution (and CMD) as notroot:
@@ -18,7 +17,6 @@ cd yay-bin && \
   makepkg --noconfirm --syncdeps --rmdeps --install --clean && \
 gpg --keyserver ipv4.pool.sks-keyservers.net --recv-key 330239C1C4DAFEE1 && \
 yay -Syyu --noconfirm && \
-ls && ls && ls && ls && pwd && pwd && ls && \
 # clone pvtest repo to allow for installation of previuous versions of boost, boost-libs, and libx11; current versions of these resulted in build issues
 git clone https://github.com/pervices/pvpkg.git && \
 cd pvpkg/Arch  && \
@@ -43,7 +41,6 @@ mv tests /home/notroot/libuhd
 WORKDIR /home/notroot/gnuradio
 # use wget to collect GnuRadio PKGBUILD from Github, and create the package with the dependencies speified from the PKGBUILD; sudo chown command allows user notroot to build in this directory
 RUN sudo wget https://raw.githubusercontent.com/pervices/pvpkg/master/Arch/GnuRadio/PKGBUILD &&  \ 
-ls && \
 sudo chown -R notroot /home/notroot/gnuradio && \
   makepkg --noconfirm --syncdeps --install && gpg --keyserver ipv4.pool.sks-keyservers.net --recv-key CB9387521E1EE0127DA804843FDBB55084CC5D84 && \
  yay -Sy --noconfirm \
