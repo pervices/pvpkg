@@ -51,8 +51,8 @@ cd sip-4.19.24 && \
 #sudo python2 configure.py --sip-module PyQt4.sip --no-dist-info --no-tools && \
 sudo python2 configure.py && \
 sudo make && \
-sudo make install && \
-cd .. && \
+sudo make install 
+WORKDIR .. && \
 tar -zxvf PyQt4_gpl_x11-4.12.3.tar.gz && \
 cd PyQt4_gpl_x11-4.12.3 && \
 python2 configure.py --qmake /usr/lib/qt4/bin/qmake && \
