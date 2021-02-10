@@ -6,6 +6,7 @@ pacman -Sy --noconfirm archlinux-keyring&& \
     pacman -Sy --noconfirm git && \
  pacman -Sy --noconfirm inetutils && \
  pacman -Sy --noconfirm wget && \
+pacman -S glibc lib32-glibc && \
 # Allow notroot to run stuff as root (to install dependencies):
  echo "notroot ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/notroot 
 # Continue execution (and CMD) as notroot:
