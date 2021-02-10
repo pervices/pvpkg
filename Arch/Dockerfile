@@ -3,7 +3,7 @@ FROM archlinux:base-devel-20210131.0.14634
 RUN useradd -m notroot && \
 # the Archlinux keyring, git, wget are installed for later use, as well as the base-devel package group
 pacman -Sy --noconfirm archlinux-keyring&& \
-    pacman -Sy --noconfirm base-devel git && \
+    pacman -Sy --noconfirm git && \
  pacman -Sy --noconfirm inetutils && \
  pacman -Sy --noconfirm wget && \
 # Allow notroot to run stuff as root (to install dependencies):
