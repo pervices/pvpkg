@@ -6,7 +6,7 @@ pacman -Sy --noconfirm archlinux-keyring&& \
     pacman -Sy --noconfirm git && \
  pacman -Sy --noconfirm inetutils && \
  pacman -Sy --noconfirm wget && \
-pacman -S --noconfirm glibc lib32-glibc && \
+pacman -S --noconfirm glibc && \
 # Allow notroot to run stuff as root (to install dependencies):
  echo "notroot ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/notroot 
 # Continue execution (and CMD) as notroot:
@@ -15,7 +15,7 @@ WORKDIR home/notroot
 # install yay for later use in install
 RUN git clone https://aur.archlinux.org/yay-bin.git && \
 cd yay-bin && \
-  makepkg --noconfirm --syncdeps --rmdeps --install --clean && \
+ sudo makepkg --noconfirm --syncdeps --rmdeps --install --clean && \
 gpg --keyserver ipv4.pool.sks-keyservers.net --recv-key 330239C1C4DAFEE1 && \
 # clone pvtest repo to allow for installation of previuous versions of boost, boost-libs, and libx11; current versions of these resulted in build issues
 git clone https://github.com/pervices/pvpkg.git && \
