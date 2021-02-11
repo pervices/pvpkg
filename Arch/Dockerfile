@@ -3,7 +3,8 @@ FROM archlinux:base-devel-20210131.0.14634
 RUN useradd -m notroot && \
 # the Archlinux keyring, git, wget are installed for later use, as well as the base-devel package group
 pacman -Sy --noconfirm archlinux-keyring&& \
-    pacman -Sy --noconfirm git && \
+    #pacman -Sy --noconfirm git && \
+pacman -U https://archive.archlinux.org/packages/g/git/git-2.30.0-1-x86_64.pkg.tar.zst && \
  pacman -Sy --noconfirm inetutils && \
  pacman -Sy --noconfirm wget && \
 pacman -S --noconfirm glibc && \
