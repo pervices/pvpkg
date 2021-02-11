@@ -27,7 +27,7 @@ DUT_DATA_IP_ADDR2=10.10.11.2
 
 echo ":: Starting preparation work"
 
-cd .. &&
+#cd .. &&
 #mkdir -p pkg-archive && touch 1.xz && mv *.xz pkg-archive/ && sync &&
 #echo $USER"@"$HOST | sudo -S rm -fv /usr/bin/usrp2_card_burner /usr/lib/uhd/utils/usrp2_card_burner.py /usr/lib/uhd/utils/usrp2_recovery.py &&
 #makepkg &&
@@ -54,7 +54,7 @@ do
 	echo ":: Executing ${TEST_NAMES[$i]} test" >> log.txt
 	#echo "$i"
 	pwd
-	python2 -u tests/${TEST_FILES[$i]}.py
+	python2 -u /home/notroot/libuhd/tests/${TEST_FILES[$i]}.py
 	rv=$?
 	if [ $rv -eq 0 ]; then
 		PASSED_TESTS=$((PASSED_TESTS+1))

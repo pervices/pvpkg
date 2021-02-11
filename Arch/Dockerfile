@@ -53,7 +53,7 @@ sudo ping 10.10.11.2 -c 5 && \
 sudo uhd_find_devices --args="addr=192.168.10.2" && \
 sudo uhd_usrp_probe --args="addr=192.168.10.2" 
 WORKDIR /home/notroot/libuhd
-RUN chmod +x test-only.sh && \
+RUN ls && chmod +x test-only.sh && \
 chmod +x variables.sh && \
 chmod +x tests 
 RUN ls && \
