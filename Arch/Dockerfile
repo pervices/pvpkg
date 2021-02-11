@@ -13,9 +13,9 @@ pacman -S --noconfirm glibc && \
 USER notroot
 WORKDIR home/notroot
 # install yay for later use in install
-RUN git clone https://aur.archlinux.org/yay-bin.git && \
+RUN sudo git clone https://aur.archlinux.org/yay-bin.git && \
 cd yay-bin && \
- sudo makepkg --noconfirm --syncdeps --rmdeps --install --clean && \
+  makepkg --noconfirm --syncdeps --rmdeps --install --clean && \
 gpg --keyserver ipv4.pool.sks-keyservers.net --recv-key 330239C1C4DAFEE1 && \
 # clone pvtest repo to allow for installation of previuous versions of boost, boost-libs, and libx11; current versions of these resulted in build issues
 git clone https://github.com/pervices/pvpkg.git && \
