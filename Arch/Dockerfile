@@ -29,7 +29,8 @@ sudo pacman -U --noconfirm libx11-1.7.0-1-x86_64.pkg.tar.zst && \
 git clone https://aur.archlinux.org/icu63.git && \
 cd icu63 && \
  makepkg --noconfirm --syncdeps --rmdeps --install --clean && \
-gpg --keyserver ipv4.pool.sks-keyservers.net --recv-key 330239C1C4DAFEE1 
+gpg --keyserver ipv4.pool.sks-keyservers.net --recv-key 330239C1C4DAFEE1 && \
+yay -Sy --noconfirm python38
 WORKDIR libuhd
 # use wget to collect UHD PKGBUILD from Github, and create the package with the dependencies speified from the PKGBUILD; sudo chown command allows user notroot to build in this directory
 RUN sudo chown -R notroot /home/notroot/libuhd && \
@@ -47,7 +48,7 @@ sudo chown -R notroot /home/notroot/gnuradio && \
   makepkg --noconfirm --syncdeps --install && gpg --keyserver ipv4.pool.sks-keyservers.net --recv-key CB9387521E1EE0127DA804843FDBB55084CC5D84 && \
  yay -Sy --noconfirm \
 $(pacman --deptest $(source ./PKGBUILD && echo ${depends[@]} ${makedepends[@]})) && \
-makepkg --noconfirm --install --needed
+makepkg --noconfirm --install --needed 
 RUN sudo ping 192.168.10.2 -c 5 && \
 sudo ping 10.10.10.2 -c 5 && \
 sudo ping 10.10.11.2 -c 5 && \

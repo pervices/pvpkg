@@ -95,7 +95,8 @@ sudo chown -R notroot /home/notroot/gnuradio && \
 $(pacman --deptest $(source ./PKGBUILD && echo ${depends[@]} ${makedepends[@]})) && \
 makepkg --noconfirm --install --needed
 #test ping commands, then give tests executable permission, and run them twice; non-critical issues can be present on fresh build, so second run clears these up
-RUN sudo ping 192.168.10.2 -c 5 && \
+RUN pip2 install scipy && \
+sudo ping 192.168.10.2 -c 5 && \
 sudo ping 10.10.10.2 -c 5 && \
 sudo ping 10.10.11.2 -c 5 && \
 sudo uhd_find_devices --args="addr=192.168.10.2" && \
