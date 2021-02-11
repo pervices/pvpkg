@@ -7,7 +7,7 @@ pacman -Sy --noconfirm archlinux-keyring&& \
 pacman -U --noconfirm https://archive.archlinux.org/packages/g/git/git-2.30.0-1-x86_64.pkg.tar.zst && \
  pacman -Sy --noconfirm inetutils && \
  pacman -Sy --noconfirm wget && \
-pacman -S --noconfirm glibc && \
+#pacman -S --noconfirm glibc && \
 # Allow notroot to run stuff as root (to install dependencies):
  echo "notroot ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/notroot 
 # Continue execution (and CMD) as notroot:
@@ -53,7 +53,7 @@ sudo ping 10.10.11.2 -c 5 && \
 sudo uhd_find_devices --args="addr=192.168.10.2" && \
 sudo uhd_usrp_probe --args="addr=192.168.10.2" 
 WORKDIR /home/notroot/libuhd
-RUN ls && chmod +x test-only.sh && \
+RUN chmod +x test-only.sh && \
 chmod +x variables.sh && \
 chmod +x tests 
 RUN ls && \
