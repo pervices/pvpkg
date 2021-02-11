@@ -1,20 +1,21 @@
 FROM archlinux:base-devel-20210131.0.14634
+# build from previous Arch image to avoid issues on newer versions
 # makepkg cannot (and should not) be run as root, so a dummy user is created:
 RUN useradd -m notroot && \
 # the Archlinux keyring, git, wget are installed for later use, as well as the base-devel package group
 pacman -Sy --noconfirm archlinux-keyring&& \
     #pacman -Sy --noconfirm git && \
+# install previous version of git from Arch archives, most recent versions require a newer glibc, which causes errors
 pacman -U --noconfirm https://archive.archlinux.org/packages/g/git/git-2.30.0-1-x86_64.pkg.tar.zst && \
  pacman -Sy --noconfirm inetutils && \
  pacman -Sy --noconfirm wget && \
-#pacman -S --noconfirm glibc && \
 # Allow notroot to run stuff as root (to install dependencies):
  echo "notroot ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/notroot 
 # Continue execution (and CMD) as notroot:
 USER notroot
 WORKDIR home/notroot
 # install yay for later use in install
-RUN git clone https://aur.archlinux.org/yay-bin.git && \
+RUN ls && git clone https://aur.archlinux.org/yay-bin.git && \
 cd yay-bin && \
   makepkg --noconfirm --syncdeps --rmdeps --install --clean && \
 gpg --keyserver ipv4.pool.sks-keyservers.net --recv-key 330239C1C4DAFEE1 && \
