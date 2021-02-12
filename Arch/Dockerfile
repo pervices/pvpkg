@@ -30,8 +30,8 @@ git clone https://aur.archlinux.org/icu63.git && \
 cd icu63 && \
  makepkg --noconfirm --syncdeps --rmdeps --install --clean && \
 gpg --keyserver ipv4.pool.sks-keyservers.net --recv-key 330239C1C4DAFEE1 && \
-yay -Sy --noconfirm python38
-RUN pip3 install python-numpy
+pacman -U --noconfirm https://archive.archlinux.org/packages/p/python/python-3.9.1-1-x86_64.pkg.tar.zst && \
+pacman -U --noconfirm https://archive.archlinux.org/packages/p/python-numpy/python-numpy-1.19.5-1-x86_64.pkg.tar.zst
 WORKDIR libuhd
 # use wget to collect UHD PKGBUILD from Github, and create the package with the dependencies speified from the PKGBUILD; sudo chown command allows user notroot to build in this directory
 RUN sudo chown -R notroot /home/notroot/libuhd && \
