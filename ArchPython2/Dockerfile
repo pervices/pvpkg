@@ -86,7 +86,8 @@ echo 'export LD_LIBRARY_PATH=/user/local/lib:$LD_LIBRARY_PATH' >> ~/.bashrc && \
 echo 'export PYTHONPATH=/usr/local/lib/python3/dist-packages:usr/local/lib/python2.7/site-packages:$PYTHONPATH' >> ~/.profile && \
 echo 'export LD_LIBRARY_PATH=/user/local/lib:$LD_LIBRARY_PATH' >> ~/.profile && \
 # install cheetah Python2 module with pip, since it is no longer available using pacman
-pip2 install Cheetah 
+pip2 install Cheetah && \
+pacman -U --noconfirm https://archive.archlinux.org/packages/p/python2-scipy/python2-scipy-1.2.3-1-x86_64.pkg.tar.zst
 # use wget to collect GnuRadio PKGBUILD from Github, and create the package with the dependencies specified from the PKGBUILD; sudo chown command allows user notroot to build in this directory
 RUN sudo wget 'https://raw.githubusercontent.com/pervices/pvpkg/master/ArchPython2/GNURadio/PKGBUILD' &&  \ 
 sudo chown -R notroot /home/notroot/gnuradio && \
@@ -95,7 +96,6 @@ sudo chown -R notroot /home/notroot/gnuradio && \
 $(pacman --deptest $(source ./PKGBUILD && echo ${depends[@]} ${makedepends[@]})) && \
 makepkg --noconfirm --install --needed
 #test ping commands, then give tests executable permission, and run them twice; non-critical issues can be present on fresh build, so second run clears these up
-RUN pip2 install scipy 
 RUN sudo ping 192.168.10.2 -c 5 && \
 sudo ping 10.10.10.2 -c 5 && \
 sudo ping 10.10.11.2 -c 5 && \
