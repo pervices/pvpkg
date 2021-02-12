@@ -23,6 +23,8 @@ pkgver() {
 }
 
 build() {
+echo export path
+    export PYTHON=python3
     cd "$srcdir/$_gitname"
  git submodule init
     git pull --recurse-submodules=on origin $_gitbranch_volk
