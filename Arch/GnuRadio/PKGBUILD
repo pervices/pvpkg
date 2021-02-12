@@ -14,7 +14,9 @@ source=("git+https://github.com/gnuradio/gnuradio.git")
 md5sums=('SKIP')
 conflicts=('gnuradio' 'gnuradio-companion')
 provides=('gnuradio' 'gnuradio-companion')
-
+_gitbranch='v3.7.13.4'
+source=("git://github.com/gnuradio/gnuradio.git#tag="$_gitbranch)
+_gitbranch_volk='v3.7.13.4'
 pkgver() {
     cd "$srcdir/$_gitname"
     git describe --always | sed 's|-|.|g'
@@ -22,6 +24,9 @@ pkgver() {
 
 build() {
     cd "$srcdir/$_gitname"
+ git submodule init
+    git pull --recurse-submodules=on origin $_gitbranch_volk
+    git submodule update
 
     sed -i -e "s|GR_PKG_LIBEXEC_DIR|GR_RUNTIME_DIR|" grc/scripts/freedesktop/CMakeLists.txt
     msg "Starting build."
