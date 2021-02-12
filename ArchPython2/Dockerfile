@@ -87,7 +87,7 @@ echo 'export PYTHONPATH=/usr/local/lib/python3/dist-packages:usr/local/lib/pytho
 echo 'export LD_LIBRARY_PATH=/user/local/lib:$LD_LIBRARY_PATH' >> ~/.profile && \
 # install cheetah Python2 module with pip, since it is no longer available using pacman
 pip2 install Cheetah && \
-pacman -U --noconfirm https://archive.archlinux.org/packages/p/python2-scipy/python2-scipy-1.2.3-1-x86_64.pkg.tar.zst
+sudo pacman -U --noconfirm https://archive.archlinux.org/packages/p/python2-scipy/python2-scipy-1.2.3-1-x86_64.pkg.tar.zst
 # use wget to collect GnuRadio PKGBUILD from Github, and create the package with the dependencies specified from the PKGBUILD; sudo chown command allows user notroot to build in this directory
 RUN sudo wget 'https://raw.githubusercontent.com/pervices/pvpkg/master/ArchPython2/GNURadio/PKGBUILD' &&  \ 
 sudo chown -R notroot /home/notroot/gnuradio && \
