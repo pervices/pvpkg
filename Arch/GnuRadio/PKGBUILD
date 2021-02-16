@@ -32,17 +32,30 @@ echo export path
 
     sed -i -e "s|GR_PKG_LIBEXEC_DIR|GR_RUNTIME_DIR|" grc/scripts/freedesktop/CMakeLists.txt
     msg "Starting build."
+        cd "$srcdir/$_gitname/"
     mkdir -p build
-    cd build
+    cd "$srcdir/$_gitname/build"
+    
+    pwd
+    
     cmake \
+          -DPYTHON_EXECUTABLE=$(which python3) \
+        -DPYTHON_INCLUDE_DIR=$(echo /usr/include/python3*) \
+        -DPYTHON_LIBRARY=$(echo /usr/lib/libpython3.*.so) \
         -DENABLE_GRC=ON \
+        -DENABLE_GR_WXGUI=ON \
         -DENABLE_GR_QTGUI=ON \
         -DENABLE_INTERNAL_VOLK=ON \
-        -DENABLE_GR_CTRLPORT=OFF \
         -DCMAKE_INSTALL_PREFIX=/usr \
-        -DGR_PYTHON_3=OFF \
-        -DQWT_LIBRARIES=/usr/lib/libqwt.so -Wno-dev ../
-    make -j4
+        -Wno-dev ../
+
+    make -j 5
+}
+
+check() {
+    cd "$srcdir/$_gitname/build"
+    export PYTHON=python3
+    #make test
 }
 
 
