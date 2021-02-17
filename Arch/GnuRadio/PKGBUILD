@@ -14,9 +14,9 @@ source=("git+https://github.com/gnuradio/gnuradio.git")
 md5sums=('SKIP')
 conflicts=('gnuradio' 'gnuradio-companion')
 provides=('gnuradio' 'gnuradio-companion')
-_gitbranch='v3.7.13.4'
+_gitbranch='v3.8'
 source=("git://github.com/gnuradio/gnuradio.git#tag="$_gitbranch)
-_gitbranch_volk='v3.7.13.4'
+_gitbranch_volk='v3.8'
 pkgver() {
     cd "$srcdir/$_gitname"
     git describe --always | sed 's|-|.|g'
@@ -39,7 +39,8 @@ echo export path
     pwd
     
     cmake \
-          -DPYTHON_EXECUTABLE=$(which python3) \
+          -DPYTHON_EXECUTABLE=/usr/bin/python3 \
+          -DCMAKE_BUILD_TYPE=Release \
         -DPYTHON_INCLUDE_DIR=$(echo /usr/include/python3*) \
         -DPYTHON_LIBRARY=$(echo /usr/lib/libpython3.*.so) \
         -DENABLE_GRC=ON \
