@@ -14,9 +14,9 @@ source=("git+https://github.com/gnuradio/gnuradio.git")
 md5sums=('SKIP')
 conflicts=('gnuradio' 'gnuradio-companion')
 provides=('gnuradio' 'gnuradio-companion')
-_gitbranch='v3.8.1.0'
+_gitbranch='v3.8.2.0'
 source=("git://github.com/gnuradio/gnuradio.git#tag="$_gitbranch)
-_gitbranch_volk='v3.8.1.0'
+_gitbranch_volk='v3.8.2.0'
 pkgver() {
     cd "$srcdir/$_gitname"
     git describe --always | sed 's|-|.|g'
