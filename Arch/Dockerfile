@@ -35,7 +35,10 @@ sudo pacman -U --noconfirm https://archive.archlinux.org/packages/p/python-numpy
 sudo pacman -U --noconfirm https://archive.archlinux.org/packages/l/libuv/libuv-1.40.0-1-x86_64.pkg.tar.zst && \
 sudo pacman -U --noconfirm https://archive.archlinux.org/packages/c/cmake/cmake-3.19.4-1-x86_64.pkg.tar.zst && \
 sudo pacman -U --noconfirm https://archive.archlinux.org/packages/v/vulkan-icd-loader/vulkan-icd-loader-1.2.166-1-x86_64.pkg.tar.zst && \
-sudo pacman -U --noconfirm https://archive.archlinux.org/packages/x/xkeyboard-config/xkeyboard-config-2.31-1-any.pkg.tar.zst&& \
+sudo pacman -U --noconfirm https://archive.archlinux.org/packages/x/xkeyboard-config/xkeyboard-config-2.31-1-any.pkg.tar.zst && \
+sudo pacman -U --noconfirm https://archive.archlinux.org/packages/l/lm_sensors/lm_sensors-3.6.0-2-x86_64.pkg.tar.zst && \
+sudo pacman -U --noconfirm https://archive.archlinux.org/packages/m/mesa/mesa-20.3.4-1-x86_64.pkg.tar.zst && \
+sudo pacman -U --noconfirm https://archive.archlinux.org/packages/j/js78/js78-78.7.0-1-x86_64.pkg.tar.zst  && \
 sudo pacman -U --noconfirm https://archive.archlinux.org/packages/g/gtk3/gtk3-1:3.24.24-1-x86_64.pkg.tar.zst  && \
 sudo pacman -U --noconfirm https://archive.archlinux.org/packages/p/python-gobject/python-gobject-3.38.0-2-x86_64.pkg.tar.zst
 WORKDIR libuhd
