@@ -25,6 +25,7 @@ cd pvpkg/Arch  && \
 sudo pacman -U --noconfirm boost-libs-1.69.0-1-x86_64.pkg.tar.xz && \ 
 sudo pacman -U --noconfirm boost-1.69.0-1-x86_64.pkg.tar.xz && \
 sudo pacman -U --noconfirm libx11-1.7.0-1-x86_64.pkg.tar.zst && \
+sudo pacman -U --noconfirm https://archive.archlinux.org/packages/g/glibc/glibc-2.32-5-x86_64.pkg.tar.zst && \
 # building icu63, which UHD will not build without
 git clone https://aur.archlinux.org/icu63.git && \
 cd icu63 && \
