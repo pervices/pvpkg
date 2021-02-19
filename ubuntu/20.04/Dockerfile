@@ -89,7 +89,7 @@ RUN git clone https://github.com/pervices/pvpkg.git && \
 mv test-only.sh variables.sh /home/notroot/libuhd && \
 mv tests /home/notroot/libuhd
 WORKDIR /home/notroot/libuhd
-RUNchmod +x test-only.sh && \
+RUN chmod +x test-only.sh && \
 chmod +x variables.sh && \
 chmod +x tests && \
 sudo ./test-only.sh && \
