@@ -29,7 +29,7 @@ find -name "*.py" -or -name '*.py.in' | xargs sed -i "s|#!/usr/bin/env python$|#
 WORKDIR /home
 RUN git clone https://github.com/pervices/uhd.git && \
 mkdir uhdlib
-WORKDIR /home/uhdlib
+WORKDIR /home/notroot/libuhd
 RUN cmake \
     -DCMAKE_INSTALL_PREFIX=/usr/ \
 -D Boost_NO_BOOST_CMAKE:BOOL=0 \
@@ -85,8 +85,15 @@ WORKDIR build
 RUN cmake -DCMAKE_BUILD_TYPE=Release -DPYTHON_EXECUTABLE=/usr/bin/python3 ../ && \
 make -j4 && \
 make install
-RUN ldconfig && \
-uhd_find_devices --args="addr=192.168.10.2" && \
-uhd_usrp_probe --args="addr=192.168.10.2"
+RUN git clone https://github.com/pervices/pvpkg.git && \
+mv test-only.sh variables.sh /home/notroot/libuhd && \
+mv tests /home/notroot/libuhd
+WORKDIR /home/notroot/libuhd
+RUNchmod +x test-only.sh && \
+chmod +x variables.sh && \
+chmod +x tests && \
+sudo ./test-only.sh && \
+sudo ./test-only.sh
+
 
 
