@@ -93,6 +93,9 @@ WORKDIR /home/notroot/libuhd
 RUN chmod +x test-only.sh && \
 chmod +x variables.sh && \
 chmod +x tests && \
+apt -y install python-is-python3 && \
+apt-get -y install sudo && \
+apt-get install iputils-ping && \
 ./test-only.sh && \
 ./test-only.sh
 
