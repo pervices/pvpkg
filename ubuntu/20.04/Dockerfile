@@ -86,6 +86,7 @@ RUN cmake -DCMAKE_BUILD_TYPE=Release -DPYTHON_EXECUTABLE=/usr/bin/python3 ../ &&
 make -j4 && \
 make install
 RUN git clone https://github.com/pervices/pvpkg.git && \
+cd pvpkg/Arch && \
 mv test-only.sh variables.sh /home/notroot/libuhd && \
 mv tests /home/notroot/libuhd
 WORKDIR /home/notroot/libuhd
