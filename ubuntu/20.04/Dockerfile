@@ -93,8 +93,8 @@ WORKDIR /home/notroot/libuhd
 RUN chmod +x test-only.sh && \
 chmod +x variables.sh && \
 chmod +x tests && \
-sudo ./test-only.sh && \
-sudo ./test-only.sh
+./test-only.sh && \
+./test-only.sh
 
 
 
