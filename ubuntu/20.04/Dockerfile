@@ -98,7 +98,7 @@ apt-get -y install sudo && \
 apt-get -y install net-tools iputils-ping && \ 
 ldconfig && \
 gnuradio-config-info --prefix && \
-find /usr/local -name gnuradio | grep "packages"
+find /usr/local -name gnuradio | grep "packages" && \
 ./test-only.sh && \
 ./test-only.sh
 
