@@ -96,7 +96,8 @@ chmod +x tests && \
 apt -y install python-is-python3 && \
 apt-get -y install sudo && \
 apt-get -y install net-tools iputils-ping && \ 
-ldconfig && \ sleep 10000 && \
+ldconfig && \
+gnuradio-config-info --prefix && \
 ./test-only.sh && \
 ./test-only.sh
 
