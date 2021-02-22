@@ -96,7 +96,7 @@ chmod +x tests && \
 apt -y install python-is-python3 && \
 apt-get -y install sudo && \
 apt-get -y install net-tools iputils-ping && \ 
-ldconfig /usr/local/lib && \
+ldconfig && \ sleep 10000 && \
 ./test-only.sh && \
 ./test-only.sh
 
