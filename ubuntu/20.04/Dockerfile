@@ -95,7 +95,8 @@ chmod +x variables.sh && \
 chmod +x tests && \
 apt -y install python-is-python3 && \
 apt-get -y install sudo && \
-apt-get -y install iputils-ping && \
+apt-get -y install iputils-ping && \ 
+ldconfig && \
 ./test-only.sh && \
 ./test-only.sh
 
