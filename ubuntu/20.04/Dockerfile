@@ -85,7 +85,7 @@ WORKDIR build
 RUN cmake -DCMAKE_BUILD_TYPE=Release -DPYTHON_EXECUTABLE=/usr/bin/python3 ../ && \
 make -j4 && \
 make install
-RUN git clone https://github.com/pervices/pvpkg.git && \
+RUN ls && git clone https://github.com/pervices/pvpkg.git && \
 cd pvpkg/Arch && \
 mv test-only.sh variables.sh /home/notroot/libuhd && \
 mv tests /home/notroot/libuhd
@@ -95,7 +95,7 @@ chmod +x variables.sh && \
 chmod +x tests && \
 apt -y install python-is-python3 && \
 apt-get -y install sudo && \
-apt-get -y install iputils-ping && \ 
+apt-get -y install net-tools iputils-ping && \ 
 ldconfig && \
 ./test-only.sh && \
 ./test-only.sh
