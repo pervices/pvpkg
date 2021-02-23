@@ -37,12 +37,12 @@ sudo pacman -U --noconfirm https://archive.archlinux.org/packages/c/cmake/cmake-
 sudo pacman -U --noconfirm https://archive.archlinux.org/packages/v/vulkan-icd-loader/vulkan-icd-loader-1.2.166-1-x86_64.pkg.tar.zst && \
 sudo pacman -U --noconfirm https://archive.archlinux.org/packages/x/xkeyboard-config/xkeyboard-config-2.31-1-any.pkg.tar.zst&& \
 sudo pacman -U --noconfirm https://archive.archlinux.org/packages/g/gtk3/gtk3-1:3.24.25-1-x86_64.pkg.tar.zst && \
-sudo pacman -U --noconfirm https://archive.archlinux.org/packages/p/python-gobject/python-gobject-3.38.0-2-x86_64.pkg.tar.zst
+sudo pacman -U --noconfirm https://archive.archlinux.org/packages/p/python-gobject/python-gobject-3.38.0-2-x86_64.pkg.tar.zst && \
+sudo pacman -Qo //usr/lib/libgtk-3.so.0
 WORKDIR libuhd
 # use wget to collect UHD PKGBUILD from Github, and create the package with the dependencies speified from the PKGBUILD; sudo chown command allows user notroot to build in this directory
 RUN sudo chown -R notroot /home/notroot/libuhd && \
 sudo wget https://raw.githubusercontent.com/pervices/pvpkg/master/Arch/UHD/PKGBUILD && \
-sleep 10000 && \
 yay -Sy --noconfirm \
    $(pacman --deptest $(source ./PKGBUILD && echo ${depends[@]} ${makedepends[@]})) && \
  makepkg --noconfirm --syncdeps --install --needed && pwd && ls && pwd
@@ -65,7 +65,7 @@ sudo uhd_usrp_probe --args="addr=192.168.10.2"
 WORKDIR /home/notroot/libuhd
 RUN chmod +x test-only.sh && \
 chmod +x variables.sh && \
-chmod +x tests 
+chmod +x tests
 RUN ls && \
 sudo ./test-only.sh && \
 sudo ./test-only.sh 
