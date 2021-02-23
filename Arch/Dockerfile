@@ -29,6 +29,7 @@ sudo pacman -U --noconfirm https://archive.archlinux.org/packages/l/llvm-libs/ll
 sudo pacman -U --noconfirm https://archive.archlinux.org/packages/c/compiler-rt/compiler-rt-11.0.1-1-x86_64.pkg.tar.zst && \
 sudo pacman -U --noconfirm https://archive.archlinux.org/packages/c/clang/clang-11.0.1-1-x86_64.pkg.tar.zst && \
 sudo pacman -U --noconfirm https://archive.archlinux.org/packages/l/libsndfile/libsndfile-1.0.28-3-x86_64.pkg.tar.zst && \
+sudo pacman -U --noconfirm https://archive.archlinux.org/packages/q/qt5-base/qt5-base-5.15.2-3-x86_64.pkg.tar.zst && \
 # building icu63, which UHD will not build without
 yay -Sy --noconfirm icu63 && \
 sudo pacman -U --noconfirm https://archive.archlinux.org/packages/p/python/python-3.9.1-1-x86_64.pkg.tar.zst && \
