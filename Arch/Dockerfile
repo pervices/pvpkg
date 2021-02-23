@@ -29,10 +29,7 @@ sudo pacman -U --noconfirm https://archive.archlinux.org/packages/c/clang/clang-
 sudo pacman -U --noconfirm https://archive.archlinux.org/packages/l/llvm-libs/llvm-libs-11.0.1-1-x86_64.pkg.tar.zst  && \
 sudo pacman -U --noconfirm https://archive.archlinux.org/packages/c/compiler-rt/compiler-rt-11.0.1-1-x86_64.pkg.tar.zst && \
 # building icu63, which UHD will not build without
-git clone https://aur.archlinux.org/icu63.git && \
-cd icu63 && \
- makepkg --noconfirm --syncdeps --rmdeps --install --clean --needed && \
-gpg --keyserver ipv4.pool.sks-keyservers.net --recv-key 330239C1C4DAFEE1 && \
+yay -Sy --noconfirm icu63 && \
 sudo pacman -U --noconfirm https://archive.archlinux.org/packages/p/python/python-3.9.1-1-x86_64.pkg.tar.zst && \
 sudo pacman -U --noconfirm https://archive.archlinux.org/packages/p/python-numpy/python-numpy-1.19.5-1-x86_64.pkg.tar.zst && \
 sudo pacman -U --noconfirm https://archive.archlinux.org/packages/l/libuv/libuv-1.40.0-1-x86_64.pkg.tar.zst && \
