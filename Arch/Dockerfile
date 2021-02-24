@@ -32,7 +32,7 @@ sudo pacman -U --noconfirm https://archive.archlinux.org/packages/l/libsndfile/l
 # building icu63, which UHD will not build without
 yay -Sy --noconfirm icu63 && \
 sudo pacman -U --noconfirm https://archive.archlinux.org/packages/p/python/python-3.9.1-1-x86_64.pkg.tar.zst && \
-sudo pacman -U --noconfirm https://archive.archlinux.org/packages/p/python-numpy/python-numpy-1.19.5-1-x86_64.pkg.tar.zst && \
+sudo pacman -U --noconfirm https://archive.archlinux.org/packages/p/python-numpy-1.20.0-1-x86_64.pkg.tar.zst && \
 sudo pacman -U --noconfirm https://archive.archlinux.org/packages/l/libuv/libuv-1.40.0-1-x86_64.pkg.tar.zst && \
 sudo pacman -U --noconfirm https://archive.archlinux.org/packages/c/cmake/cmake-3.19.4-1-x86_64.pkg.tar.zst && \
 sudo pacman -U --noconfirm https://archive.archlinux.org/packages/v/vulkan-icd-loader/vulkan-icd-loader-1.2.166-1-x86_64.pkg.tar.zst && \
