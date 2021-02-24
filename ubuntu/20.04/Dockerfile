@@ -99,7 +99,7 @@ apt-get -y install net-tools iputils-ping && \
 ldconfig && \
 gnuradio-config-info --prefix && \
 find /usr/local -name gnuradio | grep "packages" && \
-export PYTHONPATH=usr/local/lib/python3/dist-packages:usr/local/lib/python3/site-packages:$PYTHONPATH
+export PYTHONPATH=usr/local/lib/python3/dist-packages:usr/local/lib/python3/site-packages:$PYTHONPATH && \
 ./test-only.sh && \
 ./test-only.sh
 
