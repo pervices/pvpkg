@@ -101,6 +101,7 @@ gnuradio-config-info --prefix && \
 find /usr/local -name gnuradio | grep "packages" && \
 export PYTHONPATH=usr/local/lib/python3/dist-packages:usr/local/lib/python3.8/site-packages:$PYTHONPATH && \
 export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH && \
+ldconfig && \
 python --version && \
 ./test-only.sh && \
 ./test-only.sh
