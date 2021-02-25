@@ -17,9 +17,8 @@ pip3 install requests
 
 # install UHD using cmake, with Python 3 enabled
 WORKDIR /home
-RUN git clone https://github.com/pervices/uhd.git && \
-mkdir uhdlib
-WORKDIR /home/uhdlib
+RUN git clone https://github.com/pervices/uhd.git
+WORKDIR /home/notroot/libuhd
 RUN cmake \
     -DCMAKE_INSTALL_PREFIX=/usr/ \
            -DENABLE_PYTHON3=ON \
@@ -72,13 +71,21 @@ git submodule update --init && \
 cmake \
  .. && \
 make -j4 && \
-make install && \
-ldconfig
+make install
+RUN git clone https://github.com/pervices/pvpkg.git && \
+cd pvpkg/Arch && \
+mv test-only.sh variables.sh /home/notroot/libuhd && \
+mv tests /home/notroot/libuhd
+WORKDIR /home/notroot/libuhd
+RUN chmod +x test-only.sh && \
+chmod +x variables.sh && \
+chmod +x tests && \
 RUN ping 192.168.10.2 -c 5 && \
 ping 10.10.10.2 -c 5 && \
 ping 10.10.11.2 -c 5 && \
-uhd_find_devices --args="addr=192.168.10.2" && \
-uhd_usrp_probe --args="addr=192.168.10.2"
+./test-only.sh && \
+./test-only.sh
+
 
 
 
