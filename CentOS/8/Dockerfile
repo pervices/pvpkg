@@ -79,7 +79,7 @@ mv tests /home/notroot/libuhd
 WORKDIR /home/notroot/libuhd
 RUN chmod +x test-only.sh && \
 chmod +x variables.sh && \
-chmod +x tests && \
+chmod +x tests
 RUN ping 192.168.10.2 -c 5 && \
 ping 10.10.10.2 -c 5 && \
 ping 10.10.11.2 -c 5 && \

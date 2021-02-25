@@ -31,6 +31,7 @@ sudo pacman -U --noconfirm https://archive.archlinux.org/packages/c/cmake/cmake-
 sudo pacman -U --noconfirm https://archive.archlinux.org/packages/l/libuv/libuv-1.40.0-1-x86_64.pkg.tar.zst && \
 sudo pacman -U --noconfirm https://archive.archlinux.org/packages/m/mesa/mesa-20.3.4-1-x86_64.pkg.tar.zst && \
 sudo pacman -U --noconfirm https://archive.archlinux.org/packages/l/libxv/libxv-1.0.11-4-x86_64.pkg.tar.zst && \
+sudo pacman -U --noconfirm https://archive.archlinux.org/packages/a/alsa-lib/alsa-lib-1.2.4-3-x86_64.pkg.tar.zst && \
 # building icu63, which UHD will not build without
 yay -Sy --noconfirm icu63 && \
  makepkg --noconfirm --syncdeps --rmdeps --install --clean && \
