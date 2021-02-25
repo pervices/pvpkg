@@ -104,6 +104,7 @@ echo 'export LD_LIBRARY_PATH=/user/local/lib:$LD_LIBRARY_PATH' >> ~/.bashrc && \
 echo 'export PYTHONPATH=/usr/local/lib/python3/dist-packages:usr/local/lib/python3/site-packages:$PYTHONPATH' >> ~/.profile && \
 echo 'export LD_LIBRARY_PATH=/user/local/lib:$LD_LIBRARY_PATH' >> ~/.profile 
 RUN ldconfig && \
+python -m site --user-site && \
 python --version && \
 ./test-only.sh && \
 ./test-only.sh
