@@ -3,16 +3,17 @@ FROM archlinux:base-devel-20210131.0.14634
 # makepkg cannot (and should not) be run as root, so a dummy user is created:
 RUN useradd -m notroot && \
 # the Archlinux keyring, git, wget are installed for later use, as well as the base-devel package group
- pacman -Sy --noconfirm inetutils && \
-pacman -Sy --noconfirm wget && \
+ pacman -Sy --noconfirm archlinux-keyring && \
 pacman -U --noconfirm https://archive.archlinux.org/packages/g/git/git-2.30.0-1-x86_64.pkg.tar.zst && \
+pacman -Sy --noconfirm inetutils && \
+pacman -Sy --noconfirm wget && \
 # Allow notroot to run stuff as root (to install dependencies):
  echo "notroot ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/notroot 
 # Continue execution (and CMD) as notroot:
 USER notroot
 WORKDIR /home/notroot
 # install yay for later use in install
-RUN pwd && ls && git clone https://aur.archlinux.org/yay-bin.git && \
+RUN git clone https://aur.archlinux.org/yay-bin.git && \
 cd yay-bin && \
 makepkg --noconfirm --syncdeps --rmdeps --install --clean && \
 gpg --keyserver ipv4.pool.sks-keyservers.net --recv-key 330239C1C4DAFEE1 && \
@@ -22,6 +23,7 @@ cd pvpkg && cd Arch && \
 sudo pacman -U --noconfirm boost-libs-1.69.0-1-x86_64.pkg.tar.xz && \ 
 sudo pacman -U --noconfirm boost-1.69.0-1-x86_64.pkg.tar.xz && \
 sudo pacman -U --noconfirm libx11-1.7.0-1-x86_64.pkg.tar.zst && \
+sudo pacman -U --noconfirm https://archive.archlinux.org/packages/l/llvm-libs/llvm-libs-11.0.1-1-x86_64.pkg.tar.zst  && \
 sudo pacman -U --noconfirm https://archive.archlinux.org/packages/c/compiler-rt/compiler-rt-11.0.1-1-x86_64.pkg.tar.zst && \
 sudo pacman -U --noconfirm https://archive.archlinux.org/packages/c/clang/clang-11.0.1-1-x86_64.pkg.tar.zst && \
 sudo pacman -U --noconfirm https://archive.archlinux.org/packages/l/libsndfile/libsndfile-1.0.28-3-x86_64.pkg.tar.zst && \
