@@ -3,7 +3,7 @@ FROM archlinux:base-devel-20210131.0.14634
 # makepkg cannot (and should not) be run as root, so a dummy user is created:
 RUN useradd -m notroot && \
 # the Archlinux keyring, git, wget are installed for later use, as well as the base-devel package group
-pacman -Sy --noconfirm git && \
+pacman -U --noconfirm https://archive.archlinux.org/packages/g/git/git-2.30.0-1-x86_64.pkg.tar.zst && \
  pacman -Sy --noconfirm inetutils && \
 pacman -Sy --noconfirm wget && \
 # Allow notroot to run stuff as root (to install dependencies):
@@ -22,6 +22,9 @@ cd pvpkg && cd Arch && \
 sudo pacman -U --noconfirm boost-libs-1.69.0-1-x86_64.pkg.tar.xz && \ 
 sudo pacman -U --noconfirm boost-1.69.0-1-x86_64.pkg.tar.xz && \
 sudo pacman -U --noconfirm libx11-1.7.0-1-x86_64.pkg.tar.zst && \
+sudo pacman -U --noconfirm https://archive.archlinux.org/packages/c/compiler-rt/compiler-rt-11.0.1-1-x86_64.pkg.tar.zst && \
+sudo pacman -U --noconfirm https://archive.archlinux.org/packages/c/clang/clang-11.0.1-1-x86_64.pkg.tar.zst && \
+sudo pacman -U --noconfirm https://archive.archlinux.org/packages/l/libsndfile/libsndfile-1.0.28-3-x86_64.pkg.tar.zst && \
 # building icu63, which UHD will not build without
 git clone https://aur.archlinux.org/icu63.git && \
 cd icu63 && \
