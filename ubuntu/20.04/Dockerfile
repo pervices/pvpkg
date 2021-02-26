@@ -76,7 +76,7 @@ RUN git clone --recursive https://github.com/gnuradio/volk.git
 WORKDIR volk
 RUN mkdir build
 WORKDIR build
-RUN cmake \
+RUN  ls && cmake \
  -DCMAKE_BUILD_TYPE=Release \
  -DPYTHON_EXECUTABLE=/usr/bin/python3 \
  -DPYTHON_INCLUDE_DIR=$(echo /usr/include/python3*) \
