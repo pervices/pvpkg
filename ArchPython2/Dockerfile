@@ -37,6 +37,7 @@ sudo pacman -U --noconfirm https://archive.archlinux.org/packages/l/libmng/libmn
 sudo pacman -U --noconfirm https://archive.archlinux.org/packages/p/postgresql/postgresql-13.1-3-x86_64.pkg.tar.zst && \
 sudo pacman -U --noconfirm https://archive.archlinux.org/packages/m/mariadb-libs/mariadb-libs-10.5.8-1-x86_64.pkg.tar.zst && \
 sudo pacman -U --noconfirm https://archive.archlinux.org/packages/u/unixodbc/unixodbc-2.3.9-1-x86_64.pkg.tar.zst && \
+sudo pacman -U --noconfirm https://archive.archlinux.org/packages/c/cups/cups-2.3.3-3-x86_64.pkg.tar.zst && \
 # building icu63, which UHD will not build without
 yay -Sy --noconfirm icu63 && \
  makepkg --noconfirm --syncdeps --rmdeps --install --clean && \

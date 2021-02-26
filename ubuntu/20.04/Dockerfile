@@ -35,6 +35,8 @@ RUN cmake \
 -D Boost_NO_BOOST_CMAKE:BOOL=0 \
            -DENABLE_PYTHON3=ON \
            -DBOOST_PYTHON_COMPONENT=python38 \
+        -DPYTHON_INCLUDE_DIR=$(echo /usr/include/python3*) \
+        -DPYTHON_LIBRARY=$(echo /usr/lib/libpython3.*.so) \
            -DENABLE_EXAMPLES=ON \
            -DENABLE_UTILS=ON \
            -DENABLE_TESTS=OFF \
@@ -74,7 +76,12 @@ RUN git clone --recursive https://github.com/gnuradio/volk.git
 WORKDIR volk
 RUN mkdir build
 WORKDIR build
-RUN cmake -DCMAKE_BUILD_TYPE=Release -DPYTHON_EXECUTABLE=/usr/bin/python3 ../ && \
+RUN cmake \
+ -DCMAKE_BUILD_TYPE=Release \
+ -DPYTHON_EXECUTABLE=/usr/bin/python3 \
+ -DPYTHON_INCLUDE_DIR=$(echo /usr/include/python3*) \
+ -DPYTHON_LIBRARY=$(echo /usr/lib/libpython3.*.so) \
+../ && \
 make -j4 && \
 make install
 WORKDIR /home
