@@ -13,7 +13,7 @@ apt-get -y install build-essential && \
 apt-get -y install doxygen && \
 pip3 install mako && \
  apt-get -y install libusb-1.0-0-dev && \
- apt-get -y install liborc-0.4-0 && \
+ apt-get -y install liborc-0.4-dev && \
 pip3  install Cheetah3 && \
 pip3  install  requests && \
 pip3  install numpy && \
@@ -63,10 +63,10 @@ RUN apt -y install libgmp-dev swig  \
  python3-sphinx python3-lxml libfftw3-dev \
 libsdl1.2-dev libgsl-dev libqwt-qt5-dev libqt5opengl5-dev  \
 liblog4cpp5-dev libzmq3-dev python3-yaml python3-click python3-click-plugins \
-python3-zmq python3-scipy python3-gi python3-gi-cairo gobject-introspection gir1.2-gtk-3.0  python3-pybind11 libsndfile1-dev && \
-pip3 install pyqt5 
-
-
+python3-zmq python3-scipy python3-gi python3-gi-cairo gobject-introspection gir1.2-gtk-3.0  python3-pybind11 libsndfile1-dev \
+swig && \
+pip3 install pyqt5 && \
+pip3 install --user --upgrade construct requests
 
 # install volk and gnuradio separately, as is required for the most recent Ubuntu 20.04 version; specify Python3 in cmake as shown
 WORKDIR /home
