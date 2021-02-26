@@ -74,13 +74,14 @@ make -j4 && \
 make install
 RUN git clone https://github.com/pervices/pvpkg.git && \
 cd pvpkg/Arch && \
-mv test-only.sh variables.sh /home/notroot/libuhd && \
-mv tests /home/notroot/libuhd
+mv variables.sh /home/notroot/libuhd && \
+mv tests /home/notroot/libuhd && \
+cd ../ubuntu && \
+mv test-only.sh /home/notroot/libuhd
 WORKDIR /home/notroot/libuhd
 RUN chmod +x test-only.sh && \
 chmod +x variables.sh && \
-chmod +x tests && \
-echo 'alias python=python3' >> ~/.bashrc 
+chmod +x tests 
 RUN ping 192.168.10.2 -c 5 && \
 ping 10.10.10.2 -c 5 && \
 ping 10.10.11.2 -c 5 && \

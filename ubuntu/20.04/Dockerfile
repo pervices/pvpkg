@@ -87,13 +87,14 @@ make -j4 && \
 make install
 RUN ls && git clone https://github.com/pervices/pvpkg.git && \
 cd pvpkg/Arch && \
-mv test-only.sh variables.sh /home/notroot/libuhd && \
-mv tests /home/notroot/libuhd
+mv variables.sh /home/notroot/libuhd && \
+mv tests /home/notroot/libuhd && \
+cd ../ubuntu && \
+mv test-only.sh /home/notroot/libuhd
 WORKDIR /home/notroot/libuhd
 RUN chmod +x test-only.sh && \
 chmod +x variables.sh && \
 chmod +x tests && \
-apt -y install python-is-python3 && \
 apt-get -y install sudo && \
 apt-get -y install net-tools iputils-ping && \ 
 ldconfig && \
