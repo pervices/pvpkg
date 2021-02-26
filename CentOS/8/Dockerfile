@@ -71,7 +71,8 @@ git submodule update --init && \
 cmake \
  .. && \
 make -j4 && \
-make install
+make install && \
+ldconfig
 RUN git clone https://github.com/pervices/pvpkg.git && \
 cd pvpkg/Arch && \
 mv variables.sh /home/notroot/libuhd && \

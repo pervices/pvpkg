@@ -34,6 +34,7 @@ sudo pacman -U --noconfirm https://archive.archlinux.org/packages/l/libxv/libxv-
 sudo pacman -U --noconfirm https://archive.archlinux.org/packages/a/alsa-lib/alsa-lib-1.2.4-3-x86_64.pkg.tar.zst && \
 sudo pacman -U --noconfirm https://archive.archlinux.org/packages/x/xdg-utils/xdg-utils-1.1.3+19+g9816ebb-1-any.pkg.tar.zst && \
 sudo pacman -U --noconfirm https://archive.archlinux.org/packages/l/libmng/libmng-2.0.3-3-x86_64.pkg.tar.zst && \
+sudo pacman -U --noconfirm https://archive.archlinux.org/packages/p/postgresql/postgresql-13.1-3-x86_64.pkg.tar.zst && \
 # building icu63, which UHD will not build without
 yay -Sy --noconfirm icu63 && \
  makepkg --noconfirm --syncdeps --rmdeps --install --clean && \
@@ -77,19 +78,12 @@ cd PyQt4_gpl_x11-4.12.3 && \
 python2 configure.py --confirm-license --qmake /usr/lib/qt4/bin/qmake && \
 sudo make && \
 sudo make install
-#WORKDIR /home/notroot/yay-bin/pvpkg/ArchPython2/qt4
-#RUN sudo chown -R notroot /home/notroot/yay-bin/pvpkg/ArchPython2/qt4 && \
-#yay -Sy --noconfirm \
- #  $(pacman --deptest $(source ./PKGBUILD && echo ${depends[@]} ${makedepends[@]})) && \
-# makepkg --noconfirm --syncdeps --install --needed
 # install qwt-qt4 from PKGBUILD, since it is no longer available from Pacman
 WORKDIR /home/notroot/yay-bin/pvpkg/ArchPython2/qwt-qt4
 RUN sudo chown -R notroot /home/notroot/yay-bin/pvpkg/ArchPython2/qwt-qt4 && \
 yay -Sy --noconfirm \
   $(pacman --deptest $(source ./PKGBUILD && echo ${depends[@]} ${makedepends[@]})) && \
  makepkg --noconfirm --syncdeps --install --needed
-#sudo pacman -Sy --noconfirm python2-gobject && \
-#sudo pacman -U --noconfirm pygtk-2.24.0-3-x86_64.pkg.tar.xz 
 WORKDIR /home/notroot/gnuradio
 # ensure Python2 is grabbed for Python instructions
 RUN echo 'export PYTHONPATH=/usr/local/lib/python3/dist-packages:usr/local/lib/python2.7/site-packages:$PYTHONPATH' >> ~/.bashrc && \
