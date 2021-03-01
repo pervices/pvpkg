@@ -68,7 +68,8 @@ WORKDIR /home/notroot/libuhd
 RUN chmod +x test-only.sh && \
 chmod +x variables.sh && \
 chmod +x tests
-RUN ls && \
+RUN ls && \ 
+sleep 20000 && \
 sudo ./test-only.sh && \
 sudo ./test-only.sh 
 
