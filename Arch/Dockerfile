@@ -32,15 +32,15 @@ sudo pacman -U --noconfirm https://archive.archlinux.org/packages/l/libsndfile/l
 # building icu63, which UHD will not build without
 yay -Sy --noconfirm icu63 && \
 sudo pacman -U --noconfirm https://archive.archlinux.org/packages/p/python/python-3.9.1-1-x86_64.pkg.tar.zst && \
+sudo pacman -U --noconfirm https://archive.archlinux.org/packages/m/mesa/mesa-20.3.4-1-x86_64.pkg.tar.zst && \
 sudo pacman -U --noconfirm https://archive.archlinux.org/packages/p/python-numpy-1.20.0-1-x86_64.pkg.tar.zst && \
+sudo pacman -U --noconfirm https://archive.archlinux.org/packages/q/qt5-base/qt5-base-5.15.2-3-x86_64.pkg.tar.zst && \
 sudo pacman -U --noconfirm https://archive.archlinux.org/packages/p/python-jinja/python-jinja-2.11.2-4-any.pkg.tar.zst && \
 sudo pacman -U --noconfirm https://archive.archlinux.org/packages/p/python-pyqt5/python-pyqt5-5.15.2-3-x86_64.pkg.tar.zst && \
 sudo pacman -U --noconfirm https://archive.archlinux.org/packages/l/libuv/libuv-1.40.0-1-x86_64.pkg.tar.zst && \
 sudo pacman -U --noconfirm https://archive.archlinux.org/packages/c/cmake/cmake-3.19.4-1-x86_64.pkg.tar.zst && \
-sudo pacman -U --noconfirm https://archive.archlinux.org/packages/m/mesa/mesa-20.3.4-1-x86_64.pkg.tar.zst && \
 sudo pacman -U --noconfirm https://archive.archlinux.org/packages/v/vulkan-icd-loader/vulkan-icd-loader-1.2.166-1-x86_64.pkg.tar.zst && \
 sudo pacman -U --noconfirm https://archive.archlinux.org/packages/x/xkeyboard-config/xkeyboard-config-2.31-1-any.pkg.tar.zst&& \
-sudo pacman -U --noconfirm https://archive.archlinux.org/packages/q/qt5-base/qt5-base-5.15.2-3-x86_64.pkg.tar.zst && \
 sudo pacman -U --noconfirm https://archive.archlinux.org/packages/g/gtk3/gtk3-1:3.24.24-2-x86_64.pkg.tar.zst && \
 sudo pacman -U --noconfirm https://archive.archlinux.org/packages/p/python-gobject/python-gobject-3.38.0-2-x86_64.pkg.tar.zst && \
 sudo pacman -Qo /usr/lib/libgtk-3.so.0
