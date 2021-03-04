@@ -6,7 +6,7 @@ pipeline {
 
         registryCredential = '85454c7d-a176-4e4c-94c2-d415e42a4cc3' 
 
-        dockerImageArch = '' 
+        dockerImageArchLatest = '' 
         dockerImageArchPython2= ''
         dockerImageCentos8 = '' 
         dockerImageUbuntu1804 = '' 
@@ -42,14 +42,14 @@ pipeline {
 
               }
 
-                stage('ArchLinux Python2') { 
+                stage('ArchLinuxLatestImage') { 
 
                   steps { 
 		      //Build Image
 
                       script { 
-                              dir("${env.WORKSPACE}/ArchPython2") {
-                    		      dockerImageArchPython2 = docker.build(registry + ":$BUILD_NUMBER", "--network host .") 
+                              dir("${env.WORKSPACE}/ArchlinuxLatestImage") {
+                    		      dockerImageArchLatest = docker.build(registry + ":$BUILD_NUMBER", "--network host .") 
                   	}
 		       //Test with pvtests
 
@@ -115,7 +115,7 @@ pipeline {
                     docker.withRegistry( '', registryCredential ) { 
 
                         dockerImageArch.push() 
-                        dockerImageArch.psuh()
+                        dockerImageArchLatest.psuh()
                         dockerImageCentos8.push() 
                         dockerImageUbuntu1804.push() 
                         dockerImageUbuntu2004.push() 
