@@ -1,4 +1,4 @@
-
+git config --global user.name not.root
 pkgname=gnuradio-git
 _gitname=gnuradio
 pkgver=v3.8.0.0.734.g912d48596
