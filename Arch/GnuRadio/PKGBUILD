@@ -15,7 +15,8 @@ md5sums=('SKIP')
 conflicts=('gnuradio' 'gnuradio-companion')
 provides=('gnuradio' 'gnuradio-companion')
 _gitbranch='v3.9.0.0'
-source=("git://github.com/gnuradio/gnuradio.git#tag="$_gitbranch)
+#source=("git://github.com/pervices/gnuradio.git#tag="$_gitbranch)
+source=("git://github.com/pervices/gnuradio.git#branch=add-stream-mode-api-4177")
 _gitbranch_volk='v3.9.0.0'
 pkgver() {
     cd "$srcdir/$_gitname"
