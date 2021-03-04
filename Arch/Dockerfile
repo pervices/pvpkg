@@ -74,7 +74,6 @@ RUN chmod +x test-only.sh && \
 chmod +x variables.sh && \
 chmod +x tests
 RUN ls && \ 
-sleep 20000 && \
 sudo ./test-only.sh && \
 sudo ./test-only.sh 
 
