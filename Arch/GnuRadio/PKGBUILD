@@ -1,8 +1,8 @@
 
 pkgname=gnuradio-git
 _gitname=gnuradio
-#pkgver=v3.8.0.0.734.g912d48596
-#pkgrel=1
+pkgver=v3.10.0.0git
+pkgrel=1
 pkgdesc="General purpose DSP and SDR toolkit, with drivers for usrp and fcd."
 arch=('i686' 'x86_64')
 url="https://github.com/pervices/gnuradio"
