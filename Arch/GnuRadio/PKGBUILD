@@ -10,12 +10,12 @@ license=('GPL')
 depends=('libx11' 'fftw' 'python' 'python-numpy' 'python-mako' 'python-click' 'python-click-plugins' 'python-pyqt5' 'cppunit' 'gsl' 'blas' 'guile' 'boost-libs>=1.54' 'libusb' 'portaudio' 'libuhd' 'zeromq' 'libvolk' 'log4cpp')
 makedepends=('python-cairo' 'python-yaml' 'glu' 'pybind11' 'python-sphinx' 'cairo' 'qwt' 'swig')
 optdepends=('python-lxml: Some GRC modules use lxml optionally for improved performance')
-source=("git+https://github.com/gnuradio/gnuradio.git#branch=master")
+source=("git+https://github.com/gnuradio/gnuradio.git#commit=34f6586")
 md5sums=('SKIP')
 conflicts=('gnuradio' 'gnuradio-companion')
 provides=('gnuradio' 'gnuradio-companion')
 #_gitbranch='v3.9.0.0'
-source=("git://github.com/gnuradio/gnuradio.git#branch=master")
+source=("git://github.com/gnuradio/gnuradio.git#commit=34f6586")
 #_gitbranch_volk='v3.9.0.0'
 pkgver() {
     cd "$srcdir/$_gitname"
@@ -28,7 +28,7 @@ echo export path
     cd "$srcdir/$_gitname"
  git submodule init
     git pull --recurse-submodules=on origin master
-    git submodule update
+    #git submodule update
 
     sed -i -e "s|GR_PKG_LIBEXEC_DIR|GR_RUNTIME_DIR|" grc/scripts/freedesktop/CMakeLists.txt
     msg "Starting build."
