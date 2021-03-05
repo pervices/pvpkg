@@ -3,7 +3,7 @@ FROM archlinux:base-devel
 # makepkg cannot (and should not) be run as root, so a dummy user is created:
 RUN useradd -m notroot && \
 echo "notroot ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/notroot && \
-pacman-db-upgrade
+sudo pacman-db-upgrade
 # the Archlinux keyring, git, wget are installed for later use, as well as the base-devel package group
 RUN pacman -Sy --noconfirm archlinux-keyring&& \
     #pacman -Sy --noconfirm git && \
