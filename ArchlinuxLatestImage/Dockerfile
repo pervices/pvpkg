@@ -11,18 +11,18 @@ RUN pacman -Sy --noconfirm archlinux-keyring&& \
     #pacman -Sy --noconfirm git && \
 # install previous version of git from Arch archives, most recent versions require a newer glibc, which causes errors
  pacman -Sy --noconfirm inetutils && \
- pacman -Sy --noconfirm wget && \
+ pacman -Sy --noconfirm wget
 # Allow notroot to run stuff as root (to install dependencies): 
 # Continue execution (and CMD) as notroot:
 USER notroot
 WORKDIR home/notroot
 # install yay for later use in install
-RUN ls && ls && git clone https://aur.archlinux.org/yay-bin.git && \
+RUN git clone https://aur.archlinux.org/yay-bin.git && \
 cd yay-bin && \
   makepkg --noconfirm --syncdeps --rmdeps --install --clean && \
 gpg --keyserver ipv4.pool.sks-keyservers.net --recv-key 330239C1C4DAFEE1 && \
 # clone pvtest repo to allow for installation of previuous versions of boost, boost-libs, and libx11; current versions of these resulted in build issues
-ls && ls && pwd && git clone https://github.com/pervices/pvpkg.git && \
+git clone https://github.com/pervices/pvpkg.git && \
 cd pvpkg/Arch  && \
 # building icu63, which UHD will not build without
 yay -Sy --noconfirm icu63 && \
@@ -38,7 +38,7 @@ RUN mv test-only.sh variables.sh /home/notroot/libuhd && \
 mv tests /home/notroot/libuhd
 WORKDIR /home/notroot/gnuradio
 # use wget to collect GnuRadio PKGBUILD from Github, and create the package with the dependencies speified from the PKGBUILD; sudo chown command allows user notroot to build in this directory
-RUN ls && pwd && pwd && ls && ls && ls && sudo wget https://raw.githubusercontent.com/pervices/pvpkg/master/Arch/GnuRadio/PKGBUILD &&  \ 
+RUN sudo wget https://raw.githubusercontent.com/pervices/pvpkg/master/Arch/GnuRadio/PKGBUILD &&  \ 
 sudo chown -R notroot /home/notroot/gnuradio && \
   makepkg --noconfirm --syncdeps --install && gpg --keyserver ipv4.pool.sks-keyservers.net --recv-key CB9387521E1EE0127DA804843FDBB55084CC5D84 && \
  yay -Sy --noconfirm \
