@@ -25,14 +25,14 @@ gpg --keyserver ipv4.pool.sks-keyservers.net --recv-key 330239C1C4DAFEE1 && \
 git clone https://github.com/pervices/pvpkg.git && \
 cd pvpkg/Arch  && \
 # building icu63, which UHD will not build without
-yay -Sy --noconfirm icu63 && \
+yay -Sy --noconfirm icu63
 WORKDIR libuhd
 # use wget to collect UHD PKGBUILD from Github, and create the package with the dependencies speified from the PKGBUILD; sudo chown command allows user notroot to build in this directory
 RUN sudo chown -R notroot /home/notroot/libuhd && \
 sudo wget https://raw.githubusercontent.com/pervices/pvpkg/master/Arch/UHD/PKGBUILD && \
 yay -Sy --noconfirm \
    $(pacman --deptest $(source ./PKGBUILD && echo ${depends[@]} ${makedepends[@]})) && \
- makepkg --noconfirm --syncdeps --install --needed && pwd && ls && pwd
+ makepkg --noconfirm --syncdeps --install --needed
 WORKDIR /home/notroot/yay-bin/pvpkg/Arch
 RUN mv test-only.sh variables.sh /home/notroot/libuhd && \
 mv tests /home/notroot/libuhd
