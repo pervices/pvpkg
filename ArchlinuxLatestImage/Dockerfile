@@ -4,6 +4,9 @@ FROM archlinux:base-devel
 RUN useradd -m notroot && \
 echo "notroot ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/notroot
 # the Archlinux keyring, git, wget are installed for later use, as well as the base-devel package group
+RUN patched_glibc=glibc-linux4-2.33-4-x86_64.pkg.tar.zst && \
+    curl -LO "https://repo.archlinuxcn.org/x86_64/$patched_glibc" && \
+    bsdtar -C / -xvf "$patched_glibc"
 RUN pacman -Sy --noconfirm archlinux-keyring&& \
     #pacman -Sy --noconfirm git && \
 # install previous version of git from Arch archives, most recent versions require a newer glibc, which causes errors
