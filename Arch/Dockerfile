@@ -46,7 +46,9 @@ sudo pacman -U --noconfirm https://archive.archlinux.org/packages/x/xkeyboard-co
 sudo pacman -U --noconfirm https://archive.archlinux.org/packages/l/libxkbcommon/libxkbcommon-1.0.3-1-x86_64.pkg.tar.zst && \
 sudo pacman -U --noconfirm https://archive.archlinux.org/packages/g/gtk3/gtk3-1:3.24.24-2-x86_64.pkg.tar.zst && \
 sudo pacman -U --noconfirm https://archive.archlinux.org/packages/p/python-gobject/python-gobject-3.38.0-2-x86_64.pkg.tar.zst && \
-sudo pacman -Qo /usr/lib/libgtk-3.so.0
+sudo pacman -U --noconfirm https://archive.archlinux.org/packages/p/python-pygments/python-pygments-2.7.4-1-any.pkg.tar.zst && \
+sudo pacman -U --noconfirm https://archive.archlinux.org/packages/p/python-sphinx/python-sphinx-3.4.3-1-any.pkg.tar.zst && \
+sudo pacman -Qo /usr/lib/libgtk-3.so.0 
 WORKDIR libuhd
 # use wget to collect UHD PKGBUILD from Github, and create the package with the dependencies speified from the PKGBUILD; sudo chown command allows user notroot to build in this directory
 RUN sudo chown -R notroot /home/notroot/libuhd && \
