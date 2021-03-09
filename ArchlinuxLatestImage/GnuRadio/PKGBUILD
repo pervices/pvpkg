@@ -8,14 +8,14 @@ arch=('i686' 'x86_64')
 url="https://github.com/pervices/gnuradio"
 license=('GPL')
 depends=('libx11' 'fftw' 'python' 'python-numpy' 'python-mako' 'python-click' 'python-click-plugins' 'python-pyqt5' 'cppunit' 'gsl' 'blas' 'guile' 'boost-libs>=1.54' 'libusb' 'portaudio' 'libuhd' 'zeromq' 'libvolk' 'log4cpp')
-makedepends=('python-cairo' 'python-yaml' 'glu' 'pybind11' 'python-sphinx' 'cairo' 'qwt' 'swig')
+makedepends=('python-cairo' 'python-yaml' 'glu' 'pybind11' 'python-sphinx' 'cairo' 'qwt' 'swig' 'python-gobject' 'gtk3')
 optdepends=('python-lxml: Some GRC modules use lxml optionally for improved performance')
-source=("git+https://github.com/gnuradio/gnuradio.git#branch=master")
+source=("git+https://github.com/pervices/gnuradio.git#branch=add-stream-mode-api-4177")
 md5sums=('SKIP')
 conflicts=('gnuradio' 'gnuradio-companion')
 provides=('gnuradio' 'gnuradio-companion')
 _gitbranch='v3.9.0.0'
-source=("git://github.com/gnuradio/gnuradio.git")
+source=("git://github.com/pervices/gnuradio.git#branch=add-stream-mode-api-4177")
 _gitbranch_volk='v3.9.0.0'
 pkgver() {
     cd "$srcdir/$_gitname"
