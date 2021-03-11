@@ -77,7 +77,7 @@ def run_rx(csrc, channels, stack, sample_rate, _vsnk):
 
     for frame in stack:
 
-        cmd = uhd.stream_cmd_t(uhd.stream_cmd_t.STREAM_MODE_NUM_SAMPS_AND_DONE)
+        cmd = uhd.stream_cmd_t(uhd.stream_mode_t.STREAM_MODE_NUM_SAMPS_AND_DONE)
         cmd.num_samps = frame[1]
         cmd.stream_now = False
         cmd.time_spec = uhd.time_spec(frame[0])
