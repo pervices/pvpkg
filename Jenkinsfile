@@ -25,22 +25,22 @@ pipeline {
         stage('Build UHD and GNU Radio') {
         parallel {
 
-              stage('ArchLinux') { 
+              //stage('ArchLinux') { 
 
-                  steps { 
+                 // steps { 
 		      //Build Image
 
-                       script { 
-                              dir("${env.WORKSPACE}/Arch") {
-                    		      dockerImageArch = docker.build(registry + ":$BUILD_NUMBER", "--network host .") 
-                  	}
+                      // script { 
+                        //      dir("${env.WORKSPACE}/Arch") {
+                    	//	      dockerImageArch = docker.build(registry + ":$BUILD_NUMBER", "--network host .") 
+                  	//}
 		       //Test with pvtests
 
 		      //If passed, save UHD package.
-                      }
-                  } 
+                     // }
+                //  } 
 
-              }
+           //   }
 
                 stage('ArchLinuxLatestImage') { 
 
