@@ -36,7 +36,6 @@ RUN cmake \
            -DENABLE_PYTHON3=ON \
            -DBOOST_PYTHON_COMPONENT=python38 \
         -DPYTHON_INCLUDE_DIR=$(echo /usr/include/python3*) \
-        -DPYTHON_LIBRARY=$(echo /usr/lib/libpython3.*.so) \
            -DENABLE_EXAMPLES=ON \
            -DENABLE_UTILS=ON \
            -DENABLE_TESTS=OFF \
