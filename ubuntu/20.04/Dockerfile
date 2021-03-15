@@ -56,8 +56,7 @@ RUN cmake \
          /home/uhd/host && \
 make -j4 && \
 make test && \
-make install && \
-ldconfig
+make install
 
 # install necessary packages for GnuRadio
 RUN apt -y install libgmp-dev swig  \
