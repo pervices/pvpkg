@@ -59,7 +59,7 @@ make test && \
 make install
 
 # install necessary packages for GnuRadio
-RUN apt -y install libgmp-dev swig  \
+RUN apt-get -y -f install libgmp-dev swig  \
  python3-sphinx python3-lxml libfftw3-dev \
 libsdl1.2-dev libgsl-dev libqwt-qt5-dev libqt5opengl5-dev  \
 liblog4cpp5-dev libzmq3-dev python3-yaml python3-click python3-click-plugins \
