@@ -25,7 +25,6 @@ gpg --keyserver ipv4.pool.sks-keyservers.net --recv-key 330239C1C4DAFEE1 && \
 ls && git clone https://github.com/pervices/pvpkg.git && \
 cd pvpkg/Arch  && \
 # building icu63, which UHD will not build without
-sudo pacman -U --noconfirm https://archive.archlinux.org/packages/i/icu/icu-67.1-1-x86_64.pkg.tar.zst && \
 #sudo pacman -U --noconfirm boost-libs-1.69.0-1-x86_64.pkg.tar.xz && \ 
 #sudo pacman -U --noconfirm boost-1.69.0-1-x86_64.pkg.tar.xz
 sudo pacman -U --noconfirm boost-libs-1.72.0-2-x86_64.pkg.tar.zst && \
@@ -33,7 +32,7 @@ sudo pacman -U --noconfirm boost-1.72.0-2-x86_64.pkg.tar.zst
 WORKDIR libuhd
 # use wget to collect UHD PKGBUILD from Github, and create the package with the dependencies speified from the PKGBUILD; sudo chown command allows user notroot to build in this directory
 RUN sudo chown -R notroot /home/notroot/libuhd && \
-sudo wget https://raw.githubusercontent.com/pervices/pvpkg/master/Arch/UHD/PKGBUILD && \
+ls && sudo wget https://raw.githubusercontent.com/pervices/pvpkg/master/Arch/UHD/PKGBUILD && \
 yay -Sy --noconfirm \
    $(pacman --deptest $(source ./PKGBUILD && echo ${depends[@]} ${makedepends[@]})) && \
  makepkg --noconfirm --syncdeps --install --needed
