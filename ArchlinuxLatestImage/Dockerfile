@@ -25,7 +25,7 @@ gpg --keyserver ipv4.pool.sks-keyservers.net --recv-key 330239C1C4DAFEE1 && \
 ls && git clone https://github.com/pervices/pvpkg.git && \
 cd pvpkg/Arch  && \
 # building icu63, which UHD will not build without
-yay -Sy --noconfirm icu63 && \
+ls && yay -Sy --noconfirm icu63 && \
 sudo pacman -U --noconfirm boost-libs-1.69.0-1-x86_64.pkg.tar.xz && \ 
 sudo pacman -U --noconfirm boost-1.69.0-1-x86_64.pkg.tar.xz
 WORKDIR libuhd
