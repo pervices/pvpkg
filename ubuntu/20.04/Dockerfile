@@ -5,6 +5,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 # install necessary components for UHD; install some Python components using pip; use version 1.67 of boost to prevent issues
 RUN apt update && \
+apt-get -y install coreutils && \
 apt-get -y install git && \
 apt-get -y install cmake && \
 apt-get -y install build-essential && \
@@ -113,6 +114,7 @@ echo 'export LD_LIBRARY_PATH=/user/local/lib:$LD_LIBRARY_PATH' >> ~/.profile
 RUN ldconfig && \
 python3 -m site --user-site && \
 python3 --version && \
+sleep 10000 && \
 ./test-only.sh && \
 ./test-only.sh
 
