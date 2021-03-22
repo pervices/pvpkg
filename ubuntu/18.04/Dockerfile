@@ -50,7 +50,8 @@ ldconfig
 ENV DEBIAN_FRONTEND=noninteractive
 
 # install necessary packages for GnuRadio; specify LIBRARYPATH and PYTHONPATH as follows
-RUN apt -y install libgmp-dev swig python3-sphinx python3-lxml libfftw3-dev libsdl1.2-dev libgsl-dev libqwt-qt5-dev libqt5opengl5-dev \
+RUN apt-get update && \
+apt -y install libgmp-dev swig python3-sphinx python3-lxml libfftw3-dev libsdl1.2-dev libgsl-dev libqwt-qt5-dev libqt5opengl5-dev \
  python3-pyqt5 liblog4cpp5-dev libzmq3-dev python3-yaml python3-click python3-click-plugins python3-zmq python3-scipy python3-gi-cairo gir1.2-pango-1.0 libgtk-3-dev && \
 pip3 install git+https://github.com/pyqtgraph/pyqtgraph@develop && \
 pip3 install scipy 
