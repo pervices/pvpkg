@@ -19,7 +19,7 @@ pip3 install requests
 WORKDIR /home
 RUN git clone https://github.com/pervices/uhd.git && \
  mkdir uhdlib
-WORKDIR /home/uhdlib
+WORKDIR /home/notroot/libuhd
 RUN cmake \
     -DCMAKE_INSTALL_PREFIX=/usr/ \
            -DENABLE_PYTHON3=ON \
@@ -65,11 +65,23 @@ mkdir build
 WORKDIR build
 RUN git pull --recurse-submodules=on && \
 git submodule update --init && \
-cmake .. && \
+cmake -DCMAKE_BUILD_TYPE=Release -DPYTHON_EXECUTABLE=/usr/bin/python3 .. && \
 make -j $(nproc --all) && \
 make install 
-RUN uhd_find_devices --args="addr=192.168.10.2" && \
-uhd_usrp_probe --args="addr=192.168.10.2"
+RUN ls && git clone https://github.com/pervices/pvpkg.git && \
+cd pvpkg/Arch && \
+mv variables.sh /home/notroot/libuhd && \
+mv tests /home/notroot/libuhd && \
+cd ../ubuntu && \
+mv test-only.sh /home/notroot/libuhd
+WORKDIR /home/notroot/libuhd
+RUN chmod +x test-only.sh && \
+chmod +x variables.sh && \
+chmod +x tests && \
+apt-get -y install sudo && \
+apt-get -y install net-tools iputils-ping && \ 
+ldconfig && \
+./test-only.sh 
 
 
 
