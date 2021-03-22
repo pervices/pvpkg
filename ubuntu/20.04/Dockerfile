@@ -18,7 +18,7 @@ pip3 install mako && \
 pip3  install Cheetah3 && \
 pip3  install  requests && \
 pip3  install numpy && \
-#pip3 install pybind11 && \
+pip3 install pybind11 && \
 pip3 install docutils && \
 pip3 install ruamel.yaml && \
 pip3 install setuptools && \
@@ -107,9 +107,9 @@ apt-get -y install net-tools iputils-ping && \
 ldconfig && \
 gnuradio-config-info --prefix && \
 find /usr/local -name gnuradio | grep "packages" && \
-echo "export PYTHONPATH=/usr/local/lib/python3/dist-packages:usr/local/lib/python3.8/dist-packages:$PYTHONPATH" >> ~/.bashrc && \
+echo "export PYTHONPATH=/usr/local/lib/python3/dist-packages:$PYTHONPATH" >> ~/.bashrc && \
 echo "export LD_LIBRARY_PATH=/user/local/lib:$LD_LIBRARY_PATH" >> ~/.bashrc && \
-echo "export PYTHONPATH=/usr/local/lib/python3/dist-packages:usr/local/lib/python3.8/dist-packages:$PYTHONPATH" >> ~/.profile && \
+echo "export PYTHONPATH=/usr/local/lib/python3/dist-packages:$PYTHONPATH" >> ~/.profile && \
 echo "export LD_LIBRARY_PATH=/user/local/lib:$LD_LIBRARY_PATH" >> ~/.profile 
 RUN ldconfig && \
 python3 -m site --user-site && \
