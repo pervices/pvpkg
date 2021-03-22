@@ -8,7 +8,7 @@ arch=('i686' 'x86_64')
 url="https://github.com/pervices/gnuradio"
 license=('GPL')
 depends=('libx11' 'fftw' 'python' 'python-numpy' 'python-mako' 'python-click' 'python-click-plugins' 'cppunit' 'gsl' 'blas' 'guile' 'boost-libs>=1.54' 'libusb' 'portaudio' 'libuhd' 'zeromq' 'libvolk' 'log4cpp')
-makedepends=('python-cairo' 'python-yaml' 'glu' 'pybind11' 'python-sphinx' 'cairo' 'qwt' 'swig' 'python-gobject' 'gtk3' 'python-pyqt5' 'lxml' 'pango')
+makedepends=('python-cairo' 'python-yaml' 'glu' 'pybind11' 'python-sphinx' 'cairo' 'qwt' 'swig' 'python-gobject' 'gtk3' 'python-pyqt5' 'pango')
 optdepends=('python-lxml: Some GRC modules use lxml optionally for improved performance')
 source=("git+https://github.com/pervices/gnuradio.git#branch=add-stream-mode-api-4177")
 md5sums=('SKIP')

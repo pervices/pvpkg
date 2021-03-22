@@ -41,7 +41,7 @@ mv tests /home/notroot/libuhd
 WORKDIR /home/notroot/gnuradio
 # use wget to collect GnuRadio PKGBUILD from Github, and create the package with the dependencies speified from the PKGBUILD; sudo chown command allows user notroot to build in this directory
 #RUN sudo pacman -U --noconfirm https://archive.archlinux.org/packages/p/python-pyqt5/python-pyqt5-5.15.4-1-x86_64.pkg.tar.zst && \
-RUN ls && sudo wget https://raw.githubusercontent.com/pervices/pvpkg/master/ArchlinuxLatestImage/GnuRadio/PKGBUILD &&  \ 
+RUN ls && pwd && sudo wget https://raw.githubusercontent.com/pervices/pvpkg/master/ArchlinuxLatestImage/GnuRadio/PKGBUILD &&  \ 
 sudo chown -R notroot /home/notroot/gnuradio && \
   makepkg --noconfirm --syncdeps --install && gpg --keyserver ipv4.pool.sks-keyservers.net --recv-key CB9387521E1EE0127DA804843FDBB55084CC5D84 && \
  yay -Sy --noconfirm \
