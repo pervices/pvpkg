@@ -65,8 +65,7 @@ apt-get -y -f install libgmp-dev swig  \
  python3-sphinx python3-lxml libfftw3-dev \
 libsdl1.2-dev libgsl-dev libqwt-qt5-dev libqt5opengl5-dev  \
 liblog4cpp5-dev libzmq3-dev python3-yaml python3-click python3-click-plugins \
-python3-zmq python3-scipy python3-gi python3-gi-cairo gobject-introspection gir1.2-gtk-3.0  python3-pybind11 libsndfile1-dev \
-swig && \
+python3-zmq python3-scipy python3-gi python3-gi-cairo gobject-introspection gir1.2-gtk-3.0 libsndfile1-dev \
 pip3 install pyqt5 && \
 pip3 install --user --upgrade construct requests
 
@@ -89,7 +88,7 @@ RUN git clone https://github.com/gnuradio/gnuradio.git
 WORKDIR gnuradio
 RUN mkdir build
 WORKDIR build
-RUN ls && cmake -DCMAKE_BUILD_TYPE=Release -DPYTHON_EXECUTABLE=/usr/bin/python3 -DPYTHON_INCLUDE_DIR=$(echo /usr/include/python3*) ../ && \
+RUN ls && cmake -DCMAKE_BUILD_TYPE=Debug -DPYTHON_EXECUTABLE=/usr/bin/python3 ../ && \
 make -j4 && \
 make install
 RUN ls && git clone https://github.com/pervices/pvpkg.git && \

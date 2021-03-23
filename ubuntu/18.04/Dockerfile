@@ -66,7 +66,7 @@ mkdir build
 WORKDIR build
 RUN git pull --recurse-submodules=on && \
 git submodule update --init && \
-cmake -DCMAKE_BUILD_TYPE=Release -DPYTHON_EXECUTABLE=/usr/bin/python3 .. && \
+cmake -DCMAKE_BUILD_TYPE=Debug -DPYTHON_EXECUTABLE=/usr/bin/python3 .. && \
 make -j $(nproc --all) && \
 make install 
 RUN ls && git clone https://github.com/pervices/pvpkg.git && \
