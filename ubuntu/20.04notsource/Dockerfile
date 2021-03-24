@@ -1,7 +1,7 @@
 FROM ubuntu:20.04
 WORKDIR /home/notroot/libuhd
 RUN apt-get update && \
-apt-get -y install software-properties-common && \
+apt-get -y install software-properties-common git coreutils build-essential && \
 add-apt-repository ppa:ettusresearch/uhd && \
 apt-get update && \
 apt-get -y install libuhd-dev libuhd3.15.0 uhd-host && \
