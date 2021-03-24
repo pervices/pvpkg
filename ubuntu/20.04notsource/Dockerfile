@@ -1,6 +1,6 @@
 FROM ubuntu:20.04
 WORKDIR /home/notroot/libuhd
-RUN add-apt-repository ppa:ettusresearch/uhd
+RUN add-apt-repository ppa:ettusresearch/uhd && \
 apt-get update && \
 apt-get install libuhd-dev libuhd003 uhd-host && \
  add-apt-repository ppa:gnuradio/gnuradio-releases && \
