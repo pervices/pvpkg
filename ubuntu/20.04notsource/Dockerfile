@@ -1,4 +1,5 @@
 FROM ubuntu:20.04
+ENV DEBIAN_FRONTEND=noninteractive
 WORKDIR /home/notroot/libuhd
 RUN apt-get update && \
 apt-get -y install software-properties-common git coreutils build-essential && \
