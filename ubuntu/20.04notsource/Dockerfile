@@ -1,6 +1,5 @@
 FROM ubuntu:20.04
 ENV DEBIAN_FRONTEND=noninteractive
-WORKDIR /home/notroot/libuhd
 RUN apt-get update && \
 apt-get -y install software-properties-common cmake git coreutils build-essential python3-dev python3-pip libboost1.67-all-dev doxygen libusb-1.0-0-dev liborc-0.4-dev && \
 pip3  install Cheetah3 && \
@@ -10,8 +9,11 @@ pip3 install pybind11 && \
 pip3 install docutils && \
 pip3 install ruamel.yaml && \
 pip3 install setuptools && \
-pip3 install mako && \
-git clone https://github.com/pervices/uhd.git
+pip3 install mako
+WORKDIR /home
+RUN git clone https://github.com/pervices/uhd.git && \
+mkdir uhdlib
+WORKDIR /home/notroot/libuhd
 RUN cmake \
     -DCMAKE_INSTALL_PREFIX=/usr/ \
 -D Boost_NO_BOOST_CMAKE:BOOL=0 \
