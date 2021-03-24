@@ -40,7 +40,7 @@ RUN cmake \
 	   -DENABLE_USB=OFF \
          /home/uhd/host && \
 make -j4 && \
-make install
+make install && \
 #add-apt-repository ppa:ettusresearch/uhd && \
 apt-get update 
 #apt-get -y install libuhd-dev libuhd3.15.0 uhd-host && \
