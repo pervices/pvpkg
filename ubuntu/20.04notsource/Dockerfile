@@ -1,13 +1,13 @@
 FROM ubuntu:20.04
 WORKDIR /home/notroot/libuhd
 RUN apt-get update && \
-apt-get install software-properties-common && \
+apt-get -y install software-properties-common && \
 add-apt-repository ppa:ettusresearch/uhd && \
 apt-get update && \
-apt-get install libuhd-dev libuhd003 uhd-host && \
+apt-get -y install libuhd-dev libuhd003 uhd-host && \
  add-apt-repository ppa:gnuradio/gnuradio-releases && \
 apt-get update && \
-apt-get install gnuradio
+apt-get -y install gnuradio
 RUN git clone https://github.com/pervices/pvpkg.git && \
 cd pvpkg/Arch && \
 mv variables.sh /home/notroot/libuhd && \
