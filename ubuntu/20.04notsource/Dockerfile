@@ -42,7 +42,7 @@ RUN cmake \
 make -j4 && \
 make install
 #add-apt-repository ppa:ettusresearch/uhd && \
-#apt-get update && \
+apt-get update 
 #apt-get -y install libuhd-dev libuhd3.15.0 uhd-host && \
 RUN add-apt-repository ppa:gnuradio/gnuradio-releases && \
 apt-get update && \
