@@ -1,7 +1,7 @@
 FROM ubuntu:20.04
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && \
-apt-get -y install software-properties-common cmake git coreutils build-essential python3-dev python3-pip libboost1.67-all-dev doxygen libusb-1.0-0-dev liborc-0.4-dev && \
+apt-get -y install sudo iputils-ping netutils software-properties-common cmake git coreutils build-essential python3-dev python3-pip libboost1.67-all-dev doxygen libusb-1.0-0-dev liborc-0.4-dev && \
 pip3  install Cheetah3 && \
 pip3  install  requests && \
 pip3  install numpy && \
@@ -9,7 +9,8 @@ pip3 install pybind11 && \
 pip3 install docutils && \
 pip3 install ruamel.yaml && \
 pip3 install setuptools && \
-pip3 install mako
+pip3 install mako && \
+pip3 install retrying 
 WORKDIR /home
 RUN git clone https://github.com/pervices/uhd.git && \
 mkdir uhdlib
