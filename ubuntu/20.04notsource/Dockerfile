@@ -35,7 +35,7 @@ RUN cmake \
 	   -DENABLE_OCTOCLOCK=OFF \
 	   -DENABLE_DOXYGEN=OFF \
 	   -DENABLE_USB=OFF \
-         /.. && \
+         /home/uhd/host && \
 make -j4 && \
 make install
 #add-apt-repository ppa:ettusresearch/uhd && \
