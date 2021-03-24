@@ -4,7 +4,7 @@ RUN apt-get update && \
 apt-get -y install software-properties-common && \
 add-apt-repository ppa:ettusresearch/uhd && \
 apt-get update && \
-apt-get -y install libuhd-dev libuhd003 uhd-host && \
+apt-get -y install libuhd-dev libuhd3.15.0 uhd-host && \
  add-apt-repository ppa:gnuradio/gnuradio-releases && \
 apt-get update && \
 apt-get -y install gnuradio
