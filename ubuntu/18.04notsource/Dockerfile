@@ -4,7 +4,7 @@ RUN apt-get update && \
 apt-get -y install sudo iputils-ping net-tools software-properties-common cmake git coreutils build-essential python3.6 python3-pip libboost-all-dev doxygen libusb-1.0-0-dev liborc-0.4-dev && \
 pip3  install Cheetah3 && \
 pip3  install  requests && \
-pip3  install numpy && \
+pip3  install -U numpy && \
 pip3 install pybind11 && \
 pip3 install docutils && \
 pip3 install ruamel.yaml && \
