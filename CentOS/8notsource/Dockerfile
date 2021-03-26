@@ -2,7 +2,7 @@ FROM centos:8
 RUN yum -y update && \
  dnf -y --enablerepo=powertools install boost-python3-devel && \
 dnf -y --enablerepo=powertools install doxygen python3-sphinx SDL-devel && \
- yum -y install git && \
+ yum -y install git sudo && \
  yum -y install cmake && \
  yum -y install epel-release && \
  yum -y install gcc-c++ make && \
@@ -12,8 +12,8 @@ dnf -y --enablerepo=powertools install doxygen python3-sphinx SDL-devel && \
  pip3 install mako && \
  pip3 install Cheetah3 && \
  pip3 install numpy && \
-pip3 install requests 
-
+pip3 install requests && \
+pip3 install scipy
 # install UHD using cmake, with Python 3 enabled
 WORKDIR /home
 RUN git clone https://github.com/pervices/uhd.git
