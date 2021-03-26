@@ -43,10 +43,8 @@ RUN cmake \
 make -j4 && \
 make install && \
 ldconfig && \
-pybombs auto-config && \
-pybombs recipes add-defaults && \
-pybombs prefix init ~/prefix-3.8 -R gnuradio-default && \
-source ~/prefix-3.8/setup_env.sh
+mkdir homebrew && curl -L https://github.com/Homebrew/brew/tarball/master | tar xz --strip 1 -C homebrew && \
+brew install gnuradio
 #RUN dnf -y install gnuradio
 RUN git clone https://github.com/pervices/pvpkg.git && \
 cd pvpkg/Arch && \
