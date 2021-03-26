@@ -5,6 +5,7 @@ apt-get -y install sudo iputils-ping net-tools software-properties-common cmake 
 pip3  install Cheetah3 && \
 pip3  install  requests && \
 pip3  install -U numpy && \
+pip3  install -U scipy && \
 pip3 install pybind11 && \
 pip3 install docutils && \
 pip3 install ruamel.yaml && \
