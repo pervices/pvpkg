@@ -43,7 +43,10 @@ RUN cmake \
 make -j4 && \
 make install && \
 ldconfig && \
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" && \
+git clone https://github.com/Homebrew/brew ~/.linuxbrew/Homebrew && \
+mkdir ~/.linuxbrew/bin && \
+ln -s ~/.linuxbrew/Homebrew/bin/brew ~/.linuxbrew/bin && \
+eval $(~/.linuxbrew/bin/brew shellenv) && \
 brew install gnuradio
 #RUN dnf -y install gnuradio
 RUN git clone https://github.com/pervices/pvpkg.git && \
