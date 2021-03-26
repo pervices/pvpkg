@@ -43,7 +43,7 @@ RUN cmake \
 make -j4 && \
 make install && \
 ldconfig && \
-mkdir homebrew && curl -L https://github.com/Homebrew/brew/tarball/master | tar xz --strip 1 -C homebrew && \
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" && \
 brew install gnuradio
 #RUN dnf -y install gnuradio
 RUN git clone https://github.com/pervices/pvpkg.git && \
