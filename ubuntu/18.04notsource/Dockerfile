@@ -41,7 +41,7 @@ RUN cmake \
 make test && \
  make install && \
 apt-get update
-RUN add-apt-repository ppa:gnuradio/gnuradio-releases && \
+RUN add-apt-repository ppa:gnuradio/gnuradio-releases-3.8 && \
 apt-get update && \
 apt-get -y install gnuradio
 RUN git clone https://github.com/pervices/pvpkg.git && \
