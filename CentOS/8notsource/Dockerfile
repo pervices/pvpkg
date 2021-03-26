@@ -13,7 +13,8 @@ dnf -y --enablerepo=powertools install doxygen python3-sphinx SDL-devel && \
  pip3 install Cheetah3 && \
  pip3 install numpy && \
 pip3 install requests && \
-pip3 install scipy
+pip3 install scipy && \
+pip3 install pybombs
 # install UHD using cmake, with Python 3 enabled
 WORKDIR /home
 RUN git clone https://github.com/pervices/uhd.git
@@ -41,8 +42,12 @@ RUN cmake \
         /home/uhd/host && \
 make -j4 && \
 make install && \
-ldconfig
-RUN dnf -y install gnuradio
+ldconfig && \
+pybombs auto-config && \
+pybombs recipes add-defaults && \
+pybombs prefix init ~/prefix-3.8 -R gnuradio-default && \
+source ~/prefix-3.8/setup_env.sh
+#RUN dnf -y install gnuradio
 RUN git clone https://github.com/pervices/pvpkg.git && \
 cd pvpkg/Arch && \
 mv variables.sh /home/notroot/libuhd && \
