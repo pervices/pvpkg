@@ -53,4 +53,5 @@ WORKDIR /home/notroot/libuhd
 RUN chmod +x test-only.sh && \
 chmod +x variables.sh && \
 chmod +x tests && \
+uhd_usrp_probe && \
 ./test-only.sh 
