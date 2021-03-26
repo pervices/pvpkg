@@ -1,7 +1,7 @@
 FROM centos:8
 RUN yum -y update && \
  dnf -y --enablerepo=powertools install boost-python3-devel && \
-dnf -y --enablerepo=powertools install doxygen python3-sphinx SDL-devel && \
+dnf -y --enablerepo=powertools install doxygen python3-sphinx SDL-devel ruby && \
  yum -y install git sudo which && \
  yum -y install cmake && \
  yum -y install epel-release && \
