@@ -80,7 +80,7 @@ pipeline {
                    steps { 
 
                       script { 
-                             dir("${env.WORKSPACE}/ubuntu/18.04notsource") {
+                             dir("${env.WORKSPACE}/ubuntu/18.04") {
                                      dockerImageUbuntu1804 = docker.build(registry + ":$BUILD_NUMBER", "--network host .") 
                         }
                        }
