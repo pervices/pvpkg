@@ -41,18 +41,19 @@ RUN cmake \
          /home/uhd/host && \
 make -j4 && \
 make install && \
-#add-apt-repository ppa:ettusresearch/uhd && \
 apt-get update 
-#apt-get -y install libuhd-dev libuhd3.15.0 uhd-host && \
-RUN add-apt-repository ppa:gnuradio/gnuradio-releases && \
-apt-get update && \
-apt-get -y install gnuradio
 RUN git clone https://github.com/pervices/pvpkg.git && \
 cd pvpkg/Arch && \
 mv variables.sh /home/notroot/libuhd && \
 mv tests /home/notroot/libuhd && \
 cd ../ubuntu && \
-mv test-only.sh /home/notroot/libuhd
+mv test-only.sh /home/notroot/libuhd && \
+cd 20.04 && \
+mv gnuradio_3.8.1.0~rc1-2build2.debian.tar.xz /home/notroot/libuhd
+WORKDIR /home/notroot/libuhd
+RUN tar zxvf gnuradio_3.8.1.0~rc1-2build2.debian.tar.xz && \
+cd gnuradio_3.8.1.0~rc1-2build2.debian && \
+./configure && make && make install
 WORKDIR /home/notroot/libuhd
 RUN chmod +x test-only.sh && \
 chmod +x variables.sh && \
