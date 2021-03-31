@@ -1,7 +1,7 @@
 FROM ubuntu:20.04
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && \
-apt-get -y install sudo xz-utils iputils-ping net-tools software-properties-common cmake git coreutils build-essential python3-dev python3-pip libboost1.67-all-dev doxygen libusb-1.0-0-dev liborc-0.4-dev && \
+apt-get -y install sudo dh-make bzr-builddeb xz-utils iputils-ping net-tools software-properties-common cmake git coreutils build-essential python3-dev python3-pip libboost1.67-all-dev doxygen libusb-1.0-0-dev liborc-0.4-dev && \
 pip3  install Cheetah3 && \
 pip3  install  requests && \
 pip3  install numpy && \
@@ -53,9 +53,8 @@ mv gnuradio_3.8.1.0~rc1-2build2.debian.tar.xz /home/notroot/libuhd
 WORKDIR /home/notroot/libuhd
 RUN tar -xf gnuradio_3.8.1.0~rc1-2build2.debian.tar.xz && \ 
 xz -d -v gnuradio_3.8.1.0~rc1-2build2.debian.tar.xz && \
-ls && \
 cd debian && \
-make && make install
+bzr dh-make gnuradio 3.8.1.0 gnuradio-dev.abi.tar.gz.amd64
 WORKDIR /home/notroot/libuhd
 RUN chmod +x test-only.sh && \
 chmod +x variables.sh && \
