@@ -51,7 +51,8 @@ mv test-only.sh /home/notroot/libuhd && \
 cd 20.04 && \
 mv gnuradio_3.8.1.0~rc1-2build2.debian.tar.xz /home/notroot/libuhd
 WORKDIR /home/notroot/libuhd
-RUN tar -xf gnuradio_3.8.1.0~rc1-2build2.debian.tar.xz && \
+RUN tar -xf gnuradio_3.8.1.0~rc1-2build2.debian.tar.xz && \ 
+ls && \
 cd gnuradio_3.8.1.0~rc1-2build2.debian && \
 ./configure && make && make install
 WORKDIR /home/notroot/libuhd
