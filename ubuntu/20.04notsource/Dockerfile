@@ -55,7 +55,7 @@ RUN tar -xf gnuradio_3.8.1.0~rc1-2build2.debian.tar.xz && \
 xz -d -v gnuradio_3.8.1.0~rc1-2build2.debian.tar.xz && \
 ls && \
 cd debian && \
-./configure && make && make install
+make && make install
 WORKDIR /home/notroot/libuhd
 RUN chmod +x test-only.sh && \
 chmod +x variables.sh && \
