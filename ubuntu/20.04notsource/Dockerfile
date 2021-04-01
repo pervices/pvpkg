@@ -51,7 +51,7 @@ mv test-only.sh /home/notroot/libuhd && \
 cd 20.04notsource && \
 mv gnuradio_3.8.1.0~rc1-2build2.debian.tar.xz gnuradio_3.8.1.0~rc1-2build2.dsc /home/notroot/libuhd
 WORKDIR /home/notroot/libuhd
-RUN dpkg-source -x gnuradio_3.8.1.0~rc1-2build2.dsc && \
+RUN dpkg-source -x --no-check gnuradio_3.8.1.0~rc1-2build2.dsc && \
 ls
 RUN tar -xf gnuradio_3.8.1.0~rc1-2build2.debian.tar.xz && \ 
 xz -d -v gnuradio_3.8.1.0~rc1-2build2.debian.tar.xz && \ 
