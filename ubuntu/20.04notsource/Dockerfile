@@ -53,6 +53,7 @@ mv gnuradio_3.8.1.0~rc1-2build2.debian.tar.xz /home/notroot/libuhd
 WORKDIR /home/notroot/libuhd
 RUN tar -xf gnuradio_3.8.1.0~rc1-2build2.debian.tar.xz && \ 
 xz -d -v gnuradio_3.8.1.0~rc1-2build2.debian.tar.xz && \ 
+bzr add debian && \
 cd debian && \
 bzr builddeb -- -us -uc
 WORKDIR /home/notroot/libuhd
