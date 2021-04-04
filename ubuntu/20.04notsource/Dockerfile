@@ -15,7 +15,7 @@ WORKDIR /home/notroot/libuhd
 RUN tar -xf gnuradio_3.8.1.0~rc1-2build2.debian.tar.xz && \ 
 xz -d -v gnuradio_3.8.1.0~rc1-2build2.debian.tar.xz && \ 
 cd debian && \
-mk-build-deps -i control && \
+mk-build-deps -i -y control && \
 cd ../ && \
 dpkg-buildpackage -us -uc && \
 apt-get install -f
