@@ -16,7 +16,7 @@ RUN tar -xf gnuradio_3.8.1.0~rc1-2build2.debian.tar.xz && \
 xz -d -v gnuradio_3.8.1.0~rc1-2build2.debian.tar.xz && \ 
 cd debian && \
 mk-build-deps -i --tool 'apt-get --yes' control 
-RUN dpkg-source -b /home/notroot/libuhd
+RUN cd .. && dpkg-source -b /home/notroot/libuhd
 WORKDIR /home/notroot/libuhd
 RUN chmod +x test-only.sh && \
 chmod +x variables.sh && \
