@@ -17,7 +17,7 @@ RUN dpkg-source -x --no-check gnuradio_3.8.1.0~rc1-2build2.dsc && \
 #xz -d -v gnuradio_3.8.1.0~rc1-2build2.debian.tar.xz && \ 
 cd gnuradio-3.8.1.0~rc1/debian && \
 mk-build-deps -i -r --tool 'apt-get --yes' control 
-RUN ls && debuild
+RUN cd gnuradio-3.8.1.0~rc1/debian  && debuild
 WORKDIR /home/notroot/libuhd
 RUN chmod +x test-only.sh && \
 chmod +x variables.sh && \
