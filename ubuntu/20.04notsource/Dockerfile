@@ -15,7 +15,7 @@ WORKDIR /home/notroot/libuhd
 RUN dpkg-source -x --no-check gnuradio_3.8.1.0~rc1-2build2.dsc && \
 #tar -xf gnuradio_3.8.1.0~rc1-2build2.debian.tar.xz && \ 
 #xz -d -v gnuradio_3.8.1.0~rc1-2build2.debian.tar.xz && \ 
- ls && cd debian && \
+cd gnuradio-3.8.1.0~rc1 && \
 mk-build-deps -i -r --tool 'apt-get --yes' control 
 RUN debuild
 WORKDIR /home/notroot/libuhd
