@@ -35,7 +35,7 @@ RUN cmake \
 make -j4 && \
 make install
 WORKDIR /home/notroot/libuhd
-RUN git clone https://github.com/pervices/pvpkg.git && \
+RUN  ls && git clone https://github.com/pervices/pvpkg.git && \
 cd pvpkg/Arch && \
 mv variables.sh /home/notroot/libuhd && \
 mv tests /home/notroot/libuhd && \
