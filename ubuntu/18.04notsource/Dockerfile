@@ -17,6 +17,7 @@ RUN apt-get update && \
 add-apt-repository ppa:gnuradio/gnuradio-releases-3.8 && \
 apt-get update && \
 apt-get -y install gnuradio
+WORKDIR /home/notroot/libuhd
 RUN git clone https://github.com/pervices/pvpkg.git && \
 cd pvpkg/Arch && \
 mv variables.sh /home/notroot/libuhd && \
