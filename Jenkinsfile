@@ -75,12 +75,12 @@ pipeline {
 
 
 
-               stage('Ubuntu 18.04') { 
+               stage('Ubuntu 20.04 PV libUHD') { 
 
                    steps { 
 
                       script { 
-                             dir("${env.WORKSPACE}/ubuntu/18.04notsource") {
+                             dir("${env.WORKSPACE}/ubuntu/20.04notsource2") {
                                      dockerImageUbuntu1804 = docker.build(registry + ":$BUILD_NUMBER", "--network host .") 
                         }
                        }
