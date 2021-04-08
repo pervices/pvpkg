@@ -35,7 +35,7 @@ apt-get -y install dpkg-dev sudo dh-make bzr-builddeb equivs xz-utils iputils-pi
 #make -j4 && \
 #make install
 WORKDIR /home/notroot/libuhd
-RUN  ls && pwd && ls && git clone https://github.com/pervices/pvpkg.git && \
+RUN  ls && pwd && ls && pwd && git clone https://github.com/pervices/pvpkg.git && \
 cd pvpkg/Arch && \
 mv variables.sh /home/notroot/libuhd && \
 mv tests /home/notroot/libuhd && \
@@ -55,5 +55,6 @@ WORKDIR /home/notroot/libuhd
 RUN chmod +x test-only.sh && \
 chmod +x variables.sh && \
 chmod +x tests && \
-ldconfig && \
+ldconfig 
+RUN sleep 10000 && \
 ./test-only.sh
