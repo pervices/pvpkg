@@ -65,7 +65,7 @@ pipeline {
                   steps { 
 
                        script { 
-                             dir("${env.WORKSPACE}/CentOS/8notsource") {
+                             dir("${env.WORKSPACE}/CentOS/8") {
                                      dockerImageCentos8 = docker.build(registry + ":$BUILD_NUMBER", "--network host .") 
                        }
                      }
