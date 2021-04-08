@@ -12,7 +12,7 @@ cd ../CentOS/8notsource && \
 mv gnuradio-3.8.0.0-6.el8.src.rpm /home/notroot/libuhd
 RUN rpm -ivh ./gnuradio-3.8.0.0-6.el8.src.rpm && \ 
 ls && \
-dnf-builddep gnuradio-3.8.0.0-6.el8.src.rpm
+dnf builddep gnuradio-3.8.0.0-6.el8.src.rpm
 
 
 
