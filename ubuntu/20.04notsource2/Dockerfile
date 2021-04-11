@@ -35,7 +35,7 @@ RUN cmake \
 make -j4 && \
 make install
 WORKDIR /home/notroot/libuhd
-RUN  ls && pwd && ls && pwd && git clone https://github.com/pervices/pvpkg.git && \
+RUN git clone https://github.com/pervices/pvpkg.git && \
 cd pvpkg/Arch && \
 mv variables.sh /home/notroot/libuhd && \
 mv tests /home/notroot/libuhd && \
@@ -48,7 +48,6 @@ RUN dpkg-source -x --no-check gnuradio_3.8.1.0~rc1-2build2.dsc && \
 #tar -xf gnuradio_3.8.1.0~rc1-2build2.debian.tar.xz && \ 
 #xz -d -v gnuradio_3.8.1.0~rc1-2build2.debian.tar.xz && \ 
 cd gnuradio-3.8.1.0~rc1/debian && \
-apt-get update && \
 mk-build-deps -i -r --tool 'apt-get --yes' control 
 RUN cd gnuradio-3.8.1.0~rc1 && dpkg-buildpackage --pre-clean --post-clean -i -us -uc
 WORKDIR /home/notroot/libuhd
