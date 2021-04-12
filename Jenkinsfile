@@ -88,7 +88,7 @@ pipeline {
 
              }
              
-               stage('Ubuntu 20.04') { 
+               stage('Ubuntu 20.04 PV libUHD and Gnuradio from Source') { 
 
                    steps { 
 
