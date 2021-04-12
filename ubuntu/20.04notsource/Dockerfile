@@ -1,7 +1,7 @@
 FROM ubuntu:20.04
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && \
-apt-get -y install dpkg-dev sudo dh-make bzr-builddeb equivs xz-utils iputils-ping net-tools software-properties-common cmake git coreutils build-essential 
+apt-get -y install dpkg-dev sudo dh-make bzr-builddeb equivs xz-utils iputils-ping net-tools software-properties-common cmake git coreutils build-essential && \ 
 apt-get -y install python3-dev python3-pip libboost1.67-all-dev doxygen libusb-1.0-0-dev liborc-0.4-dev && \
 pip3 install mako Cheetah3 requests numpy pybind11 docutils ruamel.yaml setuptools
 WORKDIR /home
