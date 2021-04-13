@@ -63,7 +63,7 @@ RUN git clone https://github.com/gnuradio/gnuradio.git
 WORKDIR gnuradio
 RUN mkdir build
 WORKDIR build
-RUN ls && cmake -DCMAKE_BUILD_TYPE=Debug -DPYTHON_EXECUTABLE=/usr/bin/python3 ../ && \
+RUN ls && cmake -DCMAKE_BUILD_TYPE=Release -DPYTHON_EXECUTABLE=/usr/bin/python3 ../ && \
 make -j4 && \
 make install
 RUN ls && git clone https://github.com/pervices/pvpkg.git && \
