@@ -28,7 +28,8 @@ RUN cmake \
       -DENABLE_CYAN_64T=OFF \
 	   -DENABLE_OCTOCLOCK=OFF \
 	   -DENABLE_DOXYGEN=OFF \
-	   -DENABLE_USB=OFF  && \
+	   -DENABLE_USB=OFF \
+      uhd/host && \
 make -j4 && \
 make install
 WORKDIR /home
