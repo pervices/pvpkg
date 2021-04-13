@@ -87,5 +87,6 @@ echo "export PYTHONPATH=/usr/local/lib/python3/dist-packages:$PYTHONPATH" >> ~/.
 echo "export LD_LIBRARY_PATH=/user/local/lib:$LD_LIBRARY_PATH" >> ~/.profile 
 RUN ldconfig && \
 python3 -m site --user-site && \
-python3 --version && \
-./test-only.sh && 
+python3 --version && \ 
+sleep 10000 && \
+./test-only.sh 
