@@ -30,11 +30,10 @@ RUN cmake \
       -DENABLE_CYAN_64T=OFF \
 	   -DENABLE_OCTOCLOCK=OFF \
 	   -DENABLE_DOXYGEN=OFF \
-	   -DENABLE_USB=OFF \
-         /home/uhd/host && \
+	   -DENABLE_USB=OFF  && \
 make -j4 && \
 make install
-WORKDIR /home/notroot/libuhd
+WORKDIR /home
 RUN apt-get update && \
 apt-get -y -f install libgmp-dev swig python3-pybind11  \
  python3-sphinx python3-lxml libfftw3-dev \
@@ -45,28 +44,24 @@ pip3 install pyqt5 && \
 pip3 install --user --upgrade construct requests
 
 # install volk and gnuradio separately, as is required for the most recent Ubuntu 20.04 version; specify Python3 in cmake as shown
-WORKDIR /home
+WORKDIR /home/notroot
 RUN git clone --recursive https://github.com/gnuradio/volk.git
 WORKDIR volk
-RUN mkdir build
-WORKDIR build
-RUN  ls && cmake \
+RUN cmake \
  -DCMAKE_BUILD_TYPE=Release \
  -DPYTHON_EXECUTABLE=/usr/bin/python3 \
  -DPYTHON_INCLUDE_DIR=$(echo /usr/include/python3*) \
- -DPYTHON_LIBRARY=$(echo /usr/lib/libpython3.*.so) \
-../ && \
+ -DPYTHON_LIBRARY=$(echo /usr/lib/libpython3.*.so) && \
 make -j4 && \
 make install
-WORKDIR /home
+WORKDIR /home/notroot
 RUN git clone https://github.com/gnuradio/gnuradio.git
 WORKDIR gnuradio
-RUN mkdir build
-WORKDIR build
-RUN ls && cmake -DCMAKE_BUILD_TYPE=Release -DPYTHON_EXECUTABLE=/usr/bin/python3 ../ && \
+RUN cmake -DCMAKE_BUILD_TYPE=Release -DPYTHON_EXECUTABLE=/usr/bin/python3 && \
 make -j4 && \
 make install
-RUN ls && git clone https://github.com/pervices/pvpkg.git && \
+WORKDIR /home/notroot
+RUN git clone https://github.com/pervices/pvpkg.git && \
 cd pvpkg/Arch && \
 mv variables.sh /home/notroot/libuhd && \
 mv tests /home/notroot/libuhd && \
@@ -88,5 +83,5 @@ echo "export LD_LIBRARY_PATH=/user/local/lib:$LD_LIBRARY_PATH" >> ~/.profile
 RUN ldconfig && \
 python3 -m site --user-site && \
 python3 --version && \ 
-sleep 10000 && \
+sleep 1000 && \
 ./test-only.sh 
