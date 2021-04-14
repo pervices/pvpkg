@@ -3,7 +3,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && \
 apt-get -y install dpkg-dev sudo dh-make bzr-builddeb equivs xz-utils iputils-ping net-tools software-properties-common cmake git coreutils build-essential && \ 
 apt-get -y install python3-dev python3-pip libboost1.67-all-dev doxygen libusb-1.0-0-dev liborc-0.4-dev && \
-pip3 install mako Cheetah3 requests numpy docutils ruamel.yaml setuptools
+pip3 install mako Cheetah3 requests numpy docutils ruamel.yaml setuptools retrying
 WORKDIR /home/notroot/libuhd
 RUN git clone https://github.com/pervices/uhd.git
 RUN cmake \
@@ -66,7 +66,7 @@ cmake -DCMAKE_BUILD_TYPE=Release -DPYTHON_EXECUTABLE=/usr/bin/python3 ../ && \
 make -j4 && \
 make install
 WORKDIR /home/notroot
-RUN ls && git clone https://github.com/pervices/pvpkg.git && \
+RUN git clone https://github.com/pervices/pvpkg.git && \
 cd pvpkg/Arch && \
 mv variables.sh /home/notroot/testing && \
 mv tests /home/notroot/testing && \
