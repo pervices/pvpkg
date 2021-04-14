@@ -4,7 +4,7 @@ def main():
 
     name = "tx_trigger_log.txt"
 
-    os.system("/home/notroot/gnuradio/examples/test_tx_trigger > %s" % name)
+    os.system("/home/notroot/libuhd/examples/test_tx_trigger > %s" % name)
 
     with open(name, "r") as b:
 
