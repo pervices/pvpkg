@@ -54,9 +54,9 @@ RUN cmake \
 make -j4 && \
 make install
 WORKDIR /home/notroot
-RUN git clone https://github.com/gnuradio/gnuradio.git
-WORKDIR gnuradio
-RUN cmake -DCMAKE_BUILD_TYPE=Release -DPYTHON_EXECUTABLE=/usr/bin/python3 && \
+RUN git clone https://github.com/gnuradio/gnuradio.git && \
+cd gnuradio && \
+cmake -DCMAKE_BUILD_TYPE=Release -DPYTHON_EXECUTABLE=/usr/bin/python3 && \
 make -j4 && \
 make install
 WORKDIR /home/notroot
