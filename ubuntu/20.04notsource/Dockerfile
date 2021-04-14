@@ -43,20 +43,21 @@ pip3 install pyqt5 && \
 pip3 install --user --upgrade construct requests
 
 # install volk and gnuradio separately, as is required for the most recent Ubuntu 20.04 version; specify Python3 in cmake as shown
-WORKDIR /home/notroot
-RUN git clone --recursive https://github.com/gnuradio/volk.git
-WORKDIR volk
-RUN cmake \
+WORKDIR /home/notroot/gnuradio
+RUN git clone --recursive https://github.com/gnuradio/volk.git && \
+cd volk && \
+cmake \
  -DCMAKE_BUILD_TYPE=Release \
  -DPYTHON_EXECUTABLE=/usr/bin/python3 \
  -DPYTHON_INCLUDE_DIR=$(echo /usr/include/python3*) \
- -DPYTHON_LIBRARY=$(echo /usr/lib/libpython3.*.so) && \
+ -DPYTHON_LIBRARY=$(echo /usr/lib/libpython3.*.so) \
+../ && \
 make -j4 && \
 make install
-WORKDIR /home/notroot
+WORKDIR /home/notroot/gnuradio
 RUN git clone https://github.com/gnuradio/gnuradio.git && \
 cd gnuradio && \
-cmake -DCMAKE_BUILD_TYPE=Release -DPYTHON_EXECUTABLE=/usr/bin/python3 && \
+cmake -DCMAKE_BUILD_TYPE=Release -DPYTHON_EXECUTABLE=/usr/bin/python3 ../ && \
 make -j4 && \
 make install
 WORKDIR /home/notroot
@@ -71,7 +72,7 @@ RUN chmod +x test-only.sh && \
 chmod +x variables.sh && \
 chmod +x tests && \
 apt-get -y install sudo && \
-apt-get -y install net-tools iputils-ping && \ 
+apt-get -y install net-tools iputils-ping iproute2 && \ 
 ldconfig && \
 gnuradio-config-info --prefix && \
 find /usr/local -name gnuradio | grep "packages" && \
@@ -82,5 +83,4 @@ echo "export LD_LIBRARY_PATH=/user/local/lib:$LD_LIBRARY_PATH" >> ~/.profile
 RUN ldconfig && \
 python3 -m site --user-site && \
 python3 --version && \ 
-sleep 1000 && \
 ./test-only.sh 
