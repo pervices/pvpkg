@@ -41,6 +41,10 @@ yay -Sy --noconfirm \
 WORKDIR /home/notroot/pvpkg/Arch
 RUN mv test-only.sh variables.sh /home/notroot/testing && \
 mv tests /home/notroot/testing
+# copying examples directory to libuhd folder to enable test to be found in same location as for other distributions to enable test_tx_trigger to be run
+WORKDIR /home/notroot/libuhd/src/uhd/host
+RUN sudo chown -R notroot /home/notroot/libuhd/src/uhd/host && \
+cp -R examples /home/notroot/libuhd
 WORKDIR /home/notroot/gnuradio
 # use wget to collect GnuRadio PKGBUILD from Github, and create the package with the dependencies speified from the PKGBUILD; sudo chown command allows user notroot to build in this directory
 #RUN sudo pacman -U --noconfirm https://archive.archlinux.org/packages/p/python-pyqt5/python-pyqt5-5.15.4-1-x86_64.pkg.tar.zst && \

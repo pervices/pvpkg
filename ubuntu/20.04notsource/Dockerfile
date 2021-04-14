@@ -66,7 +66,7 @@ cmake -DCMAKE_BUILD_TYPE=Release -DPYTHON_EXECUTABLE=/usr/bin/python3 ../ && \
 make -j4 && \
 make install
 WORKDIR /home/notroot
-RUN git clone https://github.com/pervices/pvpkg.git && \
+RUN ls && git clone https://github.com/pervices/pvpkg.git && \
 cd pvpkg/Arch && \
 mv variables.sh /home/notroot/testing && \
 mv tests /home/notroot/testing && \
