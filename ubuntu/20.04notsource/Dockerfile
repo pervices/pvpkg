@@ -46,6 +46,8 @@ pip3 install --user --upgrade construct requests
 WORKDIR /home/notroot/gnuradio
 RUN git clone --recursive https://github.com/gnuradio/volk.git && \
 cd volk && \
+mkdir build && \
+cd build && \
 cmake \
  -DCMAKE_BUILD_TYPE=Release \
  -DPYTHON_EXECUTABLE=/usr/bin/python3 \
@@ -54,20 +56,23 @@ cmake \
 ../ && \
 make -j4 && \
 make install
+WORKDIR /home/notroot/testing
 WORKDIR /home/notroot/gnuradio
 RUN git clone https://github.com/gnuradio/gnuradio.git && \
 cd gnuradio && \
+mkdir build && \
+cd build && \
 cmake -DCMAKE_BUILD_TYPE=Release -DPYTHON_EXECUTABLE=/usr/bin/python3 ../ && \
 make -j4 && \
 make install
 WORKDIR /home/notroot
 RUN git clone https://github.com/pervices/pvpkg.git && \
 cd pvpkg/Arch && \
-mv variables.sh /home/notroot/libuhd && \
-mv tests /home/notroot/libuhd && \
+mv variables.sh /home/notroot/testing && \
+mv tests /home/notroot/testing && \
 cd ../ubuntu && \
-mv test-only.sh /home/notroot/libuhd
-WORKDIR /home/notroot/libuhd
+mv test-only.sh /home/notroot/testing
+WORKDIR /home/notroot/testing
 RUN chmod +x test-only.sh && \
 chmod +x variables.sh && \
 chmod +x tests && \
@@ -82,5 +87,6 @@ echo "export PYTHONPATH=/usr/local/lib/python3/dist-packages:$PYTHONPATH" >> ~/.
 echo "export LD_LIBRARY_PATH=/user/local/lib:$LD_LIBRARY_PATH" >> ~/.profile 
 RUN ldconfig && \
 python3 -m site --user-site && \
-python3 --version && \ 
+python3 --version && \
+sleep 1000 && \ 
 ./test-only.sh 

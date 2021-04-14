@@ -54,7 +54,7 @@ do
 	echo ":: Executing ${TEST_NAMES[$i]} test" >> log.txt
 	#echo "$i"
 	pwd
-	python3 -u /home/notroot/libuhd/tests/${TEST_FILES[$i]}.py
+	python3 -u /home/notroot/testing/${TEST_FILES[$i]}.py
 	rv=$?
 	if [ $rv -eq 0 ]; then
 		PASSED_TESTS=$((PASSED_TESTS+1))
