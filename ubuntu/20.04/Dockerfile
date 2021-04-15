@@ -27,9 +27,7 @@ find -name "*.py" -or -name '*.py.in' | xargs sed -i "s|#!/usr/bin/env python$|#
 #RUN ls
 
 # install UHD using cmake, specifying Boost and Python options shown
-WORKDIR /home
-RUN git clone https://github.com/pervices/uhd.git && \
-mkdir uhdlib
+RUN git clone https://github.com/pervices/uhd.git
 WORKDIR /home/notroot/libuhd
 RUN cmake \
     -DCMAKE_INSTALL_PREFIX=/usr/ \
@@ -54,9 +52,8 @@ RUN cmake \
 	   -DENABLE_OCTOCLOCK=OFF \
 	   -DENABLE_DOXYGEN=OFF \
 	   -DENABLE_USB=OFF \
-         /home/uhd/host && \
+         /.. && \
 make -j4 && \
-make test && \
 make install
 
 # install necessary packages for GnuRadio
