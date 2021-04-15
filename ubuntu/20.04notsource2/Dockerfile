@@ -49,6 +49,7 @@ RUN dpkg-source -x --no-check gnuradio_3.8.1.0~rc1-2build2.dsc && \
 #tar -xf gnuradio_3.8.1.0~rc1-2build2.debian.tar.xz && \ 
 #xz -d -v gnuradio_3.8.1.0~rc1-2build2.debian.tar.xz && \ 
 cd gnuradio-3.8.1.0~rc1/debian && \
+sleep 10000 && \
 mk-build-deps -i -r --tool 'apt-get -f --yes' control 
 RUN cd gnuradio-3.8.1.0~rc1 && dpkg-buildpackage --pre-clean --post-clean -i -us -uc
 WORKDIR /home/notroot/testing
