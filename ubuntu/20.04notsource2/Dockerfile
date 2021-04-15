@@ -35,10 +35,10 @@ make install
 WORKDIR /home/notroot/testing
 WORKDIR /home/notroot/gnuradio
 WORKDIR /home
-RUN apt-get update && \
+RUN apt-get update && ls && \
 git clone https://github.com/pervices/pvpkg.git && \
 cd pvpkg/Arch && \
-mv variables.sh /home/notroot/testing && ls && \
+mv variables.sh /home/notroot/testing && \
 mv tests /home/notroot/testing && \
 cd ../ubuntu && \
 mv test-only.sh /home/notroot/testing && \
