@@ -29,7 +29,7 @@ RUN cmake \
 	   -DENABLE_OCTOCLOCK=OFF \
 	   -DENABLE_DOXYGEN=OFF \
 	   -DENABLE_USB=OFF \
-       /uhd/host && \
+       uhd/host && \
 make -j4 && \
 make install
 WORKDIR /home/notroot/testing
