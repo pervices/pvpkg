@@ -38,7 +38,7 @@ WORKDIR /home
 RUN apt-get update && \
 git clone https://github.com/pervices/pvpkg.git && \
 cd pvpkg/Arch && \
-mv variables.sh /home/notroot/testing && \
+mv variables.sh /home/notroot/testing && ls && \
 mv tests /home/notroot/testing && \
 cd ../ubuntu && \
 mv test-only.sh /home/notroot/testing && \
@@ -49,7 +49,6 @@ RUN dpkg-source -x --no-check gnuradio_3.8.1.0~rc1-2build2.dsc && \
 #tar -xf gnuradio_3.8.1.0~rc1-2build2.debian.tar.xz && \ 
 #xz -d -v gnuradio_3.8.1.0~rc1-2build2.debian.tar.xz && \ 
 cd gnuradio-3.8.1.0~rc1/debian && \
-sleep 10000 && \
 mk-build-deps -i -r --tool 'apt-get -f --yes' control 
 RUN cd gnuradio-3.8.1.0~rc1 && dpkg-buildpackage --pre-clean --post-clean -i -us -uc
 WORKDIR /home/notroot/testing
