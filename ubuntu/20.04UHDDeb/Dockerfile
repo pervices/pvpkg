@@ -1,0 +1,15 @@
+FROM ubuntu:20.04
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt-get update && \
+apt-get -y install dpkg-dev sudo apt-utils dh-make bzr-builddeb equivs xz-utils iputils-ping net-tools software-properties-common cmake git coreutils build-essential 
+WORKDIR /home
+RUN git clone https://github.com/pervices/pvpkg.git && \
+cd pvpkg/ubuntu/20.04UHDDeb && \ 
+mv uhdpv_3.13.0.orig.tar.gz uhdpv_3.13.0-1.debian.tar.xz uhdpv_3.13.0-1.dsc /home
+WORKDIR /home
+RUN RUN dpkg-source -x --no-check uhdpv_3.13.0-1.dsc && \
+cd uhdpv_3.13.0/debian && \
+mk-build-deps -i -r --tool 'apt-get -f --yes' control
+RUN cd uhdpv_3.13.0 && dpkg-buildpackage --pre-clean --post-clean -i -us -uc
+
+
