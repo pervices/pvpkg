@@ -11,10 +11,10 @@ Package-List:
  uhdpv deb unknown optional arch=any
 Checksums-Sha1:
  7b0de5e2533ed8a9e67bdf421a78935c92053dae 11906966 uhdpv_3.13.0.orig.tar.gz
- f0266964d86b3fb629fe6f04e5b3c9b727f18a90 8864 uhdpv_3.13.0-1.debian.tar.xz
+ 540050d6290ced0a1444d1fadb6f8d92414f1561 8864 uhdpv_3.13.0-1.debian.tar.xz
 Checksums-Sha256:
  343477962bc597945a1636e31d6303477331afaac114b76b2741594b5d25b36e 11906966 uhdpv_3.13.0.orig.tar.gz
- f63d16afcd07b9dba9c26744d14baadd4592e1a7185a13294aa19a5d7febbced 8864 uhdpv_3.13.0-1.debian.tar.xz
+ 9acd2c176a1d04042777f507a42f77c6535f5ebba09b5bb174d492e7c0403423 8864 uhdpv_3.13.0-1.debian.tar.xz
 Files:
  c8697dc9454829b5c36b6fefa3e541e8 11906966 uhdpv_3.13.0.orig.tar.gz
- 6fdc5c9666d9d8188e07ea808c2a4f82 8864 uhdpv_3.13.0-1.debian.tar.xz
+ c6d6b57fa26d3327bc83a98f4d11b201 8864 uhdpv_3.13.0-1.debian.tar.xz
