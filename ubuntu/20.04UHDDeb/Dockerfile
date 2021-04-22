@@ -5,7 +5,7 @@ apt-get -y install dpkg-dev sudo apt-utils dh-make bzr-builddeb equivs xz-utils 
 apt-get -y install python3-pip && \
 pip3 install Cheetah3 
 WORKDIR /home
-RUN pwd && ls && pwd && apt-get update && git clone https://github.com/pervices/pvpkg.git && \
+RUN pwd && ls && pwd && ls && apt-get update && git clone https://github.com/pervices/pvpkg.git && \
 cd pvpkg/ubuntu/20.04UHDDeb && \ 
 mv uhdpv_3.13.0.orig.tar.gz uhdpv_3.13.0-1.debian.tar.xz uhdpv_3.13.0-1.dsc /home
 WORKDIR /home
