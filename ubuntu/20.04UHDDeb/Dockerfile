@@ -8,7 +8,7 @@ WORKDIR /home/notroot/gnuradio
 WORKDIR /home/notroot/testing
 WORKDIR /home/notroot/libuhd
 WORKDIR /home/notroot
-RUN apt-get update && git clone https://github.com/pervices/pvpkg.git && \
+RUN apt-get update && ls && git clone https://github.com/pervices/pvpkg.git && \
 cd pvpkg/Arch && \
 mv variables.sh /home/notroot/testing && \
 mv tests /home/notroot/testing && \
