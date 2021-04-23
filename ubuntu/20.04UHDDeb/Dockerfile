@@ -8,7 +8,7 @@ WORKDIR /home/notroot/gnuradio
 WORKDIR /home/notroot/testing
 WORKDIR /home/notroot/libuhd
 WORKDIR /home/notroot
-RUN apt-get update && pwd && ls && git clone https://github.com/pervices/pvpkg.git && \
+RUN apt-get update && pwd && ls && pwd && git clone https://github.com/pervices/pvpkg.git && \
 cd pvpkg/Arch && \
 mv variables.sh /home/notroot/testing && \
 mv tests /home/notroot/testing && \
@@ -26,7 +26,7 @@ RUN cd uhdpv-3.13.0 && dpkg-buildpackage --pre-clean --post-clean -i -us -uc
 WORKDIR /home/notroot/gnuradio
 RUN dpkg-source -x --no-check gnuradio_3.8.1.0~rc1-2build2.dsc && \
 cd gnuradio-3.8.1.0~rc1/debian && \
-mk-build-deps -i -r --tool 'apt-get -f --yes' control 
+mk-build-deps -i --tool 'apt-get -f --yes' control 
 RUN cd gnuradio-3.8.1.0~rc1 && dpkg-buildpackage --pre-clean --post-clean -i -us -uc
 WORKDIR /home/notroot/testing
 RUN chmod +x test-only.sh && \
