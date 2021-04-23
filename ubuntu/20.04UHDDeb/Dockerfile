@@ -25,7 +25,7 @@ mk-build-deps -i -r --tool 'apt-get -f --yes' control
 RUN cd uhdpv-3.13.0 && dpkg-buildpackage --pre-clean --post-clean -i -us -uc
 WORKDIR /home/notroot/gnuradio
 RUN dpkg-source -x --no-check gnuradiopv_3.10.0-1.dsc && \
-cd gnuradio-3.8.1.0~rc1/debian && \
+cd gnuradio-3.8.1.0/debian && \
 mk-build-deps -i -r --tool 'apt-get -f --yes' control 
 RUN cd gnuradiopv-3.10.0 && dpkg-buildpackage --pre-clean --post-clean -i -us -uc
 WORKDIR /home/notroot/testing
