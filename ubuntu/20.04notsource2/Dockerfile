@@ -5,7 +5,7 @@ apt-get -y install dpkg-dev sudo apt-utils dh-make bzr-builddeb equivs xz-utils 
 apt-get -y install python3-pip && \
 pip3 install Cheetah3 
 WORKDIR /home/notroot/gnuradio
-RUN apt-get update && ls && git clone https://github.com/pervices/pvpkg.git && \
+RUN apt-get update && ls && ls && git clone https://github.com/pervices/pvpkg.git && \
 cd pvpkg/ubuntu/20.04notsource2 && \
 mv gnuradiopv_3.10.0.orig.tar.gz gnuradiopv_3.10.0-1.dsc gnuradiopv_3.10.0-1.debian.tar.xz /home/notroot/gnuradio
 WORKDIR /home/notroot/gnuradio
