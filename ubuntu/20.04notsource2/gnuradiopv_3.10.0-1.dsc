@@ -10,11 +10,11 @@ Build-Depends: cmake, debhelper (>= 12~), dh-python, doxygen, gir1.2-gtk-3.0, gi
 Package-List:
  gnuradiopv deb unknown optional arch=any
 Checksums-Sha1:
- 88476fb5bfb96bef0d70240e0cc24b4e366513b9 4325253 gnuradiopv_3.10.0.orig.tar.gz
+ 6c65b56295d146f8440929238c7e47bc4654531e 4325593 gnuradiopv_3.10.0.orig.tar.gz
  a39e14bb22566e7bcfcdcf109c9a3e3813fe0af2 17088 gnuradiopv_3.10.0-1.debian.tar.xz
 Checksums-Sha256:
- b9b10a0ca6fd0fe1aa7014f93666b0ea8377636e00a70366184d088b9d1d45d2 4325253 gnuradiopv_3.10.0.orig.tar.gz
+ b8709e44f5d2ab5f5c752771be0363c8ca446301d46478d4584961ca4e4209b9 4325593 gnuradiopv_3.10.0.orig.tar.gz
  9e1ec90b961cd7b7a5de8a398a2d22aec38218b6d62952f22788b173eb55d937 17088 gnuradiopv_3.10.0-1.debian.tar.xz
 Files:
- c38804d70d13fdd8490ada80f8b7a93b 4325253 gnuradiopv_3.10.0.orig.tar.gz
+ cc1f7848674410457456055797d47aad 4325593 gnuradiopv_3.10.0.orig.tar.gz
  e21517cea87131303dbc6e7cf498f599 17088 gnuradiopv_3.10.0-1.debian.tar.xz
