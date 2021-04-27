@@ -23,6 +23,7 @@ RUN dpkg-source -x --no-check uhdpv_3.13.0-1.dsc && \
 cd uhdpv-3.13.0/debian && \
 mk-build-deps -i -r --tool 'apt-get -f --yes' control
 RUN cd uhdpv-3.13.0 && dpkg-buildpackage --pre-clean --post-clean -us -uc && \
+cd .. && \
 dpkg -i uhdpv_3.13.0-1_amd64.deb
 WORKDIR /home/notroot/gnuradio
 RUN dpkg-source -x --no-check gnuradio_3.8.1.0~rc1-2build2.dsc && \
