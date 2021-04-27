@@ -30,7 +30,10 @@ RUN dpkg-source -x --no-check gnuradio_3.8.1.0~rc1-2build2.dsc && \
 cd gnuradio-3.8.1.0~rc1/debian && \
 mk-build-deps -i -r --tool 'apt-get -f --yes' control
 RUN cd gnuradio-3.8.1.0~rc1 && dpkg-buildpackage --pre-clean --post-clean -i -us -uc && \ 
-sleep 10000
+cd .. && \
+dpkg -i libgnuradio*.deb && \  
+apt -y --fix-broken install && \
+dpkg -i gnuradio_3.8.1.0~rc1-2build2_amd64.deb
 WORKDIR /home/notroot/testing
 RUN chmod +x test-only.sh && \
 chmod +x variables.sh && \
