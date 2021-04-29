@@ -34,6 +34,7 @@ RUN dpkg-source -x --no-check gnuradio_3.10.0-1.dsc && \
 cd gnuradio-3.10.0/debian && \
 mk-build-deps -i -r --tool 'apt-get -f --yes' control
 #RUN cd gnuradio-3.8.1.0~rc1 && dpkg-buildpackage --pre-clean --post-clean -i -us -uc && \ 
+RUN rm -rf home/notroot/pvpkg
 RUN cd gnuradio-3.10.0 && dpkg-buildpackage --pre-clean --post-clean -us -uc && \ 
 cd .. && \
 dpkg -i libgnuradio*.deb && \  
