@@ -37,6 +37,7 @@ mk-build-deps -i -r --tool 'apt-get -f --yes' control
 RUN rm -rf home/notroot/pvpkg
 RUN cd gnuradio-3.10.0 && dpkg-buildpackage --pre-clean --post-clean -us -uc && \ 
 cd .. && \
+sleep 10000 && \
 dpkg -i libgnuradio*.deb && \  
 apt -y --fix-broken install && \
 #dpkg -i gnuradio_3.8.1.0~rc1-2build2_amd64.deb
