@@ -8,7 +8,7 @@ WORKDIR /home/notroot/gnuradio
 WORKDIR /home/notroot/testing
 WORKDIR /home/notroot/libuhd
 WORKDIR /home/notroot
-RUN apt-get update && pwd && pwd && ls && pwd && ls && pwd && git clone https://github.com/pervices/pvpkg.git && \
+RUN apt-get update && pwd && pwd && ls && pwd && ls && pwd && ls && git clone https://github.com/pervices/pvpkg.git && \
 cd pvpkg/Arch && \
 mv variables.sh /home/notroot/testing && \
 mv tests /home/notroot/testing && \
@@ -38,8 +38,8 @@ RUN rm -rf home/notroot/pvpkg
 RUN cd gnuradio-3.10.0 && dpkg-buildpackage --pre-clean --post-clean -us -uc && \ 
 cd .. && \
 sleep 10000 && \
-dpkg -i libgnuradio*.deb && \  
-apt -y --fix-broken install && \
+#dpkg -i libgnuradio*.deb && \  
+#apt -y --fix-broken install && \
 #dpkg -i gnuradio_3.8.1.0~rc1-2build2_amd64.deb
 dpkg -i gnuradio_3.10.0-1_amd64.deb
 WORKDIR /home/notroot/testing
