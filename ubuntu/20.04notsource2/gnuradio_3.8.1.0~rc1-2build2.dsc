@@ -33,10 +33,10 @@ Package-List:
  libgnuradio-zeromq3.8.1 deb libs optional arch=kfreebsd-any,linux-any
 Checksums-Sha1:
  8a747ee7d51f9b7fa80bcda6c6823409100e0e4e 3032552 gnuradio_3.8.1.0~rc1.orig.tar.xz
- 8a3d48e31c13de0b305eed4dbc912893cdecc994 1475184 gnuradio_3.8.1.0~rc1-2build2.debian.tar.xz
+ e0415c621207102e4eec1c086e8c6d2646850b42 1475968 gnuradio_3.8.1.0~rc1-2build2.debian.tar.xz
 Checksums-Sha256:
  ee056a2a015ea779d33f40dc773545d4d27346dc41e9715b90147e2b4c04da59 3032552 gnuradio_3.8.1.0~rc1.orig.tar.xz
- b97e522100507cd7b2b972a96ed2449dc5a0d222bde75ca13108a09455c58921 1475184 gnuradio_3.8.1.0~rc1-2build2.debian.tar.xz
+ 84529d93ef8c643762e8e3729984a94ff6830ea581b324249d3b64355aba2daf 1475968 gnuradio_3.8.1.0~rc1-2build2.debian.tar.xz
 Files:
  fc1b1f1e6f442ba4e54bd5ad304a3798 3032552 gnuradio_3.8.1.0~rc1.orig.tar.xz
- f5ccaae0f7c7e0f6429162ee0927aa14 1475184 gnuradio_3.8.1.0~rc1-2build2.debian.tar.xz
+ 8c6c7102b79820c3b6be34fcc71ce500 1475968 gnuradio_3.8.1.0~rc1-2build2.debian.tar.xz
