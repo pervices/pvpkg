@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<descriptor>
+
+<gcc_options>
+  -fPIC
+  -g
+  -O2
+  -fstack-protector-strong
+  -Wformat
+  -Werror=format-security
+  -Wdate-time
+  -D_FORTIFY_SOURCE=2
+  -fvisibility=hidden
+  -Wsign-compare
+  -Wall
+  -Wno-uninitialized
+</gcc_options>
+
+<headers>
+debian/gnuradio-dev/usr/include/
+</headers>
+
+<skip_including>
+debian/gnuradio-dev/usr/include/gnuradio/uhd
+</skip_including>
+
+<libs>
+debian/libgnuradio-analog3.8/usr/lib/
+debian/libgnuradio-atsc3.8/usr/lib/
+debian/libgnuradio-audio3.8/usr/lib/
+debian/libgnuradio-comedi3.8/usr/lib/
+debian/libgnuradio-blocks3.8/usr/lib/
+debian/libgnuradio-channels3.8/usr/lib/
+debian/libgnuradio-digital3.8/usr/lib/
+debian/libgnuradio-dtv3.8/usr/lib/
+debian/libgnuradio-fec3.8/usr/lib/
+debian/libgnuradio-fcd3.8/usr/lib/
+debian/libgnuradio-filter3.8/usr/lib/
+debian/libgnuradio-fft3.8/usr/lib/
+debian/libgnuradio-noaa3.8/usr/lib/
+debian/libgnuradio-pager3.8/usr/lib/
+debian/libgnuradio-pmt3.8/usr/lib/
+debian/libgnuradio-qtgui3.8/usr/lib/
+debian/libgnuradio-runtime3.8/usr/lib/
+debian/libgnuradio-trellis3.8/usr/lib/
+debian/libgnuradio-uhd3.8/usr/lib/
+debian/libgnuradio-video-sdl3.8/usr/lib/
+debian/libgnuradio-vocoder3.8/usr/lib/
+debian/libgnuradio-wavelet3.8/usr/lib/
+debian/libgnuradio-wxgui3.8/usr/lib/
+debian/libgnuradio-zeromq3.8/usr/lib/
+</libs>
+
+</descriptor>
