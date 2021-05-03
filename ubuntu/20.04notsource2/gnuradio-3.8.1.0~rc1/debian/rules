@@ -24,3 +24,6 @@ override_dh_acc:
 override_dh_installmime:
 	dh_installmime
 	rm -f debian/gnuradio/usr/share/mime/packages/gnuradio.xml
+
+override_dh_shlibdeps:
+	dh_shlibdeps --dpkg-shlibdeps-params=--ignore-missing-info
