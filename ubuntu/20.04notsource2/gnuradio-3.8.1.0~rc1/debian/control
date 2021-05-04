@@ -359,3 +359,10 @@ Description: gnuradio zeromq functions
  PUB/SUB, PUSH/PULL, REP/REQ models supported.
  .
  Part of the main gnuradio build.
+
+Package: libgnuradio-network3.8.1
+Section: libs
+Architecture: any
+Pre-Depends: ${misc:Pre-Depends}
+Depends: ${misc:Depends}, ${shlibs:Depends}
+Multi-Arch: same

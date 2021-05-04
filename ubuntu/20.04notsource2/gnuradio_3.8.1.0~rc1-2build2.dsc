@@ -1,6 +1,6 @@
 Format: 3.0 (quilt)
 Source: gnuradio
-Binary: gnuradio, gnuradio-doc, gnuradio-dev, libgnuradio-analog3.8.1, libgnuradio-audio3.8.1, libgnuradio-blocks3.8.1, libgnuradio-channels3.8.1, libgnuradio-digital3.8.1, libgnuradio-dtv3.8.1, libgnuradio-fec3.8.1, libgnuradio-fft3.8.1, libgnuradio-filter3.8.1, libgnuradio-pmt3.8.1, libgnuradio-qtgui3.8.1, libgnuradio-runtime3.8.1, libgnuradio-trellis3.8.1, libgnuradio-uhd3.8.1, libgnuradio-video-sdl3.8.1, libgnuradio-vocoder3.8.1, libgnuradio-wavelet3.8.1, libgnuradio-zeromq3.8.1
+Binary: gnuradio, gnuradio-doc, gnuradio-dev, libgnuradio-analog3.8.1, libgnuradio-audio3.8.1, libgnuradio-blocks3.8.1, libgnuradio-channels3.8.1, libgnuradio-digital3.8.1, libgnuradio-dtv3.8.1, libgnuradio-fec3.8.1, libgnuradio-fft3.8.1, libgnuradio-filter3.8.1, libgnuradio-pmt3.8.1, libgnuradio-qtgui3.8.1, libgnuradio-runtime3.8.1, libgnuradio-trellis3.8.1, libgnuradio-uhd3.8.1, libgnuradio-video-sdl3.8.1, libgnuradio-vocoder3.8.1, libgnuradio-wavelet3.8.1, libgnuradio-zeromq3.8.1, libgnuradio-network3.8.1
 Architecture: any all
 Version: 3.8.1.0~rc1-2build2
 Maintainer: A. Maitland Bottoms <bottoms@debian.org>
@@ -22,6 +22,7 @@ Package-List:
  libgnuradio-fec3.8.1 deb libs optional arch=any
  libgnuradio-fft3.8.1 deb libs optional arch=any
  libgnuradio-filter3.8.1 deb libs optional arch=any
+ libgnuradio-network3.8.1 deb libs optional arch=any
  libgnuradio-pmt3.8.1 deb libs optional arch=any
  libgnuradio-qtgui3.8.1 deb libs optional arch=kfreebsd-any,linux-any
  libgnuradio-runtime3.8.1 deb libs optional arch=any
@@ -33,10 +34,10 @@ Package-List:
  libgnuradio-zeromq3.8.1 deb libs optional arch=kfreebsd-any,linux-any
 Checksums-Sha1:
  4e22347ea3838a5b105eb9e1bfc7ffb6d31f273e 3034100 gnuradio_3.8.1.0~rc1.orig.tar.xz
- 879ac193e9f9fb0056d77fdbc18f566b80ba1d90 1474892 gnuradio_3.8.1.0~rc1-2build2.debian.tar.xz
+ 307cbd0c84d9d595e7e16b62cb884b20811c6c4f 1474944 gnuradio_3.8.1.0~rc1-2build2.debian.tar.xz
 Checksums-Sha256:
  c77f3efed196b2e5e98dd3612beb6fa280e5a3fc2257761b1e475f0a20a23780 3034100 gnuradio_3.8.1.0~rc1.orig.tar.xz
- 7a23826d73bca3448916489c462c489dac8e6a52bd501a52c559d7f3b5bfa486 1474892 gnuradio_3.8.1.0~rc1-2build2.debian.tar.xz
+ 05ca79cfae385a2951d55cd1f3b98d0143cc0125a32096af6d2ddc9ad66bd107 1474944 gnuradio_3.8.1.0~rc1-2build2.debian.tar.xz
 Files:
  f9a76629f4a43d2b22eb4fe3d952e1ad 3034100 gnuradio_3.8.1.0~rc1.orig.tar.xz
- 14b158c821d9f524ec8bc301b575d332 1474892 gnuradio_3.8.1.0~rc1-2build2.debian.tar.xz
+ 7f8b32d6a847913045be77e71370a3bc 1474944 gnuradio_3.8.1.0~rc1-2build2.debian.tar.xz
