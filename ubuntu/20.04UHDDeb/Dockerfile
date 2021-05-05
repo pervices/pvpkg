@@ -46,4 +46,5 @@ RUN chmod +x test-only.sh && \
 chmod +x variables.sh && \
 chmod +x tests && \
 ldconfig && \
+sleep 10000 &&\
 ./test-only.sh
