@@ -88,16 +88,16 @@ pipeline {
 
              }
              
-               stage('Ubuntu 20.04 PV libUHD and Gnuradio from Source') { 
+              // stage('Ubuntu 20.04 PV libUHD and Gnuradio from Source') { 
 
-                   steps { 
+               //    steps { 
 
-                      script { 
-                              dir("${env.WORKSPACE}/ubuntu/20.04notsource2") {
-                                       dockerImageUbuntu2004 = docker.build(registry + ":$BUILD_NUMBER", "--network host .") 
-                }
-               }
-           } 
+                //      script { 
+               //               dir("${env.WORKSPACE}/ubuntu/20.04notsource2") {
+             //                          dockerImageUbuntu2004 = docker.build(registry + ":$BUILD_NUMBER", "--network host .") 
+             //   }
+            //   }
+        //   } 
 
       }
 
