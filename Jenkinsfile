@@ -6,7 +6,7 @@ pipeline {
 
         registryCredential = '85454c7d-a176-4e4c-94c2-d415e42a4cc3' 
 
-        dockerImageArchLatest = '' 
+        dockerImageArch = '' 
         dockerImageArchPython2= ''
         dockerImageCentos8 = '' 
         dockerImageUbuntu1804 = '' 
@@ -25,31 +25,14 @@ pipeline {
         stage('Build UHD and GNU Radio') {
         parallel {
 
-              //stage('ArchLinux') { 
-
-                 // steps { 
-		      //Build Image
-
-                      // script { 
-                        //      dir("${env.WORKSPACE}/Arch") {
-                    	//	      dockerImageArch = docker.build(registry + ":$BUILD_NUMBER", "--network host .") 
-                  	//}
-		       //Test with pvtests
-
-		      //If passed, save UHD package.
-                     // }
-                //  } 
-
-           //   }
-
-                stage('ArchLinuxLatestImage') { 
+                stage('ArchLinux') { 
 
                   steps { 
 		      //Build Image
 
                       script { 
-                              dir("${env.WORKSPACE}/ArchlinuxLatestImage") {
-                    		      dockerImageArchLatest = docker.build(registry + ":$BUILD_NUMBER", "--network host .") 
+                              dir("${env.WORKSPACE}/Arch") {
+                    		      dockerImageArch = docker.build(registry + ":$BUILD_NUMBER", "--network host .") 
                   	}
 		       //Test with pvtests
 
@@ -75,13 +58,13 @@ pipeline {
 
 
 
-               stage('Ubuntu 20.04 PV libUHD') { 
+               stage('Ubuntu 20.04 PV Debian') { 
 
                    steps { 
 
                       script { 
-                             dir("${env.WORKSPACE}/ubuntu/20.04UHDDeb") {
-                                     dockerImageUbuntu1804 = docker.build(registry + ":$BUILD_NUMBER", "--network host .") 
+                             dir("${env.WORKSPACE}/ubuntu/20.04Debian") {
+                                     dockerImageUbuntu2004 = docker.build(registry + ":$BUILD_NUMBER", "--network host .") 
                         }
                        }
                      } 
@@ -94,7 +77,7 @@ pipeline {
 
                 //      script { 
                //               dir("${env.WORKSPACE}/ubuntu/20.04notsource2") {
-             //                          dockerImageUbuntu2004 = docker.build(registry + ":$BUILD_NUMBER", "--network host .") 
+             //                          dockerImageUbuntu1804 = docker.build(registry + ":$BUILD_NUMBER", "--network host .") 
              //   }
             //   }
         //   } 

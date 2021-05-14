@@ -1,2 +1,0 @@
-A QT_GUI_Bercurve_Sink example can be found at ~/gnuradio/gr-fec/examples/ber_curve_gen.grc
-
