@@ -8,8 +8,7 @@ rpm -ivh ./gnuradio-3.8.0.0-6.el8.src.rpm && \
 cd /root/rpmbuild/SPECS && \
 dnf builddep --enablerepo=powertools -y gnuradio.spec && \
 rpmbuild -bp gnuradio.spec && \
-rpmbuild -ba --define 'debug_package %{nil}' gnuradio.spec && \
-sleep 10000
+rpmbuild -ba --define 'debug_package %{nil}' gnuradio.spec
  
 
 
