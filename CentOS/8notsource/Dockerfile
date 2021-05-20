@@ -18,9 +18,8 @@ WORKDIR /root/rpmbuild/SPECS
 RUN dnf builddep --enablerepo=powertools -y gnuradio.spec && \
 rpmbuild -bp gnuradio.spec && \
 rpmbuild --rebuild --define 'debug_package %{nil}' /pvpkg/CentOS/8notsource/gnuradio-3.8.0.0-6.el8.src.rpm && \
-sleep 10000
- 
-
+cd ../RPMS/x86_64 && \
+rpm -i *gnuradio*.rpm 
 
 
 
