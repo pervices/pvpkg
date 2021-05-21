@@ -10,9 +10,9 @@ rpm -ivh ./gnuradio-3.8.0.0-6.el8.src.rpm
 WORKDIR /home/notroot
 WORKDIR testing
 WORKDIR /pvpkg/Testing
-RUN mv variables.sh /testing && \
-mv tests /testing && \
-mv test-only.sh /testing
+RUN mv variables.sh /home/notroot/testing && \
+mv tests home/notroot/testing && \
+mv test-only.sh home/notroot/testing
 WORKDIR /root/rpmbuild/SPECS 
 RUN dnf builddep --enablerepo=powertools -y uhd.spec && \
 rpmbuild -bp uhd.spec && \
