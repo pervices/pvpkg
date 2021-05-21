@@ -7,7 +7,7 @@ cd pvpkg/CentOS/8notsource && \
 wget https://download-ib01.fedoraproject.org/pub/epel/8/Everything/SRPMS/Packages/u/uhd-3.15.0.0-0.1.rc2.el8.src.rpm && \
 rpm -ivh ./uhd-3.15.0.0-0.1.rc2.el8.src.rpm && \
 rpm -ivh ./gnuradio-3.8.0.0-6.el8.src.rpm 
-WORDKDIR /testing
+WORKDIR /testing
 WORKDIR /pvpkg/Testing
 RUN mv variables.sh /testing && \
 mv tests /testing && \
