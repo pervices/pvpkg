@@ -6,9 +6,14 @@ git clone https://github.com/pervices/pvpkg.git && \
 cd pvpkg/CentOS/8notsource && \
 wget https://download-ib01.fedoraproject.org/pub/epel/8/Everything/SRPMS/Packages/u/uhd-3.15.0.0-0.1.rc2.el8.src.rpm && \
 rpm -ivh ./uhd-3.15.0.0-0.1.rc2.el8.src.rpm && \
-rpm -ivh ./gnuradio-3.8.0.0-6.el8.src.rpm && \
-cd /root/rpmbuild/SPECS && \
-dnf builddep --enablerepo=powertools -y uhd.spec && \
+rpm -ivh ./gnuradio-3.8.0.0-6.el8.src.rpm 
+WORDKDIR /testing
+WORKDIR /pvpkg/Testing
+RUN mv variables.sh /testing && \
+mv tests /testing && \
+mv test-only.sh /testing
+WORKDIR /root/rpmbuild/SPECS 
+RUN dnf builddep --enablerepo=powertools -y uhd.spec && \
 rpmbuild -bp uhd.spec && \
 rpmbuild --rebuild --define 'debug_package %{nil}' /pvpkg/CentOS/8notsource/uhd-3.15.0.0-0.1.rc2.el8.src.rpm && \   
 cd ../RPMS/x86_64 && \
@@ -20,6 +25,8 @@ rpmbuild -bp gnuradio.spec && \
 rpmbuild --rebuild --define 'debug_package %{nil}' /pvpkg/CentOS/8notsource/gnuradio-3.8.0.0-6.el8.src.rpm && \
 cd ../RPMS/x86_64 && \
 rpm -i *gnuradio*.rpm 
-
-
-
+WORKDIR /testing
+RUN chmod +x test-only.sh && \
+chmod +x variables.sh && \
+chmod +x tests && \
+./test-only.sh
