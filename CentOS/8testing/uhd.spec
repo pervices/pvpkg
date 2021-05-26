@@ -199,10 +199,6 @@ exit 0
 %doc _tmpdoc/*
 %{_bindir}/uhd_*
 %{_bindir}/usrp2_*
-%{_prefix}/lib/udev/rules.d/10-usrp-uhd.rules
-%config(noreplace) %{_sysconfdir}/security/limits.d/*.conf
-%{_libdir}/lib*.so.*
-%{_libexecdir}/uhd
 %{_mandir}/man1/*.1*
 %{_datadir}/uhd
 %{python3_sitearch}/uhd
