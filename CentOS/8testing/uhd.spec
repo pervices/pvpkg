@@ -153,10 +153,6 @@ make install DESTDIR=%{buildroot}
 # Remove tests, examples binaries
 rm -rf %{buildroot}%{_libdir}/uhd/{tests,examples}
 
-# Move the utils stuff to libexec dir
-mkdir -p %{buildroot}%{_libexecdir}/uhd
-mv %{buildroot}%{_libdir}/uhd/utils/* %{buildroot}%{_libexecdir}/uhd
-
 popd
 # Package base docs to base package
 mkdir _tmpdoc

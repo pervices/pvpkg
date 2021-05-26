@@ -8,4 +8,4 @@ mv uhd.spec /root/rpmbuild/SPECS && \
 mv master.tar.gz /root/rpmbuild/SOURCES
 WORKDIR /root/rpmbuild/SPECS
 RUN dnf builddep --enablerepo=powertools -y uhd.spec && \
-sleep 10000
+rpmbuild -ba uhd.spec
