@@ -5,7 +5,7 @@ rpmdev-setuptree && \
 ls && git clone https://github.com/pervices/pvpkg.git && \
 cd pvpkg/CentOS/8testing && \
 mv uhd.spec /root/rpmbuild/SPECS && \
-mc master.tar.gz /root/rpmbuild/SOURCES
+mv master.tar.gz /root/rpmbuild/SOURCES
 WORKDIR /root/rpmbuild/SPECS
 RUN dnf builddep --enablerepo=powertools -y uhd.spec && \
 sleep 10000
