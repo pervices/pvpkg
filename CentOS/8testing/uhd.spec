@@ -121,11 +121,13 @@ exit 0
 
 %files
 %doc _tmpdoc/*
-%{_bindir}/uhd_*
-%{_bindir}/usrp2_*
+%doc %{_docdir}/%{name}/doxygen
+%{_includedir}/*
+%{_bindir}/*
 %{_mandir}/man1/*.1*
 %{_datadir}/uhd
 %{python3_sitearch}/uhd
+
 
 
 
