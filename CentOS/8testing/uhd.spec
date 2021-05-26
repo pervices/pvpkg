@@ -150,11 +150,6 @@ find . -type f -name "*.py" -exec sed -i '/^#!/ s|.*|#!%{__python3}|' {} \;
 pushd host/build
 make install DESTDIR=%{buildroot}
 
-# Fix udev rules and use dynamic ACL management for device
-sed -i 's/BUS==/SUBSYSTEM==/;s/SYSFS{/ATTRS{/;s/MODE:="0666"/GROUP:="usrp" MODE:="0660", ENV{ID_SOFTWARE_RADIO}="1"/' %{buildroot}%{_libdir}/uhd/utils/uhd-usrp.rules
-mkdir -p %{buildroot}%{_prefix}/lib/udev/rules.d
-mv %{buildroot}%{_libdir}/uhd/utils/uhd-usrp.rules %{buildroot}%{_prefix}/lib/udev/rules.d/10-usrp-uhd.rules
-
 # Remove tests, examples binaries
 rm -rf %{buildroot}%{_libdir}/uhd/{tests,examples}
 
