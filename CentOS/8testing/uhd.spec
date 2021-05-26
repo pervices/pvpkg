@@ -29,7 +29,7 @@ BuildRequires:  wireshark-devel
 %endif
 BuildRequires:  python3-mako, python3-requests, python3-devel, tar
 %if ! %{with binary_firmware}
-BuildRequires:  sdcc sed
+BuildRequires: sed
 %endif
 Requires(pre):  shadow-utils, glibc-common
 Requires:       python3-tkinter
