@@ -127,6 +127,10 @@ exit 0
 %{_mandir}/man1/*.1*
 %{_datadir}/uhd
 %{python3_sitearch}/uhd
+%exclude /usr/lib/debug/*
+/usr/lib/*
+
+
 
 
 
