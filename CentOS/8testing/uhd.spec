@@ -1,31 +1,18 @@
-#%%global git_commit c52f3f41806622c95573de21be042f966f675543
-#%%global git_date 201904023
-
-#%%global git_short_commit %%(echo %{git_commit} | cut -c -8)
-#%%global git_suffix %%{git_date}git%{git_short_commit}
-
-# By default include binary_firmware, otherwise try to rebuild
-# the firmware from sources. If you want to rebuild all firmware
-# images you need to install appropriate tools (e.g. Xilinx ISE).
-%bcond_without binary_firmware
-
-# By default do not build with wireshark support, it's currently
-# broken (upstream ticket #268)
-%bcond_with wireshark
-
-# NEON support is by default disabled on ARMs
-# building with --with=neon will enable auto detection
+%ifarch aarch64
+%bcond_without neon
+%else
 %bcond_with neon
-
-%global wireshark_dissectors chdr zpu octoclock
-%global wireshark_ver %((%{__awk} '/^#define VERSION[ \t]+/ { print $NF }' /usr/include/wireshark/config.h 2>/dev/null||echo none)|/usr/bin/tr -d '"')
-
-%ifarch %{arm} aarch64
-%if ! %{with neon}
-%global have_neon -DHAVE_ARM_NEON_H=0
-%endif
 %endif
 
+%ifarch %{arm}
+%if %{with neon}
+%global my_optflags %(echo -n "%{optflags}" | sed 's/-mfpu=[^ \\t]\\+//g'; echo " -mfpu=neon")
+%{expand: %global optflags %{my_optflags}}
+%global mfpu_neon -Dhave_mfpu_neon=1
+%else
+%global mfpu_neon -Dhave_mfpu_neon=0
+%endif
+%endif
 
 Name:           uhd
 URL:            http://github.com/pervices/uhd
@@ -55,44 +42,6 @@ The UHD is the universal hardware driver for Ettus Research products.
 The goal of the UHD is to provide a host driver and API for current and
 future Ettus Research products. It can be used standalone without GNU Radio.
 
-%package firmware
-Summary:        Firmware files for UHD
-Requires:       %{name} = %{version}-%{release}
-BuildArch:      noarch
-
-%description firmware
-Firmware files for the Universal Hardware driver (UHD).
-
-%package devel
-Summary:        Development files for UHD
-Requires:       %{name} = %{version}-%{release}
-
-%description devel
-Development files for the Universal Hardware Driver (UHD).
-
-%package doc
-Summary:        Documentation files for UHD
-BuildArch:      noarch
-
-%description doc
-Documentation for the Universal Hardware Driver (UHD).
-
-%package tools
-Summary:        Tools for working with / debugging USRP device
-Requires:       %{name} = %{version}-%{release}
-
-%description tools
-Tools that are useful for working with and/or debugging USRP device.
-
-%if %{with wireshark}
-%package wireshark
-Summary:        Wireshark dissector plugins
-Requires:       %{name} = %{version}-%{release}
-Requires:       wireshark = %{wireshark_ver}
-
-%description wireshark
-Wireshark dissector plugins.
-%endif
 
 %prep
 %setup -q -n %{name}-master
@@ -204,23 +153,5 @@ exit 0
 %{python3_sitearch}/uhd
 
 
-%files devel
-%{_includedir}/*
-%{_libdir}/lib*.so
-%{_libdir}/cmake/uhd/*.cmake
-%{_libdir}/pkgconfig/*.pc
-
-%files doc
-%doc %{_docdir}/%{name}/doxygen
-
-%files tools
-%doc tools/README.md
-%{_bindir}/usrp_x3xx_fpga_jtag_programmer.sh
-%{_bindir}/chdr_log
-
-%if %{with wireshark}
-%files wireshark
-%{_libdir}/wireshark/plugins/*
-%endif
 
 %changelog
