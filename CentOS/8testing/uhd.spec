@@ -203,9 +203,6 @@ exit 0
 %{_datadir}/uhd
 %{python3_sitearch}/uhd
 
-%files firmware
-%dir %{_datadir}/uhd/images
-%{_datadir}/uhd/images/*
 
 %files devel
 %{_includedir}/*
