@@ -71,18 +71,18 @@ pipeline {
 
              }
              
-              // stage('Ubuntu 20.04 PV libUHD and Gnuradio from Source') { 
+               stage('CentOS8 RPM Generation and Testing') { 
 
-               //    steps { 
+                   steps { 
 
-                //      script { 
-               //               dir("${env.WORKSPACE}/ubuntu/20.04notsource2") {
-             //                          dockerImageUbuntu1804 = docker.build(registry + ":$BUILD_NUMBER", "--network host .") 
-             //   }
-            //   }
-        //   } 
+                      script { 
+                              dir("${env.WORKSPACE}/CentOS/8testing") {
+                                       dockerImageUbuntu1804 = docker.build(registry + ":$BUILD_NUMBER", "--network host .") 
+                }
+               }
+           } 
 
-     // }
+      }
 
        }
       }
