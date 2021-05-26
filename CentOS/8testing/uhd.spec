@@ -34,7 +34,7 @@ Release:        master
 License:        GPLv3+
 BuildRequires:  gcc-c++
 BuildRequires:  cmake
-BuildRequires:  boost-devel, libusb1-devel, python3-cheetah, ncurses-devel
+BuildRequires:  boost-python3-devel, libusb1-devel, python3-cheetah, ncurses-devel
 BuildRequires:  python3-docutils, doxygen, pkgconfig, libpcap-devel
 BuildRequires:  python3-numpy, vim-common
 %if %{with wireshark}
@@ -158,11 +158,6 @@ popd
 mkdir _tmpdoc
 mv %{buildroot}%{_docdir}/%{name}/{LICENSE,README.md} _tmpdoc
 
-install -m 644 -D %{SOURCE1} %{buildroot}%{_sysconfdir}/security/limits.d/99-usrp.conf
-
-# firmware
-mkdir -p %{buildroot}%{_datadir}/uhd/images
-cp -r images/images/* %{buildroot}%{_datadir}/uhd/images
 
 # remove win stuff
 rm -rf %{buildroot}%{_datadir}/uhd/images/winusb_driver
