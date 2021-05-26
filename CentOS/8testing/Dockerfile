@@ -8,5 +8,7 @@ mv uhd.spec /root/rpmbuild/SPECS && \
 mv master.tar.gz /root/rpmbuild/SOURCES
 WORKDIR /root/rpmbuild/SPECS
 RUN dnf builddep --enablerepo=powertools -y uhd.spec && \
-QA_RPATHS=$(( 0x0001|0x0002 )) rpmbuild -ba uhd.spec
-RUN sleep 10000 
+QA_RPATHS=$(( 0x0001|0x0002 )) rpmbuild -ba uhd.spec && \
+cd ../RPMS/x86_64 && \
+rpm -i uhd*.rpm && \
+uhd_usrp_probe

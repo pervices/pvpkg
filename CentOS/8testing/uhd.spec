@@ -23,7 +23,7 @@ BuildRequires:  gcc-c++
 BuildRequires:  cmake
 BuildRequires:  boost-python3-devel, libusb1-devel, python3-cheetah, ncurses-devel
 BuildRequires:  python3-docutils, doxygen, pkgconfig, libpcap-devel
-BuildRequires:  python3-numpy, vim-common
+BuildRequires:  python3-numpy, python3-tkinter, vim-common
 %if %{with wireshark}
 BuildRequires:  wireshark-devel
 %endif
