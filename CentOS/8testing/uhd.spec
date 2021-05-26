@@ -47,18 +47,13 @@ future Ettus Research products. It can be used standalone without GNU Radio.
 %setup -q -n %{name}-master
 
 
-# fix python shebangs
-find . -type f -name "*.py" -exec sed -i '/^#!/ s|.*|#!%{__python3}|' {} \;
 
 %build
 # firmware
 %if ! %{with binary_firmware}
 # rebuilt from sources
 export PATH=$PATH:%{_libexecdir}/sdcc
-pushd images
 sed -i '/-name "\*\.twr" | xargs grep constraint | grep met/ s/^/#/' Makefile
-make %{?_smp_mflags} images
-popd
 %endif
 
 mkdir -p host/build
@@ -74,19 +69,6 @@ pushd tools/uhd_dump
 make %{?_smp_mflags} CFLAGS="%{optflags}" LDFLAGS="%{?__global_ldflags}"
 popd
 
-%if %{with wireshark}
-# wireshark dissectors
-pushd tools/dissectors
-for d in %{wireshark_dissectors}
-do
-  mkdir "build_$d"
-  pushd "build_$d"
-  %cmake -DETTUS_DISSECTOR_NAME="$d" ../
-  make %{?_smp_mflags}
-  popd
-done
-popd
-%endif
 
 #%%check
 #cd host/build
