@@ -9,6 +9,9 @@ mv maint-3.9.tar.gz /root/rpmbuild/SOURCES && \
 ls && ls && git clone https://github.com/pervices/pvpkg.git && \
 cd pvpkg/CentOS/8testing && \
 mv uhd.spec gnuradio.spec /root/rpmbuild/SPECS 
+WORKDIR /root/rpmbuild/SPECS
+RUN dnf builddep --enablerepo=powertools -y gnuradio.spec
+WORKDIR /home
 RUN  git clone --recursive https://github.com/gnuradio/volk.git && \
 cd volk && \
 mkdir build && \
