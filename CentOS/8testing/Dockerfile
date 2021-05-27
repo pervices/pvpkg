@@ -3,10 +3,9 @@ RUN yum -y update && \
 yum -y install dnf-plugins-core epel-release make gcc rpm-build git rpmdevtools wget &&\
 rpmdev-setuptree && \
 wget https://github.com/pervices/uhd/archive/refs/heads/master.tar.gz && \
-mv uhd-master.tar.gz master.tar.gz && \
 mv master.tar.gz /root/rpmbuild/SOURCES && \
 wget https://github.com/pervices/gnuradio/archive/refs/heads/maint-3.9.tar.gz && \
-mv gnuradio-maint-3.9.tar.gz /root/rpmbuild/SOURCES && \
+mv maint-3.9.tar.gz /root/rpmbuild/SOURCES && \
 git clone https://github.com/pervices/pvpkg.git && \
 cd pvpkg/CentOS/8testing && \
 mv uhd.spec /root/rpmbuild/SPECS
