@@ -1,6 +1,6 @@
 FROM centos:8
 RUN yum -y update && \
-yum -y install dnf-plugins-core epel-release make gcc rpm-build git rpmdevtools wget &&\
+yum -y install dnf-plugins-core epel-release make gcc rpm-build git rpmdevtools wget cmake &&\
 rpmdev-setuptree && \
 wget https://github.com/pervices/uhd/archive/refs/heads/master.tar.gz && \
 mv master.tar.gz /root/rpmbuild/SOURCES && \
