@@ -40,7 +40,7 @@ BuildRequires:	cmake
 BuildRequires:	gcc-c++
 BuildRequires:	libtool
 BuildRequires:	alsa-lib-devel
-BuildRequires:	boost-devel
+BuildRequires:	boost-python3-devel
 BuildRequires:	codec2-devel
 BuildRequires:	cppzmq-devel
 BuildRequires:	desktop-file-utils
@@ -68,6 +68,7 @@ BuildRequires:	python3-gobject
 BuildRequires:	python3-numpy
 BuildRequires:	python3-pyyaml
 BuildRequires:	python3-lxml
+BuildRequires:  python3-pybind11
 BuildRequires:	python3-mako
 BuildRequires:	python3-qt5-devel
 BuildRequires:	python3-scipy
