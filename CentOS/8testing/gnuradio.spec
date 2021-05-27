@@ -161,11 +161,7 @@ cd build
 %license COPYING
 %{_bindir}/*
 %{_libdir}/lib*.so.*
-%{_libexecdir}/*
 %{_datadir}/gnuradio
-%{_datadir}/applications/gnuradio-grc.desktop
-%{_datadir}/mime/packages/gnuradio-grc.xml
-%{_datadir}/icons/hicolor/*/apps/gnuradio-grc.png
 %config(noreplace) %{_sysconfdir}/gnuradio
 %exclude %{_datadir}/gnuradio/examples
 %exclude %{_docdir}/%{name}/html
