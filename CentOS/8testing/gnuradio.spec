@@ -1,3 +1,5 @@
+%define _binaries_in_noarch_packages_terminate_build 0
+%define _unpackaged_files_terminate_build 0
 # NEON support is by default enabled on aarch64 and disabled on other ARMs (it can be overridden)
 %ifarch aarch64
 %bcond_without neon
