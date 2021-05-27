@@ -4,7 +4,7 @@ yum -y install dnf-plugins-core epel-release make gcc rpm-build git rpmdevtools 
 rpmdev-setuptree && \
 wget https://github.com/pervices/uhd/archive/refs/heads/master.tar.gz && \
 mv master.tar.gz /root/rpmbuild/SOURCES && \
-wget https://github.com/pervices/gnuradio/archive/refs/heads/maint-3.9.tar.gz && \
+ls && wget https://github.com/pervices/gnuradio/archive/refs/heads/maint-3.9.tar.gz && \
 mv maint-3.9.tar.gz /root/rpmbuild/SOURCES && \
 git clone https://github.com/pervices/pvpkg.git && \
 cd pvpkg/CentOS/8testing && \

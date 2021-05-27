@@ -21,7 +21,7 @@
 #%%global alphatag rc1
 
 Name:		gnuradio
-Version:	3.8.0.0
+Version:	3.9.0.0
 Release:	6%{?alphatag:.%{alphatag}}%{?dist}
 Summary:	Software defined radio framework
 
@@ -29,7 +29,7 @@ License:	GPLv3
 URL:		https://www.gnuradio.org/
 #Source0:	http://gnuradio.org/releases/gnuradio/gnuradio-%%{version}%%{?alphatag}.tar.xz
 #Source0:	http://gnuradio.org/releases/gnuradio/gnuradio-%%{version}.tar.gz
-Source0:	https://github.com/gnuradio/%{name}/releases/download/v%{version}/%{name}-%{version}.tar.xz
+Source0:	https://github.com/pervices/%{name}/archive/refs/heads/maint-3.9.tar.gz
 # git clone git://gnuradio.org/gnuradio
 # cd gnuradio
 # git archive --format=tar --prefix=%%{name}-%%{version}/ %%{git_commit} | \
@@ -133,7 +133,7 @@ Requires:	%{name} = %{version}-%{release}
 GNU Radio examples
 
 %prep
-%setup -q -n gnuradio-maint-3.9
+%setup -q -n %{name}-%{version}%{?alphatag}
 
 %build
 mkdir build
