@@ -153,9 +153,6 @@ cd build
 
 %install
 %make_install -C build
-# Remove extraneous desktop/icon/mime files
-rm -r %{buildroot}%{_datadir}/%{name}/grc/freedesktop
-rm -r %{buildroot}%{_datadir}/icons/gnome
       
 
 %ldconfig_scriptlets
