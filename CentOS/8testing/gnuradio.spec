@@ -21,8 +21,8 @@
 #%%global alphatag rc1
 
 Name:		gnuradio
-Version:	3.9.0.0
-Release:	6%{?alphatag:.%{alphatag}}%{?dist}
+Version:	3.9
+Release:	maint
 Summary:	Software defined radio framework
 
 License:	GPLv3
@@ -133,7 +133,7 @@ Requires:	%{name} = %{version}-%{release}
 GNU Radio examples
 
 %prep
-%setup -q -n %{name}-%{version}%{?alphatag}
+%setup -q -n %{name}-%{release}-%{version}%{?alphatag}
 
 %build
 mkdir build
