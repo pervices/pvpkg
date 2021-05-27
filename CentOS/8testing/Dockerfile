@@ -6,7 +6,7 @@ wget https://github.com/pervices/uhd/archive/refs/heads/master.tar.gz && \
 mv master.tar.gz /root/rpmbuild/SOURCES && \
 ls && wget https://github.com/pervices/gnuradio/archive/refs/heads/maint-3.9.tar.gz && \
 mv maint-3.9.tar.gz /root/rpmbuild/SOURCES && \
-ls && ls && ls && ls && ls && git clone https://github.com/pervices/pvpkg.git && \
+ls && ls && ls && ls && ls && ls && git clone https://github.com/pervices/pvpkg.git && \
 cd pvpkg/CentOS/8testing && \
 mv uhd.spec gnuradio.spec /root/rpmbuild/SPECS 
 WORKDIR /root/rpmbuild/SPECS

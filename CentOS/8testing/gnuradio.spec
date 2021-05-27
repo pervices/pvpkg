@@ -173,7 +173,7 @@ cd build
 %files -n python3-%{name}
 %{python3_sitearch}/%{name}/
 %{python3_sitearch}/pmt/
-%{python3_sitearch}/volk_modtool/
+
 
 %files devel
 %{_includedir}/*
