@@ -21,7 +21,7 @@ make && \
 make install
 WORKDIR /root/rpmbuild/SPECS
 RUN dnf builddep --enablerepo=powertools -y gnuradio.spec && \
-QA_RPATHS=$(( 0x0001|0x0002 )) rpmbuild -ba gnuradio.spec && \
+QA_RPATHS=$(( 0x0001|0x0002 )) rpmbuild --define 'debug_package %{nil}' -ba gnuradio.spec && \
 sleep 10000 && \
 RUN dnf builddep --enablerepo=powertools -y uhd.spec && \
 QA_RPATHS=$(( 0x0001|0x0002 )) rpmbuild -ba uhd.spec && \
