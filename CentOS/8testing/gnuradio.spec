@@ -54,6 +54,7 @@ BuildRequires:	gsm-devel
 BuildRequires:	gtk3-devel
 BuildRequires:	jack-audio-connection-kit-devel
 BuildRequires:	log4cpp-devel
+BuildRequires:  libsndfile-devel
 # mpir is not yet available on ppc64le
 %ifnarch ppc64le
 BuildRequires:	mpir-devel
@@ -152,7 +153,6 @@ cd build
 
 %install
 %make_install -C build
-desktop-file-validate %{buildroot}%{_datadir}/applications/gnuradio-grc.desktop
 # Remove extraneous desktop/icon/mime files
 rm -r %{buildroot}%{_datadir}/%{name}/grc/freedesktop
 rm -r %{buildroot}%{_datadir}/icons/gnome
