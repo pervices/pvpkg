@@ -8,7 +8,7 @@ wget https://github.com/pervices/gnuradio/archive/refs/heads/maint-3.9.tar.gz &&
 mv maint-3.9.tar.gz /root/rpmbuild/SOURCES && \
 git clone https://github.com/pervices/pvpkg.git && \
 cd pvpkg/CentOS/8testing && \
-mv uhd.spec /root/rpmbuild/SPECS
+mv uhd.spec gnuradio.spec /root/rpmbuild/SPECS
 WORKDIR /root/rpmbuild/SPECS
 RUN dnf builddep --enablerepo=powertools -y gnuradio.spec && \
 QA_RPATHS=$(( 0x0001|0x0002 )) rpmbuild -ba gnuradio.spec && \
