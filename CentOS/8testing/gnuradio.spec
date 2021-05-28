@@ -169,6 +169,11 @@ cd build
 %exclude %{_docdir}/%{name}/html
 %exclude %{_docdir}/%{name}/xml
 %doc %{_docdir}/%{name}
+/usr/local/lib64/pkgconfig/volk.pc
+/usr/local/lib64/libvolk*
+/usr/local/bin/volk_profile
+/usr/local/include/volk/*
+/usr/local/lib64/python3.6/site-packages/volk*
 
 %files -n python3-%{name}
 %{python3_sitearch}/%{name}/
