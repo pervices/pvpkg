@@ -9,9 +9,19 @@ git clone https://github.com/pervices/pvpkg.git && \
 cd pvpkg/ubuntu/20.04Debian && \
 mv gnuradio uhd /home/notroot
 RUN apt-get update
-WORKDIR /home/notroot/uhd
-Run sleep 10000 && \
-RUN git clone https://github.com/pervices/gnuradio/archive/refs/heads/maint-3.9.tar.gz && \
-cp test.txt test_$(git rev-parse --short HEAD)_$(date +%d%b%Y).txt
+WORKDIR /home/notroot/uhdpv
+RUN git clone -b master https://github.com/pervices/uhd.git 
+RUN sleep 10000 
+
+
+
+
+
+
+
+
+
+#cp test.txt test_$(git rev-parse --short HEAD)_$(date +%d%b%Y).txt
+
 
 
