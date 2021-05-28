@@ -179,7 +179,6 @@ cd build
 %{_includedir}/*
 %{_libdir}/lib*.so
 %{_libdir}/pkgconfig/*.pc
-%{_libdir}/cmake/volk
 %{_libdir}/cmake/gnuradio
 
 %files doc
