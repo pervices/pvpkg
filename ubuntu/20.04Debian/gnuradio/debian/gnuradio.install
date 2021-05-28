@@ -1,0 +1,7 @@
+etc
+usr/bin
+usr/lib/python*
+usr/share/applications
+usr/share/gnuradio
+usr/share/icons
+usr/share/mime

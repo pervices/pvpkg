@@ -63,7 +63,7 @@ pipeline {
                    steps { 
 
                       script { 
-                             dir("${env.WORKSPACE}/ubuntu/20.04Debian") {
+                             dir("${env.WORKSPACE}/ubuntu/20.04debian") {
                                      dockerImageUbuntu2004 = docker.build(registry + ":$BUILD_NUMBER", "--network host .") 
                         }
                        }
