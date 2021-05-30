@@ -9,11 +9,11 @@ git clone https://github.com/pervices/pvpkg.git && \
 cd pvpkg/ubuntu/20.04Debian && \
 mv gnuradio uhd /home/notroot
 RUN apt-get update
-WORKDIR /home/notroot/uhdpv
-RUN git clone -b master https://github.com/pervices/uhd.git 
+WORKDIR /home/notroot/uhd
+RUN git clone -b master https://github.com/pervices/uhd.git && \
+cd debian && \
+mk-build-deps -i --tool 'apt-get -f --yes' control
 RUN sleep 10000 
-
-
 
 
 
