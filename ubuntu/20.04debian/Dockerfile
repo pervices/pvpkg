@@ -8,15 +8,22 @@ pip3 install Cheetah3 && \
 git clone https://github.com/pervices/pvpkg.git && \
 cd pvpkg/ubuntu/20.04Debian && \
 mv gnuradio uhd /home/notroot
+RUN sleep 10000 
 RUN apt-get update
 WORKDIR /home/notroot/uhd
 RUN git clone -b master https://github.com/pervices/uhd.git && \
 cd debian && \
-mk-build-deps -i --tool 'apt-get -f --yes' control
+mk-build-deps -i --tool 'apt-get -f --yes' control && \
+tar -czvf uhdpv_3.13.0.orig.tar.gz /home/notroot/uhd/uhd
+# tar uhd source
+# run dpkg-buildpackage
+# dpkg-i uhd
+
 RUN sleep 10000 
 
 
 
+#dh_auto_clean: error: invalid or non-existing path to the source directory: host
 
 
 
