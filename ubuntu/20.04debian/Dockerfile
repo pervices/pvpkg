@@ -12,11 +12,9 @@ RUN apt-get update
 WORKDIR /home/notroot/uhd
 RUN git clone -b master https://github.com/pervices/uhd.git && \
 cd debian && \
-mk-build-deps -i --tool 'apt-get -f --yes' control && \ 
-cd .. && \
-tar -czvf uhdpv_3.13.0.orig.tar.gz /home/notroot/uhd/uhd && \
-
-RUN sleep 10000 
+mk-build-deps -i --tool 'apt-get -f --yes' control
+RUN tar -czvf uhdpv_3.13.0.orig.tar.gz /home/notroot/uhd/uhd && \
+sleep 10000 
 # tar uhd source
 # run dpkg-buildpackage
 # dpkg-i uhd
