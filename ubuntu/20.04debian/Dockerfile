@@ -16,9 +16,7 @@ mk-build-deps -i --tool 'apt-get -f --yes' control
 RUN tar -czvf uhdpv_3.13.0.orig.tar.gz /home/notroot/uhd/uhd && \
 mv debian /home/notroot/uhd/uhd && \
 cd uhd && \
-git clean -fx
-RUN sleep 10000 && \
-dpkg-buildpackage -us -uc && \
+dpkg-buildpackage -us -uc -b && \
 sleep 10000 
 # tar uhd source
 # run dpkg-buildpackage
