@@ -14,6 +14,10 @@ RUN git clone -b master https://github.com/pervices/uhd.git && \
 cd debian && \
 mk-build-deps -i --tool 'apt-get -f --yes' control
 RUN tar -czvf uhdpv_3.13.0.orig.tar.gz /home/notroot/uhd/uhd && \
+mv debian /home/notroot/uhd/uhd && \
+cd uhd && \
+git clean -fx && \
+dpkg-buildpackage -us -uc && \
 sleep 10000 
 # tar uhd source
 # run dpkg-buildpackage
