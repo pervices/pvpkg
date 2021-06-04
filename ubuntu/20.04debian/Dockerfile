@@ -19,7 +19,7 @@ cd uhd && \
 dpkg-buildpackage -us -uc -b && \
 cd .. && \
 dpkg -i uhd*.deb
-WORKDIR gnuradio
+WORKDIR /home/notroot/gnuradio
 RUN git clone -b maint-3.9 https://github.com/pervices/gnuradio.git && \
 sleep 10000 
 # tar uhd source
