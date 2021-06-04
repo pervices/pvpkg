@@ -21,7 +21,9 @@ cd .. && \
 dpkg -i uhd*.deb
 WORKDIR /home/notroot/gnuradio
 RUN git clone -b maint-3.9 https://github.com/pervices/gnuradio.git && \
-sleep 10000 
+sleep 10000 && \
+diff -u /home/notroot/pvpkg/ubuntu/20.04/modified/CMakeLists_mod.txt /home/notroot/gnuradio/gnuradio/CMakeLists.txt > CMakeLists.patch && \
+diff -u /home/notroot/pvpkg/ubuntu/20.04/modified/uhd_types_python_mod.cc /home/notroot/gnuradio/gnuradio/gr-uhd/python/uhd/bindings/uhd_types_python.cc > uhd_types_python.patch 
 # tar uhd source
 # run dpkg-buildpackage
 # dpkg-i uhd
