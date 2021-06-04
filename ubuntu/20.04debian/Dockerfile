@@ -23,16 +23,19 @@ WORKDIR /home/notroot/gnuradio
 RUN git clone -b maint-3.9 https://github.com/pervices/gnuradio.git && \
 sleep 10000 && \
 diff -u /home/notroot/pvpkg/ubuntu/20.04/modified/CMakeLists_mod.txt /home/notroot/gnuradio/gnuradio/CMakeLists.txt > CMakeLists.patch && \
-diff -u /home/notroot/pvpkg/ubuntu/20.04/modified/uhd_types_python_mod.cc /home/notroot/gnuradio/gnuradio/gr-uhd/python/uhd/bindings/uhd_types_python.cc > uhd_types_python.patch 
-# tar uhd source
-# run dpkg-buildpackage
-# dpkg-i uhd
+diff -u /home/notroot/pvpkg/ubuntu/20.04/modified/uhd_types_python_mod.cc /home/notroot/gnuradio/gnuradio/gr-uhd/python/uhd/bindings/uhd_types_python.cc > uhd_types_python.patch && \
+patch -R  /home/notroot/gnuradio/gnuradio/CMakeLists.txt CMakeLists.patch && \
+patch -R /home/notroot/gnuradio/gnuradio/gr-uhd/python/uhd/bindings/uhd_types_python.cc uhd_types_python.patch && \
+tar -czvf gnuradio_3.9.orig.tar.gz /home/notroot/gnuradio/gnuradio && \
+mv debian /home/notroot/gnuradio/gnuradio && \
+cd gnuradio/debian && \
+mk-build-deps -i --tool 'apt-get -f --yes' control && \
+cd .. && \
+dpkg-buildpackage -us -uc -b && \
+cd .. && \
+dpkg -i libgnuradio*.deb && \
+dpkg -i gnuradio*.deb
 
-
-
-
-
-#dh_auto_clean: error: invalid or non-existing path to the source directory: host
 
 
 
