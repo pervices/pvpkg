@@ -17,6 +17,9 @@ RUN tar -czvf uhdpv_3.13.0.orig.tar.gz /home/notroot/uhd/uhd && \
 mv debian /home/notroot/uhd/uhd && \
 cd uhd && \
 dpkg-buildpackage -us -uc -b && \
+dpkg -i uhd*.deb
+WORKDIR gnuradio
+RUN git clone -b maint-3.9 https://github.com/pervices/gnuradio.git && \
 sleep 10000 
 # tar uhd source
 # run dpkg-buildpackage
