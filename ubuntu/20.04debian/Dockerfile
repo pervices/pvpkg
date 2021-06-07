@@ -1,5 +1,6 @@
 FROM ubuntu:20.04
 ENV DEBIAN_FRONTEND=noninteractive
+SHELL ["/bin/bash", "-c"]
 WORKDIR /home/notroot
 RUN apt-get update && \
 apt-get -y install dpkg-dev sudo apt-utils dh-make bzr-builddeb equivs xz-utils iputils-ping net-tools software-properties-common cmake git coreutils build-essential && \
@@ -20,9 +21,9 @@ dpkg-buildpackage -us -uc -b && \
 cd .. && \
 dpkg -i uhd*.deb
 WORKDIR /home/notroot/gnuradio
-RUN git clone -b maint-3.9 https://github.com/pervices/gnuradio.git
-RUN diff -u /home/notroot/pvpkg/ubuntu/20.04/modified/CMakeLists_mod.txt /home/notroot/gnuradio/gnuradio/CMakeLists.txt > CMakeLists.patch 
-RUN diff -u /home/notroot/pvpkg/ubuntu/20.04/modified/uhd_types_python_mod.cc /home/notroot/gnuradio/gnuradio/gr-uhd/python/uhd/bindings/uhd_types_python.cc > uhd_types_python.patch 
+RUN git clone -b maint-3.9 https://github.com/pervices/gnuradio.git 
+RUN diff -u /home/notroot/pvpkg/ubuntu/20.04/modified/CMakeLists_mod.txt /home/notroot/gnuradio/gnuradio/CMakeLists.txt > CMakeLists.patch && \
+diff -u /home/notroot/pvpkg/ubuntu/20.04/modified/uhd_types_python_mod.cc /home/notroot/gnuradio/gnuradio/gr-uhd/python/uhd/bindings/uhd_types_python.cc > uhd_types_python.patch
 RUN patch -R  /home/notroot/gnuradio/gnuradio/CMakeLists.txt CMakeLists.patch && \
 RUN patch -R /home/notroot/gnuradio/gnuradio/gr-uhd/python/uhd/bindings/uhd_types_python.cc uhd_types_python.patch && \
 tar -czvf gnuradio_3.9.orig.tar.gz /home/notroot/gnuradio/gnuradio && \
