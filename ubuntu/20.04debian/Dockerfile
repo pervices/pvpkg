@@ -21,8 +21,13 @@ dpkg-buildpackage -us -uc -b && \
 cd .. && \
 dpkg -i uhd*.deb
 WORKDIR /home/notroot/gnuradio
-RUN git clone -b maint-3.9 https://github.com/pervices/gnuradio.git
-RUN sleep 10000 && \
+RUN git clone -b maint-3.9 https://github.com/pervices/gnuradio.git && \
+rm /home/notroot/gnuradio/gnuradio/CMakeLists.txt && \
+rm /home/notroot/gnuradio/gnuradio/gr-uhd/python/uhd/bindings/uhd_types_python.cc && \
+mv /home/notroot/pvpkg/ubuntu/20.04/modified/CMakeLists_mod.txt /home/notroot/gnuradio/gnuradio && \
+mv /home/notroot/gnuradio/gnuradio/CMakeLists_mod.txt /home/notroot/gnuradio/gnuradio/CMakeLists.txt && \
+mv /home/notroot/pvpkg/ubuntu/20.04/modified/uhd_types_python_mod.cc /home/notroot/gnuradio/gnuradio/gr-uhd/python/uhd/bindings && \
+mv /home/notroot/gnuradio/gnuradio/gr-uhd/python/uhd/bindings/uhd_types_python_mod.cc /home/notroot/gnuradio/gnuradio/gr-uhd/python/uhd/bindings/uhd_types_python.cc && \
 #RUN diff -u /home/notroot/pvpkg/ubuntu/20.04/modified/CMakeLists_mod.txt /home/notroot/gnuradio/gnuradio/CMakeLists.txt > CMakeLists.patch
 #RUN diff -u /home/notroot/pvpkg/ubuntu/20.04/modified/uhd_types_python_mod.cc /home/notroot/gnuradio/gnuradio/gr-uhd/python/uhd/bindings/uhd_types_python.cc > uhd_types_python.patch
 #RUN patch -R  /home/notroot/gnuradio/gnuradio/CMakeLists.txt CMakeLists.patch && \
