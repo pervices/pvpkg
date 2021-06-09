@@ -111,8 +111,6 @@ def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stac
 
     for thread in threads:
         thread.start()
-        time.sleep(2.5)#temporary, waits 2.50s for transmitter to start. test_tx_rx_gain has rx recieve intended as 7.5s and transmit as 10s
-
     # Stop.
     for thread in threads:
         thread.join()

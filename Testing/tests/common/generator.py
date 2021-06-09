@@ -78,7 +78,7 @@ def lo_band_gain_rx(channels):
     wave_freq = 1000000
     sample_count = 1000
     center_freq = 15000000
-    sample_rate = 10000000
+    sample_rate = 9848485
     tx_gain = 25
     for rx_gain in [ 5, 10, 20 ]:
         yield locals()
@@ -92,7 +92,7 @@ def lo_band_gain_tx(channels):
     wave_freq = 1000000
     sample_count = 1000
     center_freq = 15000000
-    sample_rate = 10000000
+    sample_rate = 9848485
     rx_gain = 25
     for tx_gain in [ 5, 10, 20 ]:
         yield locals()
@@ -106,7 +106,7 @@ def hi_band_gain_tx(channels):
     wave_freq = 1000000
     sample_count = 1000
     center_freq = 2000000000
-    sample_rate = 10000000
+    sample_rate = 9848485
     rx_gain = 40
     for tx_gain in [ 5, 10, 20 ]:
         yield locals()
@@ -120,8 +120,8 @@ def hi_band_gain_rx(channels):
     wave_freq = 1000000
     sample_count = 1000
     center_freq = 2000000000
-    sample_rate = 10000000
-    tx_gain = 40
+    sample_rate = 9848485
+    tx_gain = 30
     for rx_gain in [ 5, 10, 20 ]:
         yield locals()
 
