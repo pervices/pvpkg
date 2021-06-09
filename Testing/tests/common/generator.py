@@ -5,13 +5,15 @@ def hi_band_wave_sweep():
 
     print(sys._getframe().f_code.co_name)
 
-    channels = list(range(4))
+    #channels = list(range(4))
+    channels = list(range(2))
     sample_count = 256
     tx_gain = 25
     rx_gain = 25
     center_freq = 1000000000
     sample_rate = 25000000
     for wave_freq in [ 500000, 600000, 700000, 800000, 900000, 1000000 ]:
+    #for wave_freq in [ 500000, 600000, 700000 ]:
         yield locals()
 
 def lo_band_wave_sweep():

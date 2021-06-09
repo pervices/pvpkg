@@ -2,18 +2,18 @@ from common import sigproc
 from common import engine
 from common import generator as gen
 from retrying import retry
+import numpy as np
 
 @retry(stop_max_attempt_number = 3)
 def test(it):
-
     gen.dump(it)
+
 
     tx_stack = [ (10.0, it["sample_rate" ]) ] # One seconds worth.
     rx_stack = [ (10.5, it["sample_count"]) ]
     vsnk = engine.run(it["channels"], it["wave_freq"], it["sample_rate"], it["center_freq"], it["tx_gain"], it["rx_gain"], tx_stack, rx_stack)
 
     for ch, channel in enumerate(vsnk):
-
         real = [datum.real for datum in channel.data()]
         imag = [datum.imag for datum in channel.data()]
 
@@ -25,8 +25,10 @@ def test(it):
 
         print("channel %2d: real %10.0f Hz (%8.5f) :: imag %10.0f Hz (%8.5f)" % (ch, fund_real, like_real, fund_imag, like_imag))
 
+        sigproc.dump_file(vsnk, it["wave_freq"])
+
         try:
-            assert like_real > 0.95 and like_real < 1.05 and like_imag > 0.95 and like_imag < 1.05
+            assert (like_real > 0.95 and like_real < 1.05 and like_imag > 0.95 and like_imag < 1.05), "like_real and like_imag do not meet requirements, fail"
         except:
             sigproc.dump(vsnk)
             raise
