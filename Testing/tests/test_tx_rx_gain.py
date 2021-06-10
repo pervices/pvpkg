@@ -23,16 +23,21 @@ def main(iterations):
     # Calculate absolute area.
     areas = []
     for vsnk in vsnks:
+        areas[0:len(vsnk)]
+        x = 0
         for channel in vsnk:
+            x = x + 1
             #Uses only the list sample_count sample, this should be changed to use all samples (which should be equal to sample_count) once theissues with tx and rx start delays are fixed
-            area = [sigproc.absolute_area(channel.data()[-sample_count:-1])]
-        areas.append(area)
+            areas[x] = [sigproc.absolute_area(channel.data()[-sample_count:-1])]
+        #areas.append(area)
     areas = np.array(areas).T.tolist() # Transpose.
 
+    print(areas)
     # Assert area is increasing per channel.
     for area in areas:
         print(area)
-        assert area == sorted(area)
+        for x in range (1, len(area)):
+            assert area[x] - area[x-1] > 1 #makes sure the difference in area is significant
 
 #Change the argument in the following function to select how many channels to test
 main(gen.lo_band_gain_tx(4))
