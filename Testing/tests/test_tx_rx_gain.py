@@ -34,7 +34,7 @@ def main(iterations):
         print(area)
         assert area == sorted(area)
 
-
+#Change the argument in the following function to select how many channels to test
 main(gen.lo_band_gain_tx(4))
 main(gen.lo_band_gain_rx(4))
 main(gen.hi_band_gain_tx(4))
