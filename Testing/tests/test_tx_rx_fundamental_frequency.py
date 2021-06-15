@@ -1,3 +1,4 @@
+import os
 from common import sigproc
 from common import engine
 from common import generator as gen
@@ -25,7 +26,8 @@ def test(it):
 
         print("channel %2d: real %10.0f Hz (%8.5f) :: imag %10.0f Hz (%8.5f)" % (ch, fund_real, like_real, fund_imag, like_imag))
 
-        sigproc.dump_file(vsnk, it["wave_freq"])
+    #Uncomment this when you want to see all real and imag results
+        #sigproc.dump_file(vsnk, it["wave_freq"])
 
         try:
             assert (like_real > 0.95 and like_real < 1.05 and like_imag > 0.95 and like_imag < 1.05), "like_real and like_imag do not meet requirements, fail"

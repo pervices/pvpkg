@@ -1,8 +1,21 @@
 import scipy.fftpack
 import numpy as np
 import sys
+import os
 
 from scipy import signal
+
+#Used for the dump_file def. Uncomment if you want to use that function
+    #Creates a folder that stores all the outcomes of dump def. in seperated
+    #text files, Rather than seeing them output on the terminal
+    #N O T E: if you want to run the CI test again, make sure the dump folder
+    #is either deleted or renamed, otherwise you'll get a error.
+
+#leaf_dir = "dump"
+#parent_dir = "./"
+#path = os.path.join(parent_dir, leaf_dir)
+#os.makedirs(path)
+
 
 def dump(vsnk):
 
@@ -27,14 +40,10 @@ def dump_file(vsnk, wave_freq):
     for sample in sample_count:
         for channel in channels:
             datum = vsnk[channel].data()[sample]
-            #sys.stdout.write("%10.5f %10.5f\t" % (datum.real, datum.imag))
-            #Try to write to a file here?
-            f = open("CH_" + str(channel) + "_WF_" + str(wave_freq) + "_sins.dat", "a")
+            #Writing to a file
+            f = open("./dump/CH_" + str(channel) + "_WF_" + str(wave_freq) + ".dat", "a")
             f.write("%10.5f %10.5f\t" % (datum.real, datum.imag) + "\n")
 
-        #sys.stdout.write("\n")
-
-    #sys.stdout.write("\n")
     return None
 
 
