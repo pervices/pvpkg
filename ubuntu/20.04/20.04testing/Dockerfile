@@ -7,7 +7,7 @@ apt-get -y install dpkg-dev sudo apt-utils dh-make bzr-builddeb equivs xz-utils 
 apt-get -y install python3-pip && \
 pip3 install Cheetah3 && \
 ls && git clone https://github.com/pervices/pvpkg.git && \
-cd pvpkg/ubuntu/20.04testing && \
+cd pvpkg/ubuntu/20.04/20.04testing && \
 mv gnuradio uhd /home/notroot
 RUN apt-get update
 WORKDIR /home/notroot/uhd
