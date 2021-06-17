@@ -82,30 +82,6 @@ steps {
        }
       }
 
-	// Replace with the other distributions
-        stage('Deploy our image') { 
 
-            steps { 
-
-                script { 
-                   
-    //   ssh -p 237 -i /home/altrus/.ssh/id_rsa_pv_files filespervices@files.pervices.com 
-                    }
-
-                } 
-
-            }
-
-        } 
-        stage('Cleaning up') { 
-
-            steps { 
-
-                sh "docker rmi $registry:$BUILD_NUMBER" 
-
-            }
-        } 
-    
-}
 
 
