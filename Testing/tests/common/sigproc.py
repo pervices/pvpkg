@@ -11,10 +11,14 @@ from scipy import signal
     #N O T E: if you want to run the CI test again, make sure the dump folder
     #is either deleted or renamed, otherwise you'll get a error.
 
-#leaf_dir = "dump"
-#parent_dir = "./"
-#path = os.path.join(parent_dir, leaf_dir)
-#os.makedirs(path)
+from datetime import datetime
+now = datetime.now() # current date and time
+iso_time = now.strftime("%Y%m%dT%H%M%S.%N")
+leaf_dir = "dump_"+iso_time
+parent_dir = "./"
+dump_dir = parent_dir + leaf_dir
+path = os.path.join("./",dump_dir)
+os.makedirs(path)
 
 
 def dump(vsnk):
@@ -41,7 +45,7 @@ def dump_file(vsnk, wave_freq):
         for channel in channels:
             datum = vsnk[channel].data()[sample]
             #Writing to a file
-            f = open("./dump/CH_" + str(channel) + "_WF_" + str(wave_freq) + ".dat", "a")
+            f = open(dump_dir+"./CH_" + str(channel) + "_WF_" + str(wave_freq) + ".dat", "a")
             f.write("%10.5f %10.5f\t" % (datum.real, datum.imag) + "\n")
 
     return None
