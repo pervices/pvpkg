@@ -1,17 +1,5 @@
 pipeline { 
 
-    environment { 
-
-        registry = "than97/pvpkg" 
-
-        registryCredential = '85454c7d-a176-4e4c-94c2-d415e42a4cc3' 
-
-        dockerImageArch = '' 
-        dockerImageArchPython2= ''
-        dockerImageCentos8 = '' 
-        dockerImageUbuntu1804 = '' 
-        dockerImageUbuntu2004 = '' 
-    }
 // citests agents used to build and test repo.
     agent {
 	label 'crossci||waveci'
@@ -21,7 +9,13 @@ pipeline {
 
         // Build stages for each distribution are set to run in parallel. Need to add build artifacts and run tests 
         // for each parallel build. 
- 
+
+	
+steps {
+    withCredentials([sshUserPrivateKey(credentialsId: sshfilespervices, keyFileVariable: KEY')]) {
+        sh "ssh -i ${KEY} -p 237 -i /home/altrus/.ssh/id_rsa_pv_files filespervices@files.pervices.com"
+    }
+}
         stage('Build UHD and GNU Radio') {
         parallel {
 
@@ -94,14 +88,7 @@ pipeline {
 
                 script { 
                    
-      
-                    docker.withRegistry( '', registryCredential ) { 
-
-                        dockerImageArch.push() 
-                        dockerImageArchLatest.psuh()
-                        dockerImageCentos8.push() 
-                        dockerImageUbuntu1804.push() 
-                        dockerImageUbuntu2004.push() 
+    //   ssh -p 237 -i /home/altrus/.ssh/id_rsa_pv_files filespervices@files.pervices.com 
                     }
 
                 } 
