@@ -12,8 +12,8 @@ pipeline {
 
 	stage('Test Credentials'){
 steps {
-    withCredentials([sshUserPrivateKey(credentialsId: 'sshfilespervices', keyFileVariable: 'KEY')]) {
-        sh "ssh -i ${KEY} -p 237 -i /home/altrus/.ssh/id_rsa_pv_files filespervices@files.pervices.com"
+    withCredentials(bindings: [sshUserPrivateKey(credentialsId: 'sshfilespervices', keyFileVariable: 'KEY', passphraseVariable '', usernameVariable '')]) {
+        sh "ssh -i ${KEY} -p 237 filespervices@files.pervices.com"
     }
 }
 }
