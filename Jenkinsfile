@@ -10,11 +10,12 @@ pipeline {
         // Build stages for each distribution are set to run in parallel. Need to add build artifacts and run tests 
         // for each parallel build. 
 
-	
+	stage('Test Credentials'){
 steps {
     withCredentials([sshUserPrivateKey(credentialsId: sshfilespervices, keyFileVariable: KEY')]) {
         sh "ssh -i ${KEY} -p 237 -i /home/altrus/.ssh/id_rsa_pv_files filespervices@files.pervices.com"
     }
+}
 }
         stage('Build UHD and GNU Radio') {
         parallel {
