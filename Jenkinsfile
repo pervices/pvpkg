@@ -14,7 +14,7 @@ pipeline {
 steps {
     withCredentials(bindings: [sshUserPrivateKey(credentialsId: 'sshfilespervices', keyFileVariable: 'KEY')]) {
         // sh "ssh -i ${KEY} -P 237 filespervices@files.pervices.com"
-           ssh -i ${KEY} ssh://filespervices@files.pervices.com:237
+           sh "ssh -i ${KEY} ssh://filespervices@files.pervices.com:237"
     }
 }
 }
