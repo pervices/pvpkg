@@ -5,7 +5,7 @@ pipeline {
 	label 'crossci||waveci'
     }
 
-    stages { 
+    stages {
 
         // Build stages for each distribution are set to run in parallel. Need to add build artifacts and run tests 
         // for each parallel build. 
@@ -13,7 +13,7 @@ pipeline {
 	stage('Test Credentials'){
 steps {
     withCredentials(bindings: [sshUserPrivateKey(credentialsId: 'sshfilespervices', keyFileVariable: 'KEY', passphraseVariable: 'PW')]) {
-         sh "ssh -i ${KEY} -v -p 237 filespervices@files.pervices.com ${PW}"
+sh "ssh -i ${KEY} -v -p 237 filespervices@files.pervices.com ${PW}"
     }
 }
 }
