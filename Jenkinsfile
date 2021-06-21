@@ -13,7 +13,8 @@ pipeline {
 	stage('Test Credentials'){
 steps {
     withCredentials(bindings: [sshUserPrivateKey(credentialsId: 'sshfilespervices', keyFileVariable: 'KEY')]) {
-        sh "ssh -i ${KEY} -P 237 filespervices@files.pervices.com"
+        // sh "ssh -i ${KEY} -P 237 filespervices@files.pervices.com"
+           ssh -i ${KEY} ssh://filespervices@files.pervices.com:237
     }
 }
 }
