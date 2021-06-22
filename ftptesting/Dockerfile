@@ -5,5 +5,6 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 # install necessary components for UHD; install some Python components using pip; use version 1.67 of boost to prevent issues
 RUN apt update && \
+pwd && \
 touch test.txt && \
 echo "This is a test file" > test.txt
