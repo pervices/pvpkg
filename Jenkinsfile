@@ -46,7 +46,7 @@ pipeline {
                        script { 
                              dir("${env.WORKSPACE}/ftptesting") {
                                   dockerImageftptesting = docker.build("$BUILD_NUMBER", "--network host .")
-                               sh "docker cp dockerImageftptesting:/home/test.txt ${env.WORKSPACE}/ftptesting"
+                               sh "docker cp dockerImageftptesting:/test.txt ${env.WORKSPACE}/ftptesting"
                        }
                     } 
                 }
