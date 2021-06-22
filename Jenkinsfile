@@ -12,8 +12,10 @@ pipeline {
 
 	stage('Test Credentials'){
 steps {
-    withCredentials(bindings: [sshUserPrivateKey(credentialsId: 'sshfilespervices', keyFileVariable: 'KEY', passphraseVariable: 'PW')]) {
-sh "ssh -i \${KEY} -vvv -T -p 237 filespervices@files.pervices.com \${PW}"
+    //withCredentials(bindings: [sshUserPrivateKey(credentialsId: 'sshfilespervices', keyFileVariable: 'KEY', passphraseVariable: 'PW')]) {
+//sh "ssh -i \${KEY} -vvv -T -p 237 filespervices@files.pervices.com \${PW}"
+     sshagent(credentials: ['sshfilespervices']) {
+    sh "ssh vvv -T -p 237 filespervices@files.pervices.com
     }
 }
 }
