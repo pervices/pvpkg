@@ -46,7 +46,7 @@ pipeline {
                        script { 
                              dir("${env.WORKSPACE}/ftptesting") {
                                   dockerImageftptesting = docker.build("$BUILD_NUMBER", "--network host .")
-                                   dockerImageftptesting.inside('-v $WORKSPACE:/output') {
+                                   dockerImageftptesting.inside('-v ${env.WORKSPACE}:/output -u root') {
                                        sh "mkdir ${env.WORKSPACE}/jenkinsOut && cp /home/test.txt ${env.WORKSPACE}/jenkinsOut"
                        }
                      }
