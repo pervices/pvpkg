@@ -45,7 +45,7 @@ pipeline {
 
                        script { 
                              dir("${env.WORKSPACE}/ftptesting") {
-                                  dockerImageftptesting = docker.build(registry + ":$BUILD_NUMBER", "--network host .")
+                                  dockerImageftptesting = docker.build("$BUILD_NUMBER", "--network host .")
                                    dockerImageftptesting.inside('-v') {
                                        sh "mkdir ${env.WORKSPACE}/jenkinsOut && cp /home/test.txt ${env.WORKSPACE}/jenkinsOut"
                        }
@@ -62,7 +62,7 @@ pipeline {
 
                       script { 
                              dir("${env.WORKSPACE}/ubuntu/20.04/20.04testing") {
-                                     dockerImageUbuntu2004 = docker.build(registry + ":$BUILD_NUMBER", "--network host .") 
+                                     dockerImageUbuntu2004 = docker.build("$BUILD_NUMBER", "--network host .") 
                         }
                        }
                      } 
@@ -75,7 +75,7 @@ pipeline {
 
                       script { 
                               dir("${env.WORKSPACE}/CentOS/8testing") {
-                                       dockerImageUbuntu1804 = docker.build(registry + ":$BUILD_NUMBER", "--network host .") 
+                                       dockerImageUbuntu1804 = docker.build("$BUILD_NUMBER", "--network host .") 
                 }
                }
            } 
