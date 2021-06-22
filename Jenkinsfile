@@ -15,8 +15,8 @@ steps {
     //withCredentials(bindings: [sshUserPrivateKey(credentialsId: 'sshfilespervices', keyFileVariable: 'KEY', passphraseVariable: 'PW')]) {
 //sh "ssh -i \${KEY} -vvv -T -p 237 filespervices@files.pervices.com \${PW}"
      sshagent(credentials: ['sshfilespervices']) {
-    sh "ssh -vvv -T -p 237 filespervices@files.pervices.com && \
-    echo 'ssh -vvv -T -p 237 filespervices@files.pervices.com'"
+    sh "ssh -T -p 237 filespervices@files.pervices.com && \
+    echo 'ssh -T -p 237 filespervices@files.pervices.com'"
     }
 }
 }
