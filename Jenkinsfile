@@ -10,16 +10,14 @@ pipeline {
         // Build stages for each distribution are set to run in parallel. Need to add build artifacts and run tests 
         // for each parallel build. 
 
-	stage('Test Credentials'){
-steps {
-    //withCredentials(bindings: [sshUserPrivateKey(credentialsId: 'sshfilespervices', keyFileVariable: 'KEY', passphraseVariable: 'PW')]) {
-//sh "ssh -i \${KEY} -vvv -T -p 237 filespervices@files.pervices.com \${PW}"
-     sshagent(credentials: ['sshfilespervices']) {
-    sh "ssh -T -p 237 filespervices@files.pervices.com && \
-    echo 'ssh -T -p 237 filespervices@files.pervices.com'"
-    }
-}
-}
+	//stage('Test Credentials'){
+//steps {
+   //  sshagent(credentials: ['sshfilespervices']) {
+  //  sh "ssh -T -p 237 filespervices@files.pervices.com && \
+   // echo 'ssh -T -p 237 filespervices@files.pervices.com'"
+   // }
+//}
+//}
         stage('Build UHD and GNU Radio') {
         parallel {
 
@@ -41,17 +39,19 @@ steps {
               }
 
 
-               stage('CentOS 8') { 
+               stage('TestingFTP') { 
 
                   steps { 
 
                        script { 
-                             dir("${env.WORKSPACE}/CentOS/8notsource") {
-                                     dockerImageCentos8 = docker.build(registry + ":$BUILD_NUMBER", "--network host .") 
+                             dir("${env.WORKSPACE}/ftptesting") {
+                                  dockerImageftptesting = docker.build(registry + ":$BUILD_NUMBER", "--network host .")
+                                   dockerImageftptesting.inside('-v') {
+                                       sh "mkdir ${env.WORKSPACE}/jenkinsOut && cp /home/test.txt ${env.WORKSPACE}/jenkinsOut"
                        }
                      }
                     } 
-
+                }
              }
 
 
