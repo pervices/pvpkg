@@ -47,7 +47,7 @@ pipeline {
                              dir("${env.WORKSPACE}/ftptesting") {
                                   dockerImageftptesting = docker.build("$BUILD_NUMBER", "--network host .")
                                sh "TESTID=(docker ps -aqf \"name=dockerImageftptesting\") && \
-                           docker cp ImageID:/test.txt ${env.WORKSPACE}/ftptesting"
+                           docker cp TESTID:/test.txt ${env.WORKSPACE}/ftptesting"
                        }
                     } 
                 }
