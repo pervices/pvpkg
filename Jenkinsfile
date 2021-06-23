@@ -47,8 +47,9 @@ pipeline {
                              dir("${env.WORKSPACE}/ftptesting") {
                                   dockerImageftptesting = docker.build("ftp:$BUILD_NUMBER", "--network host .")
                                   sh "docker images ftp:$BUILD_NUMBER --format \"{{.ID}}\" && \
-                                    env.CONTID=\$(docker images ftp:$BUILD_NUMBER --format \"{{.ID}}\") && \
-                                     echo $CONTID"
+                                    env.IID="" && \
+                                    IID=\$(docker images ftp:$BUILD_NUMBER --format \"{{.ID}}\") && \
+                                     echo $IID"
                                  //  dockerImageftptesting.inside {
                                  // sh "cd /tmp && ls"
                            //    sh "TESTID=(docker ps -aqf \"name=$BUILD_NUMBER\") && \
