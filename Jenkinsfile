@@ -45,7 +45,7 @@ pipeline {
 
                        script { 
                              dir("${env.WORKSPACE}/ftptesting") {
-                                  dockerImageftptesting = docker.build("-t ftp", $BUILD_NUMBER", "--network host .")
+                                  dockerImageftptesting = docker.build("$BUILD_NUMBER", "-t ftp", "--network host .")
                                  sh "docker ps"
                                  //  dockerImageftptesting.inside {
                                  // sh "cd /tmp && ls"
