@@ -46,7 +46,7 @@ pipeline {
                        script { 
                              dir("${env.WORKSPACE}/ftptesting") {
                                   dockerImageftptesting = docker.build("$BUILD_NUMBER", "--network host .")
-                               sh "api_image_id=${docker inspect --format="{{.Id}}" dockerImageftptesting | sed '/^[[:space:]]*$/d'}
+                               sh "api_image_id=\$(docker inspect --format="{{.Id}}" dockerImageftptesting | sed '/^[[:space:]]*$/d')
                            docker cp dockerImageftptesting:/test.txt ${env.WORKSPACE}/ftptesting"
                        }
                     } 
