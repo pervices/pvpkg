@@ -50,7 +50,7 @@ pipeline {
                                 environment {
                                     IID = "\$(docker images ftp:$BUILD_NUMBER --format \"{{.ID}}\")"}
                           script { 
-                                  sh "echo $IID"   
+                                  sh "echo ${env.IID}"   
                                 //  sh "docker images ftp:$BUILD_NUMBER --format \"{{.ID}}\" && \
                                 //    IID =\$(docker images ftp:$BUILD_NUMBER --format \"{{.ID}}\") && \
                                   //   echo IID"
