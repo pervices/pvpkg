@@ -46,7 +46,7 @@ pipeline {
                        script { 
                              dir("${env.WORKSPACE}/ftptesting") {
                                   dockerImageftptesting = docker.build("ftp:$BUILD_NUMBER", "--network host .")
-                                   env.IID = ""
+                                  // env.IID = ""
                                   sh "docker images ftp:$BUILD_NUMBER --format \"{{.ID}}\" && \
                                     env.IID = \$(docker images ftp:$BUILD_NUMBER --format \"{{.ID}}\") && \
                                      echo $IID"
