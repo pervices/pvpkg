@@ -46,7 +46,7 @@ pipeline {
                        script { 
                              dir("${env.WORKSPACE}/ftptesting") {
                                   dockerImageftptesting = docker.build("$BUILD_NUMBER", "--network host .")
-                               sh 'docker ps -qf \"name=dockerImageftptesting\"'
+                               sh 'TESTID=(docker ps -qf \"name=dockerImageftptesting\")'
                        }
                     } 
                 }
