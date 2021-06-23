@@ -45,12 +45,13 @@ pipeline {
 
                        script { 
                              dir("${env.WORKSPACE}/ftptesting") {
-                                  dockerImageftptesting = docker.build("$BUILD_NUMBER", "-t ftp", "--network host .")
+                                 def dockerImageftptesting = docker.build("$BUILD_NUMBER", "--network host .")
                                  sh "docker ps"
                                  //  dockerImageftptesting.inside {
                                  // sh "cd /tmp && ls"
                            //    sh "TESTID=(docker ps -aqf \"name=$BUILD_NUMBER\") && \
                       //     docker cp $TESTID:/test.txt ${env.WORKSPACE}/ftptesting"
+                           //  docker container ls  | grep 'container-name' | awk '{print $1}'
                     //   }
                     } 
                 }
