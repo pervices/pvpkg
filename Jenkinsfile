@@ -49,8 +49,8 @@ pipeline {
                                  sh "docker ps"
                                  //  dockerImageftptesting.inside {
                                  // sh "cd /tmp && ls"
-                               sh "TESTID=(docker ps -aqf \"name=$BUILD_NUMBER\") && \
-                           docker cp $TESTID:/test.txt ${env.WORKSPACE}/ftptesting"
+                           //    sh "TESTID=(docker ps -aqf \"name=$BUILD_NUMBER\") && \
+                      //     docker cp $TESTID:/test.txt ${env.WORKSPACE}/ftptesting"
                     //   }
                     } 
                 }
