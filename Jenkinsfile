@@ -48,7 +48,7 @@ pipeline {
                                   dockerImageftptesting = docker.build("ftp:$BUILD_NUMBER", "--network host .")
                                   sh "docker images ftp:$BUILD_NUMBER --format \"{{.ID}}\" && \
                                     CONTID=(docker images ftp:$BUILD_NUMBER --format \"{{.ID}}\") && \
-                                     export $CONTID"
+                                     export CONTID"
                                  //  dockerImageftptesting.inside {
                                  // sh "cd /tmp && ls"
                            //    sh "TESTID=(docker ps -aqf \"name=$BUILD_NUMBER\") && \
