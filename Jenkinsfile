@@ -47,8 +47,9 @@ pipeline {
                              dir("${env.WORKSPACE}/ftptesting") {
                                   dockerImageftptesting = docker.build("ftp:$BUILD_NUMBER", "--network host .")
                                   env.IID = "\$(docker images ftp:$BUILD_NUMBER --format \"{{.ID}}\")"
-                                  sh "echo ${IID}   && \
-                               docker images ftp:$BUILD_NUMBER --format \"{{.ID}}\""
+                                  env.CID = "\$(docker container ls  | grep '${IID}' | awk '{print $1}')
+                                  sh "echo ${IID} && echo $CID"
+                            //   docker images ftp:$BUILD_NUMBER --format \"{{.ID}}\""
                                 //    IID =\$(docker images ftp:$BUILD_NUMBER --format \"{{.ID}}\") && \
                                   //   echo IID"
                                  //  dockerImageftptesting.inside {
