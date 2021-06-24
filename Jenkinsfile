@@ -10,14 +10,14 @@ pipeline {
         // Build stages for each distribution are set to run in parallel. Need to add build artifacts and run tests 
         // for each parallel build. 
 
-	stage('Test Credentials'){
-steps {
-     sshagent(credentials: ['sshfilespervices']) {
-    sh "ssh -T -p 237 filespervices@files.pervices.com && \
-    echo 'ssh -T -p 237 filespervices@files.pervices.com'"
-    }
-}
-}
+	//stage('Test Credentials'){
+//steps {
+   //  sshagent(credentials: ['sshfilespervices']) {
+  //  sh "ssh -T -p 237 filespervices@files.pervices.com && \
+   // echo 'ssh -T -p 237 filespervices@files.pervices.com'"
+   // }
+//}
+//}
         stage('Build UHD and GNU Radio') {
         parallel {
 
@@ -53,7 +53,7 @@ steps {
                                 sh "docker cp ${CID}:/test.txt $WORKSPACE/ftptesting"
                                 sh "echo ${IID} && echo ${CID}"
                                  sshagent(credentials: ['sshfilespervices']) {
-                                 sh "ssh -T -p 237 filespervices@files.pervices.com && \
+                                 sh "ssh -T -vvv -p 237 filespervices@files.pervices.com && \
                                         pwd"
                                 //  scp -P 237 test.txt filespervices@files.pervices.com:<path-to-file>
                             //   docker images ftp:$BUILD_NUMBER --format \"{{.ID}}\""
