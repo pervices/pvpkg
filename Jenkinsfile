@@ -68,16 +68,16 @@ pipeline {
                       script { 
                              dir("${env.WORKSPACE}/ubuntu/20.04/20.04testing") {
                                  dockerImageUbuntu2004 = docker.build("ubuntu:$BUILD_NUMBER", "--network host .") 
-                             //    env.IID = "\$(docker images ubuntu:$BUILD_NUMBER --format \"{{.ID}}\")"
-                             //    env.CID="\$(docker create $IID)"
-                              //   sh "docker cp ${CID}: $WORKSPACE/ftptesting && \
-                           //         docker cp ${CID}: $WORKSPACE/ftptesting"
+                                 env.IID = "\$(docker images ubuntu:$BUILD_NUMBER --format \"{{.ID}}\")"
+                                 env.CID="\$(docker create $IID)"
+                                 sh "docker cp ${CID}:/home/uhd*.tar.gz $WORKSPACE/ubuntu/20.04/20.04testing && \
+                                 docker cp ${CID}:/home/gnuradio*.tar.gz $WORKSPACE/ubuntu/20.04/20.04testing"
                               //  sh "echo ${IID} && echo ${CID}"
-                         //        sshagent(credentials: ['sshfilespervices']) {
-                        //         sh "ssh -T -p 237 filespervices@files.pervices.com && \
-                        //         scp -P 237 test.txt filespervices@files.pervices.com:/home/filespervices/www/latest/ && \
-                       //          scp -P 237 test.txt filespervices@files.pervices.com:/home/filespervices/www/latest/"
-                      //  }
+                                 sshagent(credentials: ['sshfilespervices']) {
+                                 sh "ssh -T -p 237 filespervices@files.pervices.com && \
+                                 scp -P 237 uhd*.tar.gz filespervices@files.pervices.com:/home/filespervices/www/latest/sw/uhd/ && \
+                                 scp -P 237 gnuradio*.tar.gz filespervices@files.pervices.com:/home/filespervices/www/latest/sw/gnuradio/"
+                        }
                        }
                      } 
                  }

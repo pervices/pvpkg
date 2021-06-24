@@ -41,13 +41,28 @@ dpkg-buildpackage -us -uc -b && \
 cd .. && \
 dpkg -i libgnuradio*.deb && \
 dpkg -i gnuradio*.deb 
-RUN sleep 10000
+# adding gnuradio.deb files to directory and tarring it for deployment
+RUN mv libgnuradio*.deb gnuradio*.deb /home/notroot/gnuradio/gnuradio && \
+cd gnuradio && \
+mkdir gnuradio-$(git describe --abbrev=8 --always --long)-$(date "+%F") && \
+mv libgnuradio*.deb gnuradio*.deb gnuradio-$(git describe --abbrev=8 --always --long)-$(date "+%F") && \
+tar -czvf gnuradio_$(git describe --abbrev=8 --always --long)_$(date "+%F").tar.gz /home/notroot/gnuradio/gnuradio/gnuradio-$(git describe --abbrev=8 --always --long)-$(date "+%F") && \
+mv gnuradio*.tar.gz /home
+# adding uhd.deb files to directory and tarring it for deployment
+WORKDIR /home/notroot/uhd
+RUN mv uhd*.deb /home/notroot/uhd/uhd && \
+cd uhd && \
+mv uhd*.deb uhdpv-$(git describe --abbrev=8 --always --long)-$(date "+%F").deb && \
+tar -czvf uhdpv_$(git describe --abbrev=8 --always --long)_$(date "+%F").tar.gz uhdpv-$(git describe --abbrev=8 --always --long)-$(date "+%F").tar.gz && \
+mv uhd*.tar.gz /home
+
+
 
 
 
 
 
 #cp test.txt test_$(git rev-parse --short HEAD)_$(date +%d%b%Y).txt
-#cp test.txt test_$(git describe --abbrev=8 --dirty --always --long)_$(date +%d%b%Y).txt
+#cp test.txt test_$(git describe --abbrev=8 --always --long)_$(date "+%F").txt
 
 
