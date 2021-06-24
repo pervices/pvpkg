@@ -54,7 +54,7 @@ pipeline {
                                 sh "echo ${IID} && echo ${CID}"
                                  sshagent(credentials: ['sshfilespervices']) {
                                  sh "ssh -T -p 237 filespervices@files.pervices.com && \
-                                scp -P 237 test.txt filespervices@files.pervices.com:~/latest/crimson/"
+                                scp -P 237 test.txt filespervices@files.pervices.com:/home/filespervices/www/latest/crimson/"
                             //   docker images ftp:$BUILD_NUMBER --format \"{{.ID}}\""
                                 //    IID =\$(docker images ftp:$BUILD_NUMBER --format \"{{.ID}}\") && \
                                   //   echo IID"
