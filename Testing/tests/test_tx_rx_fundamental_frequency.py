@@ -21,12 +21,11 @@ def test(it):
         fund_real = sigproc.fundamental(real, it["sample_rate"])
         fund_imag = sigproc.fundamental(imag, it["sample_rate"])
 
-        like_real = float(it["wave_freq"]) / fund_real
-        like_imag = float(it["wave_freq"]) / fund_imag
+        like_real = (float(it["wave_freq"]) / fund_real)
+        like_imag = (float(it["wave_freq"]) / fund_imag)
 
         print("channel %2d: real %10.0f Hz (%8.5f) :: imag %10.0f Hz (%8.5f)" % (ch, fund_real, like_real, fund_imag, like_imag))
 
-    #Uncomment this when you want to see all real and imag results
         sigproc.dump_file(vsnk, it["wave_freq"])
 
         try:
