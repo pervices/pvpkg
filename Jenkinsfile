@@ -64,7 +64,7 @@ steps {
                            //    sh "TESTID=(docker ps -aqf \"name=$BUILD_NUMBER\") && \
                       //     docker cp $TESTID:/test.txt ${env.WORKSPACE}/ftptesting"
                            //  docker container ls  | grep 'container-name' | awk '{print $1}'
-                    //   }
+                       }
                      
                  }
                 }
