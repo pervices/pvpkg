@@ -40,13 +40,14 @@ cd .. && \
 dpkg-buildpackage -us -uc -b && \
 cd .. && \
 dpkg -i libgnuradio*.deb && \
-dpkg -i gnuradio*.deb
+dpkg -i gnuradio*.deb 
+RUN sleep 10000
 
 
 
 
 
 #cp test.txt test_$(git rev-parse --short HEAD)_$(date +%d%b%Y).txt
-
+#cp test.txt test_$(git describe --abbrev=8 --dirty --always --long)_$(date +%d%b%Y).txt
 
 
