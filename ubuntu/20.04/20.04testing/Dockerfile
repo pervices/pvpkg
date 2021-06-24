@@ -54,7 +54,8 @@ RUN mv uhd*.deb /home/notroot/uhd/uhd && \
 cd uhd && \
 mv uhd*.deb uhdpv-$(git describe --abbrev=8 --always --long)-$(date "+%F").deb && \
 tar -czvf uhdpv_$(git describe --abbrev=8 --always --long)_$(date "+%F").tar.gz uhdpv-$(git describe --abbrev=8 --always --long)-$(date "+%F").deb && \
-mv uhd*.tar.gz /home
+mv uhd*.tar.gz /home && \
+sleep 1000
 
 
 
