@@ -49,8 +49,8 @@ pipeline {
                                   env.IID = "\$(docker images ftp:$BUILD_NUMBER --format \"{{.ID}}\")"
                                //   env.CID = sh(script: "/bin/bash -c 'docker container ls  | grep '$IID' | awk '{print '$1'}'''")
                                   env.CID="\$(docker create $IID)"
-                                  docker cp ${env.CID}:/test.txt $WORKSPACE/ftptesting
-                                  sh "echo ${IID}"
+                                 // docker cp ${env.CID}:/test.txt $WORKSPACE/ftptesting
+                                  sh "echo ${IID} && ${CID}"
                             //   docker images ftp:$BUILD_NUMBER --format \"{{.ID}}\""
                                 //    IID =\$(docker images ftp:$BUILD_NUMBER --format \"{{.ID}}\") && \
                                   //   echo IID"
