@@ -52,6 +52,10 @@ pipeline {
                                  env.CID="\$(docker create $IID)"
                                 sh "docker cp ${CID}:/test.txt $WORKSPACE/ftptesting"
                                 sh "echo ${IID} && echo ${CID}"
+                                 sshagent(credentials: ['sshfilespervices']) {
+                                 sh "ssh -T -p 237 filespervices@files.pervices.com && \
+                                        pwd"}
+                                //  scp -P 237 test.txt filespervices@files.pervices.com:<path-to-file>
                             //   docker images ftp:$BUILD_NUMBER --format \"{{.ID}}\""
                                 //    IID =\$(docker images ftp:$BUILD_NUMBER --format \"{{.ID}}\") && \
                                   //   echo IID"
