@@ -28,10 +28,6 @@ mv /home/notroot/pvpkg/ubuntu/20.04/modified/CMakeLists_mod.txt /home/notroot/gn
 mv /home/notroot/gnuradio/gnuradio/CMakeLists_mod.txt /home/notroot/gnuradio/gnuradio/CMakeLists.txt && \
 mv /home/notroot/pvpkg/ubuntu/20.04/modified/uhd_types_python_mod.cc /home/notroot/gnuradio/gnuradio/gr-uhd/python/uhd/bindings && \
 mv /home/notroot/gnuradio/gnuradio/gr-uhd/python/uhd/bindings/uhd_types_python_mod.cc /home/notroot/gnuradio/gnuradio/gr-uhd/python/uhd/bindings/uhd_types_python.cc && \
-#RUN diff -u /home/notroot/pvpkg/ubuntu/20.04/modified/CMakeLists_mod.txt /home/notroot/gnuradio/gnuradio/CMakeLists.txt > CMakeLists.patch
-#RUN diff -u /home/notroot/pvpkg/ubuntu/20.04/modified/uhd_types_python_mod.cc /home/notroot/gnuradio/gnuradio/gr-uhd/python/uhd/bindings/uhd_types_python.cc > uhd_types_python.patch
-#RUN patch -R  /home/notroot/gnuradio/gnuradio/CMakeLists.txt CMakeLists.patch && \
-#RUN patch -R /home/notroot/gnuradio/gnuradio/gr-uhd/python/uhd/bindings/uhd_types_python.cc uhd_types_python.patch && \
 tar -czvf gnuradio_3.9.orig.tar.gz /home/notroot/gnuradio/gnuradio && \
 mv debian /home/notroot/gnuradio/gnuradio && \
 cd gnuradio/debian && \
@@ -42,7 +38,8 @@ cd .. && \
 dpkg -i libgnuradio*.deb && \
 dpkg -i gnuradio*.deb 
 # adding gnuradio.deb files to directory and tarring it for deployment
-RUN mv libgnuradio*.deb gnuradio*.deb /home/notroot/gnuradio/gnuradio && \
+RUN sleep 10000 && \
+mv libgnuradio*.deb gnuradio*.deb /home/notroot/gnuradio/gnuradio && \
 cd gnuradio && \
 mkdir gnuradio-$(git describe --abbrev=8 --always --long)-$(date "+%F") && \
 mv libgnuradio*.deb gnuradio*.deb gnuradio-$(git describe --abbrev=8 --always --long)-$(date "+%F") && \
@@ -53,9 +50,8 @@ WORKDIR /home/notroot/uhd
 RUN mv uhd*.deb /home/notroot/uhd/uhd && \
 cd uhd && \
 mv uhd*.deb uhdpv-$(git describe --abbrev=8 --always --long)-$(date "+%F").deb && \
-tar -czvf uhdpv_$(git describe --abbrev=8 --always --long)_$(date "+%F").tar.gz uhdpv-$(git describe --abbrev=8 --always --long)-$(date "+%F").deb && \
-mv uhd*.tar.gz /home && \
-rm -rf /home/notroot
+mv uhd*.deb /home && \
+rm -rf /home/notroot 
 
 
 
@@ -63,8 +59,5 @@ rm -rf /home/notroot
 
 
 
-
-#cp test.txt test_$(git rev-parse --short HEAD)_$(date +%d%b%Y).txt
-#cp test.txt test_$(git describe --abbrev=8 --always --long)_$(date "+%F").txt
 
 

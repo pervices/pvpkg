@@ -75,7 +75,7 @@ pipeline {
                               //  sh "echo ${IID} && echo ${CID}"
                                  sshagent(credentials: ['sshfilespervices']) {
                                  sh "ssh -T -p 237 filespervices@files.pervices.com && \
-                                 scp -P 237 uhd*.tar.gz filespervices@files.pervices.com:/home/filespervices/www/latest/sw/uhd/ && \
+                                 scp -P 237 uhdpv*.deb filespervices@files.pervices.com:/home/filespervices/www/latest/sw/uhd/ && \
                                  scp -P 237 gnuradio*.tar.gz filespervices@files.pervices.com:/home/filespervices/www/latest/sw/gnuradio/"
                         }
                        }
