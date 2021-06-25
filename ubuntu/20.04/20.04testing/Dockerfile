@@ -40,10 +40,9 @@ dpkg -i gnuradio*.deb
 # adding gnuradio.deb files to directory and tarring it for deployment; changing names of generated .debs to match relevant git tag and versioning info
 RUN mv libgnuradio*.deb gnuradio*.deb /home/notroot/gnuradio/gnuradio && \
 cd gnuradio && \
-sleep 10000 && \
 mv gnuradio-dev*.deb gnuradio-dev-$(git describe --abbrev=8 --always --long)-$(date "+%F").deb && \
-mv gnuradio-doc*.deb gnuradio-doc-$(git describe --abbrev=8 --always --long)-$(date "+%F").deb && \
-mv gnuradio*.deb gnuradio-$(git describe --abbrev=8 --always --long)-$(date "+%F").deb && \
+mv gnuradio-doc*.deb "gnuradio-doc-$(git describe --abbrev=8 --always --long)-$(date "+%F").deb" && \
+mv gnuradio*amd64.deb gnuradio-$(git describe --abbrev=8 --always --long)-$(date "+%F").deb && \
 mv libgnuradio-analog*.deb libgnuradio-analog-$(git describe --abbrev=8 --always --long)-$(date "+%F").deb && \
 mv libgnuradio-audio*.deb libgnuradio-audio-$(git describe --abbrev=8 --always --long)-$(date "+%F").deb && \
 mv libgnuradio-blocks*.deb libgnuradio-blocks-$(git describe --abbrev=8 --always --long)-$(date "+%F").deb && \
