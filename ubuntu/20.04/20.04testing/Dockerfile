@@ -37,10 +37,31 @@ dpkg-buildpackage -us -uc -b && \
 cd .. && \
 dpkg -i libgnuradio*.deb && \
 dpkg -i gnuradio*.deb 
-# adding gnuradio.deb files to directory and tarring it for deployment
-RUN sleep 10000 && \
-mv libgnuradio*.deb gnuradio*.deb /home/notroot/gnuradio/gnuradio && \
+# adding gnuradio.deb files to directory and tarring it for deployment; changing names of generated .debs to match relevant git tag and versioning info
+RUN mv libgnuradio*.deb gnuradio*.deb /home/notroot/gnuradio/gnuradio && \
 cd gnuradio && \
+mv gnuradio-dev*.deb gnuradio-dev-$(git describe --abbrev=8 --always --long)-$(date "+%F").deb && \
+mv gnuradio-doc*.deb gnuradio-doc-$(git describe --abbrev=8 --always --long)-$(date "+%F").deb && \
+mv gnuradio*.deb gnuradio-$(git describe --abbrev=8 --always --long)-$(date "+%F").deb && \
+mv libgnuradio-analog*.deb libgnuradio-analog-$(git describe --abbrev=8 --always --long)-$(date "+%F").deb && \
+mv libgnuradio-audio*.deb libgnuradio-audio-$(git describe --abbrev=8 --always --long)-$(date "+%F").deb && \
+mv libgnuradio-blocks*.deb libgnuradio-blocks-$(git describe --abbrev=8 --always --long)-$(date "+%F").deb && \
+mv libgnuradio-channels*.deb libgnuradio-channels-$(git describe --abbrev=8 --always --long)-$(date "+%F").deb && \
+mv libgnuradio-digital*.deb libgnuradio-digital-$(git describe --abbrev=8 --always --long)-$(date "+%F").deb && \
+mv libgnuradio-dtv*.deb libgnuradio-dtv-$(git describe --abbrev=8 --always --long)-$(date "+%F").deb && \
+mv libgnuradio-fec*.deb libgnuradio-fec-$(git describe --abbrev=8 --always --long)-$(date "+%F").deb && \
+mv libgnuradio-fft*.deb libgnuradio-fft-$(git describe --abbrev=8 --always --long)-$(date "+%F").deb && \
+mv libgnuradio-filter*.deb libgnuradio-filter-$(git describe --abbrev=8 --always --long)-$(date "+%F").deb && \
+mv libgnuradio-network*.deb libgnuradio-network-$(git describe --abbrev=8 --always --long)-$(date "+%F").deb && \
+mv libgnuradio-pmt*.deb libgnuradio-pmt-$(git describe --abbrev=8 --always --long)-$(date "+%F").deb && \
+mv libgnuradio-qtgui*.deb libgnuradio-qtgui-$(git describe --abbrev=8 --always --long)-$(date "+%F").deb && \
+mv libgnuradio-runtime*.deb libgnuradio-runtime-$(git describe --abbrev=8 --always --long)-$(date "+%F").deb && \
+mv libgnuradio-trellis*.deb libgnuradio-trellis-$(git describe --abbrev=8 --always --long)-$(date "+%F").deb && \
+mv libgnuradio-uhd*.deb libgnuradio-uhd-$(git describe --abbrev=8 --always --long)-$(date "+%F").deb && \
+mv libgnuradio-video-sdl*.deb libgnuradio-video-sdl-$(git describe --abbrev=8 --always --long)-$(date "+%F").deb && \
+mv libgnuradio-vocoder*.deb libgnuradio-vocoder-$(git describe --abbrev=8 --always --long)-$(date "+%F").deb && \
+mv libgnuradio-wavelet*.deb libgnuradio-wavelet-$(git describe --abbrev=8 --always --long)-$(date "+%F").deb && \
+mv libgnuradio-zeromq*.deb libgnuradio-zeromq-$(git describe --abbrev=8 --always --long)-$(date "+%F").deb && \
 mkdir gnuradio-$(git describe --abbrev=8 --always --long)-$(date "+%F") && \
 mv libgnuradio*.deb gnuradio*.deb gnuradio-$(git describe --abbrev=8 --always --long)-$(date "+%F") && \
 tar -czvf gnuradio_$(git describe --abbrev=8 --always --long)_$(date "+%F").tar.gz /home/notroot/gnuradio/gnuradio/gnuradio-$(git describe --abbrev=8 --always --long)-$(date "+%F") && \
