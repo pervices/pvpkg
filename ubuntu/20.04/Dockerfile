@@ -1,117 +1,89 @@
 FROM ubuntu:20.04
-
-# set environemnt to non-interactive to stop input prompts that occurred on certain instructions
 ENV DEBIAN_FRONTEND=noninteractive
-
-# install necessary components for UHD; install some Python components using pip; use version 1.67 of boost to prevent issues
-RUN apt update && \
-apt-get -y install coreutils && \
-apt-get -y install git && \
-apt-get -y install cmake && \
-apt-get -y install build-essential && \
- apt-get -y install python3-dev python3-pip && \
- apt-get -y install libboost1.67-all-dev  && \
-apt-get -y install doxygen && \
-pip3 install mako && \
- apt-get -y install libusb-1.0-0-dev && \
- apt-get -y install liborc-0.4-dev && \
-pip3  install Cheetah3 && \
-pip3  install  requests && \
-pip3  install numpy && \
-pip3 install pybind11 && \
-pip3 install docutils && \
-pip3 install ruamel.yaml && \
-pip3 install setuptools && \
-find -name "*.py" -or -name '*.py.in' | xargs sed -i "s|#!/usr/bin/env python$|#!/usr/bin/env python3|" 
-#WORKDIR /usr/lib/x86_64-linux-gnu
-#RUN ls
-
-# install UHD using cmake, specifying Boost and Python options shown
-RUN git clone https://github.com/pervices/uhd.git
-WORKDIR /home/notroot/libuhd
-RUN cmake \
-    -DCMAKE_INSTALL_PREFIX=/usr/ \
--D Boost_NO_BOOST_CMAKE:BOOL=0 \
-           -DENABLE_PYTHON3=ON \
-           -DBOOST_PYTHON_COMPONENT=python38 \
-        -DPYTHON_INCLUDE_DIR=$(echo /usr/include/python3*) \
-           -DENABLE_EXAMPLES=ON \
-           -DENABLE_UTILS=ON \
-           -DENABLE_TESTS=OFF \
-           -DENABLE_E100=OFF \
-	   -DENABLE_N230=OFF \
-	   -DENABLE_N300=OFF \
-	   -DENABLE_E320=OFF \
-	   -DENABLE_USRP1=OFF \
-	   -DENABLE_USER2=OFF \
-	   -DENABLE_B200=OFF \
-	   -DENABLE_X300=OFF \
-       -DENABLE_CRIMSON_TNG=ON \
-       -DENABLE_CYAN_16T=OFF \
-       -DENABLE_CYAN_64T=OFF \
-	   -DENABLE_OCTOCLOCK=OFF \
-	   -DENABLE_DOXYGEN=OFF \
-	   -DENABLE_USB=OFF \
-         /.. && \
-make -j4 && \
-make install
-
-# install necessary packages for GnuRadio
+SHELL ["/bin/bash", "-c", "-x"]
+WORKDIR /home/notroot
+# installing basic essential packages to container to allow for rest of build to occur
 RUN apt-get update && \
-apt-get -y -f install libgmp-dev swig  \
- python3-sphinx python3-lxml libfftw3-dev \
-libsdl1.2-dev libgsl-dev libqwt-qt5-dev libqt5opengl5-dev  \
-liblog4cpp5-dev libzmq3-dev python3-yaml python3-click python3-click-plugins \
-python3-zmq python3-scipy python3-gi python3-gi-cairo gobject-introspection gir1.2-gtk-3.0 libsndfile1-dev \
-pip3 install pyqt5 && \
-pip3 install --user --upgrade construct requests
+apt-get -y install dpkg-dev sudo apt-utils dh-make bzr-builddeb equivs xz-utils iputils-ping net-tools software-properties-common cmake git coreutils build-essential && \
+apt-get -y install python3-pip && \
+pip3 install Cheetah3 && \
+# clone pvpkg repo to get uhd and gnuradio Debian directories, as well as modified cmake and uhd_types files to patch
+ls && git clone https://github.com/pervices/pvpkg.git && \
+cd pvpkg/ubuntu/20.04 && \
+mv gnuradio uhd /home/notroot
+RUN apt-get update
+WORKDIR /home/notroot/uhd
+# clone latest pervices uhd version, tar repo as orig.tar.gz, and build debian package
+RUN git clone -b master https://github.com/pervices/uhd.git && \
+cd debian && \
+mk-build-deps -i --tool 'apt-get -f --yes' control
+RUN tar -czvf uhdpv_3.13.0.orig.tar.gz /home/notroot/uhd/uhd && \
+mv debian /home/notroot/uhd/uhd && \
+cd uhd && \
+dpkg-buildpackage -us -uc -b && \
+cd .. && \
+dpkg -i uhd*.deb
+WORKDIR /home/notroot/gnuradio
+# clone gnuradio 3.9 from github, replace Cmake and uhd types files from Github with those from pvpkg to allow for successful build
+RUN git clone -b maint-3.9 https://github.com/pervices/gnuradio.git && \
+rm /home/notroot/gnuradio/gnuradio/CMakeLists.txt && \
+rm /home/notroot/gnuradio/gnuradio/gr-uhd/python/uhd/bindings/uhd_types_python.cc && \
+mv /home/notroot/pvpkg/ubuntu/20.04/modified/CMakeLists_mod.txt /home/notroot/gnuradio/gnuradio && \
+mv /home/notroot/gnuradio/gnuradio/CMakeLists_mod.txt /home/notroot/gnuradio/gnuradio/CMakeLists.txt && \
+mv /home/notroot/pvpkg/ubuntu/20.04/modified/uhd_types_python_mod.cc /home/notroot/gnuradio/gnuradio/gr-uhd/python/uhd/bindings && \
+mv /home/notroot/gnuradio/gnuradio/gr-uhd/python/uhd/bindings/uhd_types_python_mod.cc /home/notroot/gnuradio/gnuradio/gr-uhd/python/uhd/bindings/uhd_types_python.cc && \
+# create orig.tar.gz of gnuradio repo nad build debian package
+tar -czvf gnuradio_3.9.orig.tar.gz /home/notroot/gnuradio/gnuradio && \
+mv debian /home/notroot/gnuradio/gnuradio && \
+cd gnuradio/debian && \
+mk-build-deps -i --tool 'apt-get -f --yes' control && \
+cd .. && \
+dpkg-buildpackage -us -uc -b && \
+cd .. && \
+dpkg -i libgnuradio*.deb && \
+dpkg -i gnuradio*.deb 
+# adding gnuradio.deb files to directory and tarring it for deployment; changing names of generated .debs to match relevant git tag and versioning info
+RUN mv libgnuradio*.deb gnuradio*.deb /home/notroot/gnuradio/gnuradio && \
+cd gnuradio && \
+mv gnuradio-dev*.deb gnuradio-dev-$(git describe --abbrev=8 --always --long)-$(date "+%F").deb && \
+mv gnuradio-doc*.deb "gnuradio-doc-$(git describe --abbrev=8 --always --long)-$(date "+%F").deb" && \
+mv gnuradio*amd64.deb gnuradio-$(git describe --abbrev=8 --always --long)-$(date "+%F").deb && \
+mv libgnuradio-analog*.deb libgnuradio-analog-$(git describe --abbrev=8 --always --long)-$(date "+%F").deb && \
+mv libgnuradio-audio*.deb libgnuradio-audio-$(git describe --abbrev=8 --always --long)-$(date "+%F").deb && \
+mv libgnuradio-blocks*.deb libgnuradio-blocks-$(git describe --abbrev=8 --always --long)-$(date "+%F").deb && \
+mv libgnuradio-channels*.deb libgnuradio-channels-$(git describe --abbrev=8 --always --long)-$(date "+%F").deb && \
+mv libgnuradio-digital*.deb libgnuradio-digital-$(git describe --abbrev=8 --always --long)-$(date "+%F").deb && \
+mv libgnuradio-dtv*.deb libgnuradio-dtv-$(git describe --abbrev=8 --always --long)-$(date "+%F").deb && \
+mv libgnuradio-fec*.deb libgnuradio-fec-$(git describe --abbrev=8 --always --long)-$(date "+%F").deb && \
+mv libgnuradio-fft*.deb libgnuradio-fft-$(git describe --abbrev=8 --always --long)-$(date "+%F").deb && \
+mv libgnuradio-filter*.deb libgnuradio-filter-$(git describe --abbrev=8 --always --long)-$(date "+%F").deb && \
+mv libgnuradio-network*.deb libgnuradio-network-$(git describe --abbrev=8 --always --long)-$(date "+%F").deb && \
+mv libgnuradio-pmt*.deb libgnuradio-pmt-$(git describe --abbrev=8 --always --long)-$(date "+%F").deb && \
+mv libgnuradio-qtgui*.deb libgnuradio-qtgui-$(git describe --abbrev=8 --always --long)-$(date "+%F").deb && \
+mv libgnuradio-runtime*.deb libgnuradio-runtime-$(git describe --abbrev=8 --always --long)-$(date "+%F").deb && \
+mv libgnuradio-trellis*.deb libgnuradio-trellis-$(git describe --abbrev=8 --always --long)-$(date "+%F").deb && \
+mv libgnuradio-uhd*.deb libgnuradio-uhd-$(git describe --abbrev=8 --always --long)-$(date "+%F").deb && \
+mv libgnuradio-video-sdl*.deb libgnuradio-video-sdl-$(git describe --abbrev=8 --always --long)-$(date "+%F").deb && \
+mv libgnuradio-vocoder*.deb libgnuradio-vocoder-$(git describe --abbrev=8 --always --long)-$(date "+%F").deb && \
+mv libgnuradio-wavelet*.deb libgnuradio-wavelet-$(git describe --abbrev=8 --always --long)-$(date "+%F").deb && \
+mv libgnuradio-zeromq*.deb libgnuradio-zeromq-$(git describe --abbrev=8 --always --long)-$(date "+%F").deb && \
+mkdir gnuradio-$(git describe --abbrev=8 --always --long)-$(date "+%F") && \
+mv libgnuradio*.deb gnuradio*.deb gnuradio-$(git describe --abbrev=8 --always --long)-$(date "+%F") && \
+tar -czvf gnuradio_$(git describe --abbrev=8 --always --long)_$(date "+%F").tar.gz /home/notroot/gnuradio/gnuradio/gnuradio-$(git describe --abbrev=8 --always --long)-$(date "+%F") && \
+mv gnuradio*.tar.gz /home
+WORKDIR /home/notroot/uhd
+# move uhd deb file to home directory and tagging it for deployment
+RUN mv uhd*.deb /home/notroot/uhd/uhd && \
+cd uhd && \
+mv uhd*.deb uhdpv-$(git describe --abbrev=8 --always --long)-$(date "+%F").deb && \
+mv uhd*.deb /home && \
+rm -rf /home/notroot 
 
-# install volk and gnuradio separately, as is required for the most recent Ubuntu 20.04 version; specify Python3 in cmake as shown
-WORKDIR /home
-RUN git clone --recursive https://github.com/gnuradio/volk.git
-WORKDIR volk
-RUN mkdir build
-WORKDIR build
-RUN  ls && cmake \
- -DCMAKE_BUILD_TYPE=Release \
- -DPYTHON_EXECUTABLE=/usr/bin/python3 \
- -DPYTHON_INCLUDE_DIR=$(echo /usr/include/python3*) \
- -DPYTHON_LIBRARY=$(echo /usr/lib/libpython3.*.so) \
-../ && \
-make -j4 && \
-make install
-WORKDIR /home
-RUN git clone https://github.com/gnuradio/gnuradio.git
-WORKDIR gnuradio
-RUN mkdir build
-WORKDIR build
-RUN ls && cmake -DCMAKE_BUILD_TYPE=Debug -DPYTHON_EXECUTABLE=/usr/bin/python3 ../ && \
-make -j4 && \
-make install
-RUN ls && git clone https://github.com/pervices/pvpkg.git && \
-cd pvpkg/Arch && \
-mv variables.sh /home/notroot/libuhd && \
-mv tests /home/notroot/libuhd && \
-cd ../ubuntu && \
-mv test-only.sh /home/notroot/libuhd
-WORKDIR /home/notroot/libuhd
-RUN chmod +x test-only.sh && \
-chmod +x variables.sh && \
-chmod +x tests && \
-apt-get -y install sudo && \
-apt-get -y install net-tools iputils-ping && \ 
-ldconfig && \
-gnuradio-config-info --prefix && \
-find /usr/local -name gnuradio | grep "packages" && \
-echo "export PYTHONPATH=/usr/local/lib/python3/dist-packages:$PYTHONPATH" >> ~/.bashrc && \
-echo "export LD_LIBRARY_PATH=/user/local/lib:$LD_LIBRARY_PATH" >> ~/.bashrc && \
-echo "export PYTHONPATH=/usr/local/lib/python3/dist-packages:$PYTHONPATH" >> ~/.profile && \
-echo "export LD_LIBRARY_PATH=/user/local/lib:$LD_LIBRARY_PATH" >> ~/.profile 
-RUN ldconfig && \
-python3 -m site --user-site && \
-python3 --version && \
-./test-only.sh && \
-./test-only.sh
+
+
+
+
+
 
 
 

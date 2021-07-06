@@ -7,17 +7,7 @@ pipeline {
 
     stages {
 
-        // Build stages for each distribution are set to run in parallel. Need to add build artifacts and run tests 
-        // for each parallel build. 
 
-	//stage('Test Credentials'){
-//steps {
-   //  sshagent(credentials: ['sshfilespervices']) {
-  //  sh "ssh -T -p 237 filespervices@files.pervices.com && \
-   // echo 'ssh -T -p 237 filespervices@files.pervices.com'"
-   // }
-//}
-//}
         stage('Build UHD and GNU Radio') {
         parallel {
 
@@ -42,14 +32,15 @@ pipeline {
                stage('Ubuntu 20.04') { 
 
                    steps { 
-
+                              // Build image, enter container to transfer build artifacts from Dockerfile image, 
+                              // remove image from cache to allow subsequent builds to build from scratch, transfer build artifacts to FTP server.
                       script { 
-                             dir("${env.WORKSPACE}/ubuntu/20.04/20.04testing") {
+                             dir("${env.WORKSPACE}/ubuntu/20.04") {
                                  dockerImageUbuntu2004 = docker.build("ubuntu:$BUILD_NUMBER", "--network host .") 
                                  env.IID = "\$(docker images ubuntu:$BUILD_NUMBER --format \"{{.ID}}\")"
                                  env.CID="\$(docker create $IID)"
-                                 sh "docker cp ${CID}:/home/. $WORKSPACE/ubuntu/20.04/20.04testing && \
-                                     docker rm ${CID}"
+                                 sh "docker cp ${CID}:/home/. $WORKSPACE/ubuntu/20.04 && \
+                                     docker rm ${IID}"
                                  sshagent(credentials: ['sshfilespervices']) {
                                  sh "ssh -T -p 237 filespervices@files.pervices.com && \
                                  scp -P 237 uhdpv*.deb filespervices@files.pervices.com:/home/filespervices/www/latest/sw/uhd/ && \
