@@ -2,7 +2,7 @@ pipeline {
 
 // citests agents used to build and test repo.
     agent {
-	label 'crossci||waveci'
+	label 'waveci'
     }
 
     stages {
@@ -40,7 +40,7 @@ pipeline {
                                  env.IID = "\$(docker images ubuntu:$BUILD_NUMBER --format \"{{.ID}}\")"
                                  env.CID="\$(docker create $IID)"
                                  sh "docker cp ${CID}:/home/. $WORKSPACE/ubuntu/20.04 && \
-                                     docker rmi ${IID}"
+                                     docker rmi -f ${IID}"
                                  sshagent(credentials: ['sshfilespervices']) {
                                  sh "ssh -T -p 237 filespervices@files.pervices.com && \
                                  scp -P 237 uhdpv*.deb filespervices@files.pervices.com:/home/filespervices/www/latest/sw/uhd/ && \
