@@ -75,9 +75,9 @@ pipeline {
                             dir("${env.WORKSPACE}/ubuntu/20.04") {
                                env.IID = "\$(docker images ubuntu:$BUILD_NUMBER --format \"{{.ID}}\")"
                                env.CID="\$(docker create $IID)"
-                               sh "docker start $CID && \
-                                   docker exec -it $CID script /dev/null -c "./test-only.sh" &&\
-                                   ls"
+                           //    sh "docker start $CID && \
+                           //       docker exec -it $CID script /dev/null -c "./test-only.sh" &&\
+                           //        ls"
 }
 }
 }
