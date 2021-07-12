@@ -75,7 +75,7 @@ pipeline {
                                env.IID = "\$(docker images ubuntu:$BUILD_NUMBER --format \"{{.ID}}\")"
                                env.CID="\$(docker create $IID)"
                                sh "docker start $CID && \
-                                  docker exec -T $CID script /bin/bash -c './test-only.sh' "
+                                  docker exec -i $CID script /bin/bash -c './test-only.sh' "
     
 }
 }
