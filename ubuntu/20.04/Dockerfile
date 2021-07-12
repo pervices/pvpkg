@@ -87,8 +87,7 @@ mv uhd*.deb /home/artiacts
 WORKDIR /home/notroot/testing
 RUN chmod +x test-only.sh && \
 chmod +x variables.sh && \
-chmod +x tests && \
-./test-only.sh
+chmod +x tests 
 
 
 
