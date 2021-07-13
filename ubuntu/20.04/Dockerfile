@@ -83,7 +83,7 @@ WORKDIR /home/notroot/uhd
 RUN mv uhd*.deb /home/notroot/uhd/uhd && \
 cd uhd && \
 mv uhd*.deb uhdpv-$(git describe --abbrev=8 --always --long)-$(date "+%F").deb && \
-mv uhd*.deb /home/artiacts
+mv uhd*.deb /home/artifacts
 WORKDIR /home/notroot/testing
 RUN chmod +x test-only.sh && \
 chmod +x variables.sh && \
