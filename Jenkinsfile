@@ -73,10 +73,8 @@ pipeline {
                       script{
                             dir("${env.WORKSPACE}/ubuntu/20.04") {
                                env.IID = "\$(docker images ubuntu:$BUILD_NUMBER --format \"{{.ID}}\")"
-                               //env.CID="\$(docker create $IID)"
-                               sh "docker run --net=host -i $IID /bin/bash -c './test-only.sh'"
-                                  
-    
+                               sh "docker run --net=host -i $IID /bin/bash -c './test-only.sh' && \
+                                   docker rmi -f ${IID}"
 }
 }
 }
