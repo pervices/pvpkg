@@ -68,13 +68,26 @@ pipeline {
 
 
     stage('Ubuntu Testing'){
-          
+      parallel {
+         stage('Ubuntu Testing'){    
                      steps {
                       script{
                             dir("${env.WORKSPACE}/ubuntu/20.04") {
                                env.IID = "\$(docker images ubuntu:$BUILD_NUMBER --format \"{{.ID}}\")"
-                               sh "docker run --net=host -i $IID /bin/bash -c './test-only.sh' && \
+                               sh "docker run --net=host -i $IID /bin/bash -c './test-only.sh'"
                                    docker rmi -f ${IID}"
+}
+}
+}
+}
+    stage('Remove Ubuntu Image'){  
+                    steps {
+                    script{
+                     dir("${env.WORKSPACE}/ubuntu/20.04") {
+                     env.IID = "\$(docker images ubuntu:$BUILD_NUMBER --format \"{{.ID}}\")"
+                    sh "docker rmi -f ${IID}"
+}
+} 
 }
 }
 }
