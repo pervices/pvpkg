@@ -42,9 +42,9 @@ pipeline {
                                  sh "docker cp ${CID}:/home/artifacts/. $WORKSPACE/ubuntu/20.04"
                                     // docker rmi -f ${IID}"
                                  sshagent(credentials: ['sshfilespervices']) {
-                                sh "ssh -T -p 237 filespervices@files.pervices.com 'rm -f filespervices@files.pervices.com:/home/filespervices/www/latest/crimson/test.txt' && \
-                                 scp -P 237 uhdpv*.deb filespervices@files.pervices.com:/home/filespervices/www/latest/sw/uhd/ && \
-                                 scp -P 237 gnuradio*.tar.gz filespervices@files.pervices.com:/home/filespervices/www/latest/sw/gnuradio/"
+                                sh "ssh -T -p 237 filespervices@files.pervices.com 'rm -f filespervices@files.pervices.com:/home/filespervices/www/latest/crimson/test.txt'"
+                                / scp -P 237 uhdpv*.deb filespervices@files.pervices.com:/home/filespervices/www/latest/sw/uhd/ && \
+                                / scp -P 237 gnuradio*.tar.gz filespervices@files.pervices.com:/home/filespervices/www/latest/sw/gnuradio/"
                         }
                        }
                      } 
