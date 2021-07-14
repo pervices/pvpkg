@@ -11,45 +11,43 @@ pipeline {
         stage('Build UHD and GNU Radio') {
         parallel {
 
-               // stage('ArchLinux') { 
+                stage('ArchLinux') { 
 
-                //  steps { 
+                  steps { 
 		      //Build Image
 
-                   //   script { 
-                   //           dir("${env.WORKSPACE}/Arch") {
-                   // 		      dockerImageArch = docker.build("$BUILD_NUMBER", "--network host .") 
-                  //	}
+                      script { 
+                             dir("${env.WORKSPACE}/Arch") {
+                    		      dockerImageArch = docker.build("$BUILD_NUMBER", "--network host .") 
+                 	}
 		       //Test with pvtests
 
 		      //If passed, save UHD package.
-                   //   }
-                //  } 
+                      }
+                 } 
+             }
 
-            //  }
 
+              // stage('Ubuntu 20.04') { 
 
-               stage('Ubuntu 20.04') { 
-
-                   steps { 
+                //   steps { 
                               // Build image, enter container to transfer build artifacts from Dockerfile image, 
                               // remove image from cache to allow subsequent builds to build from scratch, transfer build artifacts to FTP server.
-                      script { 
-                             dir("${env.WORKSPACE}/ubuntu/20.04") {
-                                 dockerImageUbuntu2004 = docker.build("ubuntu:$BUILD_NUMBER", "--network host .") 
-                                 env.IID = "\$(docker images ubuntu:$BUILD_NUMBER --format \"{{.ID}}\")"
-                                 env.CID="\$(docker create $IID)"
-                                 sh "docker cp ${CID}:/home/artifacts/. $WORKSPACE/ubuntu/20.04"
-                                    // docker rmi -f ${IID}"
-                                 sshagent(credentials: ['sshfilespervices']) {
-                                sh "ssh -T -p 237 filespervices@files.pervices.com 'rm -f /home/filespervices/www/latest/sw/uhd/* && rm -f /home/filespervices/www/latest/sw/gnuradio/*' && \
-                                scp -P 237 uhdpv*.deb filespervices@files.pervices.com:/home/filespervices/www/latest/sw/uhd/ && \
-                                scp -P 237 gnuradio*.tar.gz filespervices@files.pervices.com:/home/filespervices/www/latest/sw/gnuradio/"
-                        }
-                       }
-                     } 
-                 }
-             }
+                    //  script { 
+                           //  dir("${env.WORKSPACE}/ubuntu/20.04") {
+                                // dockerImageUbuntu2004 = docker.build("ubuntu:$BUILD_NUMBER", "--network host .") 
+                               //  env.IID = "\$(docker images ubuntu:$BUILD_NUMBER --format \"{{.ID}}\")"
+                               //  env.CID="\$(docker create $IID)"
+                               //  sh "docker cp ${CID}:/home/artifacts/. $WORKSPACE/ubuntu/20.04"
+                                // sshagent(credentials: ['sshfilespervices']) {
+                               // sh "ssh -T -p 237 filespervices@files.pervices.com 'rm -f /home/filespervices/www/latest/sw/uhd/* && rm -f /home/filespervices/www/latest/sw/gnuradio/*' && \
+                               // scp -P 237 uhdpv*.deb filespervices@files.pervices.com:/home/filespervices/www/latest/sw/uhd/ && \
+                              //  scp -P 237 gnuradio*.tar.gz filespervices@files.pervices.com:/home/filespervices/www/latest/sw/gnuradio/"
+                      //  }
+                     //  }
+                    // } 
+               //  }
+            // }
              
         //       stage('CentOS8 RPM Generation and Testing') { 
 
