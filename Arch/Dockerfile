@@ -20,7 +20,7 @@ WORKDIR /home/notroot
 RUN git clone https://aur.archlinux.org/yay-bin.git && \
 cd yay-bin && \
   makepkg --noconfirm --syncdeps --rmdeps --install --clean && \
-gpg --keyserver ipv4.pool.sks-keyservers.net --search-keys 330239C1C4DAFEE1
+gpg --keyserver keyserver.ubuntu.com --search-keys 330239C1C4DAFEE1
 # clone pvtest repo to allow for installation of previuous versions of boost, boost-libs, and libx11; current versions of these resulted in build issues
 WORKDIR /home/notroot
 RUN git clone https://github.com/pervices/pvpkg.git && \
