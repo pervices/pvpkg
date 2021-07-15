@@ -26,7 +26,7 @@ WORKDIR /home/notroot
 RUN git clone https://github.com/pervices/pvpkg.git && \
 cd pvpkg/Arch  && \
 # building icu63, which UHD will not build without
-ls && yay -Sy --noconfirm icu63 && \
+yay -Sy --noconfirm icu63 && \
 sudo pacman -U --noconfirm boost-libs-1.69.0-1-x86_64.pkg.tar.xz && \ 
 sudo pacman -U --noconfirm boost-1.69.0-1-x86_64.pkg.tar.xz
 WORKDIR /home/notroot/testing
@@ -38,8 +38,8 @@ sudo wget https://raw.githubusercontent.com/pervices/pvpkg/master/Arch/UHD/PKGBU
 yay -Sy --noconfirm \
    $(pacman --deptest $(source ./PKGBUILD && echo ${depends[@]} ${makedepends[@]})) && \
  makepkg --noconfirm --syncdeps --install --needed
-WORKDIR /home/notroot/pvpkg/Arch
-RUN mv test-only.sh variables.sh /home/notroot/testing && \
+WORKDIR /home/notroot/pvpkg/Testing
+RUN mv test-only-Arch.sh variables.sh /home/notroot/testing && \
 mv tests /home/notroot/testing
 # copying examples directory to libuhd folder to enable test to be found in same location as for other distributions to enable test_tx_trigger to be run
 WORKDIR /home/notroot/libuhd/src/uhd/host
@@ -48,9 +48,10 @@ cp -R examples /home/notroot/libuhd
 WORKDIR /home/notroot/gnuradio
 # use wget to collect GnuRadio PKGBUILD from Github, and create the package with the dependencies speified from the PKGBUILD; sudo chown command allows user notroot to build in this directory
 #RUN sudo pacman -U --noconfirm https://archive.archlinux.org/packages/p/python-pyqt5/python-pyqt5-5.15.4-1-x86_64.pkg.tar.zst && \
-RUN ls && pwd && sudo wget https://raw.githubusercontent.com/pervices/pvpkg/master/ArchlinuxLatestImage/GnuRadio/PKGBUILD &&  \ 
+RUN sudo wget https://raw.githubusercontent.com/pervices/pvpkg/master/Arch/GnuRadio/PKGBUILD &&  \ 
 sudo chown -R notroot /home/notroot/gnuradio && \
-  makepkg --noconfirm --syncdeps --install && gpg --keyserver ipv4.pool.sks-keyservers.net --recv-key CB9387521E1EE0127DA804843FDBB55084CC5D84 && \
+  makepkg --noconfirm --syncdeps --install && \
+#gpg --keyserver ipv4.pool.sks-keyservers.net --recv-key CB9387521E1EE0127DA804843FDBB55084CC5D84 && \
  yay -Sy --noconfirm \
 $(pacman --deptest $(source ./PKGBUILD && echo ${depends[@]} ${makedepends[@]})) && \ 
 makepkg --noconfirm --install --needed
@@ -58,8 +59,7 @@ WORKDIR /home/notroot/testing
 RUN chmod +x test-only.sh && \
 chmod +x variables.sh && \
 chmod +x tests
-RUN ls && \ 
-sleep 10000 && \
+RUN sleep 10000 && \
 sudo ./test-only.sh
 
 
