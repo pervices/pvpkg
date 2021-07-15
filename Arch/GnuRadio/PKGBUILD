@@ -16,7 +16,7 @@ conflicts=('gnuradio' 'gnuradio-companion')
 provides=('gnuradio' 'gnuradio-companion')
 pkgver() {
     cd "$srcdir/$_gitname"
-    git describe --abbrev=8 --always --long && date "+%F"
+    date +%Y%m%d`git. && git describe --long | sed -E 's/([^-]*-g)/r\1/;s/-/./g
 }
 
 build() {
