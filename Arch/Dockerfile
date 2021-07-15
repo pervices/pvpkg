@@ -56,7 +56,7 @@ sudo chown -R notroot /home/notroot/gnuradio && \
 $(pacman --deptest $(source ./PKGBUILD && echo ${depends[@]} ${makedepends[@]})) && \ 
 makepkg --noconfirm --install --needed
 WORKDIR /home/notroot/testing
-RUN chmod +x test-only.sh && \
+RUN chmod +x test-only-Arch.sh && \
 chmod +x variables.sh && \
 chmod +x tests
 RUN sleep 10000 && \
