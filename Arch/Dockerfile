@@ -35,6 +35,7 @@ WORKDIR /home/notroot/libuhd
 RUN sudo chown -R notroot /home/notroot/libuhd && \
 sudo chown -R notroot /home/notroot/testing && \
 sudo wget https://raw.githubusercontent.com/pervices/pvpkg/master/Arch/UHD/PKGBUILD && \
+chmod +x PKGBUILD && \
 yay -Sy --noconfirm \
    $(pacman --deptest $(source ./PKGBUILD && echo ${depends[@]} ${makedepends[@]})) && \
  makepkg --noconfirm --syncdeps --install --needed
