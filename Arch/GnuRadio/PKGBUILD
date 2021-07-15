@@ -15,13 +15,8 @@ md5sums=('SKIP')
 conflicts=('gnuradio' 'gnuradio-companion')
 provides=('gnuradio' 'gnuradio-companion')
 pkgver() {
-    #If we have already downloaded the repo, then use its HEAD for the package version. Otherwise, simply use the current date.
-    cd ${srcdir}
-    if [ -d ${_gitname} ]; then
-        cd ${_gitname} && echo -n `date +%Y%m%d`git. && git describe --long | sed -E 's/([^-]*-g)/r\1/;s/-/./g'
-    else
-        date --utc +%Y%m%d%H%M 
-    fi
+    cd "$srcdir/$_gitname"
+    git describe --abbrev=8 --always --long && date "+%F"
 }
 
 build() {

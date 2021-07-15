@@ -17,7 +17,7 @@ RUN pacman -Sy --noconfirm archlinux-keyring&& \
 USER notroot
 WORKDIR /home/notroot
 # install yay for later use in install
-RUN git clone https://aur.archlinux.org/yay-bin.git && \
+RUN ls && git clone https://aur.archlinux.org/yay-bin.git && \
 cd yay-bin && \
   makepkg --noconfirm --syncdeps --rmdeps --install --clean 
 #gpg  --no-tty --keyserver keyserver.ubuntu.com --search-keys 330239C1C4DAFEE1
