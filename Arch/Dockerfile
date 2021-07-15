@@ -20,8 +20,8 @@ WORKDIR /home/notroot
 RUN ls && git clone https://aur.archlinux.org/yay-bin.git && \
 cd yay-bin && \
   makepkg --noconfirm --syncdeps --rmdeps --install --clean 
-#gpg  --no-tty --keyserver keyserver.ubuntu.com --search-keys 330239C1C4DAFEE1
 # clone pvtest repo to allow for installation of previuous versions of boost, boost-libs, and libx11; current versions of these resulted in build issues
+WORKDIR /home/artifacts
 WORKDIR /home/notroot
 RUN git clone https://github.com/pervices/pvpkg.git && \
 cd pvpkg/Arch  && \
@@ -37,7 +37,8 @@ sudo wget https://raw.githubusercontent.com/pervices/pvpkg/master/Arch/UHD/PKGBU
 sudo chown -R notroot /home/notroot/libuhd && \
 yay -Sy --noconfirm \
    $(pacman --deptest $(source ./PKGBUILD && echo ${depends[@]} ${makedepends[@]})) && \
- makepkg --noconfirm --syncdeps --install --needed
+ makepkg --noconfirm --syncdeps --install --needed && \
+mv libuhdpv*.tar.zst /home/artifacts
 WORKDIR /home/notroot/pvpkg/Testing
 RUN mv test-only-Arch.sh variables.sh /home/notroot/testing && \
 mv tests /home/notroot/testing
@@ -51,15 +52,14 @@ WORKDIR /home/notroot/gnuradio
 RUN sudo wget https://raw.githubusercontent.com/pervices/pvpkg/master/Arch/GnuRadio/PKGBUILD &&  \ 
 sudo chown -R notroot /home/notroot/gnuradio && \
   makepkg --noconfirm --syncdeps --install && \
-#gpg --keyserver ipv4.pool.sks-keyservers.net --recv-key CB9387521E1EE0127DA804843FDBB55084CC5D84 && \
  yay -Sy --noconfirm \
 $(pacman --deptest $(source ./PKGBUILD && echo ${depends[@]} ${makedepends[@]})) && \ 
-makepkg --noconfirm --install --needed
+makepkg --noconfirm --install --needed && \
+mv gnuradio*.tar.zst /home/artifacts
 WORKDIR /home/notroot/testing
 RUN chmod +x test-only-Arch.sh && \
 chmod +x variables.sh && \
 chmod +x tests
-RUN sleep 10000 && \
-sudo ./test-only.sh
+
 
 
