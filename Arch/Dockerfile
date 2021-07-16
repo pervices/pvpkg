@@ -38,7 +38,7 @@ sudo chown -R notroot /home/notroot/libuhd && \
 yay -Sy --noconfirm \
    $(pacman --deptest $(source ./PKGBUILD && echo ${depends[@]} ${makedepends[@]})) && \
  makepkg --noconfirm --syncdeps --install --needed && \
-mv libuhdpv*.tar.zst /home/artifacts
+sudo mv libuhdpv*.tar.zst /home/artifacts
 WORKDIR /home/notroot/pvpkg/Testing
 RUN mv test-only-Arch.sh variables.sh /home/notroot/testing && \
 mv tests /home/notroot/testing
@@ -55,7 +55,7 @@ sudo chown -R notroot /home/notroot/gnuradio && \
  yay -Sy --noconfirm \
 $(pacman --deptest $(source ./PKGBUILD && echo ${depends[@]} ${makedepends[@]})) && \ 
 makepkg --noconfirm --install --needed && \
-mv gnuradio*.tar.zst /home/artifacts
+sudo mv gnuradio*.tar.zst /home/artifacts
 WORKDIR /home/notroot/testing
 RUN chmod +x test-only-Arch.sh && \
 chmod +x variables.sh && \
