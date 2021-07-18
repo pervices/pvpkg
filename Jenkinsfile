@@ -51,11 +51,11 @@ pipeline {
                                // sh "ssh -T -p 237 filespervices@files.pervices.com 'rm -f /home/filespervices/www/latest/sw/uhd/* && rm -f /home/filespervices/www/latest/sw/gnuradio/*' && \
                                // scp -P 237 uhdpv*.deb filespervices@files.pervices.com:/home/filespervices/www/latest/sw/uhd/ && \
                               //  scp -P 237 gnuradio*.tar.gz filespervices@files.pervices.com:/home/filespervices/www/latest/sw/gnuradio/"
-                      //  }
-                     //  }
-                    // } 
-               //  }
-            // }
+                        }
+                       }
+                     } 
+                 }
+             }
              
         //       stage('CentOS8 RPM Generation and Testing') { 
 
