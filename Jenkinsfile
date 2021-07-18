@@ -22,11 +22,12 @@ pipeline {
                                        env.IID = "\$(docker images arch:$BUILD_NUMBER --format \"{{.ID}}\")"
                                 env.CID="\$(docker create $IID)"
                                 sh "docker cp ${CID}:/home/artifacts/. $WORKSPACE/Arch"
-                                // sshagent(credentials: ['sshfilespervices']) {
-                               // sh "ssh -T -p 237 filespervices@files.pervices.com 'rm -f /home/filespervices/www/latest/sw/archlinux/uhd/* && rm -f /home/filespervices/www/latest/sw/archlinux/gnuradio/*' && \
-                               // scp -P 237 uhdpv*.deb filespervices@files.pervices.com:/home/filespervices/www/latest/sw/archlinux/uhd/ && \
-                              //  scp -P 237 gnuradio*.tar.gz filespervices@files.pervices.com:/home/filespervices/www/latest/sw/archlinux/gnuradio/"
+                                 sshagent(credentials: ['sshfilespervices']) {
+                                sh "ssh -T -p 237 filespervices@files.pervices.com 'rm -f /home/filespervices/www/latest/sw/archlinux/uhd/* && rm -f /home/filespervices/www/latest/sw/archlinux/gnuradio/*' && \
+                                scp -P 237 uhdpv*.deb filespervices@files.pervices.com:/home/filespervices/www/latest/sw/archlinux/uhd/ && \
+                                scp -P 237 gnuradio*.tar.gz filespervices@files.pervices.com:/home/filespervices/www/latest/sw/archlinux/gnuradio/"
                  	}
+                        }
 		       //Test with pvtests
 
 		      //If passed, save UHD package.
@@ -47,10 +48,10 @@ pipeline {
                                  env.CID="\$(docker create $IID)"
                                 sh "docker cp ${CID}:/home/artifacts/. $WORKSPACE/ubuntu/20.04"
                                  sshagent(credentials: ['sshfilespervices']) {
-                                 sh "ssh -T -p 237 filespervices@files.pervices.com 'mkdir /home/filespervices/www/latest/sw/archlinux && mkdir /home/filespervices/www/latest/sw/ubuntu20.04'"
-                               // sh "ssh -T -p 237 filespervices@files.pervices.com 'rm -f /home/filespervices/www/latest/sw/uhd/* && rm -f /home/filespervices/www/latest/sw/gnuradio/*' && \
-                               // scp -P 237 uhdpv*.deb filespervices@files.pervices.com:/home/filespervices/www/latest/sw/uhd/ && \
-                              //  scp -P 237 gnuradio*.tar.gz filespervices@files.pervices.com:/home/filespervices/www/latest/sw/gnuradio/"
+                                 sh "ssh -T -p 237 filespervices@files.pervices.com 'rm -rf /home/filespervices/www/latest/sw/uhd && rm -rf /home/filespervices/www/latest/sw/gnuradio && mkdir /home/filespervices/www/latest/sw/archlinux/uhd && mkdir /home/filespervices/www/latest/sw/archlinux/gnuradio && mkdir /home/filespervices/www/latest/sw/ubuntu20.04/uhd && mkdir /home/filespervices/www/latest/sw/ubuntu20.04/gnuradio'"
+                               // sh "ssh -T -p 237 filespervices@files.pervices.com 'rm -f /home/filespervices/www/latest/sw/ubuntu20.04/uhd/* && rm -f /home/filespervices/www/latest/sw/ubuntu20.04/gnuradio/*' && \
+                               // scp -P 237 uhdpv*.deb filespervices@files.pervices.com:/home/filespervices/www/latest/sw/ubuntu20.04/uhd/ && \
+                               // scp -P 237 gnuradio*.tar.gz filespervices@files.pervices.com:/home/filespervices/www/latest/sw/ubuntu20.04/gnuradio/"
                         }
                        }
                      } 
