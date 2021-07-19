@@ -44,8 +44,7 @@ future Ettus Research products. It can be used standalone without GNU Radio.
 
 
 %prep
-%setup -q -n %{name}-master.tar.gz
-
+%setup -q -n %{name}-master
 
 
 %build

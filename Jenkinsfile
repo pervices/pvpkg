@@ -24,8 +24,8 @@ pipeline {
                                 sh "docker cp ${CID}:/home/artifacts/. $WORKSPACE/Arch"
                                  sshagent(credentials: ['sshfilespervices']) {
                                 sh "ssh -T -p 237 filespervices@files.pervices.com 'rm -f /home/filespervices/www/latest/sw/archlinux/uhd/* && rm -f /home/filespervices/www/latest/sw/archlinux/gnuradio/*' && \
-                                scp -P 237 uhdpv*.deb filespervices@files.pervices.com:/home/filespervices/www/latest/sw/archlinux/uhd/ && \
-                                scp -P 237 gnuradio*.tar.gz filespervices@files.pervices.com:/home/filespervices/www/latest/sw/archlinux/gnuradio/"
+                                scp -P 237 uhdpv* filespervices@files.pervices.com:/home/filespervices/www/latest/sw/archlinux/uhd/ && \
+                                scp -P 237 gnuradio* filespervices@files.pervices.com:/home/filespervices/www/latest/sw/archlinux/gnuradio/"
                  	}
                         }
 		       //Test with pvtests
