@@ -48,27 +48,26 @@ pipeline {
                                  env.CID="\$(docker create $IID)"
                                 sh "docker cp ${CID}:/home/artifacts/. $WORKSPACE/ubuntu/20.04"
                                  sshagent(credentials: ['sshfilespervices']) {
-                                 sh "ssh -T -p 237 filespervices@files.pervices.com 'rm -rf /home/filespervices/www/latest/sw/uhd && rm -rf /home/filespervices/www/latest/sw/gnuradio && mkdir /home/filespervices/www/latest/sw/archlinux/uhd && mkdir /home/filespervices/www/latest/sw/archlinux/gnuradio && mkdir /home/filespervices/www/latest/sw/ubuntu20.04/uhd && mkdir /home/filespervices/www/latest/sw/ubuntu20.04/gnuradio'"
-                               // sh "ssh -T -p 237 filespervices@files.pervices.com 'rm -f /home/filespervices/www/latest/sw/ubuntu20.04/uhd/* && rm -f /home/filespervices/www/latest/sw/ubuntu20.04/gnuradio/*' && \
-                               // scp -P 237 uhdpv*.deb filespervices@files.pervices.com:/home/filespervices/www/latest/sw/ubuntu20.04/uhd/ && \
-                               // scp -P 237 gnuradio*.tar.gz filespervices@files.pervices.com:/home/filespervices/www/latest/sw/ubuntu20.04/gnuradio/"
+                                sh "ssh -T -p 237 filespervices@files.pervices.com 'rm -f /home/filespervices/www/latest/sw/ubuntu20.04/uhd/* && rm -f /home/filespervices/www/latest/sw/ubuntu20.04/gnuradio/*' && \
+                                scp -P 237 uhdpv*.deb filespervices@files.pervices.com:/home/filespervices/www/latest/sw/ubuntu20.04/uhd/ && \
+                                scp -P 237 gnuradio*.tar.gz filespervices@files.pervices.com:/home/filespervices/www/latest/sw/ubuntu20.04/gnuradio/"
                         }
                        }
                      } 
                  }
              }
              
-        //       stage('CentOS8 RPM Generation and Testing') { 
+              stage('CentOS8 RPM Generation and Testing') { 
 
-          //         steps { 
+                   steps { 
 
-         //             script { 
-              //                dir("${env.WORKSPACE}/CentOS/8testing") {
-         //                              dockerImageUbuntu1804 = docker.build("$BUILD_NUMBER", "--network host .") 
-          //      }
-           //    }
-         //  } 
-//}
+                      script { 
+                              dir("${env.WORKSPACE}/CentOS/8testing") {
+                                       dockerImageCentOS8 = docker.build("centos:$BUILD_NUMBER", "--network host .") 
+                }
+               }
+           } 
+}
       }
 
        }
