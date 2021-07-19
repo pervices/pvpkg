@@ -24,7 +24,7 @@
 
 Name:		volk
 Version:	3.9
-Release:	master
+Release:	volk
 Summary:	Software defined radio framework
 
 License:	GPLv3
@@ -42,7 +42,7 @@ Volk is a component of Gnuradio that needs to be separately installed as of Gnur
 
 
 %prep
-%setup -q -n %{name}-%{release}-%{version}%{?alphatag}
+%setup -q -n %{name}-master
 
 %build
 mkdir build
