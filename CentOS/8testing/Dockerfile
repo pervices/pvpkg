@@ -20,7 +20,7 @@ RUN dnf builddep --enablerepo=powertools -y uhd.spec && \
 QA_RPATHS=$(( 0x0001|0x0002 )) rpmbuild -ba uhd.spec && \
 QA_RPATHS=$(( 0x0001|0x0002 )) rpmbuild -ba volk.spec
 RUN dnf builddep --enablerepo=powertools -y gnuradio.spec && \
-QA_RPATHS=$(( 0x0001|0x0002 )) rpmbuild --define 'debug_package %{nil}' -ba gnuradio.spec
+QA_RPATHS=$(( 0x0001|0x0002 )) rpmbuild --define 'debug_package %{nil}' -ba gnuradio.spec && \
 cd ../RPMS/x86_64 && \
 rpm -i uhd*.rpm 
 
