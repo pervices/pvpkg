@@ -140,13 +140,6 @@ GNU Radio examples
 %setup -q -n %{name}-%{release}-%{version}%{?alphatag}
 
 %build
-git clone --recursive https://github.com/gnuradio/volk.git 
-cd volk 
-mkdir build 
-cd build 
-cmake -DCMAKE_BUILD_TYPE=Release -DPYTHON_EXECUTABLE=/usr/bin/python3 ../ 
-make 
-make install
 mkdir build
 cd build
 %cmake \
@@ -176,11 +169,7 @@ cd build
 %exclude %{_docdir}/%{name}/html
 %exclude %{_docdir}/%{name}/xml
 %doc %{_docdir}/%{name}
-/usr/local/lib64/pkgconfig/volk.pc
-/usr/local/lib64/libvolk*
-/usr/local/bin/volk_profile
-/usr/local/include/volk/*
-/usr/local/lib64/python3.6/site-packages/volk*
+
 
 %files -n python3-%{name}
 %{python3_sitearch}/%{name}/
