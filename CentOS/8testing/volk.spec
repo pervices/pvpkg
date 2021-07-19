@@ -35,6 +35,8 @@ Source0:	https://github.com/gnuradio/volk/tree/master
 # git archive --format=tar --prefix=%%{name}-%%{version}/ %%{git_commit} | \
 # gzip > ../%%{name}-%%{version}.tar.gz
 
+Provides:	volk
+
 %description
 Volk is a component of Gnuradio that needs to be separately installed as of Gnuradio 3.9
 

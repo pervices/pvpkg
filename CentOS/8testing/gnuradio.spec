@@ -38,6 +38,7 @@ Source0:	https://github.com/pervices/%{name}/archive/refs/heads/maint-3.9.tar.gz
 # gzip > ../%%{name}-%%{version}.tar.gz
 
 Requires(pre):	shadow-utils
+Requires:	volk
 BuildRequires:	cmake
 BuildRequires:	gcc-c++
 BuildRequires:	libtool
