@@ -59,11 +59,11 @@ cd build
 %ldconfig_scriptlets
 
 %files
-/usr/local/lib64/pkgconfig/volk.pc
-/usr/local/lib64/libvolk*
-/usr/local/bin/volk_profile
-/usr/local/include/volk/*
-/usr/local/lib64/python3.6/site-packages/volk*
+/usr/lib64/pkgconfig/volk.pc
+/usr/lib64/libvolk*
+/usr/bin/volk_profile
+/usr/include/volk/*
+/usr/lib64/python3.6/site-packages/volk*
 
 
 %changelog
