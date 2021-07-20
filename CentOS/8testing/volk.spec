@@ -39,7 +39,7 @@ Volk is a component of Gnuradio that needs to be separately installed as of Gnur
 
 
 %prep
-%setup -q -n %{name}-master
+%setup -q -n %{name}
 
 %build
 mkdir build
