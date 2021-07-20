@@ -64,6 +64,17 @@ cd build
 /usr/bin/volk_profile
 /usr/include/volk/*
 /usr/lib64/python3.6/site-packages/volk*
-
+/usr/bin/list_cpu_features
+/usr/bin/volk-config-info
+/usr/bin/volk_modtool
+/usr/include/cpu_features/*
+/usr/lib/debug/usr/bin/list_cpu_features-3.9-volk.x86_64.debug
+/usr/lib/debug/usr/bin/volk-config-info-3.9-volk.x86_64.debug
+/usr/lib64/cmake/CpuFeatures/CpuFeaturesConfig.cmake
+/usr/lib64/cmake/CpuFeatures/CpuFeaturesConfigVersion.cmake
+/usr/lib64/cmake/CpuFeatures/CpuFeaturesTargets-release.cmake
+/usr/lib64/cmake/CpuFeatures/CpuFeaturesTargets.cmake
+/usr/lib64/cmake/volk/*
+/usr/lib64/libcpu_features.a
 
 %changelog
