@@ -36,7 +36,6 @@ QA_RPATHS=$(( 0x0001|0x0002 )) rpmbuild -ba volk.spec && \
 cd ../RPMS/x86_64 && \
 rpm -i volk-3.9-volk.x86_64.rpm
 WORKDIR /root/rpmbuild/SPECS
-RUN sleep 10000
 RUN QA_RPATHS=$(( 0x0001|0x0002 )) rpmbuild --define 'debug_package %{nil}' -ba gnuradio.spec && \
 cd ../RPMS/x86_64 && \
 rpm -i python3*.rpm && rpm -i gnuradio*.rpm && \
