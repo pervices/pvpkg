@@ -138,7 +138,7 @@ Requires:	%{name} = %{version}-%{release}
 GNU Radio examples
 
 %prep
-%setup -q -n %{name}-%{release}-%{version}%{?alphatag}
+%setup -q -n %{name}
 
 %build
 mkdir build
