@@ -19,7 +19,6 @@
 
 # For versions not yet on ftp, pull from git
 #%%global git_commit 441a3767e05d15e62c519ea66b848b5adb0f4b3a
-
 #%%global alphatag rc1
 
 Name:		volk
@@ -29,11 +28,9 @@ Summary:	Software defined radio framework
 
 License:	GPLv3
 URL:		https://www.gnuradio.org/
-Source0:	https://github.com/gnuradio/volk/tree/master
-# git clone git://gnuradio.org/gnuradio
-# cd gnuradio
-# git archive --format=tar --prefix=%%{name}-%%{version}/ %%{git_commit} | \
-# gzip > ../%%{name}-%%{version}.tar.gz
+Source0:	volk.tar.gz
+# git clone --recursive git clone --recursive https://github.com/gnuradio/volk.git
+# tar -czvf volk.tar.gz volk
 
 Provides:	volk
 
