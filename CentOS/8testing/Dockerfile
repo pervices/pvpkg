@@ -19,7 +19,7 @@ dnf builddep --enablerepo=powertools -y gnuradio.spec && \
 QA_RPATHS=$(( 0x0001|0x0002 )) rpmbuild -ba uhd.spec && \
 QA_RPATHS=$(( 0x0001|0x0002 )) rpmbuild -ba volk.spec && \
 cd ../RPMS/x86_64 && \
-rpm -i volk*.rpm
+rpm -i volk-3.9-volk.x86_64.rpm
 WORKDIR /root/rpmbuild/SPECS
 RUN QA_RPATHS=$(( 0x0001|0x0002 )) rpmbuild --define 'debug_package %{nil}' -ba gnuradio.spec && \
 cd ../RPMS/x86_64 && \
