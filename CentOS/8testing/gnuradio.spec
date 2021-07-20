@@ -38,6 +38,7 @@ Source0:	https://github.com/pervices/%{name}/archive/refs/heads/maint-3.9.tar.gz
 # gzip > ../%%{name}-%%{version}.tar.gz
 
 Requires(pre):	shadow-utils
+Requires:	uhd
 Requires:	volk
 BuildRequires:	cmake
 BuildRequires:	gcc-c++
@@ -84,7 +85,6 @@ BuildRequires:	qwt-qt5-devel
 BuildRequires:	SDL-devel
 BuildRequires:	swig
 BuildRequires:	thrift
-BuildRequires:	uhd-devel
 BuildRequires:	xdg-utils
 BuildRequires:	xmlto
 BuildRequires:	zeromq-devel

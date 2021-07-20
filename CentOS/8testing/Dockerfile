@@ -15,13 +15,16 @@ cd pvpkg/CentOS/8testing && \
 mv uhd.spec gnuradio.spec volk.spec /root/rpmbuild/SPECS 
 WORKDIR /root/rpmbuild/SPECS
 RUN dnf builddep --enablerepo=powertools -y uhd.spec && \
-dnf builddep --enablerepo=powertools -y gnuradio.spec && \
 QA_RPATHS=$(( 0x0001|0x0002 )) rpmbuild -ba uhd.spec && \
+cd ../RPMS/x86_64 && \
+rpm -i uhd*.rpm
+WORKDIR /root/rpmbuild/SPECS
+RUN dnf builddep --enablerepo=powertools -y gnuradio.spec && \
 QA_RPATHS=$(( 0x0001|0x0002 )) rpmbuild -ba volk.spec && \
 cd ../RPMS/x86_64 && \
 rpm -i volk-3.9-volk.x86_64.rpm
 WORKDIR /root/rpmbuild/SPECS
 RUN QA_RPATHS=$(( 0x0001|0x0002 )) rpmbuild --define 'debug_package %{nil}' -ba gnuradio.spec && \
 cd ../RPMS/x86_64 && \
-rpm -i uhd*.rpm 
+rpm -i gnuradio*.rpm
 
