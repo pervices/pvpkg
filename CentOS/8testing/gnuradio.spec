@@ -114,6 +114,13 @@ Summary:	GNU Radio Python 3 module
 %description -n python3-%{name}
 GNU Radio Python 3 module
 
+%package     -n libgnuradio
+Summary:        Libraries for GNU Radio
+Group:          System/Libraries
+
+%description -n libgnuradio
+Gnuradio libraries
+
 %package devel
 Summary:	GNU Radio
 Requires:	%{name}%{?_isa} = %{version}-%{release}
@@ -157,13 +164,13 @@ cd build
 %install
 %make_install -C build
       
-
+%post -n libgnuradio -p /sbin/ldconfig
+%postun -n libgnuradio -p /sbin/ldconfig
 %ldconfig_scriptlets
 
 %files
 %license COPYING
 %{_bindir}/*
-%{_libdir}/lib*.so.*
 %{_datadir}/gnuradio
 %config(noreplace) %{_sysconfdir}/gnuradio
 %exclude %{_datadir}/gnuradio/examples
@@ -171,6 +178,8 @@ cd build
 %exclude %{_docdir}/%{name}/xml
 %doc %{_docdir}/%{name}
 
+%files -n libgnuradio
+/usr/lib64/libgnuradio*.so.*
 
 %files -n python3-%{name}
 %{python3_sitearch}/%{name}/

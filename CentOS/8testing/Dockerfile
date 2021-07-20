@@ -12,7 +12,7 @@ git clone --recursive https://github.com/gnuradio/volk.git && \
 tar -czvf volk.tar.gz volk && \
 mv volk.tar.gz /root/rpmbuild/SOURCES && \
 #cmake -DCMAKE_BUILD_TYPE=Release -DPYTHON_EXECUTABLE=/usr/bin/python3 ../ 
-ls && ls && git clone https://github.com/pervices/pvpkg.git && \
+ls && ls && ls && git clone https://github.com/pervices/pvpkg.git && \
 cd pvpkg/CentOS/8testing && \
 mv uhd.spec gnuradio.spec volk.spec /root/rpmbuild/SPECS && \
 cd ../../Testing && \
