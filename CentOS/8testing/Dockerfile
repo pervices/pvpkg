@@ -23,7 +23,7 @@ rm /home/gnuradio/gr-uhd/python/uhd/bindings/uhd_types_python.cc && \
 mv /home/pvpkg/ubuntu/20.04/modified/uhd_types_python_mod.cc /home/gnuradio/gr-uhd/python/uhd/bindings && \
 mv /home/gnuradio/gr-uhd/python/uhd/bindings/uhd_types_python_mod.cc /home/gnuradio/gr-uhd/python/uhd/bindings/uhd_types_python.cc
 WORKDIR /home
-RUN tar -czvf gnuradio-maint-3.9.tar.gz /home/gnuradio && \
+RUN tar -czvf gnuradio-maint-3.9.tar.gz gnuradio && \
 mv gnuradio-maint-3.9.tar.gz /root/rpmbuild/SOURCES
 WORKDIR /root/rpmbuild/SPECS
 RUN dnf builddep --enablerepo=powertools -y uhd.spec && \
