@@ -50,7 +50,7 @@ mv uhd-debuginfo-3.13.0.0-master.x86_64.rpm uhdpv-debuginfo-$(git describe --abb
 mv uhd-debugsource-3.13.0.0-master.x86_64.rpm uhdpv-debugsource-$(git describe --abbrev=8 --always --long)-$(date "+%F").rpm && \
 mkdir uhdpv-$(git describe --abbrev=8 --always --long)-$(date "+%F") && \
 mv uhdpv*.rpm uhdpv-$(git describe --abbrev=8 --always --long)-$(date "+%F") && \
-tar uhdpv-$(git describe --abbrev=8 --always --long)-$(date "+%F").tar.gz uhdpv-$(git describe --abbrev=8 --always --long)-$(date "+%F") && \
+tar -czvf uhdpv-$(git describe --abbrev=8 --always --long)-$(date "+%F").tar.gz uhdpv-$(git describe --abbrev=8 --always --long)-$(date "+%F") && \
 mv uhdpv-$(git describe --abbrev=8 --always --long)-$(date "+%F").tar.gz /home/artifacts
 WORKDIR /home/volk
 RUN mv volk-3.9-volk.x86_64.rpm volk-$(git describe --abbrev=8 --always --long)-$(date "+%F").rpm && \
@@ -64,7 +64,7 @@ mv libgnuradio-3.9-maint.x86_64.rpm libgnuradio-$(git describe --abbrev=8 --alwa
 mv python3-gnuradio-3.9-maint.x86_64.rpm python3-gnuradio-$(git describe --abbrev=8 --always --long)-$(date "+%F").rpm && \
 mkdir gnuradio-$(git describe --abbrev=8 --always --long)-$(date "+%F") && \
 mv *.rpm volk*.rpm gnuradio-$(git describe --abbrev=8 --always --long)-$(date "+%F") && \
-tar gnuradio-$(git describe --abbrev=8 --always --long)-$(date "+%F").tar.gz gnuradio-$(git describe --abbrev=8 --always --long)-$(date "+%F") && \
+tar -czvf gnuradio-$(git describe --abbrev=8 --always --long)-$(date "+%F").tar.gz gnuradio-$(git describe --abbrev=8 --always --long)-$(date "+%F") && \
 mv gnuradio-$(git describe --abbrev=8 --always --long)-$(date "+%F").tar.gz /home/artifacts
 WORKDIR /home/notroot/testing
 
