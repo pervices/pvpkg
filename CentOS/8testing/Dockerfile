@@ -63,7 +63,7 @@ mv gnuradio-examples-3.9-maint.x86_64.rpm gnuradio-examples-$(git describe --abb
 mv libgnuradio-3.9-maint.x86_64.rpm libgnuradio-$(git describe --abbrev=8 --always --long)-$(date "+%F").rpm && \
 mv python3-gnuradio-3.9-maint.x86_64.rpm python3-gnuradio-$(git describe --abbrev=8 --always --long)-$(date "+%F").rpm && \
 mkdir gnuradio-$(git describe --abbrev=8 --always --long)-$(date "+%F") && \
-mv *.rpm volk*.rpm gnuradio-$(git describe --abbrev=8 --always --long)-$(date "+%F") && \
+mv *.rpm gnuradio-$(git describe --abbrev=8 --always --long)-$(date "+%F") && \
 tar -czvf gnuradio-$(git describe --abbrev=8 --always --long)-$(date "+%F").tar.gz gnuradio-$(git describe --abbrev=8 --always --long)-$(date "+%F") && \
 mv gnuradio-$(git describe --abbrev=8 --always --long)-$(date "+%F").tar.gz /home/artifacts
 WORKDIR /home/notroot/testing
