@@ -54,12 +54,7 @@ tar uhdpv-$(git describe --abbrev=8 --always --long)-$(date "+%F").tar.gz uhdpv-
 mv uhdpv-$(git describe --abbrev=8 --always --long)-$(date "+%F").tar.gz /home/artifacts
 WORKDIR /home/volk
 RUN mv volk-3.9-volk.x86_64.rpm volk-$(git describe --abbrev=8 --always --long)-$(date "+%F").rpm && \
-mv volk-debuginfo-3.9-volk.x86_64.rpm volk-debuginfo-$(git describe --abbrev=8 --always --long)-$(date "+%F").rpm && \
-mv volk-debugsource-3.9-volk.x86_64.rpm volk-debugsource-$(git describe --abbrev=8 --always --long)-$(date "+%F").rpm && \
-mkdir volk-$(git describe --abbrev=8 --always --long)-$(date "+%F") && \
-mv volk*.rpm volk-$(git describe --abbrev=8 --always --long)-$(date "+%F") && \
-tar volk-$(git describe --abbrev=8 --always --long)-$(date "+%F").tar.gz volk-$(git describe --abbrev=8 --always --long)-$(date "+%F") && \
-mv volk-$(git describe --abbrev=8 --always --long)-$(date "+%F").tar.gz /home/artifacts
+mv volk-$(git describe --abbrev=8 --always --long)-$(date "+%F").rpm /home/gnuradio
 WORKDIR /home/gnuradio
 RUN mv gnuradio-3.9-maint.x86_64.rpm gnuradio-$(git describe --abbrev=8 --always --long)-$(date "+%F").rpm && \
 mv gnuradio-devel-3.9-maint.x86_64.rpm gnuradio-devel-$(git describe --abbrev=8 --always --long)-$(date "+%F").rpm && \
@@ -68,7 +63,7 @@ mv gnuradio-examples-3.9-maint.x86_64.rpm gnuradio-examples-$(git describe --abb
 mv libgnuradio-3.9-maint.x86_64.rpm libgnuradio-$(git describe --abbrev=8 --always --long)-$(date "+%F").rpm && \
 mv python3-gnuradio-3.9-maint.x86_64.rpm python3-gnuradio-$(git describe --abbrev=8 --always --long)-$(date "+%F").rpm && \
 mkdir gnuradio-$(git describe --abbrev=8 --always --long)-$(date "+%F") && \
-mv *.rpm gnuradio-$(git describe --abbrev=8 --always --long)-$(date "+%F") && \
+mv *.rpm volk*.rpm gnuradio-$(git describe --abbrev=8 --always --long)-$(date "+%F") && \
 tar gnuradio-$(git describe --abbrev=8 --always --long)-$(date "+%F").tar.gz gnuradio-$(git describe --abbrev=8 --always --long)-$(date "+%F") && \
 mv gnuradio-$(git describe --abbrev=8 --always --long)-$(date "+%F").tar.gz /home/artifacts
 WORKDIR /home/notroot/testing
