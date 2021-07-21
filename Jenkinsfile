@@ -48,7 +48,7 @@ pipeline {
                                  env.CID="\$(docker create $IID)"
                                 sh "docker cp ${CID}:/home/artifacts/. $WORKSPACE/ubuntu/20.04"
                                  sshagent(credentials: ['sshfilespervices']) {
-                                sh "ssh -T -p 237 filespervices@files.pervices.com 'rm -f /home/filespervices/www/latest/sw/ubuntu20.04/uhd/* && rm -f /home/filespervices/www/latest/sw/ubuntu20.04/gnuradio/*' && \
+                                sh "ssh -T -p 237 filespervices@files.pervices.com 'rm -f /home/filespervices/www/latest/sw/ubuntu20.04/uhd/* && rm -f /home/filespervices/www/latest/sw/ubuntu20.04/gnuradio/* && mkdir /home/filespervices/www/latest/sw/centos8 && mkdir /home/filespervices/www/latest/sw/centos8/uhd && mkdir /home/filespervices/www/latest/sw/centos8/gnuradio' && \
                                 scp -P 237 uhdpv*.deb filespervices@files.pervices.com:/home/filespervices/www/latest/sw/ubuntu20.04/uhd/ && \
                                 scp -P 237 gnuradio*.tar.gz filespervices@files.pervices.com:/home/filespervices/www/latest/sw/ubuntu20.04/gnuradio/"
                         }
@@ -64,7 +64,13 @@ pipeline {
                       script { 
                               dir("${env.WORKSPACE}/CentOS/8testing") {
                                        dockerImageCentOS8 = docker.build("centos:$BUILD_NUMBER", "--network host .") 
-                }
+                              env.IID = "\$(docker images centos:$BUILD_NUMBER --format \"{{.ID}}\")"
+                                 env.CID="\$(docker create $IID)"
+                                sh "docker cp ${CID}:/home/artifacts/. $WORKSPACE/CentOS/8testing"
+                                 sshagent(credentials: ['sshfilespervices']) {
+                                sh "ssh -T -p 237 filespervices@files.pervices.com 'rm -f /home/filespervices/www/latest/sw/centos8/uhd/* && rm -f /home/filespervices/www/latest/sw/centos8/gnuradio/*' && \
+                                scp -P 237 uhd*.tar.gz filespervices@files.pervices.com:/home/filespervices/www/latest/sw/centos8/uhd/ && \
+                                scp -P 237 gnuradio*.tar.gz filespervices@files.pervices.com:/home/filespervices/www/latest/sw/centos8/gnuradio/"
                }
            } 
 }
@@ -114,6 +120,30 @@ pipeline {
                     script{
                      dir("${env.WORKSPACE}/Arch") {
                      env.IID = "\$(docker images arch:$BUILD_NUMBER --format \"{{.ID}}\")"
+                    sh "docker rmi -f ${IID}"
+}
+} 
+}
+}
+}
+}
+    stage('CentOS8 Testing'){
+      parallel {
+         stage('CentOS8 Testing'){    
+                     steps {
+                      script{
+                            dir("${env.WORKSPACE}/CentOS/8testing") {
+                               env.IID = "\$(docker images centos:$BUILD_NUMBER --format \"{{.ID}}\")"
+                               sh "docker run --net=host -i $IID /bin/bash -c './test-only-Arch.sh'"
+}
+}
+}
+}
+    stage('Remove CentOS Image'){  
+                    steps {
+                    script{
+                     dir("${env.WORKSPACE}/CentOS/8testing") {
+                     env.IID = "\$(docker images centos:$BUILD_NUMBER --format \"{{.ID}}\")"
                     sh "docker rmi -f ${IID}"
 }
 } 

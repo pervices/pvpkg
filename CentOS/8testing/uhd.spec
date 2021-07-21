@@ -36,7 +36,7 @@ Requires(pre):  shadow-utils, glibc-common
 Requires:       python3-tkinter
 Summary:        Universal Hardware Driver for Ettus Research products
 #Source0:       %%{url}/archive/v%%{version}/uhd-%%{version}.tar.gz
-Source0:        %{url}/archive/refs/heads/master.tar.gz
+Source0:        uhd.tar.gz
 
 %description
 The UHD is the universal hardware driver for Ettus Research products.
@@ -45,7 +45,7 @@ future Ettus Research products. It can be used standalone without GNU Radio.
 
 
 %prep
-%setup -q -n %{name}-master
+%setup -q -n %{name}
 
 
 %build

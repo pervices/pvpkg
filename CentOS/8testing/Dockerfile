@@ -1,12 +1,14 @@
 FROM centos:8
 WORKDIR /home/notroot
 WORKDIR /home/notroot/testing
+WORKDIR /home/artifacts
 WORKDIR /home
 RUN yum -y update && \
 yum -y install dnf-plugins-core epel-release make gcc rpm-build git rpmdevtools wget cmake &&\
 rpmdev-setuptree && \
-wget https://github.com/pervices/uhd/archive/refs/heads/master.tar.gz && \
-mv master.tar.gz /root/rpmbuild/SOURCES && \
+git clone -b master https://github.com/pervices/uhd.git && \
+tar -czvf uhd.tar.gz uhd && \
+mv uhd.tar.gz /root/rpmbuild/SOURCES && \
 git clone -b maint-3.9 https://github.com/pervices/gnuradio.git && \
 git clone --recursive https://github.com/gnuradio/volk.git && \
 tar -czvf volk.tar.gz volk && \
@@ -29,16 +31,51 @@ WORKDIR /root/rpmbuild/SPECS
 RUN dnf builddep --enablerepo=powertools -y uhd.spec && \
 QA_RPATHS=$(( 0x0001|0x0002 )) rpmbuild -ba uhd.spec && \
 cd ../RPMS/x86_64 && \
-rpm -i uhd*.rpm
+rpm -i uhd*.rpm && \
+mv uhd*.rpm /home/uhd
 WORKDIR /root/rpmbuild/SPECS
 RUN dnf builddep --enablerepo=powertools -y gnuradio.spec && \
 QA_RPATHS=$(( 0x0001|0x0002 )) rpmbuild -ba volk.spec && \
 cd ../RPMS/x86_64 && \
-rpm -i volk-3.9-volk.x86_64.rpm
+rpm -i volk*.rpm && \
+mv volk*.rpm /home/volk
 WORKDIR /root/rpmbuild/SPECS
 RUN QA_RPATHS=$(( 0x0001|0x0002 )) rpmbuild --define 'debug_package %{nil}' -ba gnuradio.spec && \
 cd ../RPMS/x86_64 && \
-sleep 10000 && \
-rpm -i python3*.rpm && rpm -i gnuradio*.rpm && \
-sleep 10000
+rpm -i libgnuradio*.rpm && rpm -i python3*.rpm && rpm -i gnuradio*.rpm && \
+mv libgnuradio*.rpm python3*.rpm gnuradio*.rpm /home/gnuradio
+WORKDIR /home/uhd 
+RUN mv uhd-3.13.0.0-master.x86_64.rpm uhdpv-$(git describe --abbrev=8 --always --long)-$(date "+%F").rpm && \
+mv uhd-debuginfo-3.13.0.0-master.x86_64.rpm uhdpv-debuginfo-$(git describe --abbrev=8 --always --long)-$(date "+%F").rpm && \
+mv uhd-debugsource-3.13.0.0-master.x86_64.rpm uhdpv-debugsource-$(git describe --abbrev=8 --always --long)-$(date "+%F").rpm && \
+mkdir uhdpv-$(git describe --abbrev=8 --always --long)-$(date "+%F") && \
+mv uhdpv*.rpm uhdpv-$(git describe --abbrev=8 --always --long)-$(date "+%F") && \
+tar uhdpv-$(git describe --abbrev=8 --always --long)-$(date "+%F").tar.gz uhdpv-$(git describe --abbrev=8 --always --long)-$(date "+%F") && \
+mv uhdpv-$(git describe --abbrev=8 --always --long)-$(date "+%F").tar.gz /home/artifacts
+WORKDIR /home/volk
+RUN mv volk-3.9-volk.x86_64.rpm volk-$(git describe --abbrev=8 --always --long)-$(date "+%F").rpm && \
+mv volk-debuginfo-3.9-volk.x86_64.rpm volk-debuginfo-$(git describe --abbrev=8 --always --long)-$(date "+%F").rpm && \
+mv volk-debugsource-3.9-volk.x86_64.rpm volk-debugsource-$(git describe --abbrev=8 --always --long)-$(date "+%F").rpm && \
+mkdir volk-$(git describe --abbrev=8 --always --long)-$(date "+%F") && \
+mv volk*.rpm volk-$(git describe --abbrev=8 --always --long)-$(date "+%F") && \
+tar volk-$(git describe --abbrev=8 --always --long)-$(date "+%F").tar.gz volk-$(git describe --abbrev=8 --always --long)-$(date "+%F") && \
+mv volk-$(git describe --abbrev=8 --always --long)-$(date "+%F").tar.gz /home/artifacts
+WORKDIR /home/gnuradio
+RUN mv gnuradio-3.9-maint.x86_64.rpm gnuradio-$(git describe --abbrev=8 --always --long)-$(date "+%F").rpm && \
+mv gnuradio-devel-3.9-maint.x86_64.rpm gnuradio-devel-$(git describe --abbrev=8 --always --long)-$(date "+%F").rpm && \
+mv gnuradio-doc-3.9-maint.x86_64.rpm gnuradio-doc-$(git describe --abbrev=8 --always --long)-$(date "+%F").rpm && \
+mv gnuradio-examples-3.9-maint.x86_64.rpm gnuradio-examples-$(git describe --abbrev=8 --always --long)-$(date "+%F").rpm && \
+mv libgnuradio-3.9-maint.x86_64.rpm libgnuradio-$(git describe --abbrev=8 --always --long)-$(date "+%F").rpm && \
+mv python3-gnuradio-3.9-maint.x86_64.rpm python3-gnuradio-$(git describe --abbrev=8 --always --long)-$(date "+%F").rpm && \
+mkdir gnuradio-$(git describe --abbrev=8 --always --long)-$(date "+%F") && \
+mv *.rpm gnuradio-$(git describe --abbrev=8 --always --long)-$(date "+%F") && \
+tar gnuradio-$(git describe --abbrev=8 --always --long)-$(date "+%F").tar.gz gnuradio-$(git describe --abbrev=8 --always --long)-$(date "+%F") && \
+mv gnuradio-$(git describe --abbrev=8 --always --long)-$(date "+%F").tar.gz /home/artifacts
+WORKDIR /home/notroot/testing
+
+
+
+
+
+
 
