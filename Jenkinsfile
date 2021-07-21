@@ -77,6 +77,8 @@ pipeline {
       }
 
        }
+}
+}
 
 
     stage('Ubuntu Testing'){
