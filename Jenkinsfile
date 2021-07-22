@@ -2,7 +2,7 @@ pipeline {
 
 // citests agents used to build and test repo.
     agent {
-	label 'waveci'
+	label 'crossci || waveci'
     }
 
     stages {
@@ -57,7 +57,7 @@ pipeline {
                  }
              }
              
-              stage('CentOS8 RPM Generation and Testing') { 
+              stage('CentOS 8') { 
 
                    steps { 
 
