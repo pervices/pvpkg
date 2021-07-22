@@ -2,7 +2,7 @@ pipeline {
 
 // citests agents used to build and test repo.
     agent {
-	label 'crossci || waveci'
+	label 'waveci'
     }
 
     stages {
