@@ -81,14 +81,14 @@ pipeline {
 }
 
 
-    stage('Ubuntu Testing'){
-      parallel {
-         stage('Ubuntu Testing'){    
+    stage('Ubuntu Testing'){  
                      steps {
+                     catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
                       script{
                             dir("${env.WORKSPACE}/ubuntu/20.04") {
                                env.IID = "\$(docker images ubuntu:$BUILD_NUMBER --format \"{{.ID}}\")"
                                sh "docker run --net=host -i $IID /bin/bash -c './test-only.sh'"
+}
 }
 }
 }
@@ -103,8 +103,7 @@ pipeline {
 } 
 }
 }
-}
-}
+
     stage('Arch Testing'){
       parallel {
          stage('Arch Testing'){    
@@ -136,7 +135,7 @@ pipeline {
                       script{
                             dir("${env.WORKSPACE}/CentOS/8testing") {
                                env.IID = "\$(docker images centos:$BUILD_NUMBER --format \"{{.ID}}\")"
-                               sh "docker run --net=host -i $IID /bin/bash -c './test-only-Arch.sh'"
+                               sh "docker run --net=host -i $IID /bin/bash -c './test-only.sh'"
 }
 }
 }
