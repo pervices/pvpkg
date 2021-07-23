@@ -157,5 +157,14 @@ pipeline {
 }
 }
 }
+ stage('Clean Up'){  
+                    steps {
+                    script{
+                     dir("${env.WORKSPACE}") {
+                     sh "docker system prune -a -f"
+}
+}
+}
+}
 }
 }
