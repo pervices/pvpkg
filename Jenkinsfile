@@ -87,7 +87,8 @@ pipeline {
                       script{
                             dir("${env.WORKSPACE}/ubuntu/20.04") {
                                env.IID = "\$(docker images ubuntu:$BUILD_NUMBER --format \"{{.ID}}\")"
-                               sh "docker run --net=host -i $IID /bin/bash -c './test-only.sh'"
+                               sh "docker run --net=host -i $IID /bin/bash -c './test-only.sh' && \
+                                   docker stop $(docker ps -a -q)"
 }
 }
 }
@@ -111,7 +112,8 @@ pipeline {
                       script{
                             dir("${env.WORKSPACE}/Arch") {
                                env.IID = "\$(docker images arch:$BUILD_NUMBER --format \"{{.ID}}\")"
-                               sh "docker run --net=host -i $IID /bin/bash -c './test-only-Arch.sh'"
+                               sh "docker run --net=host -i $IID /bin/bash -c './test-only-Arch.sh' && \
+                                   docker stop $(docker ps -a -q)"
 }
 }
 }
@@ -135,7 +137,8 @@ pipeline {
                       script{
                             dir("${env.WORKSPACE}/CentOS/8testing") {
                                env.IID = "\$(docker images centos:$BUILD_NUMBER --format \"{{.ID}}\")"
-                               sh "docker run --net=host -i $IID /bin/bash -c './test-only.sh'"
+                               sh "docker run --net=host -i $IID /bin/bash -c './test-only.sh' && \
+                               docker stop $(docker ps -a -q)"
 }
 }
 }
