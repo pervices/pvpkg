@@ -82,6 +82,9 @@ pipeline {
 
 
     stage('Ubuntu Testing'){  
+                     options {
+                timeout(time: 3, unit: "HOURS")
+                           } 
                      steps {
                      catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
                       script{
@@ -108,6 +111,9 @@ pipeline {
 
 
          stage('Arch Testing'){    
+                        options {
+                timeout(time: 3, unit: "HOURS")
+                           } 
                      steps {
                       catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
                       script{
@@ -134,6 +140,9 @@ pipeline {
 
 
          stage('CentOS8 Testing'){    
+                     options {
+                timeout(time: 3, unit: "HOURS")
+                           } 
                      steps {
                       catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
                       script{
