@@ -1,15 +1,15 @@
 FROM archlinux:base-devel
-# build from previous Arch image to avoid issues on newer versions
+# build from most recent Archlinux base image
 # makepkg cannot (and should not) be run as root, so a dummy user is created:
 RUN useradd -m notroot && \
 echo "notroot ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/notroot
+# patched version of glibc 2.33 is installed as a workaround for Docker compatibility issue present after glibc was updated in early 2021
 # the Archlinux keyring, git, wget are installed for later use, as well as the base-devel package group
 RUN patched_glibc=glibc-linux4-2.33-4-x86_64.pkg.tar.zst && \
     curl -LO "https://repo.archlinuxcn.org/x86_64/$patched_glibc" && \
     bsdtar -C / -xvf "$patched_glibc"
 RUN pacman -Sy --noconfirm archlinux-keyring&& \
     pacman -Sy --noconfirm git cmake && \
-# install previous version of git from Arch archives, most recent versions require a newer glibc, which causes errors
  pacman -Sy --noconfirm inetutils iproute2 && \
  pacman -Sy --noconfirm wget
 # Allow notroot to run stuff as root (to install dependencies): 
@@ -20,18 +20,18 @@ WORKDIR /home/notroot
 RUN ls && git clone https://aur.archlinux.org/yay-bin.git && \
 cd yay-bin && \
   makepkg --noconfirm --syncdeps --rmdeps --install --clean 
-# clone pvtest repo to allow for installation of previuous versions of boost, boost-libs, and libx11; current versions of these resulted in build issues
+# clone pvtest repo to allow for installation of previous versions of boost and boost-libs; current versions of these resulted in build issues
 WORKDIR /home/artifacts
 WORKDIR /home/notroot
 RUN git clone https://github.com/pervices/pvpkg.git && \
 cd pvpkg/Arch  && \
-# building icu63, which UHD will not build without
+# building icu63, boost, and boost-libs; which UHD will not build without
 yay -Sy --noconfirm icu63 && \
 sudo pacman -U --noconfirm boost-libs-1.69.0-1-x86_64.pkg.tar.xz && \ 
 sudo pacman -U --noconfirm boost-1.69.0-1-x86_64.pkg.tar.xz
 WORKDIR /home/notroot/testing
 WORKDIR /home/notroot/libuhd
-# use wget to collect UHD PKGBUILD from Github, and create the package with the dependencies speified from the PKGBUILD; sudo chown command allows user notroot to build in this directory
+# use wget to collect UHD PKGBUILD from Github, and create the package with the dependencies specified from the PKGBUILD; sudo chown command allows user notroot to build in this directory
 RUN sudo chown -R notroot /home/notroot/testing && \
 sudo wget https://raw.githubusercontent.com/pervices/pvpkg/master/Arch/UHD/PKGBUILD && \
 sudo chown -R notroot /home/notroot/libuhd && \
@@ -39,6 +39,7 @@ yay -Sy --noconfirm \
    $(pacman --deptest $(source ./PKGBUILD && echo ${depends[@]} ${makedepends[@]})) && \
  makepkg --noconfirm --syncdeps --install --needed && \
 sudo mv libuhdpv*.tar.zst /home/artifacts
+#creating directory to move CI tests to in order to run tests on UHD and Gnuradio installs before deployment
 WORKDIR /home/notroot/pvpkg/Testing
 RUN mv test-only-Arch.sh variables.sh /home/notroot/testing && \
 mv tests /home/notroot/testing
@@ -47,8 +48,7 @@ WORKDIR /home/notroot/libuhd/src/uhd/host
 RUN sudo chown -R notroot /home/notroot/libuhd/src/uhd/host && \
 cp -R examples /home/notroot/libuhd
 WORKDIR /home/notroot/gnuradio
-# use wget to collect GnuRadio PKGBUILD from Github, and create the package with the dependencies speified from the PKGBUILD; sudo chown command allows user notroot to build in this directory
-#RUN sudo pacman -U --noconfirm https://archive.archlinux.org/packages/p/python-pyqt5/python-pyqt5-5.15.4-1-x86_64.pkg.tar.zst && \
+# use wget to collect GnuRadio PKGBUILD from Github, and create the package with the dependencies specified from the PKGBUILD; sudo chown command allows user notroot to build in this directory
 RUN sudo wget https://raw.githubusercontent.com/pervices/pvpkg/master/Arch/GnuRadio/PKGBUILD &&  \ 
 sudo chown -R notroot /home/notroot/gnuradio && \
   makepkg --noconfirm --syncdeps --install && \
@@ -56,6 +56,7 @@ sudo chown -R notroot /home/notroot/gnuradio && \
 $(pacman --deptest $(source ./PKGBUILD && echo ${depends[@]} ${makedepends[@]})) && \ 
 makepkg --noconfirm --install --needed && \
 sudo mv gnuradio*.tar.zst /home/artifacts
+#make tests executable to allow for CI testing before deployment of packages to fileserver
 WORKDIR /home/notroot/testing
 RUN chmod +x test-only-Arch.sh && \
 chmod +x variables.sh && \
