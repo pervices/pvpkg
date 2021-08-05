@@ -53,7 +53,7 @@ dpkg -i gnuradio*.deb
 RUN mv libgnuradio*.deb gnuradio*.deb /home/notroot/gnuradio/gnuradio && \
 cd gnuradio && \
 mv gnuradio-dev*.deb gnuradio-dev-$(git describe --abbrev=8 --always --long)-$(date "+%F").deb && \
-mv gnuradio-doc*.deb "gnuradio-doc-$(git describe --abbrev=8 --always --long)-$(date "+%F").deb" && \
+mv gnuradio-doc*.deb gnuradio-doc-$(git describe --abbrev=8 --always --long)-$(date "+%F").deb && \
 mv gnuradio*amd64.deb gnuradio-$(git describe --abbrev=8 --always --long)-$(date "+%F").deb && \
 mv libgnuradio-analog*.deb libgnuradio-analog-$(git describe --abbrev=8 --always --long)-$(date "+%F").deb && \
 mv libgnuradio-audio*.deb libgnuradio-audio-$(git describe --abbrev=8 --always --long)-$(date "+%F").deb && \

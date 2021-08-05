@@ -57,7 +57,7 @@ pipeline {
                  }
              }
              
-              stage('CentOS8 RPM Generation and Testing') { 
+              stage('CentOS 8') { 
 
                    steps { 
 
@@ -81,14 +81,17 @@ pipeline {
 }
 
 
-    stage('Ubuntu Testing'){
-      parallel {
-         stage('Ubuntu Testing'){    
+    stage('Ubuntu Testing'){  
+                     options {
+                timeout(time: 3, unit: "HOURS")
+                           } 
                      steps {
+                     catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
                       script{
                             dir("${env.WORKSPACE}/ubuntu/20.04") {
                                env.IID = "\$(docker images ubuntu:$BUILD_NUMBER --format \"{{.ID}}\")"
                                sh "docker run --net=host -i $IID /bin/bash -c './test-only.sh'"
+}
 }
 }
 }
@@ -98,21 +101,26 @@ pipeline {
                     script{
                      dir("${env.WORKSPACE}/ubuntu/20.04") {
                      env.IID = "\$(docker images ubuntu:$BUILD_NUMBER --format \"{{.ID}}\")"
-                    sh "docker rmi -f ${IID}"
+                    sh "docker stop \$(docker ps -a -q) && \
+                        docker rm \$(docker ps -a -q) && \
+                        docker rmi -f ${IID}"
 }
 } 
 }
 }
-}
-}
-    stage('Arch Testing'){
-      parallel {
+
+
          stage('Arch Testing'){    
+                        options {
+                timeout(time: 3, unit: "HOURS")
+                           } 
                      steps {
+                      catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
                       script{
                             dir("${env.WORKSPACE}/Arch") {
                                env.IID = "\$(docker images arch:$BUILD_NUMBER --format \"{{.ID}}\")"
                                sh "docker run --net=host -i $IID /bin/bash -c './test-only-Arch.sh'"
+}
 }
 }
 }
@@ -122,21 +130,26 @@ pipeline {
                     script{
                      dir("${env.WORKSPACE}/Arch") {
                      env.IID = "\$(docker images arch:$BUILD_NUMBER --format \"{{.ID}}\")"
-                    sh "docker rmi -f ${IID}"
+                    sh "docker stop \$(docker ps -a -q) && \
+                        docker rm \$(docker ps -a -q) && \
+                        docker rmi -f ${IID}"
 }
 } 
 }
 }
-}
-}
-    stage('CentOS8 Testing'){
-      parallel {
+
+
          stage('CentOS8 Testing'){    
+                     options {
+                timeout(time: 3, unit: "HOURS")
+                           } 
                      steps {
+                      catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
                       script{
                             dir("${env.WORKSPACE}/CentOS/8testing") {
                                env.IID = "\$(docker images centos:$BUILD_NUMBER --format \"{{.ID}}\")"
-                               sh "docker run --net=host -i $IID /bin/bash -c './test-only-Arch.sh'"
+                               sh "docker run --net=host -i $IID /bin/bash -c './test-only.sh'"
+}
 }
 }
 }
@@ -146,9 +159,18 @@ pipeline {
                     script{
                      dir("${env.WORKSPACE}/CentOS/8testing") {
                      env.IID = "\$(docker images centos:$BUILD_NUMBER --format \"{{.ID}}\")"
-                    sh "docker rmi -f ${IID}"
+                    sh "docker stop \$(docker ps -a -q) && \
+                        docker rm \$(docker ps -a -q) && \
+                        docker rmi -f ${IID}"
 }
-} 
+}
+}
+}
+ stage('Clean Up'){  
+                    steps {
+                    script{
+                     dir("${env.WORKSPACE}") {
+                     sh "docker system prune -a -f"
 }
 }
 }
