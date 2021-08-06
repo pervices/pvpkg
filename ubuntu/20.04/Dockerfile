@@ -21,7 +21,7 @@ mv test-only.sh /home/notroot/testing
 RUN apt-get update
 WORKDIR /home/notroot/uhd
 # clone latest pervices uhd version, tar repo as orig.tar.gz, and build debian package
-RUN git clone -b ops/dwil/cyfcr4r4t_6 https://github.com/pervices/uhd.git && \
+RUN git clone -b master https://github.com/pervices/uhd.git && \
 cd debian && \
 mk-build-deps -i --tool 'apt-get -f --yes' control
 RUN tar -czvf uhdpv_3.13.0.orig.tar.gz /home/notroot/uhd/uhd && \
