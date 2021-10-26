@@ -28,7 +28,8 @@ cd pvpkg/Arch  && \
 # building icu63, boost, and boost-libs; which UHD will not build without
 yay -Sy --noconfirm icu63 && \
 sudo pacman -U --noconfirm boost-libs-1.69.0-1-x86_64.pkg.tar.xz && \ 
-sudo pacman -U --noconfirm boost-1.69.0-1-x86_64.pkg.tar.xz
+sudo pacman -U --noconfirm boost-1.69.0-1-x86_64.pkg.tar.xz && \
+sudo pacman -U --noconfirm qwt-6.1.6-1-x86_64.pkg.tar.zst
 WORKDIR /home/notroot/testing
 WORKDIR /home/notroot/libuhd
 # use wget to collect UHD PKGBUILD from Github, and create the package with the dependencies specified from the PKGBUILD; sudo chown command allows user notroot to build in this directory
