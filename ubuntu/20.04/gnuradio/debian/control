@@ -1,4 +1,4 @@
-Source: gnuradio
+Source: gnuradiopv
 Section: comm
 Priority: optional
 Maintainer: A. Maitland Bottoms <bottoms@debian.org>
@@ -65,7 +65,7 @@ Homepage: http://gnuradio.org/
 Vcs-Browser: https://salsa.debian.org/bottoms/pkg-gnuradio
 Vcs-Git: https://salsa.debian.org/bottoms/pkg-gnuradio.git
 
-Package: gnuradio
+Package: gnuradiopv
 Architecture: any
 Depends: libcanberra-gtk-module,
 	 libcanberra-gtk3-module,
@@ -95,6 +95,7 @@ Recommends: gnuradio-dev,
             uhd-host
 Suggests: gr-fosphor, gr-osmosdr
 Multi-Arch: foreign
+Provides: gnuradio
 Description: GNU Radio Software Radio Toolkit
  GNU Radio provides signal processing blocks to implement software
  radios. It can be used with readily-available low-cost external RF
@@ -118,7 +119,7 @@ Description: GNU Radio Software Radio Toolkit
  creating signal flow graphs and generating flow-graph source code.
  Also included are a variety of tools and utility programs.
 
-Package: gnuradio-doc
+Package: gnuradiopv-doc
 Section: doc
 Architecture: all
 Depends: ${misc:Depends}
@@ -129,7 +130,7 @@ Description: GNU Software Defined Radio toolkit documentation
  .
  Part of the main gnuradio build.
 
-Package: gnuradio-dev
+Package: gnuradiopv-dev
 Section: libdevel
 Architecture: any
 Pre-Depends: ${misc:Pre-Depends}
@@ -151,7 +152,7 @@ Description: GNU Software Defined Radio toolkit development
  .
  Part of the main gnuradio build.
 
-Package: libgnuradio-analog3.8.1
+Package: libgnuradiopv-analog3.8.1
 Section: libs
 Architecture: any
 Pre-Depends: ${misc:Pre-Depends}
@@ -162,7 +163,7 @@ Description: gnuradio analog functions
  These functions are also in gnuradio-core.
  Part of the main gnuradio build.
 
-Package: libgnuradio-audio3.8.1
+Package: libgnuradiopv-audio3.8.1
 Section: libs
 Architecture: any
 Pre-Depends: ${misc:Pre-Depends}
@@ -175,7 +176,7 @@ Description: gnuradio audio functions
  automatically discover the correct one to use.  Part of the main
  gnuradio build.
 
-Package: libgnuradio-blocks3.8.1
+Package: libgnuradiopv-blocks3.8.1
 Section: libs
 Architecture: any
 Pre-Depends: ${misc:Pre-Depends}
@@ -186,7 +187,7 @@ Description: gnuradio blocks functions
  These functions are also in gnuradio-core.
  Part of the main gnuradio build.
 
-Package: libgnuradio-channels3.8.1
+Package: libgnuradiopv-channels3.8.1
 Section: libs
 Architecture: any
 Pre-Depends: ${misc:Pre-Depends}
@@ -197,7 +198,7 @@ Description: gnuradio channels functions
  These functions are also in gnuradio-core.
  Part of the main gnuradio build.
 
-Package: libgnuradio-digital3.8.1
+Package: libgnuradiopv-digital3.8.1
 Section: libs
 Architecture: any
 Pre-Depends: ${misc:Pre-Depends}
@@ -208,7 +209,7 @@ Description: gnuradio digital communications functions
  including bpsk, qpsk, gmsk and ofdm signals.
  Part of the main gnuradio build.
 
-Package: libgnuradio-dtv3.8.1
+Package: libgnuradiopv-dtv3.8.1
 Section: libs
 Architecture: any
 Pre-Depends: ${misc:Pre-Depends}
@@ -219,7 +220,7 @@ Description: gnuradio digital TV signal processing blocks
  DVB-S2, DVB-T, DVB-T2 digital video broadcast standards.
  Part of the main gnuradio build.
 
-Package: libgnuradio-fec3.8.1
+Package: libgnuradiopv-fec3.8.1
 Section: libs
 Architecture: any
 Pre-Depends: ${misc:Pre-Depends}
@@ -231,7 +232,7 @@ Description: gnuradio forward error correction support
  decoders for no-op dummmy, repetition, and convolutional classes.
  Part of the main gnuradio build.
 
-Package: libgnuradio-fft3.8.1
+Package: libgnuradiopv-fft3.8.1
 Section: libs
 Architecture: any
 Pre-Depends: ${misc:Pre-Depends}
@@ -242,7 +243,7 @@ Description: gnuradio fast Fourier transform functions
  Uses single precision FFT from libfftw3-single3.
  Part of the main gnuradio build.
 
-Package: libgnuradio-filter3.8.1
+Package: libgnuradiopv-filter3.8.1
 Section: libs
 Architecture: any
 Pre-Depends: ${misc:Pre-Depends}
@@ -254,7 +255,7 @@ Description: gnuradio filter functions
  PFB arbitrary resampler methods.
  Part of the main gnuradio build.
 
-Package: libgnuradio-pmt3.8.1
+Package: libgnuradiopv-pmt3.8.1
 Section: libs
 Architecture: any
 Pre-Depends: ${misc:Pre-Depends}
@@ -266,7 +267,7 @@ Description: gnuradio pmt container library
  and threads in GNU Radio.
  Part of the main gnuradio build.
 
-Package: libgnuradio-qtgui3.8.1
+Package: libgnuradiopv-qtgui3.8.1
 Section: libs
 Architecture: kfreebsd-any linux-any
 Pre-Depends: ${misc:Pre-Depends}
@@ -278,7 +279,7 @@ Description: gnuradio Qt graphical user interface functions
  supports a QT Style Sheet (QSS) file to adjust the look.
  Part of the main gnuradio build.
 
-Package: libgnuradio-runtime3.8.1
+Package: libgnuradiopv-runtime3.8.1
 Section: libs
 Architecture: any
 Pre-Depends: ${misc:Pre-Depends}
@@ -289,7 +290,7 @@ Description: gnuradio core runtime
  settings for logging, performance counters, and control port.
  Part of the main gnuradio build.
 
-Package: libgnuradio-trellis3.8.1
+Package: libgnuradiopv-trellis3.8.1
 Section: libs
 Architecture: any
 Pre-Depends: ${misc:Pre-Depends}
@@ -301,7 +302,7 @@ Description: gnuradio trellis modulation functions
  based upon finite state machine (FSM) class.
  Part of the main gnuradio build.
 
-Package: libgnuradio-uhd3.8.1
+Package: libgnuradiopv-uhd3.8.1
 Section: libs
 Architecture: any
 Pre-Depends: ${misc:Pre-Depends}
@@ -313,7 +314,7 @@ Description: gnuradio universal hardware driver functions
  including the USRP family of software radio peripheral devices.
  Part of the main gnuradio build.
 
-Package: libgnuradio-video-sdl3.8.1
+Package: libgnuradiopv-video-sdl3.8.1
 Section: libs
 Architecture: any
 Pre-Depends: ${misc:Pre-Depends}
@@ -324,7 +325,7 @@ Description: gnuradio video functions
  Implements input and output blocks.
  Part of the main gnuradio build.
 
-Package: libgnuradio-vocoder3.8.1
+Package: libgnuradiopv-vocoder3.8.1
 Section: libs
 Architecture: any
 Pre-Depends: ${misc:Pre-Depends}
@@ -336,7 +337,7 @@ Description: gnuradio vocoder functions
  .
  Part of the main gnuradio build.
 
-Package: libgnuradio-wavelet3.8.1
+Package: libgnuradiopv-wavelet3.8.1
 Section: libs
 Architecture: any
 Pre-Depends: ${misc:Pre-Depends}
@@ -349,7 +350,7 @@ Description: gnuradio wavelet functions
  .
  Part of the main gnuradio build.
 
-Package: libgnuradio-zeromq3.8.1
+Package: libgnuradiopv-zeromq3.8.1
 Section: libs
 Architecture: kfreebsd-any linux-any
 Pre-Depends: ${misc:Pre-Depends}
@@ -362,7 +363,7 @@ Description: gnuradio zeromq functions
  .
  Part of the main gnuradio build.
 
-Package: libgnuradio-network3.8.1
+Package: libgnuradiopv-network3.8.1
 Section: libs
 Architecture: any
 Pre-Depends: ${misc:Pre-Depends}
