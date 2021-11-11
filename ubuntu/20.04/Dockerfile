@@ -40,7 +40,7 @@ mv /home/notroot/gnuradio/gnuradio/CMakeLists_mod.txt /home/notroot/gnuradio/gnu
 mv /home/notroot/pvpkg/ubuntu/20.04/modified/uhd_types_python_mod.cc /home/notroot/gnuradio/gnuradio/gr-uhd/python/uhd/bindings && \
 mv /home/notroot/gnuradio/gnuradio/gr-uhd/python/uhd/bindings/uhd_types_python_mod.cc /home/notroot/gnuradio/gnuradio/gr-uhd/python/uhd/bindings/uhd_types_python.cc && \
 # create orig.tar.gz of gnuradio repo nad build debian package
-tar -czvf gnuradio_3.9.orig.tar.gz /home/notroot/gnuradio/gnuradio && \
+tar -czvf gnuradiopv_3.9.orig.tar.gz /home/notroot/gnuradio/gnuradio && \
 mv debian /home/notroot/gnuradio/gnuradio && \
 cd gnuradio/debian && \
 mk-build-deps -i --tool 'apt-get -f --yes' control && \
