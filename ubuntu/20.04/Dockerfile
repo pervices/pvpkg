@@ -6,6 +6,7 @@ WORKDIR /home/notroot
 WORKDIR /home/notroot/testing
 WORKDIR /home/notroot
 WORKDIR /home/notroot
+WORKDIR /home/notroot
 # installing basic essential packages to container to allow for rest of build to occur
 RUN apt-get update && \
 apt-get -y install dpkg-dev sudo apt-utils dh-make bzr-builddeb equivs xz-utils iputils-ping net-tools software-properties-common cmake git coreutils build-essential && \

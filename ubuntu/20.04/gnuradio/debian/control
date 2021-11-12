@@ -135,7 +135,7 @@ Section: libdevel
 Architecture: any
 Pre-Depends: ${misc:Pre-Depends}
 Multi-Arch: same
-Depends: gnuradio (= ${binary:Version}),
+Depends: gnuradiopv,
          libcppunit-dev,
          libfftw3-dev,
          libgmp-dev,
