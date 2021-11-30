@@ -27,8 +27,8 @@ RUN git clone https://github.com/pervices/pvpkg.git && \
 cd pvpkg/Arch  && \
 # building icu63, boost, and boost-libs; which UHD will not build without
 yay -Sy --noconfirm icu63 && \
-ls && \
 sudo pacman -U --noconfirm icu-69.1-1-x86_64.pkg.tar.zst && \
+sudo pacman -U --noconfirm gtk3-1 3.24.30+62+g8d04980f38-2-x86_64.pkg.tar.zst && \
 #sudo pacman -U --noconfirm icu-70.1-1-x86_64.pkg.tar.zst && \
 sudo pacman -U --noconfirm boost-libs-1.69.0-1-x86_64.pkg.tar.xz && \ 
 sudo pacman -U --noconfirm boost-1.69.0-1-x86_64.pkg.tar.xz 
