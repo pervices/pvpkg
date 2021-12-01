@@ -30,8 +30,7 @@ yay -Sy --noconfirm icu63 && \
 sudo pacman -U --noconfirm boost-libs-1.69.0-1-x86_64.pkg.tar.xz && \ 
 sudo pacman -U --noconfirm boost-1.69.0-1-x86_64.pkg.tar.xz && \
 sudo pacman -U --noconfirm shared-mime-info-2.0+57+gc1d1c70-1-x86_64.pkg.tar.zst && \
-sudo pacman -U --noconfirm gtk3-1_3.24.30+62+g8d04980f38-2-x86_64.pkg.tar.zst && \
-sleep 10000
+sudo pacman -U --noconfirm gtk3-1_3.24.30+62+g8d04980f38-2-x86_64.pkg.tar.zst
 #sudo pacman -U --noconfirm qwt-6.1.6-1-x86_64.pkg.tar.zst
 WORKDIR /home/notroot/testing
 WORKDIR /home/notroot/libuhd
@@ -51,7 +50,8 @@ mv tests /home/notroot/testing
 WORKDIR /home/notroot/libuhd/src/uhd/host
 RUN sudo chown -R notroot /home/notroot/libuhd/src/uhd/host && \
 cp -R examples /home/notroot/libuhd
-WORKDIR /home/notroot/gnuradio
+WORKDIR /home/notroot/gnuradio && \
+sleep 10000
 # use wget to collect GnuRadio PKGBUILD from Github, and create the package with the dependencies specified from the PKGBUILD; sudo chown command allows user notroot to build in this directory
 RUN sudo wget https://raw.githubusercontent.com/pervices/pvpkg/master/Arch/GnuRadio/PKGBUILD &&  \ 
 sudo chown -R notroot /home/notroot/gnuradio && \
