@@ -29,7 +29,7 @@ cd pvpkg/Arch  && \
 yay -Sy --noconfirm icu63 && \
 sudo pacman -U --noconfirm boost-libs-1.69.0-1-x86_64.pkg.tar.xz && \ 
 sudo pacman -U --noconfirm boost-1.69.0-1-x86_64.pkg.tar.xz && \
-sudo pacman -U shared-mime-info-2.0+57+gc1d1c70-1-x86_64.pkg.tar.zst
+sudo pacman -U --noconfirm shared-mime-info-2.0+57+gc1d1c70-1-x86_64.pkg.tar.zst
 #sudo pacman -U --noconfirm qwt-6.1.6-1-x86_64.pkg.tar.zst
 WORKDIR /home/notroot/testing
 WORKDIR /home/notroot/libuhd
