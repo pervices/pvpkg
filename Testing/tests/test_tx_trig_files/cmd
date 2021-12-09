@@ -1,0 +1,1 @@
+sudo ./test_tx_trigger --start_time=5 --period=20 --tx_rate=10156250 --tx_center_freq=0 --tx_gain=20 --setpoint=1000 --samples=480 --gating=dsp 
