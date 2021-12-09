@@ -1,7 +1,7 @@
 from common import sigproc
 from common import engine
 from common import generator as gen
-
+import matplotlib.pyplot as plt
 import numpy as np
 
 def main(iterations):
@@ -15,33 +15,51 @@ def main(iterations):
         gen.dump(it)
         #Due to a bug that makes start times have no effect, tx will run for 3 seconds, rx will run for 1.5 seconds but only use the last sample_count samples
         sample_count = it["sample_count"]
-        tx_stack = [ (10, int(it["sample_rate" ])*3) ]
-        rx_stack = [ (10.5, int(it["sample_count"] + (it["sample_rate" ])*1.5)) ]
+        tx_stack = [ (10.0, int(it["sample_count" ])) ]
+        rx_stack = [ (10.0, int(it["sample_count"])) ]
         vsnk = engine.run(it["channels"], it["wave_freq"], it["sample_rate"], it["center_freq"], it["tx_gain"], it["rx_gain"], tx_stack, rx_stack)
         vsnks.append(vsnk)
+        #print("a")
+        #print(len(vsnks))
 
-    # Calculate absolute area.
-    areas = []
-    for vsnk in vsnks:
-        areas[0:len(vsnk)]
-        x = 0
-        for channel in vsnk:
-            x = x + 1
-            #Uses only the list sample_count sample, this should be changed to use all samples (which should be equal to sample_count) once theissues with tx and rx start delays are fixed
-            areas[x] = [sigproc.absolute_area(channel.data()[-sample_count:-1])]
-        #areas.append(area)
-    areas = np.array(areas).T.tolist() # Transpose.
+        iteration_areas = []
+        for vsnk in vsnks:
+            channel_areas = []
+            for ch, channel in enumerate(vsnk):
 
-    print(areas)
-    # Assert area is increasing per channel.
-    for area in areas:
-        print(area)
-        for x in range (1, len(area)):
-            assert area[x] - area[x-1] > 1 #makes sure the difference in area is significant
+                real = [datum.real for datum in channel.data()]
+                imag = [datum.imag for datum in channel.data()]
+                #print('the value of the real array is', real)
+                #print('the value of the imag array is', imag)
+
+                ## Calculate absolute area.
+                area = sigproc.absolute_area(real)
+                channel_areas.append(area)
+
+
+            iteration_areas.append(channel_areas)
+            #areas = np.array(areas).T.tolist() # Transpose.
+            print("the areas of channel 0-3 for gain 5-20 are:", iteration_areas)
+            # Assert area is increasing per channel.
+            for a in range(len(iteration_areas[0])):
+                #print(area)
+                for b in range(len(iteration_areas)-1):
+                    try:
+                        assert iteration_areas[b+1][a] - iteration_areas[b][a] > 1 #makes sure the difference in area is significant
+                    except:
+                        #plot and save real component
+                        plt.figure()
+                        plt.title("Gain plot of {} for wave_freq = {} Hz".format(ch,it["wave_freq"]))
+                        plt.xlabel("Sample")
+                        plt.ylabel("Amplitude")
+                        plt.plot(imag[0:300], label='reals')
+                        plt.plot(real[0:300], label='imags')
+                        plt.legend()
+                        plt.savefig(fname='Gain plot for channel {} at wave_freq {} at Tx gain {}'.format(ch, it["wave_freq"],it["tx_gain"],format='png'))
+
 
 #Change the argument in the following function to select how many channels to test
 main(gen.lo_band_gain_tx(4))
-main(gen.lo_band_gain_rx(4))
-main(gen.hi_band_gain_tx(4))
-main(gen.hi_band_gain_rx(4))
-
+#main(gen.lo_band_gain_rx(4))
+#main(gen.hi_band_gain_tx(4))
+#main(gen.hi_band_gain_rx(4))
