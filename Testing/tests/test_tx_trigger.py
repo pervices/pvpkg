@@ -4,7 +4,11 @@ def main():
 
     name = "tx_trigger_log.txt"
 
-    os.system("/home/notroot/libuhd/examples/test_tx_trigger.cpp > %s" % name)
+    # os.system("/home/notroot/libuhd/examples/test_tx_trigger.cpp > %s" % name)
+    # TODO: Check if the following file exists; if it doesn't, throw and error and
+    # indicate that the test_tx_trigger example binary was not found
+    # Using invokation from tx_trig pkg
+    os.system("/usr/lib/uhd/examples/test_tx_trigger --path ./test_tx_trig_files/data.txt --start_time=5 --period=20 --tx_rate=10156250 --tx_center_freq=0 --tx_gain=20 --setpoint=1000 --samples=480 --gating=dsp > %s" % name)
 
     with open(name, "r") as b:
 

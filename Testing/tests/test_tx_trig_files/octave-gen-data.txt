@@ -1,0 +1,26 @@
+#Create an initial array of time with
+#appropriate resolution. Here, we use
+#around 0.1us resolution, and a total
+#duration of 1s.
+a=[0:0.0000001:1];
+# Set the desired sinewave frequency as
+# an integer divider of the target 
+# samplerate. Here, we make a sine wave
+# with a frequency 1/10 from our target
+# transmission samplerate of 
+# 325e6/32=10.15625MSPS.
+# Within this samplerate, we will encode
+# a waveform with a frequency of 
+# 1.015625MHz.
+f=325e6/320;
+# Create output values based on sin(2*pi*f*t)
+# and store is with one value per row.
+b=sin(2*pi*f*a);
+# We expect the data to be saved
+# as a text with one value per row, so we
+# need to transpose the matrix;
+b=b';
+# Save the output to a file called data.txt
+save("-ascii","data.txt","b")
+
+

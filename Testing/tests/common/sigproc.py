@@ -41,7 +41,7 @@ def dump_file(vsnk, wave_freq):
     for sample in sample_count:
 
         for channel in channels:
-            datum = vsnk[channel].data()[sample]
+            datum = (vsnk[channel].data()[sample])
             #Writing to a file
             f = open(path+"/CH_" + str(channel) + "_WF_" + str(wave_freq) + ".dat", "a")
             f.write("%10.5f %10.5f\t" % (datum.real, datum.imag) + "\n")
@@ -70,6 +70,8 @@ def lag(real_wave, imag_wave, sample_rate, wave_freq):
 
     forewards = np.argmax(signal.correlate(real_wave, imag_wave)) - len(real_wave) + 1
     backwards = np.argmax(signal.correlate(imag_wave, real_wave)) - len(imag_wave) + 1
+    #print("forwards value is", forewards)
+    #print("backwards value is", backwards)
 
     lag = (abs(forewards) + abs(backwards)) / 2.0
     return lag / (float(sample_rate) / float(wave_freq))
