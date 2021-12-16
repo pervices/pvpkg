@@ -1,4 +1,5 @@
-FROM centos:8
+FROM redhat/ubi8
+#FROM centos:8
 WORKDIR /home/notroot
 WORKDIR /home/notroot/testing
 WORKDIR /home/artifacts
