@@ -9,6 +9,7 @@ RUN yum -y update && \
 #yum -y install dnf-plugins-core epel-release make gcc rpm-build git rpmdevtools wget cmake &&\
 yum -y install dnf-plugins-core make gcc rpm-build git wget cmake &&\
 yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm && \
+yum grouplist && \
 dnf install rpmdevtools && \
 rpmdev-setuptree && \
 git clone -b master https://github.com/pervices/uhd.git && \
