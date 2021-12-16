@@ -5,7 +5,11 @@ WORKDIR /home/notroot/testing
 WORKDIR /home/artifacts
 WORKDIR /home
 RUN yum -y update && \
-yum -y install dnf-plugins-core epel-release make gcc rpm-build git rpmdevtools wget cmake &&\
+#CentOS command
+#yum -y install dnf-plugins-core epel-release make gcc rpm-build git rpmdevtools wget cmake &&\
+yum -y install dnf-plugins-core make gcc rpm-build git wget cmake &&\
+yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm && \
+dnf group install "Development Tools" && \
 rpmdev-setuptree && \
 git clone -b master https://github.com/pervices/uhd.git && \
 tar -czvf uhd.tar.gz uhd && \
