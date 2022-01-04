@@ -1,4 +1,4 @@
-FROM redhat/ubi8
+FROM centos:8
 #FROM centos:8
 WORKDIR /home/notroot
 WORKDIR /home/notroot/testing
@@ -6,11 +6,7 @@ WORKDIR /home/artifacts
 WORKDIR /home
 RUN yum -y update && \
 #CentOS command
-#yum -y install dnf-plugins-core epel-release make gcc rpm-build git rpmdevtools wget cmake &&\
-yum -y install dnf-plugins-core make gcc rpm-build git wget cmake &&\
-yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm && \
-yum grouplist && \
-dnf install rpmdevtools && \
+yum -y install dnf-plugins-core epel-release make gcc rpm-build git rpmdevtools wget cmake &&\
 rpmdev-setuptree && \
 git clone -b master https://github.com/pervices/uhd.git && \
 tar -czvf uhd.tar.gz uhd && \
@@ -19,7 +15,6 @@ git clone -b maint-3.9 https://github.com/pervices/gnuradio.git && \
 git clone --recursive https://github.com/gnuradio/volk.git && \
 tar -czvf volk.tar.gz volk && \
 mv volk.tar.gz /root/rpmbuild/SOURCES && \
-#cmake -DCMAKE_BUILD_TYPE=Release -DPYTHON_EXECUTABLE=/usr/bin/python3 ../ 
 ls && ls && ls && git clone https://github.com/pervices/pvpkg.git && \
 cd pvpkg/CentOS/8testing && \
 mv uhd.spec gnuradio.spec volk.spec /root/rpmbuild/SPECS && \
