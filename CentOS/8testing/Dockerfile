@@ -26,7 +26,7 @@ mv test-only.sh /home/notroot/testing && \
 #mv /home/pvpkg/ubuntu/20.04/modified/uhd_types_python_mod.cc /home/gnuradio/gr-uhd/python/uhd/bindings && \
 #mv /home/gnuradio/gr-uhd/python/uhd/bindings/uhd_types_python_mod.cc /home/gnuradio/gr-uhd/python/uhd/bindings/uhd_types_python.cc
 rm /home/gnuradio/CMakeLists.txt && \
-mv /home/pvpkg/CentOS/8testing/CMakeListsMOD.txt /home/gnuradio
+mv /home/pvpkg/CentOS/8testing/CMakeListsMOD.txt /home/gnuradio && \
 mv /home/gnuradio/CMakeListsMOD.txt /home/gnuradio/CMakeLists.txt
 WORKDIR /home
 RUN tar -czvf gnuradio-maint-3.9.tar.gz gnuradio && \
