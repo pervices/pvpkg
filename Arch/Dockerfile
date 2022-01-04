@@ -50,7 +50,7 @@ mv tests /home/notroot/testing
 WORKDIR /home/notroot/libuhd/src/uhd/host
 RUN sudo chown -R notroot /home/notroot/libuhd/src/uhd/host && \
 cp -R examples /home/notroot/libuhd
-WORKDIR /home/notroot/gnuradio && \
+WORKDIR /home/notroot/gnuradio
 # use wget to collect GnuRadio PKGBUILD from Github, and create the package with the dependencies specified from the PKGBUILD; sudo chown command allows user notroot to build in this directory
 RUN sudo wget https://raw.githubusercontent.com/pervices/pvpkg/master/Arch/GnuRadio/PKGBUILD &&  \ 
 sudo chown -R notroot /home/notroot/gnuradio && \
