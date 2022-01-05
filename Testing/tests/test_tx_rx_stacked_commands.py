@@ -23,8 +23,8 @@ def test(it):
         print("channel %d" % ch)
         areas = []
         for i, frame in enumerate(rx_stack):
-            print(i)
-            print(frame)
+            #print(i)
+            #print(frame)
 
             sample_count = frame[1]
             a = int(i * sample_count)
@@ -47,7 +47,7 @@ def test(it):
                 sigproc.dump(vsnk)
                 #plotting data in interval and "gold standard"
                 plt.figure()
-                plt.title("stacked command area plot of channel {} between interval {} and {}".format(ch, a, b))
+                plt.title("stacked command area plot of channel {} between interval {} and {}".format(it["channels"], a, b))
                 plt.plot(data_gold, color='gold', label='gold standard')
                 plt.plot(data, label='data')
                 plt.legend()

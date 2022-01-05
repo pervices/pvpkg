@@ -38,47 +38,45 @@ def test(it):
         print("channel %2d: imag coherency %f" % (ch, imag_coherency))
 
         sigproc.dump_file(vsnk, it["wave_freq"])
-        thresh = 0.05
+        thresh = 0.15
         try:
             assert real_coherency > -thresh and real_coherency < thresh and \
                     imag_coherency > -thresh and imag_coherency < thresh
         except:
-            print('threshold not satisfied for channel {} at wave_freq = {}'.format(ch, it["wave_freq"]))
+            print('threshold not satisfied for channel {} at wave_freq = {}'.format(it["channels"], it["wave_freq"]))
             #plot and save real component
             plt.figure()
-            plt.title("lag plot of {} for wave_freq = {} Hz".format(ch,it["wave_freq"]))
+            plt.title("Real sample data plot of {} for wave_freq = {} Hz".format(it["channels"],it["wave_freq"]))
             plt.xlabel("Sample")
             plt.ylabel("Amplitude")
-            plt.plot(real[0:500], label='real')
-            plt.plot(reals[0][0:500],label='reals[0]')
+            plt.plot(real[0:500], color='black',label='real')
+            plt.plot(reals[0][0:500],color='purple',label='reals[0]')
             plt.legend()
             plt.savefig(fname='Real lag plot for channel {} at wave_freq {}'.format(ch, it["wave_freq"],format='png'))
 
             #plot and save imag component
             plt.figure()
-            plt.title("Sample Data plot of {} for wave_freq = {} Hz".format(ch,it["wave_freq"]))
+            plt.title("Imag Sample Data plot of {} for wave_freq = {} Hz".format(it["channels"],it["wave_freq"]))
             plt.xlabel("Sample")
             plt.ylabel("Amplitude")
-            plt.plot(real[0:250], color='red', label='imag')
-            plt.plot(reals[0][0:250], color='blue',label='imags[0]')
-            plt.plot(imag[0:250], color='green', label='imag')
-            plt.plot(imags[0][0:250], color='orange', label='imags[0]')
+            plt.plot(imag[0:500], color='green', label='imag')
+            plt.plot(imags[0][0:500], color='orange', label='imags[0]')
             plt.legend()
-            plt.savefig(fname='Imag lag plot for channel {} at wave_freq {}'.format(ch, it["wave_freq"],format='png'))
+            plt.savefig(fname='Imag lag plot for channel {} at wave_freq {}'.format(it["channels"], it["wave_freq"],format='png'))
 
             time=np.arange(0,len(real)/it["sample_rate"], 1/it["sample_rate"])
             #print(len(len(real)/it["sample_rate"]))
             #plot and save real/imag component vs. time
             plt.figure()
-            plt.title("Frequency vs. time plot of {} for wave_freq = {} Hz".format(ch,it["wave_freq"]))
+            plt.title("Time plot of {} for wave_freq = {} Hz".format(ch,it["wave_freq"]))
             plt.xlabel("time")
             plt.ylabel("Amplitude")
-            plt.plot(time[0:250], real, color='red', label='real')
-            plt.plot(time[0:250], reals[0], color='blue', label='reals')
-            plt.plot(time[0:250], imag, color='green', label='imag')
-            plt.plot(time[0:250], imags[0], color='orange', label='imags')
+            plt.plot(time[0:500], real[0:500], color='red', label='real')
+            plt.plot(time[0:500], reals[0][0:500], color='blue', label='reals')
+            plt.plot(time[0:500], imag[0:500], color='green', label='imag')
+            plt.plot(time[0:500], imags[0][0:500], color='orange', label='imags')
             plt.legend()
-            plt.savefig(fname='Phase time plot for channel {} at wave_freq {}'.format(ch, it["wave_freq"],format='png'))
+            plt.savefig(fname='Time plot for channel {} at wave_freq {}'.format(ch, it["wave_freq"],format='png'))
 
 def main(iterations):
 

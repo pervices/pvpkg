@@ -39,7 +39,7 @@ def main(iterations):
 
             iteration_areas.append(channel_areas)
             #areas = np.array(areas).T.tolist() # Transpose.
-            print("the areas of channel 0-3 for gain 5-20 are:", iteration_areas)
+            print("the areas of channel 0-3 for gain [5,10,20] are:", iteration_areas)
             # Assert area is increasing per channel.
             for a in range(len(iteration_areas[0])):
                 #print(area)
