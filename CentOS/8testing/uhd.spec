@@ -14,12 +14,12 @@
 %endif
 %endif
 
-Name:           uhdpv
+Name:           uhd
 URL:            http://github.com/pervices/uhd
 Version:        3.13.0.0
 Release:        master
 License:        GPLv3+
-Provides:	uhd
+Provides: uhd
 Conflicts: uhd
 BuildRequires:  gcc-c++
 BuildRequires:  cmake
