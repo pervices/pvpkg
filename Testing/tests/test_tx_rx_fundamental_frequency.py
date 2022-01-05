@@ -18,8 +18,8 @@ def test(it):
     for ch, channel in enumerate(vsnk):
         real = [datum.real for datum in channel.data()]
         imag = [datum.imag for datum in channel.data()]
-        print(len(real))
-        print(len(imag))
+        #print(len(real))
+        #print(len(imag))
 
         fund_real = sigproc.fundamental(real, it["sample_rate"])
         fund_imag = sigproc.fundamental(imag, it["sample_rate"])
@@ -63,5 +63,5 @@ def main(iterations):
     for it in iterations:
         test(it)
 
-
+main(gen.lo_band_wave_sweep())
 main(gen.hi_band_wave_sweep())
