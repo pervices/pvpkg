@@ -6,7 +6,7 @@ def hi_band_wave_sweep():
     print(sys._getframe().f_code.co_name)
 
     channels = list(range(4))
-    sample_count = int(round(25000000/1000))
+    sample_count = int(round(25000000/10000))
     tx_gain = 25
     rx_gain = 25
     center_freq = 1000000000
@@ -33,7 +33,7 @@ def lo_band_wave_sweep():
     print(sys._getframe().f_code.co_name)
 
     channels = list(range(4))
-    sample_count = int(round(25000000/100000))
+    sample_count = int(round(25000000/10000))
     tx_gain = 25
     rx_gain = 25
     center_freq = 10000000
