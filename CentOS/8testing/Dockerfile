@@ -6,7 +6,8 @@ WORKDIR /home/artifacts
 WORKDIR /home
 RUN yum -y update && \
 #CentOS command
-yum -y install dnf-plugins-core epel-release make gcc rpm-build git rpmdevtools wget cmake &&\
+yum -y install dnf-plugins-core epel-release make gcc rpm-build git rpmdevtools wget cmake python3-pip &&\
+pip3 install retrying && \
 rpmdev-setuptree && \
 git clone -b master https://github.com/pervices/uhd.git && \
 tar -czvf uhd.tar.gz uhd && \
