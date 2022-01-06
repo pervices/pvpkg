@@ -1,0 +1,64 @@
+# Official Per Vices gr-osmosdr build script to compile gr-osmosdr from source.
+
+pkgname=grosmosdr
+pkgver=20220106.git.gf967ab8b3
+_pkgid=git
+pkgrel=1
+pkgdesc="A common software api in your application(s) independent of the underlying radio hardware."
+arch=('x86_64' 'i686')
+url="https://osmocom.org/projects/gr-osmosdr/wiki/GrOsmoSDR"
+license=('GPL')
+depends=('gnuradio' 'libuhd')
+makedepends=( )
+
+source=('grosmosdr::git://git.osmocom.org/gr-osmosdr')
+#You can specify #branch=,#commit=,#tag=fragment
+
+md5sums=('SKIP')
+sha1sums=('SKIP')
+
+_gitname="grosmosdr"
+
+pkgver() {
+    #If we have already downloaded the repo, then use its HEAD for the package version. Otherwise, simply use the current date.
+    cd ${srcdir}
+    if [ -d ${_gitname} ]; then
+        cd ${_gitname} && echo -n `date +%Y%m%d`git. && git describe --long | sed -E 's/([^-]*-g)/r\1/;s/-/./g'
+    else
+        date --utc +%Y%m%d%H%M 
+    fi
+}
+
+build() {
+
+#        if [ -d $_gitname ]; then
+#                (cd $_gitname && git clean -x -d -f && git reset --hard HEAD && git checkout master && git fetch --all && git checkout $_gitbranch && git pull origin $_gitbranch)
+#		(cd $_gitname && git clean -x -d -f && git reset --hard $_gitbranch && git fetch --all && git reset --hard $_gitbranch )
+#                msg "Updated the local files."
+#        else
+#                git clone $_gitroot
+#                msg "GIT checkout done or server timeout"
+#        fi
+
+        cd ${srcdir}/$_gitname
+
+        #Make build directory
+        mkdir -p build
+        cd build
+        
+        #Build project using CMAKE
+        cmake \
+           -DCMAKE_INSTALL_PREFIX=/usr/ \
+           -DPYTHON_EXECUTABLE=/usr/bin/python3 \
+           ..
+        make -j4
+}
+
+check() {
+  echo 1
+}
+
+package() {
+  cd "$srcdir/$_gitname/build"
+  make DESTDIR="$pkgdir" install
+} 
