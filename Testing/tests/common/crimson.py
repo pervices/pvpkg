@@ -9,7 +9,9 @@ def calibrate(end, channels, sample_rate, center_freq, gain):
         end.set_center_freq(center_freq, channel)
         end.set_gain(gain, channel)
 
+
     end.set_time_now(uhd.time_spec(0.0))
+
 
 
 def get_snk_s(channels, sample_rate, center_freq, gain):

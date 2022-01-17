@@ -22,14 +22,15 @@ def run_tx(csnk, channels, stack, sample_rate, wave_freq):
     +---------+   +---------+   +---------+   |      csnk |
                                               +-----------+
     """
-    for frame in stack:
+    for frame in stack: #in fund_freq.py this is tx_stack
 
         # Connect.
         sigs = [analog.sig_source_c(
             sample_rate, analog.GR_SIN_WAVE, wave_freq, 2.0e4, 0.0)
             for ch in channels]
 
-        heds = [blocks.head(gr.sizeof_gr_complex, frame[1])
+        heds = [blocks.head(gr.sizeof_gr_complex, frame[1]) #block_head=(sizeofstream_dataformat, nitems)= (sizeofgr_complex, frame[1]) = (16bit I & 16bit Q, tx_stack[ , it["sample_rate"]) in fund_freq test
+
             for ch in channels]
 
         c2ss = [blocks.complex_to_interleaved_short(True)
@@ -42,8 +43,9 @@ def run_tx(csnk, channels, stack, sample_rate, wave_freq):
             flowgraph.connect(c2ss[ch], (csnk, ch))
 
         # Run.
-        csnk.set_start_time(uhd.time_spec(frame[0]))
+        csnk.set_start_time(uhd.time_spec(frame[0])) #frame[0]= tx_stack[10, ] in fund_freq test
         flowgraph.run()
+        #print("tx time spec is:", uhd.time_spec(frame[0]))
         for hed in heds:
             hed.reset()
 
@@ -75,16 +77,19 @@ def run_rx(csrc, channels, stack, sample_rate, _vsnk):
     # Run. The flowgraph must be started before stream commands are sent.
     flowgraph.start()
 
-    for frame in stack:
+    for frame in stack: #rx_stack in fund_freq
 
         cmd = uhd.stream_cmd_t(uhd.stream_mode_t.STREAM_MODE_NUM_SAMPS_AND_DONE)
-        cmd.num_samps = frame[1]
+        cmd.num_samps = frame[1] #frame[1]= rx_stack[( , it["sample_count"])] in fund_freq
         cmd.stream_now = False
-        cmd.time_spec = uhd.time_spec(frame[0])
+        #print(frame[0])
+        cmd.time_spec = uhd.time_spec(frame[0]) #frame[0]=rx_stack[ 10.005, ] in fund_freq
         csrc.issue_stream_cmd(cmd)
+        #print("rx stack time is:", cmd.time_spec)
 
     # Wait for completion.
     total_sample_count = sum([frame[1] for frame in stack])
+    #print("total sample count is:", total_sample_count)
     while len(vsnk[0].data()) < total_sample_count:
         time.sleep(0.1)
 

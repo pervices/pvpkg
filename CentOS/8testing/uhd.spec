@@ -19,7 +19,8 @@ URL:            http://github.com/pervices/uhd
 Version:        3.13.0.0
 Release:        master
 License:        GPLv3+
-Provides:	uhd
+Provides: uhd
+Conflicts: uhd
 BuildRequires:  gcc-c++
 BuildRequires:  cmake
 BuildRequires:  boost-python3-devel, libusb1-devel, python3-cheetah, ncurses-devel

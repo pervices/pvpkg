@@ -5,6 +5,8 @@ WORKDIR /home/artifacts
 WORKDIR /home/notroot
 WORKDIR /home/notroot/testing
 WORKDIR /home/notroot
+WORKDIR /home/notroot
+WORKDIR /home/notroot
 # installing basic essential packages to container to allow for rest of build to occur
 RUN apt-get update && \
 apt-get -y install dpkg-dev sudo apt-utils dh-make bzr-builddeb equivs xz-utils iputils-ping net-tools software-properties-common cmake git coreutils build-essential && \
@@ -21,7 +23,7 @@ mv test-only.sh /home/notroot/testing
 RUN apt-get update
 WORKDIR /home/notroot/uhd
 # clone latest pervices uhd version, tar repo as orig.tar.gz, and build debian package
-RUN git clone -b ops/dwil/cyfcr4r4t_6 https://github.com/pervices/uhd.git && \
+RUN git clone -b master https://github.com/pervices/uhd.git && \
 cd debian && \
 mk-build-deps -i --tool 'apt-get -f --yes' control
 RUN tar -czvf uhdpv_3.13.0.orig.tar.gz /home/notroot/uhd/uhd && \
@@ -40,7 +42,7 @@ mv /home/notroot/gnuradio/gnuradio/CMakeLists_mod.txt /home/notroot/gnuradio/gnu
 mv /home/notroot/pvpkg/ubuntu/20.04/modified/uhd_types_python_mod.cc /home/notroot/gnuradio/gnuradio/gr-uhd/python/uhd/bindings && \
 mv /home/notroot/gnuradio/gnuradio/gr-uhd/python/uhd/bindings/uhd_types_python_mod.cc /home/notroot/gnuradio/gnuradio/gr-uhd/python/uhd/bindings/uhd_types_python.cc && \
 # create orig.tar.gz of gnuradio repo nad build debian package
-tar -czvf gnuradio_3.9.orig.tar.gz /home/notroot/gnuradio/gnuradio && \
+tar -czvf gnuradiopv_3.9.orig.tar.gz /home/notroot/gnuradio/gnuradio && \
 mv debian /home/notroot/gnuradio/gnuradio && \
 cd gnuradio/debian && \
 mk-build-deps -i --tool 'apt-get -f --yes' control && \
@@ -52,31 +54,31 @@ dpkg -i gnuradio*.deb
 # adding gnuradio.deb files to directory and tarring it for deployment; changing names of generated .debs to match relevant git tag and versioning info
 RUN mv libgnuradio*.deb gnuradio*.deb /home/notroot/gnuradio/gnuradio && \
 cd gnuradio && \
-mv gnuradio-dev*.deb gnuradio-dev-$(git describe --abbrev=8 --always --long)-$(date "+%F").deb && \
-mv gnuradio-doc*.deb gnuradio-doc-$(git describe --abbrev=8 --always --long)-$(date "+%F").deb && \
-mv gnuradio*amd64.deb gnuradio-$(git describe --abbrev=8 --always --long)-$(date "+%F").deb && \
-mv libgnuradio-analog*.deb libgnuradio-analog-$(git describe --abbrev=8 --always --long)-$(date "+%F").deb && \
-mv libgnuradio-audio*.deb libgnuradio-audio-$(git describe --abbrev=8 --always --long)-$(date "+%F").deb && \
-mv libgnuradio-blocks*.deb libgnuradio-blocks-$(git describe --abbrev=8 --always --long)-$(date "+%F").deb && \
-mv libgnuradio-channels*.deb libgnuradio-channels-$(git describe --abbrev=8 --always --long)-$(date "+%F").deb && \
-mv libgnuradio-digital*.deb libgnuradio-digital-$(git describe --abbrev=8 --always --long)-$(date "+%F").deb && \
-mv libgnuradio-dtv*.deb libgnuradio-dtv-$(git describe --abbrev=8 --always --long)-$(date "+%F").deb && \
-mv libgnuradio-fec*.deb libgnuradio-fec-$(git describe --abbrev=8 --always --long)-$(date "+%F").deb && \
-mv libgnuradio-fft*.deb libgnuradio-fft-$(git describe --abbrev=8 --always --long)-$(date "+%F").deb && \
-mv libgnuradio-filter*.deb libgnuradio-filter-$(git describe --abbrev=8 --always --long)-$(date "+%F").deb && \
-mv libgnuradio-network*.deb libgnuradio-network-$(git describe --abbrev=8 --always --long)-$(date "+%F").deb && \
-mv libgnuradio-pmt*.deb libgnuradio-pmt-$(git describe --abbrev=8 --always --long)-$(date "+%F").deb && \
-mv libgnuradio-qtgui*.deb libgnuradio-qtgui-$(git describe --abbrev=8 --always --long)-$(date "+%F").deb && \
-mv libgnuradio-runtime*.deb libgnuradio-runtime-$(git describe --abbrev=8 --always --long)-$(date "+%F").deb && \
-mv libgnuradio-trellis*.deb libgnuradio-trellis-$(git describe --abbrev=8 --always --long)-$(date "+%F").deb && \
-mv libgnuradio-uhd*.deb libgnuradio-uhd-$(git describe --abbrev=8 --always --long)-$(date "+%F").deb && \
-mv libgnuradio-video-sdl*.deb libgnuradio-video-sdl-$(git describe --abbrev=8 --always --long)-$(date "+%F").deb && \
-mv libgnuradio-vocoder*.deb libgnuradio-vocoder-$(git describe --abbrev=8 --always --long)-$(date "+%F").deb && \
-mv libgnuradio-wavelet*.deb libgnuradio-wavelet-$(git describe --abbrev=8 --always --long)-$(date "+%F").deb && \
-mv libgnuradio-zeromq*.deb libgnuradio-zeromq-$(git describe --abbrev=8 --always --long)-$(date "+%F").deb && \
-mkdir gnuradio-$(git describe --abbrev=8 --always --long)-$(date "+%F") && \
-mv libgnuradio*.deb gnuradio*.deb gnuradio-$(git describe --abbrev=8 --always --long)-$(date "+%F") && \
-tar -czvf gnuradio_$(git describe --abbrev=8 --always --long)_$(date "+%F").tar.gz /home/notroot/gnuradio/gnuradio/gnuradio-$(git describe --abbrev=8 --always --long)-$(date "+%F") && \
+mv gnuradiopv-dev*.deb gnuradiopv-dev-$(git describe --abbrev=8 --always --long)-$(date "+%F").deb && \
+mv gnuradiopv-doc*.deb gnuradiopv-doc-$(git describe --abbrev=8 --always --long)-$(date "+%F").deb && \
+mv gnuradio*amd64.deb gnuradiopv-$(git describe --abbrev=8 --always --long)-$(date "+%F").deb && \
+mv libgnuradiopv-analog*.deb libgnuradiopv-analog-$(git describe --abbrev=8 --always --long)-$(date "+%F").deb && \
+mv libgnuradiopv-audio*.deb libgnuradiopv-audio-$(git describe --abbrev=8 --always --long)-$(date "+%F").deb && \
+mv libgnuradiopv-blocks*.deb libgnuradiopv-blocks-$(git describe --abbrev=8 --always --long)-$(date "+%F").deb && \
+mv libgnuradiopv-channels*.deb libgnuradiopv-channels-$(git describe --abbrev=8 --always --long)-$(date "+%F").deb && \
+mv libgnuradiopv-digital*.deb libgnuradiopv-digital-$(git describe --abbrev=8 --always --long)-$(date "+%F").deb && \
+mv libgnuradiopv-dtv*.deb libgnuradiopv-dtv-$(git describe --abbrev=8 --always --long)-$(date "+%F").deb && \
+mv libgnuradiopv-fec*.deb libgnuradiopv-fec-$(git describe --abbrev=8 --always --long)-$(date "+%F").deb && \
+mv libgnuradiopv-fft*.deb libgnuradiopv-fft-$(git describe --abbrev=8 --always --long)-$(date "+%F").deb && \
+mv libgnuradiopv-filter*.deb libgnuradiopv-filter-$(git describe --abbrev=8 --always --long)-$(date "+%F").deb && \
+mv libgnuradiopv-network*.deb libgnuradiopv-network-$(git describe --abbrev=8 --always --long)-$(date "+%F").deb && \
+mv libgnuradiopv-pmt*.deb libgnuradiopv-pmt-$(git describe --abbrev=8 --always --long)-$(date "+%F").deb && \
+mv libgnuradiopv-qtgui*.deb libgnuradiopv-qtgui-$(git describe --abbrev=8 --always --long)-$(date "+%F").deb && \
+mv libgnuradiopv-runtime*.deb libgnuradiopv-runtime-$(git describe --abbrev=8 --always --long)-$(date "+%F").deb && \
+mv libgnuradiopv-trellis*.deb libgnuradiopv-trellis-$(git describe --abbrev=8 --always --long)-$(date "+%F").deb && \
+mv libgnuradiopv-uhd*.deb libgnuradiopv-uhd-$(git describe --abbrev=8 --always --long)-$(date "+%F").deb && \
+mv libgnuradiopv-video-sdl*.deb libgnuradiopv-video-sdl-$(git describe --abbrev=8 --always --long)-$(date "+%F").deb && \
+mv libgnuradiopv-vocoder*.deb libgnuradiopv-vocoder-$(git describe --abbrev=8 --always --long)-$(date "+%F").deb && \
+mv libgnuradiopv-wavelet*.deb libgnuradiopv-wavelet-$(git describe --abbrev=8 --always --long)-$(date "+%F").deb && \
+mv libgnuradiopv-zeromq*.deb libgnuradiopv-zeromq-$(git describe --abbrev=8 --always --long)-$(date "+%F").deb && \
+mkdir gnuradiopv-$(git describe --abbrev=8 --always --long)-$(date "+%F") && \
+mv libgnuradio*.deb gnuradio*.deb gnuradiopv-$(git describe --abbrev=8 --always --long)-$(date "+%F") && \
+tar -czvf gnuradiopv_$(git describe --abbrev=8 --always --long)_$(date "+%F").tar.gz /home/notroot/gnuradio/gnuradio/gnuradiopv-$(git describe --abbrev=8 --always --long)-$(date "+%F") && \
 mv gnuradio*.tar.gz /home/artifacts
 WORKDIR /home/notroot/uhd
 # move uhd deb file to artifact directory and tagging it for deployment

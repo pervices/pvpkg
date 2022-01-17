@@ -77,6 +77,7 @@ BuildRequires:  python3-pybind11
 BuildRequires:	python3-mako
 BuildRequires:	python3-qt5-devel
 BuildRequires:	python3-scipy
+BuildRequires:	python3-matplotlib
 BuildRequires:	python3-six
 BuildRequires:	python3-sphinx
 BuildRequires:	python3-thrift
