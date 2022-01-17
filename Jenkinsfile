@@ -81,16 +81,45 @@ pipeline {
 }
 
 
-    stage('Ubuntu Testing'){  
+    stage('Arch Testing'){  
                      options {
                 timeout(time: 3, unit: "HOURS")
                            } 
                      steps {
                      catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
                       script{
+                            dir("${env.WORKSPACE}/arch") {
+                               env.IID = "\$(docker images arch:$BUILD_NUMBER --format \"{{.ID}}\")"
+                               sh "docker run --net=host -i $IID /bin/bash -c './test-only.sh'"
+}
+}
+}
+}
+}
+    stage('Remove Arch Image'){  
+                    steps {
+                    script{
+                     dir("${env.WORKSPACE}/arch") {
+                     env.IID = "\$(docker images arch:$BUILD_NUMBER --format \"{{.ID}}\")"
+                    sh "docker stop \$(docker ps -a -q) && \
+                        docker rm \$(docker ps -a -q) && \
+                        docker rmi -f ${IID}"
+}
+} 
+}
+}
+
+
+         stage('Ubuntu Testing'){    
+                        options {
+                timeout(time: 3, unit: "HOURS")
+                           } 
+                     steps {
+                      catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                      script{
                             dir("${env.WORKSPACE}/ubuntu/20.04") {
                                env.IID = "\$(docker images ubuntu:$BUILD_NUMBER --format \"{{.ID}}\")"
-                               sh "docker run --net=host -i $IID /bin/bash -c './test-only.sh'"
+                               sh "docker run --net=host -i $IID /bin/bash -c './test-only-Arch.sh'"
 }
 }
 }
@@ -101,35 +130,6 @@ pipeline {
                     script{
                      dir("${env.WORKSPACE}/ubuntu/20.04") {
                      env.IID = "\$(docker images ubuntu:$BUILD_NUMBER --format \"{{.ID}}\")"
-                    sh "docker stop \$(docker ps -a -q) && \
-                        docker rm \$(docker ps -a -q) && \
-                        docker rmi -f ${IID}"
-}
-} 
-}
-}
-
-
-         stage('Arch Testing'){    
-                        options {
-                timeout(time: 3, unit: "HOURS")
-                           } 
-                     steps {
-                      catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-                      script{
-                            dir("${env.WORKSPACE}/Arch") {
-                               env.IID = "\$(docker images arch:$BUILD_NUMBER --format \"{{.ID}}\")"
-                               sh "docker run --net=host -i $IID /bin/bash -c './test-only-Arch.sh'"
-}
-}
-}
-}
-}
-    stage('Remove Arch Image'){  
-                    steps {
-                    script{
-                     dir("${env.WORKSPACE}/Arch") {
-                     env.IID = "\$(docker images arch:$BUILD_NUMBER --format \"{{.ID}}\")"
                     sh "docker stop \$(docker ps -a -q) && \
                         docker rm \$(docker ps -a -q) && \
                         docker rmi -f ${IID}"
