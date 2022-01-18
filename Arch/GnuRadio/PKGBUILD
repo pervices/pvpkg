@@ -37,7 +37,7 @@ echo export path
         -DPYTHON_INCLUDE_DIR=$(echo /usr/include/python3*) \
         -DPYTHON_LIBRARY=$(echo /usr/lib/libpython3.*.so) \
         -DENABLE_GRC=ON \
-        -DGR_PYTHON_DIR=/usr/lib/python3.9/site-packages \
+        -DGR_PYTHON_DIR=/usr/lib/python3.10/site-packages \
         -DENABLE_GR_WXGUI=ON \
         -DENABLE_GR_QTGUI=ON \
         -DENABLE_INTERNAL_VOLK=ON \
