@@ -63,7 +63,7 @@ sudo mv gnuradio*.tar.zst /home/artifacts
 WORKDIR /home/notroot/testing
 RUN chmod +x test-only-Arch.sh && \
 chmod +x variables.sh && \
-chmod +x tests
+chmod +x tests && sleep 10000
 
 
 
