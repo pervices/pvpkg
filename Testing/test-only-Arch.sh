@@ -59,10 +59,10 @@ do
 	if [ $rv -eq 0 ]; then
 		PASSED_TESTS=$((PASSED_TESTS+1))
 		echo "${TEST_NAMES[$i]} test PASSED" >> log.txt
-	elif [ $i -eq 5 ]; then
-		EXCEPTIONS=$((EXCEPTIONS+1))
-		FAILED_TESTS=$((FAILED_TESTS+1))
-		echo "${TEST_NAMES[$i]} test FAILED but it is an exception" >> log.txt
+#	elif [ $i -eq 5 ]; then
+#		EXCEPTIONS=$((EXCEPTIONS+1))
+#		FAILED_TESTS=$((FAILED_TESTS+1))
+#		echo "${TEST_NAMES[$i]} test FAILED but it is an exception" >> log.txt
 	else
 		FAILED_TESTS=$((FAILED_TESTS+1))
 		RETURN=$((RETURN+1))
