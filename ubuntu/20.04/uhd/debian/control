@@ -34,5 +34,6 @@ Package: uhdpv
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Provides: libuhd-dev
+Conflicts: libuhd-dev
 Description: <insert up to 60 chars description>
  <insert long description, indented with spaces>
