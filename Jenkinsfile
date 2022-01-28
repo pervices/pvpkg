@@ -56,16 +56,16 @@ pipeline {
                      } 
                  }
              }
-             stage('Installation Testing Container') { 
+       //      stage('Installation Testing Container') { 
 
-                   steps { 
-                      script { 
-                             dir("${env.WORKSPACE}/installationtestingcontainer") {
-                                 dockerImageTestContainer = docker.build("test:$BUILD_NUMBER", "--network host .") 
-                       }
-                     } 
-                 }
-             }
+       //            steps { 
+        //              script { 
+          //                   dir("${env.WORKSPACE}/installationtestingcontainer") {
+           //                      dockerImageTestContainer = docker.build("test:$BUILD_NUMBER", "--network host .") 
+          //             }
+         //            } 
+         //        }
+        //     }
               stage('CentOS 8') { 
 
                    steps { 
