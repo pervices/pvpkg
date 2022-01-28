@@ -2,6 +2,7 @@ from common import sigproc
 from common import engine
 from common import generator as gen
 from retrying import retry
+import sys
 
 @retry(stop_max_attempt_number = 3)
 def test(it):
@@ -27,7 +28,8 @@ def test(it):
             assert lag > 0.20 and lag < 0.30 # About PI/4 (90 Degrees)
         except:
             sigproc.dump(vsnk)
-            raise
+            sys.exit(1)
+            
 
 
 def main(iterations):

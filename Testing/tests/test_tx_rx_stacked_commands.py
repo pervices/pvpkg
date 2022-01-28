@@ -3,7 +3,7 @@ from common import engine
 from common import generator as gen
 from retrying import retry
 import matplotlib.pyplot as plt
-#import sys
+import sys
 
 @retry(stop_max_attempt_number = 3)
 def test(it):
@@ -52,6 +52,7 @@ def test(it):
                 plt.plot(data, label='data')
                 plt.legend()
                 plt.savefig(fname='stacked commands area plot comparison for channel {} between interval {} and {} at sample rate {}'.format(ch,a, b,it["sample_rate"], format='png'))
+                sys.exit(1)
 
 def main(iterations):
 

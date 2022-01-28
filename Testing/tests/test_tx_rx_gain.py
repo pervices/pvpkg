@@ -3,6 +3,7 @@ from common import engine
 from common import generator as gen
 import matplotlib.pyplot as plt
 import numpy as np
+import sys
 
 def main(iterations):
 
@@ -56,6 +57,7 @@ def main(iterations):
                         plt.plot(real[0:300], label='imags')
                         plt.legend()
                         plt.savefig(fname='Gain plot for channel {} at wave_freq {} at Tx gain {}'.format(ch, it["wave_freq"],it["tx_gain"],format='png'))
+                        sys.exit(1)
 
 
 #Change the argument in the following function to select how many channels to test
