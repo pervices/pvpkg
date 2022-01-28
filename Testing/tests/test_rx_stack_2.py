@@ -5,6 +5,7 @@ from gnuradio import gr
 from common import crimson
 import time
 import numpy as np
+import sys 
 
 # This test does not use the engine as it only tests the RX
 
@@ -98,5 +99,6 @@ def main():
         assert (np.array_equal((ch_4_actual_array),(expect_count_array)))
     except:
         print('expected and actual array are not equal, fail')
+        sys.exit(1)
 
 main()

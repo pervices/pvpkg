@@ -4,6 +4,7 @@ from common import generator as gen
 from retrying import retry
 import numpy as np
 import matplotlib.pyplot as plt
+import sys
 
 
 @retry(stop_max_attempt_number = 3)
@@ -77,6 +78,7 @@ def test(it):
             plt.plot(time[0:500], imags[0][0:500], color='orange', label='imags')
             plt.legend()
             plt.savefig(fname='Time plot for channel {} at wave_freq {}'.format(ch, it["wave_freq"],format='png'))
+            sys.exit(1)
 
 def main(iterations):
 

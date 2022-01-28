@@ -5,6 +5,7 @@ from common import generator as gen
 from retrying import retry
 import numpy as np
 import matplotlib.pyplot as plt
+import sys
 
 @retry(stop_max_attempt_number = 1)
 def test(it):
@@ -57,6 +58,7 @@ def test(it):
             plt.plot(time, imag, label='imag')
             plt.legend()
             plt.savefig(fname='Fundamental frequency time plot for channel {} at wave_freq {}'.format(ch, it["wave_freq"],format='png'))
+            sys.exit(1)
 
 def main(iterations):
 
