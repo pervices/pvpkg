@@ -56,36 +56,36 @@ pipeline {
                      } 
                  }
              }
-             stage('Installation Testing Container') { 
-
-                   steps { 
-                      script { 
-                            dir("${env.WORKSPACE}/installationtestingcontainer") {
-                                 dockerImageTestContainer = docker.build("test:$BUILD_NUMBER", "--network host .") 
-                       }
-                    } 
-                 }
-             }
-              stage('CentOS 8') { 
-
-                   steps { 
-
-                      script { 
-                              dir("${env.WORKSPACE}/CentOS/8testing") {
-                                       dockerImageCentOS8 = docker.build("centos:$BUILD_NUMBER", "--network host .") 
-                              env.IID = "\$(docker images centos:$BUILD_NUMBER --format \"{{.ID}}\")"
-                                 env.CID="\$(docker create $IID)"
-                                sh "docker cp ${CID}:/home/artifacts/. $WORKSPACE/CentOS/8testing"
-                                 sshagent(credentials: ['sshfilespervices']) {
-                                sh "ssh -T -p 237 filespervices@files.pervices.com 'rm -f /home/filespervices/www/latest/sw/centos8/uhd/* && rm -f /home/filespervices/www/latest/sw/centos8/gnuradio/*' && \
-                                scp -P 237 uhd*.tar.gz filespervices@files.pervices.com:/home/filespervices/www/latest/sw/centos8/uhd/ && \
-                                scp -P 237 gnuradio*.tar.gz filespervices@files.pervices.com:/home/filespervices/www/latest/sw/centos8/gnuradio/"
-               }
-           } 
-}
-      }
-
-       }
+//              stage('Installation Testing Container') { 
+// 
+//                    steps { 
+//                       script { 
+//                             dir("${env.WORKSPACE}/installationtestingcontainer") {
+//                                  dockerImageTestContainer = docker.build("test:$BUILD_NUMBER", "--network host .") 
+//                        }
+//                     } 
+//                  }
+//              }
+//               stage('CentOS 8') { 
+// 
+//                    steps { 
+// 
+//                       script { 
+//                               dir("${env.WORKSPACE}/CentOS/8testing") {
+//                                        dockerImageCentOS8 = docker.build("centos:$BUILD_NUMBER", "--network host .") 
+//                               env.IID = "\$(docker images centos:$BUILD_NUMBER --format \"{{.ID}}\")"
+//                                  env.CID="\$(docker create $IID)"
+//                                 sh "docker cp ${CID}:/home/artifacts/. $WORKSPACE/CentOS/8testing"
+//                                  sshagent(credentials: ['sshfilespervices']) {
+//                                 sh "ssh -T -p 237 filespervices@files.pervices.com 'rm -f /home/filespervices/www/latest/sw/centos8/uhd/* && rm -f /home/filespervices/www/latest/sw/centos8/gnuradio/*' && \
+//                                 scp -P 237 uhd*.tar.gz filespervices@files.pervices.com:/home/filespervices/www/latest/sw/centos8/uhd/ && \
+//                                 scp -P 237 gnuradio*.tar.gz filespervices@files.pervices.com:/home/filespervices/www/latest/sw/centos8/gnuradio/"
+//                }
+//            } 
+// }
+//       }
+// 
+//        }
 }
 }
 
@@ -148,33 +148,33 @@ pipeline {
 }
 
 
-         stage('CentOS8 Testing'){    
-                     options {
-                timeout(time: 3, unit: "HOURS")
-                           } 
-                     steps {
-                      catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-                      script{
-                            dir("${env.WORKSPACE}/CentOS/8testing") {
-                               env.IID = "\$(docker images centos:$BUILD_NUMBER --format \"{{.ID}}\")"
-                               sh "docker run --net=host -i $IID /bin/bash -c './test-only.sh'"
-}
-}
-}
-}
-}
-    stage('Remove CentOS Image'){  
-                    steps {
-                    script{
-                     dir("${env.WORKSPACE}/CentOS/8testing") {
-                     env.IID = "\$(docker images centos:$BUILD_NUMBER --format \"{{.ID}}\")"
-                    sh "docker stop \$(docker ps -a -q) && \
-                        docker rm \$(docker ps -a -q) && \
-                        docker rmi -f ${IID}"
-}
-}
-}
-}
+//          stage('CentOS8 Testing'){    
+//                      options {
+//                 timeout(time: 3, unit: "HOURS")
+//                            } 
+//                      steps {
+//                       catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+//                       script{
+//                             dir("${env.WORKSPACE}/CentOS/8testing") {
+//                                env.IID = "\$(docker images centos:$BUILD_NUMBER --format \"{{.ID}}\")"
+//                                sh "docker run --net=host -i $IID /bin/bash -c './test-only.sh'"
+// }
+// }
+// }
+// }
+// }
+//     stage('Remove CentOS Image'){  
+//                     steps {
+//                     script{
+//                      dir("${env.WORKSPACE}/CentOS/8testing") {
+//                      env.IID = "\$(docker images centos:$BUILD_NUMBER --format \"{{.ID}}\")"
+//                     sh "docker stop \$(docker ps -a -q) && \
+//                         docker rm \$(docker ps -a -q) && \
+//                         docker rmi -f ${IID}"
+// }
+// }
+// }
+// }
  stage('Clean Up'){  
                     steps {
                     script{
