@@ -4,7 +4,9 @@ WORKDIR /home/notroot
 WORKDIR /home/notroot/testing
 WORKDIR /home/artifacts
 WORKDIR /home
-RUN dnf --disablerepo '*' --enablerepo=extras swap centos-linux-repos centos-stream-repos && \
+RUN wget 'http://mirror.centos.org/centos/8-stream/BaseOS/x86_64/os/Packages/centos-gpg-keys-8-3.el8.noarch.rpm' && \
+rpm -i 'centos-gpg-keys-8-3.el8.noarch.rpm' && \
+dnf --disablerepo '*' --enablerepo=extras swap centos-linux-repos centos-stream-repos && \
 #cd /etc/yum.repos.d/ && \
 #sed -i 's/mirrorlist/#mirrorlist/g' /etc/yum.repos.d/CentOS-* && \
 #sed -i 's|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|g' /etc/yum.repos.d/CentOS-* && \
