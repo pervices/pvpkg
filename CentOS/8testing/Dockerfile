@@ -7,6 +7,7 @@ WORKDIR /home
 RUN cd /etc/yum.repos.d/ && \
 sed -i 's/mirrorlist/#mirrorlist/g' /etc/yum.repos.d/CentOS-* && \
 sed -i 's|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|g' /etc/yum.repos.d/CentOS-* && \
+dnf --disablerepo '*' --enablerepo=extras swap centos-linux-repos centos-stream-repos && \
 yum -y update 
 WORKDIR /home/notroot 
 #CentOS command
