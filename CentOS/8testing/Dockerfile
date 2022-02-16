@@ -4,15 +4,13 @@ WORKDIR /home/notroot
 WORKDIR /home/notroot/testing
 WORKDIR /home/artifacts
 WORKDIR /home
-RUN wget 'http://mirror.centos.org/centos/8-stream/BaseOS/x86_64/os/Packages/centos-gpg-keys-8-3.el8.noarch.rpm' && \
-rpm -i 'centos-gpg-keys-8-3.el8.noarch.rpm' && \
-dnf --disablerepo '*' --enablerepo=extras swap centos-linux-repos centos-stream-repos && \
-#cd /etc/yum.repos.d/ && \
-#sed -i 's/mirrorlist/#mirrorlist/g' /etc/yum.repos.d/CentOS-* && \
-#sed -i 's|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|g' /etc/yum.repos.d/CentOS-* && \
-yum -y update && \
+RUN cd /etc/yum.repos.d/ && \
+sed -i 's/mirrorlist/#mirrorlist/g' /etc/yum.repos.d/CentOS-* && \
+sed -i 's|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|g' /etc/yum.repos.d/CentOS-* && \
+yum -y update 
+WORKDIR /home/notroot 
 #CentOS command
-yum -y install dnf-plugins-core epel-release make gcc rpm-build git rpmdevtools wget cmake python3-pip &&\
+RUN yum -y install dnf-plugins-core epel-release make gcc rpm-build git rpmdevtools wget cmake python3-pip &&\
 pip3 install retrying && \
 rpmdev-setuptree && \
 git clone -b master https://github.com/pervices/uhd.git && \
