@@ -4,8 +4,8 @@ WORKDIR /home/notroot
 WORKDIR /home/notroot/testing
 WORKDIR /home/artifacts
 WORKDIR /home
-RUN cd /etc/yum.repos.d/ && \
-sed -i 's/mirrorlist/#mirrorlist/g' /etc/yum.repos.d/CentOS-* && \
+WORKDIR/etc/yum.repos.d
+RUN sed -i 's/mirrorlist/#mirrorlist/g' /etc/yum.repos.d/CentOS-* && \
 sed -i 's|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|g' /etc/yum.repos.d/CentOS-* && \
 yum -y update 
 WORKDIR /home/notroot 

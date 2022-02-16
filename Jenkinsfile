@@ -11,61 +11,61 @@ pipeline {
         stage('Build UHD and GNU Radio') {
         parallel {
 
-                stage('ArchLinux') { 
+//                stage('ArchLinux') { 
 
-                  steps { 
+ //                 steps { 
 		      //Build Image
 
                       script { 
-                             dir("${env.WORKSPACE}/Arch") {
-                    		      dockerImageArch = docker.build("arch:$BUILD_NUMBER", "--network host .") 
-                                       env.IID = "\$(docker images arch:$BUILD_NUMBER --format \"{{.ID}}\")"
-                                env.CID="\$(docker create $IID)"
-                                sh "docker cp ${CID}:/home/artifacts/. $WORKSPACE/Arch"
-                                 sshagent(credentials: ['sshfilespervices']) {
-                                sh "ssh -T -p 237 filespervices@files.pervices.com 'rm -f /home/filespervices/www/latest/sw/archlinux/uhd/* && rm -f /home/filespervices/www/latest/sw/archlinux/gnuradio/*' && \
-                                scp -P 237 libuhdpv* filespervices@files.pervices.com:/home/filespervices/www/latest/sw/archlinux/uhd/ && \
-                                scp -P 237 gnuradio* filespervices@files.pervices.com:/home/filespervices/www/latest/sw/archlinux/gnuradio/"
-                 	}
-                        }
+//                             dir("${env.WORKSPACE}/Arch") {
+//                    		      dockerImageArch = docker.build("arch:$BUILD_NUMBER", "--network host .") 
+//                                       env.IID = "\$(docker images arch:$BUILD_NUMBER --format \"{{.ID}}\")"
+//                                env.CID="\$(docker create $IID)"
+//                                sh "docker cp ${CID}:/home/artifacts/. $WORKSPACE/Arch"
+ //                                sshagent(credentials: ['sshfilespervices']) {
+ //                               sh "ssh -T -p 237 filespervices@files.pervices.com 'rm -f /home/filespervices/www/latest/sw/archlinux/uhd/* && rm -f /home/filespervices/www/latest/sw/archlinux/gnuradio/*' && \
+ //                               scp -P 237 libuhdpv* filespervices@files.pervices.com:/home/filespervices/www/latest/sw/archlinux/uhd/ && \
+  //                              scp -P 237 gnuradio* filespervices@files.pervices.com:/home/filespervices/www/latest/sw/archlinux/gnuradio/"
+ //                	}
+ //                       }
 		       //Test with pvtests
 
 		      //If passed, save UHD package.
-                      }
-                 } 
-             }
+   //                   }
+  //               } 
+ //            }
 
 
-               stage('Ubuntu 20.04') { 
+            //   stage('Ubuntu 20.04') { 
 
-                   steps { 
+            //       steps { 
                               // Build image, enter container to transfer build artifacts from Dockerfile image, 
                               // remove image from cache to allow subsequent builds to build from scratch, transfer build artifacts to FTP server.
-                      script { 
-                             dir("${env.WORKSPACE}/ubuntu/20.04") {
-                                 dockerImageUbuntu2004 = docker.build("ubuntu:$BUILD_NUMBER", "--network host .") 
-                                 env.IID = "\$(docker images ubuntu:$BUILD_NUMBER --format \"{{.ID}}\")"
-                                 env.CID="\$(docker create $IID)"
-                                sh "docker cp ${CID}:/home/artifacts/. $WORKSPACE/ubuntu/20.04"
-                                 sshagent(credentials: ['sshfilespervices']) {
-                                sh "ssh -T -p 237 filespervices@files.pervices.com 'rm -f /home/filespervices/www/latest/sw/ubuntu20.04/uhd/* && rm -f /home/filespervices/www/latest/sw/ubuntu20.04/gnuradio/*' && \
-                               scp -P 237 uhdpv*.deb filespervices@files.pervices.com:/home/filespervices/www/latest/sw/ubuntu20.04/uhd/ && \
-                                scp -P 237 gnuradio*.tar.gz filespervices@files.pervices.com:/home/filespervices/www/latest/sw/ubuntu20.04/gnuradio/"
-                        }
-                       }
-                     } 
-                 }
-             }
-              stage('Installation Testing Container') { 
+           //           script { 
+           //                  dir("${env.WORKSPACE}/ubuntu/20.04") {
+          //                       dockerImageUbuntu2004 = docker.build("ubuntu:$BUILD_NUMBER", "--network host .") 
+          //                       env.IID = "\$(docker images ubuntu:$BUILD_NUMBER --format \"{{.ID}}\")"
+         //                        env.CID="\$(docker create $IID)"
+         //                       sh "docker cp ${CID}:/home/artifacts/. $WORKSPACE/ubuntu/20.04"
+         //                        sshagent(credentials: ['sshfilespervices']) {
+          //                      sh "ssh -T -p 237 filespervices@files.pervices.com 'rm -f /home/filespervices/www/latest/sw/ubuntu20.04/uhd/* && rm -f /home/filespervices/www/latest/sw/ubuntu20.04/gnuradio/*' && \
+          //                     scp -P 237 uhdpv*.deb filespervices@files.pervices.com:/home/filespervices/www/latest/sw/ubuntu20.04/uhd/ && \
+           //                     scp -P 237 gnuradio*.tar.gz filespervices@files.pervices.com:/home/filespervices/www/latest/sw/ubuntu20.04/gnuradio/"
+          //              }
+         //              }
+         //            } 
+         //        }
+        //     }
+ //             stage('Installation Testing Container') { 
  
-                    steps { 
-                       script { 
-                             dir("${env.WORKSPACE}/installationtestingcontainer") {
-                                  dockerImageTestContainer = docker.build("test:$BUILD_NUMBER", "--network host .") 
-                        }
-                     } 
-                  }
-              }
+  //                  steps { 
+   //                    script { 
+   //                          dir("${env.WORKSPACE}/installationtestingcontainer") {
+   //                               dockerImageTestContainer = docker.build("test:$BUILD_NUMBER", "--network host .") 
+    //                    }
+    //                 } 
+  //                }
+    //          }
                stage('CentOS 8') { 
  
                     steps { 
