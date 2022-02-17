@@ -37,13 +37,15 @@ WORKDIR /home
 RUN tar -czvf gnuradio-maint-3.9.tar.gz gnuradio && \
 mv gnuradio-maint-3.9.tar.gz /root/rpmbuild/SOURCES
 WORKDIR /root/rpmbuild/SPECS
-RUN dnf builddep --enablerepo=powertools -y uhd.spec && \
+#RUN dnf builddep --enablerepo=powertools -y uhd.spec && \
+RUN dnf builddep -y uhd.spec && \
 QA_RPATHS=$(( 0x0001|0x0002 )) rpmbuild -ba uhd.spec && \
 cd ../RPMS/x86_64 && \
 rpm -i uhd*.rpm && \
 mv uhd*.rpm /home/uhd
 WORKDIR /root/rpmbuild/SPECS
-RUN dnf builddep --enablerepo=powertools -y gnuradio.spec && \
+#RUN dnf builddep --enablerepo=powertools -y gnuradio.spec && \
+RUN dnf builddep  -y gnuradio.spec && \
 QA_RPATHS=$(( 0x0001|0x0002 )) rpmbuild -ba volk.spec && \
 cd ../RPMS/x86_64 && \
 rpm -i volk-3.9-volk.x86_64.rpm && \
