@@ -9,7 +9,7 @@ WORKDIR /home
 #sed -i 's|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|g' /etc/yum.repos.d/CentOS-* && \
 RUN yum -y update && \
 #CentOS command
-yum -y install dnf-plugins-core epel-release make gcc rpm-build git rpmdevtools wget cmake python3-pip &&\
+yum -y install dnf-plugins-core oracle-epel-release-el8 make gcc rpm-build git rpmdevtools wget cmake python3-pip &&\
 pip3 install retrying && \
 rpmdev-setuptree && \
 git clone -b master https://github.com/pervices/uhd.git && \
