@@ -21,7 +21,7 @@ git clone --recursive https://github.com/gnuradio/volk.git && \
 tar -czvf volk.tar.gz volk && \
 mv volk.tar.gz /root/rpmbuild/SOURCES && \
 ls && ls && ls && git clone https://github.com/pervices/pvpkg.git && \
-cd pvpkg/Oracle8/Oracle && \
+cd pvpkg/Oracle/Oracle8 && \
 mv uhd.spec gnuradio.spec volk.spec /root/rpmbuild/SPECS && \
 cd ../../Testing && \
 mv variables.sh /home/notroot/testing && \
