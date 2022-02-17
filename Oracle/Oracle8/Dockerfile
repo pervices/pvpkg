@@ -20,7 +20,7 @@ git clone -b maint-3.9 https://github.com/pervices/gnuradio.git && \
 git clone --recursive https://github.com/gnuradio/volk.git && \
 tar -czvf volk.tar.gz volk && \
 mv volk.tar.gz /root/rpmbuild/SOURCES && \
-ls && ls && ls && git clone https://github.com/pervices/pvpkg.git && \
+git clone https://github.com/pervices/pvpkg.git && \
 cd pvpkg/Oracle/Oracle8 && \
 mv uhd.spec gnuradio.spec volk.spec /root/rpmbuild/SPECS && \
 cd ../../Testing && \
