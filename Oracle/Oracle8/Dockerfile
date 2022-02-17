@@ -21,7 +21,7 @@ git clone --recursive https://github.com/gnuradio/volk.git && \
 tar -czvf volk.tar.gz volk && \
 mv volk.tar.gz /root/rpmbuild/SOURCES && \
 ls && ls && ls && git clone https://github.com/pervices/pvpkg.git && \
-cd pvpkg/CentOS/8testing && \
+cd pvpkg/Oracle8/Oracle && \
 mv uhd.spec gnuradio.spec volk.spec /root/rpmbuild/SPECS && \
 cd ../../Testing && \
 mv variables.sh /home/notroot/testing && \
@@ -31,7 +31,7 @@ rm /home/gnuradio/gr-uhd/python/uhd/bindings/uhd_types_python.cc && \
 mv /home/pvpkg/ubuntu/20.04/modified/uhd_types_python_mod.cc /home/gnuradio/gr-uhd/python/uhd/bindings && \
 mv /home/gnuradio/gr-uhd/python/uhd/bindings/uhd_types_python_mod.cc /home/gnuradio/gr-uhd/python/uhd/bindings/uhd_types_python.cc && \
 rm /home/gnuradio/CMakeLists.txt && \
-mv /home/pvpkg/CentOS/8testing/CMakeListsMOD.txt /home/gnuradio && \
+mv /home/pvpkg/Oracle/Oracle8/CMakeListsMOD.txt /home/gnuradio && \
 mv /home/gnuradio/CMakeListsMOD.txt /home/gnuradio/CMakeLists.txt
 WORKDIR /home
 RUN tar -czvf gnuradio-maint-3.9.tar.gz gnuradio && \
