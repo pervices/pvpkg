@@ -11,29 +11,29 @@ pipeline {
         stage('Build UHD and GNU Radio') {
         parallel {
 
-                stage('ArchLinux') { 
+            //    stage('ArchLinux') { 
 
-                  steps { 
+             //     steps { 
 		      //Build Image
 
-                      script { 
-                             dir("${env.WORKSPACE}/Arch") {
-                    		      dockerImageArch = docker.build("arch:$BUILD_NUMBER", "--network host .") 
-                                       env.IID = "\$(docker images arch:$BUILD_NUMBER --format \"{{.ID}}\")"
-                                env.CID="\$(docker create $IID)"
-                                sh "docker cp ${CID}:/home/artifacts/. $WORKSPACE/Arch"
-                                 sshagent(credentials: ['sshfilespervices']) {
-                                sh "ssh -T -p 237 filespervices@files.pervices.com 'rm -f /home/filespervices/www/latest/sw/archlinux/uhd/* && rm -f /home/filespervices/www/latest/sw/archlinux/gnuradio/*' && \
-                                scp -P 237 libuhdpv* filespervices@files.pervices.com:/home/filespervices/www/latest/sw/archlinux/uhd/ && \
-                                scp -P 237 gnuradio* filespervices@files.pervices.com:/home/filespervices/www/latest/sw/archlinux/gnuradio/"
-                 	}
-                        }
+              //        script { 
+               //              dir("${env.WORKSPACE}/Arch") {
+               //     		      dockerImageArch = docker.build("arch:$BUILD_NUMBER", "--network host .") 
+              //                         env.IID = "\$(docker images arch:$BUILD_NUMBER --format \"{{.ID}}\")"
+              //                  env.CID="\$(docker create $IID)"
+             //                   sh "docker cp ${CID}:/home/artifacts/. $WORKSPACE/Arch"
+              //                   sshagent(credentials: ['sshfilespervices']) {
+            //                    sh "ssh -T -p 237 filespervices@files.pervices.com 'rm -f /home/filespervices/www/latest/sw/archlinux/uhd/* && rm -f /home/filespervices/www/latest/sw/archlinux/gnuradio/*' && \
+            //                    scp -P 237 libuhdpv* filespervices@files.pervices.com:/home/filespervices/www/latest/sw/archlinux/uhd/ && \
+            //                    scp -P 237 gnuradio* filespervices@files.pervices.com:/home/filespervices/www/latest/sw/archlinux/gnuradio/"
+          //       	}
+           //             }
 		       //Test with pvtests
 
 		      //If passed, save UHD package.
-                      }
-                 } 
-             }
+         //             }
+         //        } 
+         //    }
 
 
                stage('Ubuntu 20.04') { 
@@ -148,7 +148,7 @@ pipeline {
 }
 
 
-          stage('CentOS8 Testing'){    
+          stage('Oracle Testing'){    
                       options {
                  timeout(time: 3, unit: "HOURS")
                             } 
@@ -163,7 +163,7 @@ pipeline {
  }
  }
  }
-     stage('Remove CentOS Image'){  
+     stage('Remove Oracle Image'){  
                      steps {
                      script{
                       dir("${env.WORKSPACE}/Oracle/Oracle8") {
