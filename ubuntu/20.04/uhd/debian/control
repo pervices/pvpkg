@@ -4,27 +4,27 @@ Priority: optional
 Maintainer: pvlt4 <pvlt4@unknown>
 Build-Depends: cmake,
                debhelper (>= 12),
-	       dh-python,
-	       doxygen,
-	       doxygen-latex,
-	       graphviz [!powerpcspe],
-               libboost1.67-all-dev,
+            dh-python,
+            doxygen,
+            doxygen-latex,
+            graphviz [!powerpcspe],
+            libboost1.67-all-dev,
                libgps-dev,
                libncurses5-dev,
                liborc-0.4-dev,
                libudev-dev [linux-any],
                libusb-1.0-0-dev [linux-any],
                libusb2-dev [kfreebsd-any],
-	       ninja-build,
-	       python3-all-dev,
+            ninja-build,
+            python3-all-dev,
                python3-docutils,
                python3-mako,
-	       python3-numpy,
+            python3-numpy,
                python3-pyqt5,
-	       python3-requests,
+            python3-requests,
                python3-retrying,
                python3-ruamel.yaml,
-	       python3-setuptools
+            python3-setuptools
 Standards-Version: 4.4.1
 Homepage: <insert the upstream URL, if relevant>
 #Vcs-Browser: https://salsa.debian.org/debian/uhdpv
