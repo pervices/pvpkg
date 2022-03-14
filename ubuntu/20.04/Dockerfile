@@ -12,7 +12,6 @@ apt-get -y install python3-pip && \
 pip3 install Cheetah3 pygccxml && \
 # clone pvpkg repo to get uhd and gnuradio Debian directories, as well as modified cmake and uhd_types files to patch
 git clone https://github.com/pervices/pvpkg.git && \
-ls && \
 cd pvpkg/ubuntu/20.04 && \
 mv gnuradio uhd /home/notroot && \
 cd ../../Testing && \
