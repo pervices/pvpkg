@@ -11,7 +11,8 @@ WORKDIR /home/notroot
 RUN apt-get update && \
 apt-get -y install dpkg-dev sudo apt-utils dh-make bzr-builddeb equivs xz-utils iputils-ping net-tools software-properties-common cmake git coreutils build-essential && \
 apt-get -y install python3-pip && \
-pip3 install Cheetah3 && \
+#using pip to install recent versions of packages not yet in repos
+pip3 install Cheetah3 pygccxml && \
 # clone pvpkg repo to get uhd and gnuradio Debian directories, as well as modified cmake and uhd_types files to patch
 git clone https://github.com/pervices/pvpkg.git && \
 cd pvpkg/ubuntu/20.04 && \
@@ -26,25 +27,25 @@ WORKDIR /home/notroot/uhd
 RUN git clone -b master https://github.com/pervices/uhd.git && \
 cd debian && \
 mk-build-deps -i --tool 'apt-get -f --yes' control
-RUN tar -czvf uhdpv_3.13.0.orig.tar.gz /home/notroot/uhd/uhd && \
-mv debian /home/notroot/uhd/uhd && \
+WORKDIR /home/notroot/uhd
+RUN tar -czvf uhdpv_3.13.0.orig.tar.gz uhd && \
+mv debian uhd && \
 cd uhd && \
 dpkg-buildpackage -us -uc -b && \
 cd .. && \
-dpkg -i uhd*.deb && \ 
-ls && sleep 10000
+dpkg -i uhd*.deb
 WORKDIR /home/notroot/gnuradio
 # clone gnuradio 3.9 from github, replace Cmake and uhd types files from Github with those from pvpkg to allow for successful build
-RUN git clone -b maint-3.9 https://github.com/pervices/gnuradio.git && \
-rm /home/notroot/gnuradio/gnuradio/CMakeLists.txt && \
-rm /home/notroot/gnuradio/gnuradio/gr-uhd/python/uhd/bindings/uhd_types_python.cc && \
-mv /home/notroot/pvpkg/ubuntu/20.04/modified/CMakeLists_mod.txt /home/notroot/gnuradio/gnuradio && \
-mv /home/notroot/gnuradio/gnuradio/CMakeLists_mod.txt /home/notroot/gnuradio/gnuradio/CMakeLists.txt && \
-mv /home/notroot/pvpkg/ubuntu/20.04/modified/uhd_types_python_mod.cc /home/notroot/gnuradio/gnuradio/gr-uhd/python/uhd/bindings && \
-mv /home/notroot/gnuradio/gnuradio/gr-uhd/python/uhd/bindings/uhd_types_python_mod.cc /home/notroot/gnuradio/gnuradio/gr-uhd/python/uhd/bindings/uhd_types_python.cc && \
+RUN git clone -b maint-3.10 https://github.com/gnuradio/gnuradio.git && \
+#rm /home/notroot/gnuradio/gnuradio/CMakeLists.txt && \
+#rm /home/notroot/gnuradio/gnuradio/gr-uhd/python/uhd/bindings/uhd_types_python.cc && \
+#mv /home/notroot/pvpkg/ubuntu/20.04/modified/CMakeLists_mod.txt /home/notroot/gnuradio/gnuradio && \
+#mv /home/notroot/gnuradio/gnuradio/CMakeLists_mod.txt /home/notroot/gnuradio/gnuradio/CMakeLists.txt && \
+#mv /home/notroot/pvpkg/ubuntu/20.04/modified/uhd_types_python_mod.cc /home/notroot/gnuradio/gnuradio/gr-uhd/python/uhd/bindings && \
+#mv /home/notroot/gnuradio/gnuradio/gr-uhd/python/uhd/bindings/uhd_types_python_mod.cc /home/notroot/gnuradio/gnuradio/gr-uhd/python/uhd/bindings/uhd_types_python.cc && \
 # create orig.tar.gz of gnuradio repo nad build debian package
-tar -czvf gnuradiopv_3.9.orig.tar.gz /home/notroot/gnuradio/gnuradio && \
-mv debian /home/notroot/gnuradio/gnuradio && \
+tar -czvf gnuradiopv_3.10.orig.tar.gz gnuradio && \
+mv debian gnuradio && \
 cd gnuradio/debian && \
 mk-build-deps -i --tool 'apt-get -f --yes' control && \
 cd .. && \
@@ -53,7 +54,7 @@ cd .. && \
 dpkg -i libgnuradio*.deb && \
 dpkg -i gnuradio*.deb 
 # adding gnuradio.deb files to directory and tarring it for deployment; changing names of generated .debs to match relevant git tag and versioning info
-RUN mv libgnuradio*.deb gnuradio*.deb /home/notroot/gnuradio/gnuradio && \
+RUN mv libgnuradio*.deb gnuradio*.deb gnuradio && \
 cd gnuradio && \
 mv gnuradiopv-dev*.deb gnuradiopv-dev-$(git describe --abbrev=8 --always --long)-$(date "+%F").deb && \
 mv gnuradiopv-doc*.deb gnuradiopv-doc-$(git describe --abbrev=8 --always --long)-$(date "+%F").deb && \
@@ -79,7 +80,7 @@ mv libgnuradiopv-wavelet*.deb libgnuradiopv-wavelet-$(git describe --abbrev=8 --
 mv libgnuradiopv-zeromq*.deb libgnuradiopv-zeromq-$(git describe --abbrev=8 --always --long)-$(date "+%F").deb && \
 mkdir gnuradiopv-$(git describe --abbrev=8 --always --long)-$(date "+%F") && \
 mv libgnuradio*.deb gnuradio*.deb gnuradiopv-$(git describe --abbrev=8 --always --long)-$(date "+%F") && \
-tar -czvf gnuradiopv_$(git describe --abbrev=8 --always --long)_$(date "+%F").tar.gz /home/notroot/gnuradio/gnuradio/gnuradiopv-$(git describe --abbrev=8 --always --long)-$(date "+%F") && \
+tar -czvf gnuradiopv_$(git describe --abbrev=8 --always --long)_$(date "+%F").tar.gz gnuradiopv-$(git describe --abbrev=8 --always --long)-$(date "+%F") && \
 mv gnuradio*.tar.gz /home/artifacts
 WORKDIR /home/notroot/uhd
 # move uhd deb file to artifact directory and tagging it for deployment
