@@ -22,10 +22,10 @@ RUN apt-get update
 WORKDIR /home/notroot/uhd
 # clone latest pervices uhd version, tar repo as orig.tar.gz, and build debian package
 RUN git clone -b master https://github.com/pervices/uhd.git && \
-rm uhd/host/lib/rfnoc/radio_control_impl.cpp && \
-rm uhd/host/lib/include/uhdlib/rfnoc/radio_control_impl.hpp && \
-mv /home/notroot/pvpkg/ubuntu/20.04/modified/radio_control_impl.cpp uhd/host/lib/rfnoc && \
-mv /home/notroot/pvpkg/ubuntu/20.04/modified/radio_control_impl.hpp uhd/host/lib/include/uhdlib/rfnoc && \
+#rm uhd/host/lib/rfnoc/radio_control_impl.cpp && \
+#rm uhd/host/lib/include/uhdlib/rfnoc/radio_control_impl.hpp && \
+#mv /home/notroot/pvpkg/ubuntu/20.04/modified/radio_control_impl.cpp uhd/host/lib/rfnoc && \
+#mv /home/notroot/pvpkg/ubuntu/20.04/modified/radio_control_impl.hpp uhd/host/lib/include/uhdlib/rfnoc && \
 cd debian && \
 mk-build-deps -i --tool 'apt-get -f --yes' control
 WORKDIR /home/notroot/uhd
