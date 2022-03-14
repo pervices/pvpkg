@@ -2,10 +2,7 @@ FROM ubuntu:20.04
 ENV DEBIAN_FRONTEND=noninteractive
 SHELL ["/bin/bash", "-c", "-x"]
 WORKDIR /home/artifacts
-WORKDIR /home/notroot
 WORKDIR /home/notroot/testing
-WORKDIR /home/notroot
-WORKDIR /home/notroot
 WORKDIR /home/notroot
 # installing basic essential packages to container to allow for rest of build to occur
 RUN apt-get update && \
@@ -15,6 +12,7 @@ apt-get -y install python3-pip && \
 pip3 install Cheetah3 pygccxml && \
 # clone pvpkg repo to get uhd and gnuradio Debian directories, as well as modified cmake and uhd_types files to patch
 git clone https://github.com/pervices/pvpkg.git && \
+ls && \
 cd pvpkg/ubuntu/20.04 && \
 mv gnuradio uhd /home/notroot && \
 cd ../../Testing && \
