@@ -8,7 +8,7 @@ Build-Depends: cmake,
             doxygen,
             doxygen-latex,
             graphviz [!powerpcspe],
-            libboost1.67-all-dev,
+            libboost-all-dev,
                libgps-dev,
                libncurses5-dev,
                liborc-0.4-dev,
@@ -33,7 +33,7 @@ Homepage: <insert the upstream URL, if relevant>
 Package: uhdpv
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
-Provides: libuhd-dev
-Conflicts: libuhd-dev
+Provides: libuhd-dev, uhd, libuhd
+Conflicts: libuhd-dev, uhd, libuhd
 Description: <insert up to 60 chars description>
  <insert long description, indented with spaces>
