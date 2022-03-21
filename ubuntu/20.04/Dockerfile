@@ -5,7 +5,8 @@ WORKDIR /home/artifacts
 WORKDIR /home/notroot/testing
 WORKDIR /home/notroot
 # installing basic essential packages to container to allow for rest of build to occur
-RUN apt-get update && \
+RUN apt-get update && \ 
+ls && \
 apt-get -y install dpkg-dev sudo apt-utils dh-make bzr-builddeb equivs xz-utils iputils-ping net-tools software-properties-common cmake git coreutils build-essential && \
 add-apt-repository ppa:ubuntu-toolchain-r/test && \
 apt update && apt install -y gcc-11 g++-11
@@ -14,9 +15,6 @@ update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 90 --slave /usr/bi
 update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-11 110 --slave /usr/bin/g++ g++ /usr/bin/g++-11 --slave /usr/bin/gcov gcov /usr/bin/gcov-11 --slave /usr/bin/gcc-ar gcc-ar /usr/bin/gcc-ar-11 --slave /usr/bin/gcc-ranlib gcc-ranlib /usr/bin/gcc-ranlib-11  --slave /usr/bin/cpp cpp /usr/bin/cpp-11 && \
 gcc --version && \
 ls && \
-apt install -y software-properties-common && \
-add-apt-repository ppa:deadsnakes/ppa && \
-apt install -y python3.9 && \
 apt-get -y install python3-pip && \
 #using pip to install recent versions of packages not yet in repos
 pip3 install Cheetah3 pygccxml && \
