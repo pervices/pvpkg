@@ -6,7 +6,7 @@ export DEB_HOST_MULTIARCH
 	dh $@ --with python3 --buildsystem=cmake+ninja
 
 override_dh_auto_configure:
-	dh_auto_configure  --buildsystem=cmake+ninja -- -DLIB_SUFFIX="/$(DEB_HOST_MULTIARCH)" -DENABLE_INTERNAL_VOLK=OFF
+	dh_auto_configure  --buildsystem=cmake+ninja -- -DLIB_SUFFIX="/$(DEB_HOST_MULTIARCH)" 
 
 override_dh_python3:
 	dh_python3 --no-ext-rename

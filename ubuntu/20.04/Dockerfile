@@ -45,7 +45,7 @@ cd .. && \
 dpkg -i uhd*.deb
 WORKDIR /home/notroot/gnuradio
 # clone gnuradio 3.9 from github, replace Cmake and uhd types files from Github with those from pvpkg to allow for successful build
-RUN git clone -b maint-3.10 https://github.com/gnuradio/gnuradio.git && \
+RUN git clone -b master https://github.com/gnuradio/gnuradio.git && \
 #rm /home/notroot/gnuradio/gnuradio/CMakeLists.txt && \
 #rm /home/notroot/gnuradio/gnuradio/gr-uhd/python/uhd/bindings/uhd_types_python.cc && \
 #mv /home/notroot/pvpkg/ubuntu/20.04/modified/CMakeLists_mod.txt /home/notroot/gnuradio/gnuradio && \
@@ -56,6 +56,7 @@ RUN git clone -b maint-3.10 https://github.com/gnuradio/gnuradio.git && \
 tar -czvf gnuradiopv_3.10.orig.tar.gz gnuradio && \
 mv debian gnuradio && \
 cd gnuradio/debian && \
+sleep 10000 && \
 mk-build-deps -i --tool 'apt-get -f --yes' control && \
 cd .. && \
 dpkg-buildpackage -us -uc -b && \
