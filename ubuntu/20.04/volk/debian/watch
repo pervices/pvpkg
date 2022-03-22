@@ -1,0 +1,4 @@
+version=4
+ opts="filenamemangle=s%(?:.*?)?volk-?(\d[\d.]*)\.tar\.xz%volk_$1.orig.tar.xz%" \
+ https://github.com/gnuradio/volk/releases \
+ (?:.*?/)?volk-?(\d[\d.]*)\.tar\.xz debian uupdate

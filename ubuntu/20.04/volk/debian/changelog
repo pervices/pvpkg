@@ -1,0 +1,514 @@
+volk (2.4.1-2) unstable; urgency=medium
+
+  [ Shengjing Zhu ]
+  * Use system cpu_features package
+
+  [ A. Maitland Bottoms ]
+  * Adopt Use system cpu_features package patch (Closes: #978096)
+
+ -- A. Maitland Bottoms <bottoms@debian.org>  Sun, 27 Dec 2020 15:16:07 -0500
+
+volk (2.4.1-1) unstable; urgency=medium
+
+  * New upstream release
+
+ -- A. Maitland Bottoms <bottoms@debian.org>  Thu, 17 Dec 2020 23:53:21 -0500
+
+volk (2.4.0-4) unstable; urgency=medium
+
+  * skip cpu_features on "Unsupported OS" kFreeBSD
+  * bump Standards-Version - no other changes.
+
+ -- A. Maitland Bottoms <bottoms@debian.org>  Tue, 15 Dec 2020 19:53:16 -0500
+
+volk (2.4.0-3) unstable; urgency=medium
+
+  * Fix binary-indep build (Closes: #976300)
+  * Upload to unstable
+
+ -- A. Maitland Bottoms <bottoms@debian.org>  Thu, 03 Dec 2020 20:43:29 -0500
+
+volk (2.4.0-2) experimental; urgency=medium
+
+  * Make use of cpu_features a CMake option with sensible defaults per arch
+
+ -- A. Maitland Bottoms <bottoms@debian.org>  Mon, 30 Nov 2020 16:19:19 -0500
+
+volk (2.4.0-1) experimental; urgency=medium
+
+  * New upstream release
+  * cpu_features git submodule packaged as cpu-features source component.
+  * Upload to experimental for soversion bump
+
+ -- A. Maitland Bottoms <bottoms@debian.org>  Sun, 22 Nov 2020 12:35:43 -0500
+
+volk (2.3.0-3) unstable; urgency=medium
+
+  * update to v2.3.0-14-g91e5d07
+    emit an emms instruction after using the mmx extension
+
+ -- A. Maitland Bottoms <bottoms@debian.org>  Tue, 30 Jun 2020 19:48:20 -0400
+
+volk (2.3.0-2) unstable; urgency=medium
+
+  * Upload to unstable
+
+ -- A. Maitland Bottoms <bottoms@debian.org>  Mon, 11 May 2020 07:26:03 -0400
+
+volk (2.3.0-1) experimental; urgency=medium
+
+  * New upstream release, to experimental for soversion bump
+  * Kernels
+    - volk: accurate exp kernel
+        - exp: Rename SSE4.1 to SSE2 kernel
+    - Add 32f_s32f_add_32f kernel
+        - This kernel adds in vector + scalar functionality
+    - Fix the broken index max kernels
+    - Treat the mod_range puppet as such
+    - Add puppet for power spectral density kernel
+    - Updated log10 calcs to use faster log2 approach
+    - fix: Use unaligned load
+    - divide: Optimize complexmultiplyconjugate
+
+ -- A. Maitland Bottoms <bottoms@debian.org>  Sat, 09 May 2020 15:42:23 -0400
+
+volk (2.2.1-3) unstable; urgency=medium
+
+  * update to v2.2.1-34-gd4756c5
+
+ -- A. Maitland Bottoms <bottoms@debian.org>  Sun, 05 Apr 2020 10:37:46 -0400
+
+volk (2.2.1-2) unstable; urgency=medium
+
+  * update to v2.2.1-11-gfaf230e
+  * cmake: Remove the ORC from the VOLK public link interface
+  * Fix the broken index max kernels
+
+ -- A. Maitland Bottoms <bottoms@debian.org>  Fri, 27 Mar 2020 21:48:10 -0400
+
+volk (2.2.1-1) unstable; urgency=high
+
+  * New upstream bugfix release
+    reason for high urgency:
+    - Fix loop bound in AVX rotator (only one fixed in 2.2.0-3)
+    - Fix out-of-bounds read in AVX2 square dist kernel
+    - Fix length checks in AVX2 index max kernels
+
+ -- A. Maitland Bottoms <bottoms@debian.org>  Mon, 24 Feb 2020 18:08:05 -0500
+
+volk (2.2.0-3) unstable; urgency=high
+
+  * Update to v2.2.0-6-g5701f8f
+    reason for high urgency:
+    - Fix loop bound in AVX rotator
+
+ -- A. Maitland Bottoms <bottoms@debian.org>  Sun, 23 Feb 2020 23:49:18 -0500
+
+volk (2.2.0-2) unstable; urgency=medium
+
+  * Upload to unstable
+
+ -- A. Maitland Bottoms <bottoms@debian.org>  Tue, 18 Feb 2020 17:56:58 -0500
+
+volk (2.2.0-1) experimental; urgency=medium
+
+  * New upstream release
+    - Remove build dependency on python six
+    - Fixup VolkConfigVersion
+    - add volk_version.h
+
+ -- A. Maitland Bottoms <bottoms@debian.org>  Sun, 16 Feb 2020 18:25:20 -0500
+
+volk (2.1.0-2) unstable; urgency=medium
+
+  * Upload to unstable
+
+ -- A. Maitland Bottoms <bottoms@debian.org>  Sun, 05 Jan 2020 23:17:57 -0500
+
+volk (2.1.0-1) experimental; urgency=medium
+
+  * New upstream release
+    - The AVX FMA rotator bug is fixed
+    - VOLK offers `volk::vector<>` for C++ to follow RAII
+    - Use C++17 `std::filesystem`
+        - This enables VOLK to be built without Boost if available!
+    - lots of bugfixes
+    - more optimized kernels, especially more NEON versions
+  * Upload to experimental for new ABI library package libvolk2.1
+
+ -- A. Maitland Bottoms <bottoms@debian.org>  Sun, 22 Dec 2019 10:27:36 -0500
+
+volk (2.0.0-3) unstable; urgency=medium
+
+  * update to v2.0.0-4-gf04a46f
+
+ -- A. Maitland Bottoms <bottoms@debian.org>  Thu, 14 Nov 2019 22:47:23 -0500
+
+volk (2.0.0-2) unstable; urgency=medium
+
+  * Upload to unstable
+
+ -- A. Maitland Bottoms <bottoms@debian.org>  Mon, 12 Aug 2019 22:49:11 -0400
+
+volk (2.0.0-1) experimental; urgency=medium
+
+  * New upstream release
+
+ -- A. Maitland Bottoms <bottoms@debian.org>  Wed, 07 Aug 2019 23:31:20 -0400
+
+volk (1.4-4) unstable; urgency=medium
+
+  * working volk_modtool with Python 3
+  * build and install libvolk.a
+
+ -- A. Maitland Bottoms <bottoms@debian.org>  Mon, 29 Oct 2018 01:32:05 -0400
+
+volk (1.4-3) unstable; urgency=medium
+
+  * update to v1.4-9-g297fefd
+    Added an AVX protokernel for volk_32fc_x2_32f_square_dist_scalar_mult_32f
+    fixed a buffer over-read and over-write in
+     volk_32fc_x2_s32f_square_dist_scalar_mult_32f_a_avx
+    Fix 32u_reverse_32u for ARM
+
+ -- A. Maitland Bottoms <bottoms@debian.org>  Sat, 12 May 2018 15:25:04 -0400
+
+volk (1.4-2) unstable; urgency=medium
+
+  * Upload to unstable, needed by gnuradio (>= 3.7.12.0)
+
+ -- A. Maitland Bottoms <bottoms@debian.org>  Tue, 03 Apr 2018 01:03:19 -0400
+
+volk (1.4-1) experimental; urgency=medium
+
+  * New upstream release
+    upstream changelog http://libvolk.org/release-v14.html
+
+ -- A. Maitland Bottoms <bottoms@debian.org>  Tue, 27 Mar 2018 22:57:42 -0400
+
+volk (1.3.1-1) unstable; urgency=medium
+
+  * New upstream bugfix release
+  * Refresh all debian patches for use with git am
+
+ -- A. Maitland Bottoms <bottoms@debian.org>  Tue, 27 Mar 2018 21:54:29 -0400
+
+volk (1.3-3) unstable; urgency=medium
+
+  * update to v1.3-23-g0109b2e
+  * update debian/libvolk1-dev.abi.tar.gz.amd64
+  * Add breaks/replaces gnuradio (<=3.7.2.1) (LP: #1614235)
+
+ -- A. Maitland Bottoms <bottoms@debian.org>  Sun, 04 Feb 2018 13:12:21 -0500
+
+volk (1.3-2) unstable; urgency=medium
+
+  * update to v1.3-16-g28b03a9
+    apps: fix profile update reading end of lines
+    qa: lower tolerance for 32fc_mag to fix issue #96
+  * include upstream master patch to sort input files
+
+ -- A. Maitland Bottoms <bottoms@debian.org>  Sun, 27 Aug 2017 13:44:55 -0400
+
+volk (1.3-1) unstable; urgency=medium
+
+  * New upstream release
+  * The index_max kernels were named with the wrong output datatype. To
+    fix this there are new kernels that return a 32u (int32_t) and the
+    existing kernels had their signatures changed to return 16u (int16_t).
+  * The output to stdout and stderr has been shuffled around. There is no
+    longer a message that prints what VOLK machine is being used and the
+    warning messages go to stderr rather than stdout.
+  * The 32fc_index_max kernels previously were only accurate to the SSE
+    register width (4 points). This was a pretty serious and long-lived
+    bug that's been fixed and the QA updated appropriately.
+
+ -- A. Maitland Bottoms <bottoms@debian.org>  Sat, 02 Jul 2016 16:30:47 -0400
+
+volk (1.2.2-2) unstable; urgency=medium
+
+  * update to v1.2.2-11-g78c8bc4 (to follow gnuradio maint branch)
+
+ -- A. Maitland Bottoms <bottoms@debian.org>  Sun, 19 Jun 2016 14:44:15 -0400
+
+volk (1.2.2-1) unstable; urgency=medium
+
+  * New upstream release
+
+ -- A. Maitland Bottoms <bottoms@debian.org>  Fri, 08 Apr 2016 00:12:10 -0400
+
+volk (1.2.1-2) unstable; urgency=medium
+
+  * Upstream patches:
+    Fix some CMake complaints
+    The fix for compilation with cmake 3.5
+
+ -- A. Maitland Bottoms <bottoms@debian.org>  Wed, 23 Mar 2016 17:47:54 -0400
+
+volk (1.2.1-1) unstable; urgency=medium
+
+  * New upstream release
+
+ -- A. Maitland Bottoms <bottoms@debian.org>  Sun, 07 Feb 2016 19:38:32 -0500
+
+volk (1.2-1) unstable; urgency=medium
+
+  * New upstream release
+
+ -- A. Maitland Bottoms <bottoms@debian.org>  Thu, 24 Dec 2015 20:28:13 -0500
+
+volk (1.1.1-5) experimental; urgency=medium
+
+  * update to v1.1.1-22-gef53547 to support gnuradio 3.7.9
+
+ -- A. Maitland Bottoms <bottoms@debian.org>  Fri, 11 Dec 2015 13:12:55 -0500
+
+volk (1.1.1-4) unstable; urgency=medium
+
+  * more lintian fixes
+
+ -- A. Maitland Bottoms <bottoms@debian.org>  Wed, 25 Nov 2015 21:49:58 -0500
+
+volk (1.1.1-3) unstable; urgency=medium
+
+  * Lintian fixes Pre-Depends
+
+ -- A. Maitland Bottoms <bottoms@debian.org>  Thu, 19 Nov 2015 21:24:27 -0500
+
+volk (1.1.1-2) unstable; urgency=medium
+
+  * Note that libvolk1-dev replaces files in gnuradio-dev versions <<3.7.8
+    (Closes: #802646) again. Thanks Andreas Beckmann.
+
+ -- A. Maitland Bottoms <bottoms@debian.org>  Fri, 13 Nov 2015 18:45:49 -0500
+
+volk (1.1.1-1) unstable; urgency=medium
+
+  * New upstream release
+  * New architectures exist for the AVX2 and FMA ISAs.
+  * The profiler now generates buffers that are vlen + a tiny amount and
+    generates random data to fill buffers. This is intended to catch bugs
+    in protokernels that write beyond num_points.
+  * Note that libvolk1-dev replaces files in earlier gnuradio-dev versions
+    (Closes: #802646)
+
+ -- A. Maitland Bottoms <bottoms@debian.org>  Sun, 01 Nov 2015 18:45:43 -0500
+
+volk (1.1-4) unstable; urgency=medium
+
+  * update to v1.1-12-g264addc
+
+ -- A. Maitland Bottoms <bottoms@debian.org>  Tue, 29 Sep 2015 23:41:50 -0400
+
+volk (1.1-3) unstable; urgency=low
+
+  * drop dh_acc to get reproducible builds
+
+ -- A. Maitland Bottoms <bottoms@debian.org>  Fri, 11 Sep 2015 22:57:06 -0400
+
+volk (1.1-2) unstable; urgency=low
+
+  * use dh-acc
+
+ -- A. Maitland Bottoms <bottoms@debian.org>  Mon, 07 Sep 2015 15:45:20 -0400
+
+volk (1.1-1) unstable; urgency=medium
+
+  * re-organize package naming convention
+  * New upstream release tag v1.1
+  New architectures exist for the AVX2 and FMA ISAs. Along
+  with the build-system support the following kernels have
+  no proto-kernels taking advantage of these architectures:
+
+  * 32f_x2_dot_prod_32f
+  * 32fc_x2_multiply_32fc
+  * 64_byteswap
+  * 32f_binary_slicer_8i
+  * 16u_byteswap
+  * 32u_byteswap
+
+  QA/profiler
+  -----------
+
+  The profiler now generates buffers that are vlen + a tiny
+  amount and generates random data to fill buffers. This is
+  intended to catch bugs in protokernels that write beyond
+  num_points.
+
+ -- A. Maitland Bottoms <bottoms@debian.org>  Wed, 26 Aug 2015 09:22:48 -0400
+
+volk (1.0.2-2) unstable; urgency=low
+
+  * Use SOURCE_DATE_EPOCH from the environment, if defined,
+    rather than current date and time to implement volk_build_date()
+    (embedding build date in a library does not help reproducible builds)
+  * add watch file
+
+ -- A. Maitland Bottoms <bottoms@debian.org>  Sat, 15 Aug 2015 17:43:15 -0400
+
+volk (1.0.2-1) unstable; urgency=medium
+
+  * Maintenance release 24 Jul 2015 by Nathan West
+  * The major change is the CMake logic to add ASM protokernels. Rather
+    than depending on CFLAGS and ASMFLAGS we use the results of VOLK's
+    built in has_ARCH tests. All configurations should work the same as
+    before, but manually specifying CFLAGS and ASMFLAGS on the cmake call
+    for ARM native builds should no longer be necessary.
+  * The 32fc_s32fc_x2_rotator_32fc generic protokernel now includes a
+    previously implied header.
+  * Finally, there is a fix to return the "best" protokernel to the
+    dispatcher when no volk_config exists. Thanks to Alexandre Raymond for
+    pointing this out.
+  * with maint branch patch:
+      kernels-add-missing-include-arm_neon.h
+  * removed unused build-dependency on liboil0.3-dev (closes: #793626)
+
+ -- A. Maitland Bottoms <bottoms@debian.org>  Wed, 05 Aug 2015 00:43:40 -0400
+
+volk (1.0.1-1) unstable; urgency=low
+
+  * Maintenance Release v1.0.1 08 Jul 2015 by Nathan West
+    This is a maintenance release with bug fixes since the initial release of
+    v1.0 in April.
+
+  * Contributors
+
+    The following authors have contributed code to this release:
+
+    Doug Geiger doug.geiger@bioradiation.net
+    Elliot Briggs elliot.briggs@gmail.com
+    Marcus Mueller marcus@hostalia.de
+    Nathan West nathan.west@okstate.edu
+    Tom Rondeau tom@trondeau.com
+
+  * Kernels
+
+    Several bug fixes in different kernels. The NEON implementations of the
+    following kernels have been fixed:
+
+      32f_x2_add_32f
+      32f_x2_dot_prod_32f
+      32fc_s32fc_multiply_32fc
+      32fc_x2_multiply_32fc
+
+   Additionally the NEON asm based 32f_x2_add_32f protokernels were not being
+   used and are now included and available for use via the dispatcher.
+
+   The 32f_s32f_x2_fm_detect_32f kernel now has a puppet. This solves QA seg
+   faults on 32-bit machines and provide a better test for this kernel.
+
+   The 32fc_s32fc_x2_rotator_32fc generic protokernel replaced cabsf with
+   hypotf for better Android support.
+
+  * Building
+
+    Static builds now trigger the applications (volk_profile and
+    volk-config-info) to be statically linked.
+
+    The file gcc_x86_cpuid.h has been removed since it was no longer being
+    used. Previously it provided cpuid functionality for ancient compilers
+    that we do not support.
+
+    All build types now use -Wall.
+
+  * QA and Testing
+   
+   The documentation around the --update option to volk_profile now makes it
+   clear that the option will only profile kernels without entries in
+   volk_profile. The signature of run_volk_tests with expanded args changed
+   signed types to unsigned types to reflect the actual input.
+   
+   The remaining changes are all non-functional changes to address issues
+   from Coverity.
+
+ -- A. Maitland Bottoms <bottoms@debian.org>  Fri, 10 Jul 2015 17:57:42 -0400
+
+volk (1.0-5) unstable; urgency=medium
+
+  * native-armv7-build-support skips neon on Debian armel (Closes: #789972)
+
+ -- A. Maitland Bottoms <bottoms@debian.org>  Sat, 04 Jul 2015 12:36:36 -0400
+
+volk (1.0-4) unstable; urgency=low
+
+  * update native-armv7-build-support patch from gnuradio volk package
+
+ -- A. Maitland Bottoms <bottoms@debian.org>  Thu, 25 Jun 2015 16:38:49 -0400
+
+volk (1.0-3) unstable; urgency=medium
+
+  * Add Breaks/Replaces (Closes: #789893, #789894)
+  * Allow failing tests
+
+ -- A. Maitland Bottoms <bottoms@debian.org>  Thu, 25 Jun 2015 12:46:06 -0400
+
+volk (1.0-2) unstable; urgency=medium
+
+  * kernels-add-missing-math.h-include-to-rotator
+
+ -- A. Maitland Bottoms <bottoms@debian.org>  Wed, 24 Jun 2015 21:09:32 -0400
+
+volk (1.0-1) unstable; urgency=low
+
+  * Initial package (Closes: #782417)
+  Initial Release 11 Apr 2015 by Nathan West
+
+  VOLK 1.0 is available. This is the first release of VOLK as an independently
+  tracked sub-project of GNU Radio.
+
+  * Contributors
+
+  VOLK has been tracked separately from GNU Radio since 2014 Dec 23.
+  Contributors between the split and the initial release are
+
+  Albert Holguin aholguin_77@yahoo.com
+  Doug Geiger doug.geiger@bioradiation.net
+  Elliot Briggs elliot.briggs@gmail.com
+  Julien Olivain julien.olivain@lsv.ens-cachan.fr
+  Michael Dickens michael.dickens@ettus.com
+  Nathan West nathan.west@okstate.edu
+  Tom Rondeau tom@trondeau.com
+
+  * QA
+
+  The test and profiler have significantly changed. The profiler supports
+  run-time changes to vlen and iters to help kernel development and provide
+  more flexibility on embedded systems. Additionally there is a new option
+  to update an existing volk_profile results file with only new kernels which
+  will save time when updating to newer versions of VOLK
+
+  The QA system creates a static list of kernels and test cases. The QA
+  testing and profiler iterate over this static list rather than each source
+  file keeping its own list. The QA also emits XML results to
+  lib/.unittest/kernels.xml which is formatted similarly to JUnit results.
+
+  * Modtool
+
+  Modtool was updated to support the QA and profiler changes.
+
+  * Kernels
+
+  New proto-kernels:
+
+  16ic_deinterleave_real_8i_neon
+  16ic_s32f_deinterleave_32f_neon
+  fix preprocessor errors for some compilers on byteswap and popcount puppets
+
+  ORC was moved to the asm kernels directory.
+  volk_malloc
+
+  The posix_memalign implementation of Volk_malloc now falls back to a standard
+  malloc if alignment is 1.
+
+  * Miscellaneous
+
+  Several build system and cmake changes have made it possible to build VOLK
+  both independently with proper soname versions and in-tree for projects
+  such as GNU Radio.
+
+  The static builds take advantage of cmake object libraries to speed up builds.
+
+  Finally, there are a number of changes to satisfy compiler warnings and make
+  QA work on multiple machines.
+
+ -- A. Maitland Bottoms <bottoms@debian.org>  Sun, 12 Apr 2015 23:20:41 -0400

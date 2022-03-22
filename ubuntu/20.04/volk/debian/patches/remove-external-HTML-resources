@@ -1,0 +1,20 @@
+--- a/cpu_features/README.md
++++ b/cpu_features/README.md
+@@ -1,4 +1,4 @@
+-# cpu_features [![Build Status](https://travis-ci.org/google/cpu_features.svg?branch=master)](https://travis-ci.org/google/cpu_features) [![Build status](https://ci.appveyor.com/api/projects/status/46d1owsj7n8dsylq/branch/master?svg=true)](https://ci.appveyor.com/project/gchatelet/cpu-features/branch/master)
++# cpu_features
+ 
+ A cross-platform C library to retrieve CPU features (such as available
+ instructions) at runtime.
+--- a/README.md
++++ b/README.md
+@@ -1,9 +1,3 @@
+-[![Build Status](https://travis-ci.com/gnuradio/volk.svg?branch=master)](https://travis-ci.com/gnuradio/volk) [![Build status](https://ci.appveyor.com/api/projects/status/5o56mgw0do20jlh3/branch/master?svg=true)](https://ci.appveyor.com/project/gnuradio/volk/branch/master)
+-![Check PR Formatting](https://github.com/gnuradio/volk/workflows/Check%20PR%20Formatting/badge.svg)
+-![Run VOLK tests](https://github.com/gnuradio/volk/workflows/Run%20VOLK%20tests/badge.svg)
+-
+-![VOLK Logo](/docs/volk_logo.png)
+-
+ # Welcome to VOLK!
+ 
+ VOLK is a sub-project of GNU Radio. Please see http://libvolk.org for bug

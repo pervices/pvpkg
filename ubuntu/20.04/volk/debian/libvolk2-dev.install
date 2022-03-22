@@ -1,0 +1,5 @@
+usr/include/*
+usr/lib/*/*volk.a
+usr/lib/*/*volk*so
+usr/lib/*/cmake/volk
+usr/lib/*/pkgconfig/*volk*

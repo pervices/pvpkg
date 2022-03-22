@@ -1,0 +1,6 @@
+usr/bin/list_cpu_features
+usr/lib/*/cmake/CpuFeatures/CpuFeaturesConfig.cmake
+usr/lib/*/cmake/CpuFeatures/CpuFeaturesConfigVersion.cmake
+usr/lib/*/cmake/CpuFeatures/CpuFeaturesTargets-relwithdebinfo.cmake
+usr/lib/*/cmake/CpuFeatures/CpuFeaturesTargets.cmake
+usr/lib/*/libcpu_features.a

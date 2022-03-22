@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<descriptor>
+
+  <gcc_options>
+    -DHAVE_CPUID_H
+    -DHAVE_DLFCN_H
+    -DHAVE_FENV_H
+    -DHAVE_POSIX_MEMALIGN
+    -DHAVE_XGETBV
+    -D_GLIBCXX_USE_CXX11_ABI=1
+    -I/usr/include/orc-0.4
+    -DNDEBUG
+    -std=gnu11
+    -m64
+    -mmmx
+    -msse
+    -msse2
+    -msse3
+    -mssse3
+    -msse4.1
+    -msse4.2
+    -mpopcnt
+    -mavx
+    -mfma
+    -mavx2
+    -mavx512f
+    -mavx512cd
+    -fPIC
+    -g
+    -O2
+    -fstack-protector-strong
+    -Wformat
+    -Werror=format-security
+    -Wdate-time
+    -D_FORTIFY_SOURCE=2
+    -fvisibility=hidden
+    -Wsign-compare
+    -Wall
+    -Wno-uninitialized
+</gcc_options>
+
+<headers>
+debian/libvolk2-dev/usr/include/volk/
+</headers>
+
+<libs>
+debian/libvolk2.0/usr/lib/
+</libs>
+
+</descriptor>

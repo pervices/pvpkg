@@ -1,0 +1,20 @@
+Subject: skip cpu_freatures on kfreebsd
+Author: A. Maitland Bottoms <bottoms@debian.org>
+
+ Avoid #error "Unsupported OS" on kFreeBSD
+
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -115,8 +115,10 @@
+ ########################################################################
+ 
+ # cpu_features - sensible defaults, user settable option
+-if(CMAKE_SYSTEM_PROCESSOR MATCHES
+-    "(^mips)|(^arm)|(^aarch64)|(x86_64)|(AMD64|amd64)|(^i.86$)|(^powerpc)|(^ppc)")
++message(STATUS "Building Volk for ${CMAKE_SYSTEM_NAME} on ${CMAKE_SYSTEM_PROCESSOR}")
++if((CMAKE_SYSTEM_PROCESSOR MATCHES
++      "(^mips)|(^arm)|(^aarch64)|(x86_64)|(AMD64|amd64)|(^i.86$)|(^powerpc)|(^ppc)")
++    AND (NOT CMAKE_SYSTEM_NAME MATCHES "kFreeBSD"))
+   option(VOLK_CPU_FEATURES "Volk uses cpu_features" ON)
+ else()
+   option(VOLK_CPU_FEATURES "Volk uses cpu_features" OFF)

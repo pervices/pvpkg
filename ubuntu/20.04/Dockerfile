@@ -21,7 +21,7 @@ pip3 install Cheetah3 pygccxml && \
 # clone pvpkg repo to get uhd and gnuradio Debian directories, as well as modified cmake and uhd_types files to patch
 git clone https://github.com/pervices/pvpkg.git && \
 cd pvpkg/ubuntu/20.04 && \
-mv gnuradio uhd /home/notroot && \
+mv gnuradio uhd volk /home/notroot && \
 cd ../../Testing && \
 mv variables.sh /home/notroot/testing && \
 mv tests /home/notroot/testing && \
@@ -30,10 +30,6 @@ RUN apt-get update
 WORKDIR /home/notroot/uhd
 # clone latest pervices uhd version, tar repo as orig.tar.gz, and build debian package
 RUN git clone -b master https://github.com/pervices/uhd.git && \
-#rm uhd/host/lib/rfnoc/radio_control_impl.cpp && \
-#rm uhd/host/lib/include/uhdlib/rfnoc/radio_control_impl.hpp && \
-#mv /home/notroot/pvpkg/ubuntu/20.04/modified/radio_control_impl.cpp uhd/host/lib/rfnoc && \
-#mv /home/notroot/pvpkg/ubuntu/20.04/modified/radio_control_impl.hpp uhd/host/lib/include/uhdlib/rfnoc && \
 cd debian && \
 mk-build-deps -i --tool 'apt-get -f --yes' control
 WORKDIR /home/notroot/uhd
@@ -43,9 +39,19 @@ cd uhd && \
 dpkg-buildpackage -us -uc -b && \
 cd .. && \
 dpkg -i uhd*.deb
+WORKDIR /home/notroot/volk
+RUN git clone --branch v2.4.1 --recursive https://github.com/gnuradio/volk.git && \
+tar czvf volk_2.4.1.orig.tar.gz volk && \
+mv debian volk && \
+cd volk/debian && \
+mk-build-deps -i --tool 'apt-get -f --yes' control && \
+cd .. && \
+dpkg-buildpackage -us -uc -b && \
+cd .. && \
+dpkg -i volk*.deb && sleep 10000
 WORKDIR /home/notroot/gnuradio
 # clone gnuradio 3.9 from github, replace Cmake and uhd types files from Github with those from pvpkg to allow for successful build
-RUN git clone -b master https://github.com/gnuradio/gnuradio.git && \
+RUN git clone -b maint-3.10 https://github.com/gnuradio/gnuradio.git && \
 #rm /home/notroot/gnuradio/gnuradio/CMakeLists.txt && \
 #rm /home/notroot/gnuradio/gnuradio/gr-uhd/python/uhd/bindings/uhd_types_python.cc && \
 #mv /home/notroot/pvpkg/ubuntu/20.04/modified/CMakeLists_mod.txt /home/notroot/gnuradio/gnuradio && \
@@ -56,7 +62,6 @@ RUN git clone -b master https://github.com/gnuradio/gnuradio.git && \
 tar -czvf gnuradiopv_3.10.orig.tar.gz gnuradio && \
 mv debian gnuradio && \
 cd gnuradio/debian && \
-sleep 10000 && \
 mk-build-deps -i --tool 'apt-get -f --yes' control && \
 cd .. && \
 dpkg-buildpackage -us -uc -b && \

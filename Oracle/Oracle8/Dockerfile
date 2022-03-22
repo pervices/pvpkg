@@ -9,15 +9,15 @@ WORKDIR /home
 #sed -i 's|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|g' /etc/yum.repos.d/CentOS-* && \
 RUN yum -y update && \
 #CentOS command
-yum -y install dnf-plugins-core oracle-epel-release-el8 make gcc rpm-build git rpmdevtools wget cmake python38 python3-pip &&\
+yum -y install dnf-plugins-core oracle-epel-release-el8 make gcc rpm-build git rpmdevtools wget cmake python3-pip &&\
 dnf config-manager --set-enabled ol8_codeready_builder && \
 pip3 install retrying && \
 rpmdev-setuptree && \
 git clone -b master https://github.com/pervices/uhd.git && \
 tar -czvf uhd.tar.gz uhd && \
 mv uhd.tar.gz /root/rpmbuild/SOURCES && \
-git clone -b master https://github.com/pervices/gnuradio.git && \
-git clone --recursive https://github.com/gnuradio/volk.git && \
+git clone -b maint-3.10 https://github.com/gnuradio/gnuradio.git && \
+git clone --branch v2.4.1 --recursive https://github.com/gnuradio/volk.git && \
 tar -czvf volk.tar.gz volk && \
 mv volk.tar.gz /root/rpmbuild/SOURCES && \
 git clone https://github.com/pervices/pvpkg.git && \
@@ -27,7 +27,7 @@ cd ../../Testing && \
 mv variables.sh /home/notroot/testing && \
 mv tests /home/notroot/testing && \
 mv test-only.sh /home/notroot/testing 
-rm /home/gnuradio/gr-uhd/python/uhd/bindings/uhd_types_python.cc && \
+#rm /home/gnuradio/gr-uhd/python/uhd/bindings/uhd_types_python.cc 
 #mv /home/pvpkg/ubuntu/20.04/modified/uhd_types_python_mod.cc /home/gnuradio/gr-uhd/python/uhd/bindings && \
 #mv /home/gnuradio/gr-uhd/python/uhd/bindings/uhd_types_python_mod.cc /home/gnuradio/gr-uhd/python/uhd/bindings/uhd_types_python.cc && \
 #rm /home/gnuradio/CMakeLists.txt && \
