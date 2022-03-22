@@ -23,7 +23,7 @@ Provides: uhd
 Conflicts: uhd
 BuildRequires:  gcc-c++
 BuildRequires:  cmake
-BuildRequires:  boost-python3-devel, libusb1-devel, python3-cheetah, ncurses-devel
+BuildRequires:  python38, boost-python3-devel, libusb1-devel, python3-cheetah, ncurses-devel
 BuildRequires:  python3-docutils, doxygen, pkgconfig, libpcap-devel
 BuildRequires:  python3-numpy, python3-tkinter, vim-common
 %if %{with wireshark}
@@ -52,7 +52,7 @@ future Ettus Research products. It can be used standalone without GNU Radio.
 %build
 mkdir -p host/build
 pushd host/build
-%cmake %{?have_neon} -DLIB_SUFFIX="/$(DEB_HOST_MULTIARCH)" -DPKG_LIB_DIR="/usr/lib/uhd" -DUHD_RELEASE_MODE="release" -DENABLE_CRIMSON_TNG="ON" -DENABLE_PYTHON3="ON" -DENABLE_CYAN_16T="OFF" -DENABLE_CYAN_64T="OFF" -DENABLE_CYAN_P1HDR16T="OFF" -D Boost_NO_BOOST_CMAKE:BOOL="0" -DBOOST_PYTHON_COMPONENT="python38" -DENABLE_TESTS="OFF" -DENABLE_N230="OFF"  -DENABLE_N300="OFF"  -DENABLE_E320="OFF" -DENABLE_USRP1="OFF" -DENABLE_B200="OFF" -DENABLE_X300="OFF" -DENABLE_OCTOCLOCK="OFF" -DENABLE_DOXYGEN="OFF" -DENABLE_USB="OFF" -DENABLE_CYAN_8R="ON" -DENABLE_CYAN_4R4T="ON"  \
+%cmake %{?have_neon} -DLIB_SUFFIX="/$(DEB_HOST_MULTIARCH)" -DCMAKE_CXX_FLAGS= "-std=c++14" -DPKG_LIB_DIR="/usr/lib/uhd" -DUHD_RELEASE_MODE="release" -DENABLE_CRIMSON_TNG="ON" -DENABLE_CYAN_16T="ON" -DENABLE_CYAN_64T="OFF" -DENABLE_CYAN_P1HDR16T="ON" -DENABLE_CYAN_P1HDR32T="ON" -D Boost_NO_BOOST_CMAKE:BOOL="0" -DENABLE_TESTS="OFF"  -DENABLE_N300="OFF"  -DENABLE_E320="OFF" -DENABLE_USRP1="OFF" -DENABLE_B200="OFF" -DENABLE_X300="OFF" -DENABLE_OCTOCLOCK="OFF" -DENABLE_DOXYGEN="OFF" -DENABLE_USB="OFF" -DENABLE_CYAN_8R="ON" -DENABLE_CYAN_4R4T="ON"  \
  ../
 make %{?_smp_mflags}
 #make -j1
@@ -128,6 +128,7 @@ exit 0
 %{_mandir}/man1/*.1*
 %{_datadir}/uhd
 %{python3_sitearch}/uhd
+%{python3_sitearch}/usrp_mpm/*
 %exclude /usr/lib/debug/*
 /usr/lib/*
 
