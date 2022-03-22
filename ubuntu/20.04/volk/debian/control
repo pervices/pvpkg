@@ -3,7 +3,7 @@ Section: libdevel
 Priority: optional
 Maintainer: A. Maitland Bottoms <bottoms@debian.org>
 Build-Depends: cmake,
-               debhelper-compat (= 13),
+               debhelper (>= 12~),
                dh-python,
                liborc-0.4-dev,
             python3-dev,

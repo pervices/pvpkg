@@ -44,7 +44,6 @@ BuildRequires:	cmake
 BuildRequires:	gcc-c++
 BuildRequires:	libtool
 BuildRequires:	alsa-lib-devel
-BuildRequires:	boost-python3-devel
 BuildRequires:	codec2-devel
 BuildRequires:	cppzmq-devel
 BuildRequires:	desktop-file-utils
