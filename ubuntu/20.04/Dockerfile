@@ -44,11 +44,12 @@ RUN git clone --branch v2.4.1 --recursive https://github.com/gnuradio/volk.git &
 tar czvf volk_2.4.1.orig.tar.gz volk && \
 mv debian volk && \
 cd volk/debian && \
+sleep 10000 && \
 mk-build-deps -i --tool 'apt-get -f --yes' control && \
 cd .. && \
 dpkg-buildpackage -us -uc -b && \
 cd .. && \
-dpkg -i volk*.deb && sleep 10000
+dpkg -i volk*.deb
 WORKDIR /home/notroot/gnuradio
 # clone gnuradio 3.9 from github, replace Cmake and uhd types files from Github with those from pvpkg to allow for successful build
 RUN git clone -b maint-3.10 https://github.com/gnuradio/gnuradio.git && \

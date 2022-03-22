@@ -31,7 +31,7 @@ License:	GPLv3
 URL:		https://www.gnuradio.org/
 #Source0:	http://gnuradio.org/releases/gnuradio/gnuradio-%%{version}%%{?alphatag}.tar.xz
 #Source0:	http://gnuradio.org/releases/gnuradio/gnuradio-%%{version}.tar.gz
-Source0:	https://github.com/pervices/%{name}/archive/refs/heads/gnuradio-maint-3.9.tar.gz
+Source0:	https://github.com/gnuradio/%{name}/archive/refs/heads/gnuradio-maint-3.10.tar.gz
 # git clone git://gnuradio.org/gnuradio
 # cd gnuradio
 # git archive --format=tar --prefix=%%{name}-%%{version}/ %%{git_commit} | \
