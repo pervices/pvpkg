@@ -35,8 +35,8 @@ mv test-only.sh /home/notroot/testing
 #mv /home/pvpkg/Oracle/Oracle8/CMakeListsMOD.txt /home/gnuradio && \
 #mv /home/gnuradio/CMakeListsMOD.txt /home/gnuradio/CMakeLists.txt
 WORKDIR /home
-RUN tar -czvf gnuradio-maint-3.9.tar.gz gnuradio && \
-mv gnuradio-maint-3.9.tar.gz /root/rpmbuild/SOURCES
+RUN tar -czvf gnuradio-maint-3.10.tar.gz gnuradio && \
+mv gnuradio-maint-3.10.tar.gz /root/rpmbuild/SOURCES
 WORKDIR /root/rpmbuild/SPECS
 #RUN dnf builddep --enablerepo=powertools -y uhd.spec && \
 RUN dnf builddep -y uhd.spec && \
