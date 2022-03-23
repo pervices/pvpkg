@@ -12,7 +12,7 @@ RUN yum -y update && \
 yum -y install dnf-plugins-core oracle-epel-release-el8 make gcc rpm-build git rpmdevtools wget cmake python3-pip &&\
 dnf config-manager --set-enabled ol8_codeready_builder && \
 ls && \
-cd && ls && cd \
+cd && ls && cd && \
 cd && \
 pip3 install retrying && \
 rpmdev-setuptree && \
