@@ -40,7 +40,6 @@ mv gnuradio-maint-3.10.tar.gz /root/rpmbuild/SOURCES
 WORKDIR /root/rpmbuild/SPECS
 #RUN dnf builddep --enablerepo=powertools -y uhd.spec && \
 RUN dnf builddep -y uhd.spec && \
-sleep 1000 && \
 QA_RPATHS=$(( 0x0001|0x0002 )) rpmbuild -ba uhd.spec && \
 cd ../RPMS/x86_64 && \
 rpm -i uhd*.rpm && \
