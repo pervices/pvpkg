@@ -96,6 +96,9 @@ mv libgnuradiopv-video-sdl*.deb libgnuradiopv-video-sdl-$(git describe --abbrev=
 mv libgnuradiopv-vocoder*.deb libgnuradiopv-vocoder-$(git describe --abbrev=8 --always --long)-$(date "+%F").deb && \
 mv libgnuradiopv-wavelet*.deb libgnuradiopv-wavelet-$(git describe --abbrev=8 --always --long)-$(date "+%F").deb && \
 mv libgnuradiopv-zeromq*.deb libgnuradiopv-zeromq-$(git describe --abbrev=8 --always --long)-$(date "+%F").deb && \
+mv libgnuradiopv-soapy*.deb libgnuradiopv-soapy-$(git describe --abbrev=8 --always --long)-$(date "+%F").deb && \
+mv libgnuradiopv-pdu*.deb libgnuradiopv-pdu-$(git describe --abbrev=8 --always --long)-$(date "+%F").deb && \
+mv libgnuradiopv-iio*.deb libgnuradiopv-iio-$(git describe --abbrev=8 --always --long)-$(date "+%F").deb && \
 mkdir gnuradiopv-$(git describe --abbrev=8 --always --long)-$(date "+%F") && \
 mv libgnuradio*.deb gnuradio*.deb gnuradiopv-$(git describe --abbrev=8 --always --long)-$(date "+%F") && \
 tar -czvf gnuradiopv_$(git describe --abbrev=8 --always --long)_$(date "+%F").tar.gz gnuradiopv-$(git describe --abbrev=8 --always --long)-$(date "+%F") && \
