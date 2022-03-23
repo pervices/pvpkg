@@ -388,7 +388,7 @@ Pre-Depends: ${misc:Pre-Depends}
 Depends: ${misc:Depends}, ${shlibs:Depends}
 Multi-Arch: same
 
-Package: libgnuradiopv-soapypd3.8.1
+Package: libgnuradiopv-pdu3.8.1
 Section: libs
 Architecture: any
 Pre-Depends: ${misc:Pre-Depends}
