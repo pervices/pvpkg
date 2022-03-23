@@ -3,11 +3,10 @@
 %else
 %bcond_with neon
 %endif
-
+%undefine _annotated_build
 %ifarch %{arm}
 %if %{with neon}
 %global my_optflags %(echo -n "%{optflags}" | sed 's/-mfpu=[^ \\t]\\+//g'; echo " -mfpu=neon")
-%global %undefine _annotated_build
 %{expand: %global optflags %{my_optflags}}
 %global mfpu_neon -Dhave_mfpu_neon=1
 %else
