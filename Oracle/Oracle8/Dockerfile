@@ -12,8 +12,6 @@ RUN yum -y update && \
 yum -y install dnf-plugins-core oracle-epel-release-el8 make gcc rpm-build git rpmdevtools wget cmake python3-pip &&\
 dnf config-manager --set-enabled ol8_codeready_builder && \
 ls && \
-cd && ls && cd && \
-cd && \
 pip3 install retrying && \
 rpmdev-setuptree && \
 git clone -b master https://github.com/pervices/uhd.git && \
@@ -36,7 +34,7 @@ mv test-only.sh /home/notroot/testing
 #rm /home/gnuradio/CMakeLists.txt && \
 #mv /home/pvpkg/Oracle/Oracle8/CMakeListsMOD.txt /home/gnuradio && \
 #mv /home/gnuradio/CMakeListsMOD.txt /home/gnuradio/CMakeLists.txt
-WORKDIR /home/notroot/gunradio
+WORKDIR /home
 RUN tar -czvf gnuradio-maint-3.10.tar.gz gnuradio && \
 mv gnuradio-maint-3.10.tar.gz /root/rpmbuild/SOURCES
 WORKDIR /root/rpmbuild/SPECS
