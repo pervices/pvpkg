@@ -72,7 +72,6 @@ Package: gnuradiopv
 Architecture: any
 Depends: libcanberra-gtk-module,
         libcanberra-gtk3-module,
-        libvolk2-bin,
         python3-click,
         python3-click-plugins,
         python3-gi,
@@ -143,7 +142,6 @@ Depends: gnuradiopv,
          libgmp-dev,
          libgsm1-dev,
          liblog4cpp5-dev,
-         libvolk2-dev,
          python3-dev,
          ${misc:Depends}
 Suggests: cmake, qtbase5-dev, libqwt-qt5-dev, pkg-config, swig
