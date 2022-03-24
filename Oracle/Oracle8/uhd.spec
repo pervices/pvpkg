@@ -23,7 +23,7 @@ Provides: uhd
 Conflicts: uhd
 BuildRequires:  gcc-toolset-11
 BuildRequires:  cmake
-BuildRequires:  boost169-python3, boost169-devel, libusb1-devel, python3-cheetah, ncurses-devel
+BuildRequires:  boost-python3-devel, libusb1-devel, python3-cheetah, ncurses-devel
 BuildRequires:  python3-docutils, doxygen, pkgconfig, libpcap-devel
 BuildRequires:  python3-numpy, python3-tkinter, vim-common
 %if %{with wireshark}
@@ -53,7 +53,7 @@ future Ettus Research products. It can be used standalone without GNU Radio.
 source /opt/rh/gcc-toolset-11/enable
 mkdir -p host/build
 pushd host/build
-%cmake %{?have_neon} -DBoost_DEBUG="ON" -DPKG_LIB_DIR="/usr/lib/uhd" -DUHD_RELEASE_MODE="release" -DBOOST_LIBRARYDIR="../../../../../../usr/lib64" -DBoost_INCLUDE_DIR="../../../../../../usr/include/boost169"  -DENABLE_CRIMSON_TNG="ON" -DENABLE_CYAN_16T="ON" -DENABLE_CYAN_64T="OFF" -DENABLE_CYAN_P1HDR16T="ON" -DENABLE_CYAN_P1HDR32T="ON" -DENABLE_TESTS="OFF"  -DENABLE_N300="OFF"  -DENABLE_E320="OFF" -DENABLE_USRP1="OFF" -DENABLE_B200="OFF" -DENABLE_X300="OFF" -DENABLE_OCTOCLOCK="OFF" -DENABLE_DOXYGEN="OFF" -DENABLE_USB="OFF" -DENABLE_CYAN_8R="ON" -DENABLE_CYAN_4R4T="ON"  \
+%cmake %{?have_neon} -DBoost_DEBUG="ON" -DPKG_LIB_DIR="/usr/lib/uhd" -DUHD_RELEASE_MODE="release" -DENABLE_CRIMSON_TNG="ON" -DENABLE_CYAN_16T="ON" -DENABLE_CYAN_64T="OFF" -DENABLE_CYAN_P1HDR16T="ON" -DENABLE_CYAN_P1HDR32T="ON" -DENABLE_TESTS="OFF"  -DENABLE_N300="OFF"  -DENABLE_E320="OFF" -DENABLE_USRP1="OFF" -DENABLE_B200="OFF" -DENABLE_X300="OFF" -DENABLE_OCTOCLOCK="OFF" -DENABLE_DOXYGEN="OFF" -DENABLE_USB="OFF" -DENABLE_CYAN_8R="ON" -DENABLE_CYAN_4R4T="ON"  \
  ../
 make %{?_smp_mflags}
 #make -j1

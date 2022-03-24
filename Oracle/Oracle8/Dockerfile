@@ -27,12 +27,12 @@ mv uhd.spec gnuradio.spec volk.spec /root/rpmbuild/SPECS && \
 cd ../../Testing && \
 mv variables.sh /home/notroot/testing && \
 mv tests /home/notroot/testing && \
-mv test-only.sh /home/notroot/testing 
+mv test-only.sh /home/notroot/testing && \
 #rm /home/gnuradio/gr-uhd/python/uhd/bindings/uhd_types_python.cc 
 #mv /home/pvpkg/ubuntu/20.04/modified/uhd_types_python_mod.cc /home/gnuradio/gr-uhd/python/uhd/bindings && \
 #mv /home/gnuradio/gr-uhd/python/uhd/bindings/uhd_types_python_mod.cc /home/gnuradio/gr-uhd/python/uhd/bindings/uhd_types_python.cc && \
-#rm /home/gnuradio/CMakeLists.txt && \
-#mv /home/pvpkg/Oracle/Oracle8/CMakeListsMOD.txt /home/gnuradio && \
+rm /home/gnuradio/cmake/Modules/GrMinReq.cmake && \
+mv /home/pvpkg/Oracle/Oracle8/GrMinReq.cmake /home/gnuradio/cmake/Modules
 #mv /home/gnuradio/CMakeListsMOD.txt /home/gnuradio/CMakeLists.txt
 WORKDIR /home
 RUN tar -czvf gnuradio-maint-3.10.tar.gz gnuradio && \
@@ -40,7 +40,6 @@ mv gnuradio-maint-3.10.tar.gz /root/rpmbuild/SOURCES
 WORKDIR /root/rpmbuild/SPECS
 #RUN dnf builddep --enablerepo=powertools -y uhd.spec && \
 RUN dnf builddep -y uhd.spec && \
-sleep 10000 && \
 QA_RPATHS=$(( 0x0001|0x0002 )) rpmbuild -ba uhd.spec && \
 cd ../RPMS/x86_64 && \
 rpm -i uhd*.rpm && \
