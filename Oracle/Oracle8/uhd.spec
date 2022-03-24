@@ -4,6 +4,7 @@
 %bcond_with neon
 %endif
 %undefine _annotated_build
+%undefine _hardened_build
 %ifarch %{arm}
 %if %{with neon}
 %global my_optflags %(echo -n "%{optflags}" | sed 's/-mfpu=[^ \\t]\\+//g'; echo " -mfpu=neon")
@@ -13,6 +14,10 @@
 %global mfpu_neon -Dhave_mfpu_neon=0
 %endif
 %endif
+
+#Disable generation of the debug packages because as we haven't quite figured out
+#a way to package them that doesn't also cause rpm build issues.
+%global debug_package %{nil}
 
 Name:           uhd
 URL:            http://github.com/pervices/uhd
@@ -51,18 +56,20 @@ future Ettus Research products. It can be used standalone without GNU Radio.
 
 %build
 source /opt/rh/gcc-toolset-11/enable
+# fix python shebangs (run again for generated scripts)
+find . -type f -name "*.py" -exec sed -i '/^#!/ s|.*|#!%{__python3}|' {} \;
 mkdir -p host/build
 pushd host/build
-%cmake %{?have_neon} -DBoost_DEBUG="ON" -DPKG_LIB_DIR="/usr/lib/uhd" -DUHD_RELEASE_MODE="release" -DENABLE_CRIMSON_TNG="ON" -DENABLE_CYAN_16T="ON" -DENABLE_CYAN_64T="OFF" -DENABLE_CYAN_P1HDR16T="ON" -DENABLE_CYAN_P1HDR32T="ON" -DENABLE_TESTS="OFF"  -DENABLE_N300="OFF"  -DENABLE_E320="OFF" -DENABLE_USRP1="OFF" -DENABLE_B200="OFF" -DENABLE_X300="OFF" -DENABLE_OCTOCLOCK="OFF" -DENABLE_DOXYGEN="OFF" -DENABLE_USB="OFF" -DENABLE_CYAN_8R="ON" -DENABLE_CYAN_4R4T="ON"  \
+%cmake %{?have_neon} -DPKG_LIB_DIR="/usr/lib/uhd" -DUHD_RELEASE_MODE="release" -DENABLE_CRIMSON_TNG="ON" -DENABLE_CYAN_16T="ON" -DENABLE_CYAN_64T="OFF" -DENABLE_CYAN_P1HDR16T="ON" -DENABLE_CYAN_P1HDR32T="ON" -DENABLE_EXAMPLES="ON" -DENABLE_TESTS="OFF"  -DENABLE_N300="OFF"  -DENABLE_E320="OFF" -DENABLE_USRP1="OFF" -DENABLE_B200="OFF" -DENABLE_X300="OFF" -DENABLE_OCTOCLOCK="OFF" -DENABLE_DOXYGEN="OFF" -DENABLE_USB="OFF" -DENABLE_CYAN_8R="ON" -DENABLE_CYAN_4R4T="ON"  \
  ../
 make %{?_smp_mflags}
-#make -j1
+#make -j1 
 popd
 
 # tools
-pushd tools/uhd_dump
-make %{?_smp_mflags} CFLAGS="%{optflags}" LDFLAGS="%{?__global_ldflags}"
-popd
+#pushd tools/uhd_dump
+#make %{?_smp_mflags} CFLAGS="%{optflags}" LDFLAGS="%{?__global_ldflags}"
+#popd
 
 
 #%%check
@@ -70,14 +77,8 @@ popd
 #make test
 
 %install
-# fix python shebangs (run again for generated scripts)
-find . -type f -name "*.py" -exec sed -i '/^#!/ s|.*|#!%{__python3}|' {} \;
-
 pushd host/build
 make install DESTDIR=%{buildroot}
-
-# Remove tests, examples binaries
-rm -rf %{buildroot}%{_libdir}/uhd/{tests,examples}
 
 popd
 # Package base docs to base package
@@ -99,7 +100,7 @@ popd
 
 # tools
 install -Dpm 0755 tools/usrp_x3xx_fpga_jtag_programmer.sh %{buildroot}%{_bindir}/usrp_x3xx_fpga_jtag_programmer.sh
-install -Dpm 0755 tools/uhd_dump/chdr_log %{buildroot}%{_bindir}/chdr_log
+#install -Dpm 0755 tools/uhd_dump/chdr_log %{buildroot}%{_bindir}/chdr_log
 
 %if %{with wireshark}
 # wireshark dissectors
@@ -132,6 +133,7 @@ exit 0
 %{python3_sitearch}/usrp_mpm/*
 %exclude /usr/lib/debug/*
 /usr/lib/*
+/usr/lib64/*
 
 
 
