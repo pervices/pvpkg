@@ -1,4 +1,4 @@
-FROM archlinux:base-devel
+FROM archlinux:latest
 # build from most recent Archlinux base image
 # makepkg cannot (and should not) be run as root, so a dummy user is created:
 RUN useradd -m notroot && \
@@ -7,8 +7,8 @@ echo "notroot ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/notroot
 # the Archlinux keyring, git, wget are installed for later use, as well as the base-devel package group
 RUN patched_glibc=glibc-linux4-2.33-4-x86_64.pkg.tar.zst && \
     curl -LO "https://repo.archlinuxcn.org/x86_64/$patched_glibc" && \
-    bsdtar -C / -xvf "$patched_glibc"
-RUN ls && pacman -Sy --noconfirm archlinux-keyring&& \
+   bsdtar -C / -xvf "$patched_glibc"
+RUN pacman -Sy --noconfirm archlinux-keyring&& \
     pacman -Sy --noconfirm git cmake gcc clang && \
  pacman -Sy --noconfirm inetutils iproute2 && \
  pacman -Sy --noconfirm wget
