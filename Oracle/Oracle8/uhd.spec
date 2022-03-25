@@ -133,8 +133,10 @@ exit 0
 %{python3_sitearch}/usrp_mpm/*
 %exclude /usr/lib/debug/*
 /usr/lib/*
-/usr/lib64/*
-
+/usr/lib64/libuhd.so
+/usr/lib64/libuhd.so.3.13.0
+/usr/lib64/cmake/*
+/usr/lib64/pkgconfig/uhd.pc
 
 
 

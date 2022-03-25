@@ -6,7 +6,8 @@
 %else
 %bcond_with neon
 %endif
-
+%undefine _annotated_build
+%undefine _hardened_build
 %ifarch %{arm}
 %if %{with neon}
 %global my_optflags %(echo -n "%{optflags}" | sed 's/-mfpu=[^ \\t]\\+//g'; echo " -mfpu=neon")
@@ -19,7 +20,7 @@
 
 # For versions not yet on ftp, pull from git
 #%%global git_commit 441a3767e05d15e62c519ea66b848b5adb0f4b3a
-
+%global debug_package %{nil}
 #%%global alphatag rc1
 
 Name:		gnuradio
@@ -148,6 +149,7 @@ GNU Radio examples
 %setup -q -n %{name}
 
 %build
+source /opt/rh/gcc-toolset-11/enable
 mkdir build
 cd build
 %cmake \
