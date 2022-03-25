@@ -11,9 +11,11 @@ RUN yum -y update && \
 #CentOS command
 yum -y install dnf-plugins-core oracle-epel-release-el8 make gcc rpm-build git rpmdevtools wget cmake python3-pip &&\
 dnf config-manager --set-enabled ol8_codeready_builder && \
-ls && \
-pip3 install retrying && \
-rpmdev-setuptree && \
+pip3 install retrying pygccxml && \
+cd /usr/local/lib/python3.6/site-packages/ && \
+mv pygccxml pygccxml-2.2.1.dist-info /usr/lib/python3.6/site-packages
+WORKDIR /home
+RUN rpmdev-setuptree && \
 git clone -b master https://github.com/pervices/uhd.git && \
 tar -czvf uhd.tar.gz uhd && \
 mv uhd.tar.gz /root/rpmbuild/SOURCES && \
@@ -52,7 +54,7 @@ cd ../RPMS/x86_64 && \
 rpm -i volk-3.9-volk.x86_64.rpm && \
 mv volk-3.9-volk.x86_64.rpm /home/volk
 WORKDIR /root/rpmbuild/SPECS
-RUN sleep 10000 && QA_RPATHS=$(( 0x0001|0x0002 )) rpmbuild -ba gnuradio.spec && \
+RUN QA_RPATHS=$(( 0x0001|0x0002 )) rpmbuild -ba gnuradio.spec && \
 cd ../RPMS/x86_64 && \
 rpm -i libgnuradio*.rpm && rpm -i python3*.rpm && rpm -i gnuradio*.rpm && \
 mv libgnuradio*.rpm python3*.rpm gnuradio*.rpm /home/gnuradio

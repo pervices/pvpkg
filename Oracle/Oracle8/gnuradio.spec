@@ -84,7 +84,7 @@ BuildRequires:	python3-thrift
 BuildRequires:	qwt-qt5-devel
 #BuildRequires:	tex(latex)
 BuildRequires:	SDL-devel
-BuildRequires:	spdlog
+BuildRequires:	spdlog-devel
 BuildRequires:	swig
 BuildRequires:	thrift
 BuildRequires:	xdg-utils
@@ -181,6 +181,10 @@ cd build
 %exclude %{_docdir}/%{name}/html
 %exclude %{_docdir}/%{name}/xml
 %doc %{_docdir}/%{name}
+/usr/libexec/gnuradio/grc_setup_freedesktop
+/usr/share/icons/hicolor/*
+/usr/share/applications/gnuradio-grc.desktop
+
 
 %files -n libgnuradio
 /usr/lib64/libgnuradio*.so.*
@@ -199,6 +203,7 @@ cd build
 %files doc
 %doc %{_docdir}/%{name}/html
 %doc %{_docdir}/%{name}/xml
+%doc %{_mandir}/man1/*.1*
 
 %files examples
 %{_datadir}/gnuradio/examples
