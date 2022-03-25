@@ -52,7 +52,7 @@ cd ../RPMS/x86_64 && \
 rpm -i volk-3.9-volk.x86_64.rpm && \
 mv volk-3.9-volk.x86_64.rpm /home/volk
 WORKDIR /root/rpmbuild/SPECS
-RUN QA_RPATHS=$(( 0x0001|0x0002 )) rpmbuild --define 'debug_package %{nil}' -ba gnuradio.spec && \
+RUN QA_RPATHS=$(( 0x0001|0x0002 )) rpmbuild -ba gnuradio.spec && \
 cd ../RPMS/x86_64 && \
 rpm -i libgnuradio*.rpm && rpm -i python3*.rpm && rpm -i gnuradio*.rpm && \
 mv libgnuradio*.rpm python3*.rpm gnuradio*.rpm /home/gnuradio
