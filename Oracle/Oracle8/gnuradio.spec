@@ -84,6 +84,7 @@ BuildRequires:	python3-thrift
 BuildRequires:	qwt-qt5-devel
 #BuildRequires:	tex(latex)
 BuildRequires:	SDL-devel
+BuildRequires:	spdlog
 BuildRequires:	swig
 BuildRequires:	thrift
 BuildRequires:	xdg-utils
