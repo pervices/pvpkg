@@ -60,8 +60,6 @@ rpm -i libgnuradio*.rpm && rpm -i python3*.rpm && rpm -i gnuradio*.rpm && \
 mv libgnuradio*.rpm python3*.rpm gnuradio*.rpm /home/gnuradio
 WORKDIR /home/uhd 
 RUN mv uhd-3.13.0.0-master.x86_64.rpm uhdpv-$(git describe --abbrev=8 --always --long)-$(date "+%F").rpm && \
-mv uhd-debuginfo-3.13.0.0-master.x86_64.rpm uhdpv-debuginfo-$(git describe --abbrev=8 --always --long)-$(date "+%F").rpm && \
-mv uhd-debugsource-3.13.0.0-master.x86_64.rpm uhdpv-debugsource-$(git describe --abbrev=8 --always --long)-$(date "+%F").rpm && \
 mkdir uhdpv-$(git describe --abbrev=8 --always --long)-$(date "+%F") && \
 mv uhdpv*.rpm uhdpv-$(git describe --abbrev=8 --always --long)-$(date "+%F") && \
 tar -czvf uhdpv-$(git describe --abbrev=8 --always --long)-$(date "+%F").tar.gz uhdpv-$(git describe --abbrev=8 --always --long)-$(date "+%F") && \

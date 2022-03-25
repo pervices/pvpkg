@@ -6,21 +6,18 @@ WORKDIR /home/notroot/testing
 WORKDIR /home/notroot
 # installing basic essential packages to container to allow for rest of build to occur
 RUN apt-get update && \ 
-ls && ls && \
 apt-get -y install dpkg-dev sudo apt-utils dh-make bzr-builddeb equivs xz-utils iputils-ping net-tools software-properties-common cmake git coreutils build-essential && \
 add-apt-repository ppa:ubuntu-toolchain-r/test && \
 apt update && apt install -y gcc-11 g++-11
 RUN update-alternatives --remove-all cpp && \
 update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 90 --slave /usr/bin/g++ g++ /usr/bin/g++-9 --slave /usr/bin/gcov gcov /usr/bin/gcov-9 --slave /usr/bin/gcc-ar gcc-ar /usr/bin/gcc-ar-9 --slave /usr/bin/gcc-ranlib gcc-ranlib /usr/bin/gcc-ranlib-9  --slave /usr/bin/cpp cpp /usr/bin/cpp-9 && \
 update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-11 110 --slave /usr/bin/g++ g++ /usr/bin/g++-11 --slave /usr/bin/gcov gcov /usr/bin/gcov-11 --slave /usr/bin/gcc-ar gcc-ar /usr/bin/gcc-ar-11 --slave /usr/bin/gcc-ranlib gcc-ranlib /usr/bin/gcc-ranlib-11  --slave /usr/bin/cpp cpp /usr/bin/cpp-11 && \
-gcc --version && \
 apt-get -y install python3-pip && \
 #using pip to install recent versions of packages not yet in repos
-pip3 install Cheetah3 pygccxml && \
+pip3 install pygccxml && \
 # clone pvpkg repo to get uhd and gnuradio Debian directories, as well as modified cmake and uhd_types files to patch
 git clone https://github.com/pervices/pvpkg.git && \
 cd pvpkg/ubuntu/20.04 && \
-#mv gnuradio uhd volk /home/notroot && \
 mv gnuradio uhd /home/notroot && \
 cd ../../Testing && \
 mv variables.sh /home/notroot/testing && \
@@ -45,22 +42,9 @@ cd volk && \
 mkdir build && cd build && \
 cmake -DCMAKE_BUILD_TYPE=Release -DPYTHON_EXECUTABLE=/usr/bin/python3 ../ && \
 make && make install
-#mv debian volk && \
-#cd volk/debian && \
-#mk-build-deps -i --tool 'apt-get -f --yes' control && \
-#cd .. && \
-#dpkg-buildpackage -us -uc -b && \
-#cd .. && \
-#dpkg -i volk*.deb && \
 WORKDIR /home/notroot/gnuradio
 # clone gnuradio 3.9 from github, replace Cmake and uhd types files from Github with those from pvpkg to allow for successful build
 RUN git clone -b maint-3.10 https://github.com/gnuradio/gnuradio.git && \
-#rm /home/notroot/gnuradio/gnuradio/CMakeLists.txt && \
-#rm /home/notroot/gnuradio/gnuradio/gr-uhd/python/uhd/bindings/uhd_types_python.cc && \
-#mv /home/notroot/pvpkg/ubuntu/20.04/modified/CMakeLists_mod.txt /home/notroot/gnuradio/gnuradio && \
-#mv /home/notroot/gnuradio/gnuradio/CMakeLists_mod.txt /home/notroot/gnuradio/gnuradio/CMakeLists.txt && \
-#mv /home/notroot/pvpkg/ubuntu/20.04/modified/uhd_types_python_mod.cc /home/notroot/gnuradio/gnuradio/gr-uhd/python/uhd/bindings && \
-#mv /home/notroot/gnuradio/gnuradio/gr-uhd/python/uhd/bindings/uhd_types_python_mod.cc /home/notroot/gnuradio/gnuradio/gr-uhd/python/uhd/bindings/uhd_types_python.cc && \
 # create orig.tar.gz of gnuradio repo nad build debian package
 tar -czvf gnuradiopv_3.10.orig.tar.gz gnuradio && \
 mv debian gnuradio && \
