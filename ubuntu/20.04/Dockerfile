@@ -92,7 +92,10 @@ WORKDIR /home/notroot/uhd
 RUN mv uhd*.deb InstallInstructionsUbuntu /home/notroot/uhd/uhd && \
 cd uhd && \
 mv uhd*.deb uhdpv-$(git describe --abbrev=8 --always --long)-$(date "+%F").deb && \
-mv uhd*.deb /home/artifacts
+mkdir uhdpv-$(git describe --abbrev=8 --always --long)-$(date "+%F") && \
+mv uhd*.deb InstallInstructionsUbuntu uhdpv-$(git describe --abbrev=8 --always --long)-$(date "+%F") && \
+tar -czvf uhdpv-$(git describe --abbrev=8 --always --long)-$(date "+%F").tar.gz uhdpv-$(git describe --abbrev=8 --always --long)-$(date "+%F") && \
+mv uhd*.tar.gz /home/artifacts
 WORKDIR /home/notroot/testing
 RUN chmod +x test-only.sh && \
 chmod +x variables.sh && \
