@@ -18,7 +18,7 @@ pip3 install pygccxml && \
 # clone pvpkg repo to get uhd and gnuradio Debian directories, as well as modified cmake and uhd_types files to patch
 git clone https://github.com/pervices/pvpkg.git && \
 cd pvpkg/ubuntu/20.04 && \
-mv gnuradio uhd /home/notroot && \
+mv gnuradio uhd InstallInstructionsUbuntu /home/notroot && \
 cd ../../Testing && \
 mv variables.sh /home/notroot/testing && \
 mv tests /home/notroot/testing && \
@@ -89,7 +89,7 @@ tar -czvf gnuradiopv_$(git describe --abbrev=8 --always --long)_$(date "+%F").ta
 mv gnuradio*.tar.gz /home/artifacts
 WORKDIR /home/notroot/uhd
 # move uhd deb file to artifact directory and tagging it for deployment
-RUN mv uhd*.deb /home/notroot/uhd/uhd && \
+RUN mv uhd*.deb InstallInstructionsUbuntu /home/notroot/uhd/uhd && \
 cd uhd && \
 mv uhd*.deb uhdpv-$(git describe --abbrev=8 --always --long)-$(date "+%F").deb && \
 mv uhd*.deb /home/artifacts

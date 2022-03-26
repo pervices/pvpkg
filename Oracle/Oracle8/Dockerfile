@@ -26,6 +26,7 @@ mv volk.tar.gz /root/rpmbuild/SOURCES && \
 git clone https://github.com/pervices/pvpkg.git && \
 cd pvpkg/Oracle/Oracle8 && \
 mv uhd.spec gnuradio.spec volk.spec /root/rpmbuild/SPECS && \
+mv InstallInstructionsOracle /home/uhd && \
 cd ../../Testing && \
 mv variables.sh /home/notroot/testing && \
 mv tests /home/notroot/testing && \
@@ -63,7 +64,7 @@ RUN mv uhd.spec gnuradio.spec /home/uhd
 WORKDIR /home/uhd 
 RUN mv uhd-3.13.0.0-master.x86_64.rpm uhdpv-$(git describe --abbrev=8 --always --long)-$(date "+%F").rpm && \
 mkdir uhdpv-$(git describe --abbrev=8 --always --long)-$(date "+%F") && \
-mv uhdpv*.rpm uhd.spec gnuradio.spec uhdpv-$(git describe --abbrev=8 --always --long)-$(date "+%F") && \
+mv uhdpv*.rpm uhd.spec InstallInstructionsOracle gnuradio.spec uhdpv-$(git describe --abbrev=8 --always --long)-$(date "+%F") && \
 tar -czvf uhdpv-$(git describe --abbrev=8 --always --long)-$(date "+%F").tar.gz uhdpv-$(git describe --abbrev=8 --always --long)-$(date "+%F") && \
 mv uhdpv-$(git describe --abbrev=8 --always --long)-$(date "+%F").tar.gz /home/artifacts
 WORKDIR /home/volk
