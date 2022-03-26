@@ -1,0 +1,30 @@
+ORACLE8 INSTALL INSTRUCTIONS
+
+#Packages requiring installation Before Beginning UHD/Volk/Gnuradio Install
+yum -y install dnf-plugins-core oracle-epel-release-el8 make gcc rpm-build git rpmdevtools wget cmake python3-pip
+
+
+#needed for C++17 Python compatibility; move local install from pip to rpm site-packages to use in gnuradio install or else it won't be located
+pip3 install pygccxml
+cd /usr/local/lib/python3.6/site-packages/
+mv  pygccxml  pygccxml-2.2.1.dist-info /usr/lib/python3.6/site-packages
+
+#Get latest gnuradio and uhd build file from files.pervices.com/latest/sw/centos8/
+
+#Untar files
+tar -tar -xvzf <archive name ending in .tar.gz>
+
+#From directory where uhd files are extracted, run this command to install all necessary UHD dependencies
+dnf builddep -y uhd.spec
+
+#Install uhd
+rpm -i uhd*.rpm
+
+#Ensure gcc-11 is set as compiler for application runtime (adjust path if gcc-toolset-11 is installed at different location)
+source /opt/rh/gcc-toolset-11/enable
+
+#Install all dependencies necessary for gnuradio
+dnf builddep -y gnuradio.spec
+
+#From directory where gnuradio files are extracted run this command to install gnruadio
+rpm -i volk*.rpm && rpm -i libgnuradio*.rpm && rpm -i python3*.rpm && rpm -i gnuradio*.rpm

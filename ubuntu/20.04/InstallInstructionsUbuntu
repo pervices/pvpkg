@@ -1,0 +1,46 @@
+  UBUNTU INSTALL INSTRUCTIONS
+
+#Ensure packages are installed to allow for building Debian packages on system
+apt-get -y install dpkg-dev sudo apt-utils dh-make bzr-builddeb equivs xz-utils iputils-ping net-tools software-properties-common cmake git coreutils build-essential
+
+# Add repo to allow for gcc-11 install
+add-apt-repository ppa:ubuntu-toolchain-r/test
+
+#Install gcc-11
+apt update && apt install -y gcc-11 g++-11
+
+#Run commands to ensure gcc-11 is used by default
+update-alternatives --remove-all cpp && \
+update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 90 --slave /usr/bin/g++ g++ /usr/bin/g++-9 --slave /usr/bin/gcov gcov /usr/bin/gcov-9 --slave /usr/bin/gcc-ar gcc-ar /usr/bin/gcc-ar-9 --slave /usr/bin/gcc-ranlib gcc-ranlib /usr/bin/gcc-ranlib-9  --slave /usr/bin/cpp cpp /usr/bin/cpp-9 && \
+update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-11 110 --slave /usr/bin/g++ g++ /usr/bin/g++-11 --slave /usr/bin/gcov gcov /usr/bin/gcov-11 --slave /usr/bin/gcc-ar gcc-ar /usr/bin/gcc-ar-11 --slave /usr/bin/gcc-ranlib gcc-ranlib /usr/bin/gcc-ranlib-11  --slave /usr/bin/cpp cpp /usr/bin/cpp-11
+
+#Install pip to allow installation of necessary python module pygccxml
+apt-get -y install python3-pip
+
+#Install pygccxml latest version to allow for C++17 Python compatibility (needed for gr-modtool)
+pip3 install pygccxml
+
+
+#Get latest gnuradio and uhd build file from files.pervices.com/latest/sw/ubuntu20.04/
+
+#Untar files
+tar -tar -xvzf <archive name ending in .tar.gz>
+
+#Install UHD (First command will fail, second will grab all dependencies and install package)
+dpkg -i uhd*.deb 
+apt --fix-broken install
+
+#Install volk 2.4.1 (required by gnuradio 3.10); run after uhd and before gnuradio Debian package installs
+git clone --branch v2.4.1 --recursive https://github.com/gnuradio/volk.git && \
+cd volk && \
+mkdir build && cd build && \
+cmake -DCMAKE_BUILD_TYPE=Release -DPYTHON_EXECUTABLE=/usr/bin/python3 ../ && \
+make && make install
+
+#Install gnuradio by running commands in directory deb files are extracted into (Install libraries and then gnuradio package in same way UHD was installed)
+dpkg -i libgnuradio*.deb
+apt --fix-broken install
+dpkg -i gnuradio*.deb
+apt --fix-broken install
+
+
