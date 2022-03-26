@@ -87,9 +87,11 @@ mkdir gnuradiopv-$(git describe --abbrev=8 --always --long)-$(date "+%F") && \
 mv libgnuradio*.deb gnuradio*.deb gnuradiopv-$(git describe --abbrev=8 --always --long)-$(date "+%F") && \
 tar -czvf gnuradiopv_$(git describe --abbrev=8 --always --long)_$(date "+%F").tar.gz gnuradiopv-$(git describe --abbrev=8 --always --long)-$(date "+%F") && \
 mv gnuradio*.tar.gz /home/artifacts
+WORKDIR /home/notroot
+RUN mv InstallInstructionsUbuntu /home/notroot/uhd/uhd
 WORKDIR /home/notroot/uhd
 # move uhd deb file to artifact directory and tagging it for deployment
-RUN mv uhd*.deb InstallInstructionsUbuntu /home/notroot/uhd/uhd && \
+RUN mv uhd*.deb /home/notroot/uhd/uhd && \
 cd uhd && \
 mv uhd*.deb uhdpv-$(git describe --abbrev=8 --always --long)-$(date "+%F").deb && \
 mkdir uhdpv-$(git describe --abbrev=8 --always --long)-$(date "+%F") && \
