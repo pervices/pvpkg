@@ -12,10 +12,10 @@ set(__INCLUDED_GR_MIN_REQ_CMAKE TRUE)
 # Minimum dependency versions for central dependencies:
 set(GR_BOOST_MIN_VERSION "1.66")      ## Version in CentOS 8 (EPEL)
 set(GR_CMAKE_MIN_VERSION "3.16.3")    ## Version in Ubuntu 20.04LTS
-set(GR_MAKO_MIN_VERSION "1.0.6")      ## Version in Ubuntu 20.04LTS
+set(GR_MAKO_MIN_VERSION "1.1.0")      ## Version in Ubuntu 20.04LTS
 set(GR_PYTHON_MIN_VERSION "3.6.5")    ## Version in Ubuntu 18.04LTS
 set(GR_PYGCCXML_MIN_VERSION "2.0.0")  ## Version to support c++17 (in pip)
-set(GR_NUMPY_MIN_VERSION "1.12.0")    ## Version in Ubuntu 20.04LTS
+set(GR_NUMPY_MIN_VERSION "1.17.4")    ## Version in Ubuntu 20.04LTS
 set(GCC_MIN_VERSION "9.3.0")          ## Version in Ubuntu 20.04LTS
 set(CLANG_MIN_VERSION "11.0.0")       ## Version in Ubuntu 20.04LTS
 set(APPLECLANG_MIN_VERSION "1100")    ## same as clang 11.0.0, in Xcode11
