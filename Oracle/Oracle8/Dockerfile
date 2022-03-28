@@ -15,7 +15,7 @@ pip3 install retrying pygccxml pyqtgraph==0.11.1 numpy==1.19.5 Mako && \
 cd /usr/local/lib64/python3.6/site-packages/ && \
 mv MarkupSafe-2.0.1.dist-info  markupsafe  numpy  numpy-1.19.5.dist-info  numpy.libs /usr/lib/python3.6/site-packages && \
 cd /usr/local/lib/python3.6/site-packages/ && \
-mv Mako-1.1.6.dist-info  __pycache__  mako  pygccxml  pygccxml-2.2.1.dist-info  pyqtgraph  pyqtgraph-0.11.1.dist-info  retrying-1.3.3-py3.6.egg-info  retrying.py /usr/lib/python3.6/site-packages
+mv Mako-1.1.6.dist-info mako  pygccxml  pygccxml-2.2.1.dist-info  pyqtgraph  pyqtgraph-0.11.1.dist-info  retrying-1.3.3-py3.6.egg-info  retrying.py /usr/lib/python3.6/site-packages
 WORKDIR /home
 RUN rpmdev-setuptree && \
 git clone -b master https://github.com/pervices/uhd.git && \
