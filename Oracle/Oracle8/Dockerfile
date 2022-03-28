@@ -11,8 +11,9 @@ RUN yum -y update && \
 #CentOS command
 yum -y install dnf-plugins-core oracle-epel-release-el8 make gcc rpm-build git rpmdevtools wget cmake python3-pip &&\
 dnf config-manager --set-enabled ol8_codeready_builder && \
-pip3 install retrying pygccxml && \
+pip3 install retrying pygccxml pyqtgraph==0.11.1 numpy==1.19.5 Mako && \
 cd /usr/local/lib/python3.6/site-packages/ && \
+sleep 10000 && \
 mv pygccxml pygccxml-2.2.1.dist-info /usr/lib/python3.6/site-packages
 WORKDIR /home
 RUN rpmdev-setuptree && \

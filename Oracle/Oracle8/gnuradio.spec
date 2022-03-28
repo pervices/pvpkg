@@ -81,6 +81,7 @@ BuildRequires:	python3-matplotlib
 BuildRequires:	python3-six
 BuildRequires:	python3-sphinx
 BuildRequires:	python3-thrift
+BuildRequires:	python3-zmq
 BuildRequires:	qwt-qt5-devel
 #BuildRequires:	tex(latex)
 BuildRequires:	SDL-devel
