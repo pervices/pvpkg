@@ -24,6 +24,8 @@ parameters {
                         allOf {
                           expression {params.ENABLE_ARCH == true}
                           expression {params.CI_BUILD_TYPE == 'UHD_ONLY'}
+                        }
+                        }
                             steps { 
                         script { 
                                 dir("${env.WORKSPACE}/Arch/UHD") {
@@ -38,13 +40,13 @@ parameters {
                         }
                         }
                         }
-                        }
-                        }
                  	//Build UHD and Gnuradio
                      when {
                          allOf {
                           expression {params.ENABLE_ARCH == true}
                           expression {params.CI_BUILD_TYPE == 'FULL'}
+                        }
+                        }
                              steps { 
                         script { 
                                 dir("${env.WORKSPACE}/Arch/GnuRadio") {
@@ -55,9 +57,7 @@ parameters {
                                 sshagent(credentials: ['sshfilespervices']) {
                                 sh "ssh -T -p 237 filespervices@files.pervices.com 'rm -f /home/filespervices/www/latest/sw/archlinux/uhd/* && rm -f /home/filespervices/www/latest/sw/archlinux/gnuradio/*' && \
                                 scp -P 237 libuhdpv* filespervices@files.pervices.com:/home/filespervices/www/latest/sw/archlinux/uhd/ && \
-                                scp -P 237 gnuradio* filespervices@files.pervices.com:/home/filespervices/www/latest/sw/archlinux/gnuradio/"
-                        }
-                        }
+                                scp -P 237 gnuradio* filespervices@files.pervices.com:/home/filespervices/www/latest/sw/archlinux/gnuradio/"                        
                         }
                         } 
                         }
@@ -71,6 +71,8 @@ parameters {
                           allOf {
                            expression {params.ENABLE_UBUNTU == true}
                            expression {params.CI_BUILD_TYPE == 'UHD_ONLY'}
+                       }
+                       }
                             steps { 
                         script { 
                                 dir("${env.WORKSPACE}/ubuntu/20.04/uhd") {
@@ -81,8 +83,6 @@ parameters {
                                 sshagent(credentials: ['sshfilespervices']) {
                                 sh "ssh -T -p 237 filespervices@files.pervices.com 'rm -f /home/filespervices/www/latest/sw/ubuntu20.04/uhd/*' && \
                                 scp -P 237 uhdpv*.tar.gz filespervices@files.pervices.com:/home/filespervices/www/latest/sw/ubuntu20.04/uhd/"
-                       }
-                       }
                        } 
                        }
                        }
@@ -92,6 +92,8 @@ parameters {
                           allOf {
                             expression {params.ENABLE_UBUNTU == true}
                             expression {params.CI_BUILD_TYPE == 'FULL'}
+                       }
+                       }
                                steps { 
                         script { 
                                 dir("${env.WORKSPACE}/ubuntu/20.04/gnuradio") {
@@ -103,8 +105,6 @@ parameters {
                                 sh "ssh -T -p 237 filespervices@files.pervices.com 'rm -f /home/filespervices/www/latest/sw/ubuntu20.04/uhd/* && rm -f /home/filespervices/www/latest/sw/ubuntu20.04/gnuradio/*' && \
                                 scp -P 237 uhdpv*.tar.gz filespervices@files.pervices.com:/home/filespervices/www/latest/sw/ubuntu20.04/uhd/ && \
                                 scp -P 237 gnuradio*.tar.gz filespervices@files.pervices.com:/home/filespervices/www/latest/sw/ubuntu20.04/gnuradio/"
-                       }
-                       }
                        } 
                        }
                        }
@@ -117,7 +117,9 @@ parameters {
                     when {
                           allOf {
                            expression {params.ENABLE_ORACLE == true}
-                           expression {params.CI_BUILD_TYPE == 'UHD_ONLY'}     
+                           expression {params.CI_BUILD_TYPE == 'UHD_ONLY'}
+                        }
+                        } 
                               steps { 
                         script { 
                                dir("${env.WORKSPACE}/Oracle/Oracle8/UHD") {
@@ -129,8 +131,6 @@ parameters {
                                sh "ssh -T -p 237 filespervices@files.pervices.com 'rm -f /home/filespervices/www/latest/sw/centos8/uhd/*' && \
                                scp -P 237 uhd*.tar.gz filespervices@files.pervices.com:/home/filespervices/www/latest/sw/centos8/uhd/"
                         }
-                        } 
-                        }
                         }
                         }
                         }
@@ -138,7 +138,9 @@ parameters {
                     when {
                           allOf {
                            expression {params.ENABLE_ORACLE == true}
-                           expression {params.CI_BUILD_TYPE == 'FULL'}     
+                           expression {params.CI_BUILD_TYPE == 'FULL'} 
+                        }
+                        }
                               steps { 
                         script { 
                                dir("${env.WORKSPACE}/Oracle/Oracle8/GnuRadio") {
@@ -150,8 +152,6 @@ parameters {
                                sh "ssh -T -p 237 filespervices@files.pervices.com 'rm -f /home/filespervices/www/latest/sw/centos8/uhd/* && rm -f /home/filespervices/www/latest/sw/centos8/gnuradio/*' && \
                                scp -P 237 uhd*.tar.gz filespervices@files.pervices.com:/home/filespervices/www/latest/sw/centos8/uhd/ && \
                                scp -P 237 gnuradio*.tar.gz filespervices@files.pervices.com:/home/filespervices/www/latest/sw/centos8/gnuradio/"
-                        }
-                        } 
                         }
                         }
                         }
