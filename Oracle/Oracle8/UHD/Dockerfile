@@ -83,10 +83,10 @@ mv uhdpv-$(git describe --abbrev=8 --always --long)-$(date "+%F").tar.gz /home/a
 # mv *.rpm gnuradio-$(git describe --abbrev=8 --always --long)-$(date "+%F") && \
 # tar -czvf gnuradio-$(git describe --abbrev=8 --always --long)-$(date "+%F").tar.gz gnuradio-$(git describe --abbrev=8 --always --long)-$(date "+%F") && \
 # mv gnuradio-$(git describe --abbrev=8 --always --long)-$(date "+%F").tar.gz /home/artifacts
-# WORKDIR /home/notroot/testing
-# RUN chmod +x test-only.sh && \
-# chmod +x variables.sh && \
-# chmod +x tests 
+ WORKDIR /home/notroot/testing
+ RUN chmod +x test-only.sh && \
+ chmod +x variables.sh && \
+ chmod +x tests 
 
 
 
