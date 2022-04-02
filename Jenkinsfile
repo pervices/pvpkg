@@ -18,7 +18,7 @@ parameters {
         stage('Build UHD and GNU Radio') {
         parallel {
 
-                stage('ArchLinux') { 
+                stage('ArchLinux UHD') { 
                     //Build UHD only
                     when {
                         allOf {
@@ -40,6 +40,8 @@ parameters {
                         }
                         }
                         }
+                        }
+                  stage('ArchLinux Full') { 
                  	//Build UHD and Gnuradio
                      when {
                          allOf {
@@ -62,10 +64,10 @@ parameters {
                         } 
                         }
                         }
-                    }
+                        }
 
 
-               stage('Ubuntu 20.04') { 
+               stage('Ubuntu 20.04 UHD') { 
                //Build UHD
                      when {
                           allOf {
@@ -87,6 +89,8 @@ parameters {
                        }
                        }
                        }
+                       }
+                stage('Ubuntu 20.04 Full') {
                //Build UHD
                      when {
                           allOf {
@@ -109,10 +113,10 @@ parameters {
                        }
                        }
                        }
-                    }
+                       }
 
                                       
-               stage('RPM_OracleLinux') {
+               stage('RPM_OracleLinux UHD') {
                //Build UHD
                     when {
                           allOf {
@@ -134,6 +138,8 @@ parameters {
                         }
                         }
                         }
+                        }
+                stage('RPM_OracleLinux Full') {
                  //Build UHD and Gnuradio
                     when {
                           allOf {
