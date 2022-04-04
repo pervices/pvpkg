@@ -44,7 +44,7 @@ parameters {
                         always{
                         script{
                         if (params.CLEAN == false){
-                        echo 'The image ID of the failing container is ${env.IID}.'
+                        echo 'The image ID of the failing container is "${env.IID}".'
                         }
                         }
                         }
