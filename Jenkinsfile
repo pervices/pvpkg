@@ -265,10 +265,9 @@ parameters {
 post {
 always{
 script{
-if {(params.CLEAN == true)
-sh "docker system prune -a -f" && echo "This build is finished. Cleaning up build environment."
-} else { echo "This build is finished. Not running clean"
-}
+if (params.CLEAN == true){
+sh "docker system prune -a -f" && echo "This build is finished. Cleaning up build environment."}
+else { echo "This build is finished. Not running clean."}
  		failure {
  			mail to: 'tech@pervices.com',
  			subject: "Failed Pipeline: ${currentBuild.fullDisplayName}",
