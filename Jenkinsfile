@@ -40,7 +40,20 @@ parameters {
                         }
                         }
                         }
+                        post {
+                        always{
+                        script{
+                        if (params.CLEAN == false){
+                        echo 'The image ID of the failing container is ${env.IID}.'
                         }
+                        }
+                        }
+                        }
+                        }
+                        
+                        
+                        
+                        
                   stage('ArchLinux Full') { 
                  	//Build UHD and Gnuradio
                      when {
@@ -167,113 +180,94 @@ parameters {
                     }
 
 
-// stage('Arch Testing'){  
-// options {
-// timeout(time: 3, unit: "HOURS")
-// } 
-// steps {
-// catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-// script{
-// dir("${env.WORKSPACE}/arch") {
-// env.IID = "\$(docker images arch:$BUILD_NUMBER --format \"{{.ID}}\")"
-// sh "docker run --net=host -i $IID /bin/bash -c './test-only-Arch.sh'"
-// }
-// }
-// }
-// }
-// }
-// stage('Remove Arch Image'){  
-// steps {
-// script{
-// dir("${env.WORKSPACE}/arch") {
-// env.IID = "\$(docker images arch:$BUILD_NUMBER --format \"{{.ID}}\")"
-// sh "docker stop \$(docker ps -a -q) && \
-// docker rm \$(docker ps -a -q) && \
-// docker rmi -f ${IID}"
-// }
-// } 
-// }
-// }
-// 
-// 
-// stage('Ubuntu Testing'){    
-// options {
-// timeout(time: 3, unit: "HOURS")
-// } 
-// steps {
-// catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-// script{
-// dir("${env.WORKSPACE}/ubuntu/20.04") {
-// env.IID = "\$(docker images ubuntu:$BUILD_NUMBER --format \"{{.ID}}\")"
-// sh "docker run --net=host -i $IID /bin/bash -c './test-only.sh'"
-// }
-// }
-// }
-// }
-// }
-// stage('Remove Ubuntu Image'){  
-// steps {
-// script{
-// dir("${env.WORKSPACE}/ubuntu/20.04") {
-// env.IID = "\$(docker images ubuntu:$BUILD_NUMBER --format \"{{.ID}}\")"
-// sh "docker stop \$(docker ps -a -q) && \
-// docker rm \$(docker ps -a -q) && \
-// docker rmi -f ${IID}"
-// }
-// } 
-// }
-// }
-// 
-// 
-// stage('Oracle Testing'){    
-// options {
-// timeout(time: 3, unit: "HOURS")
-//     } 
-// steps {
-// catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-// script{
-//     dir("${env.WORKSPACE}/Oracle/Oracle8") {
-//         env.IID = "\$(docker images oracle:$BUILD_NUMBER --format \"{{.ID}}\")"
-//         sh "docker run --net=host -i $IID /bin/bash -c './test-only.sh'"
-// }
-// }
-// }
-// }
-// }
-// stage('Remove Oracle Image'){  
-// steps {
-// script{
-// dir("${env.WORKSPACE}/Oracle/Oracle8") {
-// env.IID = "\$(docker images oracle:$BUILD_NUMBER --format \"{{.ID}}\")"
-// sh "docker stop \$(docker ps -a -q) && \
-// docker rm \$(docker ps -a -q) && \
-// docker rmi -f ${IID}"
-// }
-// }
-// }
-// }
-// stage('Clean Up'){  
-// steps {
-// script{
-// dir("${env.WORKSPACE}") {
-// sh "docker system prune -a -f"
-// }
-// }
-// }
-// }
-        }
+                stage('Arch Testing'){  
+                when {
+                          allOf {
+                           expression {params.CI_BUILD_TYPE == 'FULL'}
+                           expression {params.ENABLE_ARCH == true}
+                           expression {params.ENABLE_TESTING == true}
+                        }
+                        }
+                    options {
+                    timeout(time: 3, unit: "HOURS")
+                    } 
+                    steps {
+                    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                    script{
+                    dir("${env.WORKSPACE}/Arch/GnuRadio") {
+                    env.IID = "\$(docker images arch:$BUILD_NUMBER --format \"{{.ID}}\")"
+                    sh "docker run --net=host -i $IID /bin/bash -c './test-only-Arch.sh'"
+                    }
+                    }
+                    }
+                    }
+                    }
+                    
+
+
+                stage('Ubuntu Testing'){    
+                when {
+                          allOf {
+                           expression {params.CI_BUILD_TYPE == 'FULL'}
+                           expression {params.ENABLE_UBUNTU == true}
+                           expression {params.ENABLE_TESTING == true}
+                        }
+                        }
+                    options {
+                    timeout(time: 3, unit: "HOURS")
+                    } 
+                    steps {
+                    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                    script{
+                    dir("${env.WORKSPACE}/ubuntu/20.04/gnuradio") {
+                    env.IID = "\$(docker images ubuntu:$BUILD_NUMBER --format \"{{.ID}}\")"
+                    sh "docker run --net=host -i $IID /bin/bash -c './test-only.sh'"
+                    }
+                    }
+                    }
+                    }
+                    }
+
+
+               stage('Oracle Testing'){    
+               when {
+                          allOf {
+                           expression {params.CI_BUILD_TYPE == 'FULL'}
+                           expression {params.ENABLE_ORACLE == true}
+                           expression {params.ENABLE_TESTING == true}
+                        }
+                        }
+                    options {
+                    timeout(time: 3, unit: "HOURS")
+                        } 
+                    steps {
+                    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                    script{
+                        dir("${env.WORKSPACE}/Oracle/Oracle8/GnuRadio") {
+                            env.IID = "\$(docker images oracle:$BUILD_NUMBER --format \"{{.ID}}\")"
+                            sh "docker run --net=host -i $IID /bin/bash -c './test-only.sh'"
+                    }
+                    }
+                    }
+                    }
+                    }
+}
+
+
+
 post {
-always{
-script{
-if (params.CLEAN == true){
-sh "docker system prune -a -f"}
-else { echo 'This build is finished. Not running clean.'}
- 		failure {
+   always{
+        script{
+        if (params.CLEAN == true){
+        sh "docker stop \$(docker ps -a -q) && docker system prune -a -f"
+        echo 'This build is finished. Cleaning up build environment.'}
+        else { echo 'This build is finished. Not running clean.'}
+        }
+        }
+    failure {
  			mail to: 'tech@pervices.com',
  			subject: "Failed Pipeline: ${currentBuild.fullDisplayName}",
  			body: "Something is wrong with the build ${env.BUILD_URL}"
  		}
- 		}
-}
 }
 }
