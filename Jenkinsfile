@@ -45,7 +45,7 @@ parameters {
                         script{
                         if (params.CLEAN == false){
                         env.IID = "\$(docker images arch:$BUILD_NUMBER --format \"{{.ID}}\")"
-                        echo 'env'
+                        sh 'env'
                         }
                         }
                         }
