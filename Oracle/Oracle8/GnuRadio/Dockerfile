@@ -31,12 +31,8 @@ cd ../../Testing && \
 mv variables.sh /home/notroot/testing && \
 mv tests /home/notroot/testing && \
 mv test-only.sh /home/notroot/testing && \
-# rm /home/gnuradio/gr-uhd/python/uhd/bindings/uhd_types_python.cc 
-# mv /home/pvpkg/ubuntu/20.04/modified/uhd_types_python_mod.cc /home/gnuradio/gr-uhd/python/uhd/bindings && \
-# mv /home/gnuradio/gr-uhd/python/uhd/bindings/uhd_types_python_mod.cc /home/gnuradio/gr-uhd/python/uhd/bindings/uhd_types_python.cc && \
 rm /home/gnuradio/cmake/Modules/GrMinReq.cmake && \
 mv /home/pvpkg/Oracle/Oracle8/GrMinReq.cmake /home/gnuradio/cmake/Modules
-#mv /home/gnuradio/CMakeListsMOD.txt /home/gnuradio/CMakeLists.txt
 WORKDIR /home
 RUN tar -czvf gnuradio-maint-3.10.tar.gz gnuradio && \
 mv gnuradio-maint-3.10.tar.gz /root/rpmbuild/SOURCES
