@@ -11,9 +11,7 @@ RUN yum -y update && \
 #CentOS command
 yum -y install dnf-plugins-core oracle-epel-release-el8 make gcc rpm-build git rpmdevtools wget cmake python3-pip &&\
 dnf config-manager --set-enabled ol8_codeready_builder && \
-pip3 install retrying pygccxml pyqtgraph==0.11.1 numpy==1.17.4 Mako && \
-cd /usr/local/lib64/python3.6/site-packages/ && \
-mv MarkupSafe-2.0.1.dist-info  markupsafe  numpy  numpy-1.17.4.dist-info /usr/lib/python3.6/site-packages && \
+pip3 install retrying pygccxml pyqtgraph==0.11.1 Mako && \
 cd /usr/local/lib/python3.6/site-packages/ && \
 mv Mako-1.1.6.dist-info mako  pygccxml  pygccxml-2.2.1.dist-info  pyqtgraph  pyqtgraph-0.11.1.dist-info  retrying-1.3.3-py3.6.egg-info  retrying.py /usr/lib/python3.6/site-packages
 WORKDIR /home

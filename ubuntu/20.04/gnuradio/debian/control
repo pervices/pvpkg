@@ -32,9 +32,9 @@ Build-Depends: cmake,
                libsoapysdr-dev,
                libspdlog-dev,
             libthrift-dev [amd64 arm64 armel armhf i386],
-               libuhd-dev,
                libusb-1.0-0-dev [!kfreebsd-any],
                libxi-dev,
+               libx11-dev,
                libxrender-dev,
                libzmq3-dev [!hurd-i386] | libzmq-dev [!hurd-i386],
             ninja-build,
@@ -72,6 +72,7 @@ Package: gnuradiopv
 Architecture: any
 Depends: libcanberra-gtk-module,
         libcanberra-gtk3-module,
+        libuhd-dev
         python3-click,
         python3-click-plugins,
         python3-gi,
@@ -369,6 +370,8 @@ Architecture: any
 Pre-Depends: ${misc:Pre-Depends}
 Depends: ${misc:Depends}, ${shlibs:Depends}
 Multi-Arch: same
+Description: contains the blocks that implement UDP and TCP source
+    and sink blocks supporting both IPv4 and IPv6. 
 
 
 Package: libgnuradiopv-iio3.8.1
@@ -377,7 +380,7 @@ Architecture: any
 Pre-Depends: ${misc:Pre-Depends}
 Depends: ${misc:Depends}, ${shlibs:Depends}
 Multi-Arch: same
-
+Description: GNU Radio blocks for IIO devices.
 
 Package: libgnuradiopv-soapy3.8.1
 Section: libs
@@ -385,6 +388,8 @@ Architecture: any
 Pre-Depends: ${misc:Pre-Depends}
 Depends: ${misc:Depends}, ${shlibs:Depends}
 Multi-Arch: same
+Description: Interfaces to the SoapySDR library, 
+ which supports driver modules for many types of SDR hardware.
 
 Package: libgnuradiopv-pdu3.8.1
 Section: libs
@@ -392,4 +397,7 @@ Architecture: any
 Pre-Depends: ${misc:Pre-Depends}
 Depends: ${misc:Depends}, ${shlibs:Depends}
 Multi-Arch: same
+Description: Contains signal processing
+ blocks that operate on Protocol Data Unit format messages. Many
+ such blocks are analogs of streaming API functionality.
 
