@@ -4,16 +4,12 @@ WORKDIR /home/notroot
 WORKDIR /home/notroot/testing
 WORKDIR /home/artifacts
 WORKDIR /home
-#WORKDIR /etc/yum.repos.d
-#RUN sed -i 's/mirrorlist/#mirrorlist/g' /etc/yum.repos.d/CentOS-* && \
-#sed -i 's|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|g' /etc/yum.repos.d/CentOS-* && \
 RUN yum -y update && \
-#CentOS command
 yum -y install dnf-plugins-core oracle-epel-release-el8 make gcc rpm-build git rpmdevtools wget cmake python3-pip &&\
 dnf config-manager --set-enabled ol8_codeready_builder && \
-pip3 install retrying pygccxml pyqtgraph==0.11.1 Mako && \
+pip3 install retrying pygccxml pyqtgraph==0.11.1 && \
 cd /usr/local/lib/python3.6/site-packages/ && \
-mv Mako-1.1.6.dist-info mako  pygccxml  pygccxml-2.2.1.dist-info  pyqtgraph  pyqtgraph-0.11.1.dist-info  retrying-1.3.3-py3.6.egg-info  retrying.py /usr/lib/python3.6/site-packages
+mv pygccxml  pygccxml-2.2.1.dist-info  pyqtgraph  pyqtgraph-0.11.1.dist-info  retrying-1.3.3-py3.6.egg-info  retrying.py /usr/lib/python3.6/site-packages
 WORKDIR /home
 RUN rpmdev-setuptree && \
 git clone -b master https://github.com/pervices/uhd.git && \
@@ -37,14 +33,12 @@ WORKDIR /home
 RUN tar -czvf gnuradio-maint-3.10.tar.gz gnuradio && \
 mv gnuradio-maint-3.10.tar.gz /root/rpmbuild/SOURCES
 WORKDIR /root/rpmbuild/SPECS
-#RUN dnf builddep --enablerepo=powertools -y uhd.spec && \
 RUN dnf builddep -y uhd.spec && \
 QA_RPATHS=$(( 0x0001|0x0002 )) rpmbuild -ba uhd.spec && \
 cd ../RPMS/x86_64 && \
 rpm -i uhd*.rpm && \
 mv uhd*.rpm /home/uhd
 WORKDIR /root/rpmbuild/SPECS
-#RUN dnf builddep --enablerepo=powertools -y gnuradio.spec && \
 RUN dnf builddep  -y gnuradio.spec && \
 QA_RPATHS=$(( 0x0001|0x0002 )) rpmbuild -ba volk.spec && \
 cd ../RPMS/x86_64 && \
