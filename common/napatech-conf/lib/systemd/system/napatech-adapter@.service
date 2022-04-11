@@ -1,0 +1,12 @@
+[Unit]
+Description=Enable OSmode on Napatech drivers
+After=napatech.service
+Before=network-online.target network.target system-netctl.service NetworkManager.service
+
+[Service]
+Type=simple
+#EnvironmentFile=/etc/conf.d/setmtu
+ExecStart=/opt/napatech3/bin/osmode -p %i 
+
+[Install]
+WantedBy=napatech.service

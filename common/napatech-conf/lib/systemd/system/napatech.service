@@ -1,0 +1,82 @@
+; This file contains a unit configuration for systemd, enabling the Napatech
+; 3GD Service (ntservice) to be controlled and supervised by systemd. This
+; includes starting the ntservice at boot time.
+;
+; systemd is a suite of system management daemons, libraries, and utilities
+; designed as a central management and configuration platform for the Linux
+; computer operating system.
+;
+; It is recommended to ensure 'LogToSystem = true' is set in the ntservice.ini
+; file to enable logging with journald which is a part of systemd.
+;
+; To use this unit configuration file with systemd, copy this file to
+; /usr/lib/systemd/system/ and call
+; $ systemctl daemon-reload
+;
+; To enable Napatech 3GD Service to start at boot time call
+; $ systemctl enable ntservice
+;
+; To disable Napatech 3GD Service from starting at boot time call
+; $ systemctl disable ntservice
+;
+; To start the Napatech 3GD Service call
+; $ systemctl start ntservice
+; This will not return until the ntservice is operational.
+;
+; To stop the Napatech 3GD Service call
+; $ systemctl stop ntservice
+;
+; To restart the Napatech 3GD Service after ntservice.ini changes call
+; $ systemctl restart ntservice
+;
+; If LogToSystem is set to true in ntservice.ini and journald is used, then
+; call the following command to show error, warning and information messages
+; from the ntservice process
+; $ journalctl -u ntservice
+
+[Unit]
+Description=Napatech 3GD Service
+Before=network-online.target network.target system-netctl.service NetworkManager.service
+
+[Service]
+; Type is forking as ntservice will call fork() as part of its start-up.
+; ntservice does not use PID files, but systemd can guess it.
+Type=forking
+GuessMainPID=yes
+
+; Call ntstart.sh/ntstop.sh directly. ntstart.sh will automatically load the
+; low level driver, if needed. Optionally enable ExecStopPost to unload the
+; low level driver when stopping ntservice.
+;
+; By default the file /opt/napatech3/config/ntservice.ini is used as
+; configuration file for the ntservice. This can optionally be changed by
+; adding an alternative configuration file as last argument to ntstart.sh. See
+; "ntstart.sh -h" for additional information.
+ExecStart=/opt/napatech3/bin/ntstart.sh --managed
+ExecStop=/opt/napatech3/bin/ntstop.sh --managed
+; ExecStopPost=/opt/napatech3/bin/ntunload.sh
+
+; Disable the timeout logic to wait for start-up as start-up time differs
+; greatly depending on the numbers of adapters and adapter types.
+TimeoutStartSec=0
+
+; Disable the timeout logic to wait for stop as ntstop.sh will forcibly
+; terminate ntservice after 120 seconds.
+TimeoutStopSec=0
+
+; Always restart when the ntservice process terminates unclean. When the death
+; of the process is a result of a systemd operation (e.g. service stop or
+; restart), the service will not be restarted.
+Restart=on-abnormal
+
+; Successful ntservice termination code is 0. Configuration errors returns 1
+; but accept this as well to keep ntservice alive in Service Mode
+SuccessExitStatus=0 1
+
+; Do not restart when exit code is 1. This is normally caused by a
+; configuration error. See the log from ntservice using 'journalctl -xe' for
+; details.
+RestartPreventExitStatus=1
+
+[Install]
+WantedBy=multi-user.target

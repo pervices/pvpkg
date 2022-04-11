@@ -1,0 +1,8 @@
+Description='ntxs2 40GBASER port.'
+Interface=ntxs2
+Connection=ethernet
+IP=static
+Address=('10.10.12.10/24')
+ExcludeAuto=no
+SkipNoCarrier=yes
+ForceConnect=yes

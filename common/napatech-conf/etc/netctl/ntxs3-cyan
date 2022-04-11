@@ -1,0 +1,8 @@
+Description='ntx3: 40GBASER port.'
+Interface=ntxs3
+Connection=ethernet
+IP=static
+Address=('10.10.13.10/24')
+ExcludeAuto=no
+SkipNoCarrier=yes
+ForceConnect=yes

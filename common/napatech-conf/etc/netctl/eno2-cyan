@@ -1,0 +1,7 @@
+Description='eno2 cyan mgmt.'
+Interface=eno2
+Connection=ethernet
+IP=static
+Address=('192.168.10.4/24')
+ExcludeAuto=no
+SkipNoCarrier=yes
