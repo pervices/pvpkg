@@ -8,7 +8,7 @@ arch=('i686' 'x86_64')
 url="https://github.com/gnuradio/gnuradio"
 license=('GPL')
 depends=('libx11' 'fftw' 'python' 'python-numpy' 'python-mako' 'python-click' 'python-click-plugins' 'cppunit' 'gsl' 'blas' 'guile' 'boost-libs' 'libusb' 'portaudio' 'libuhd' 'zeromq' 'libvolk' 'log4cpp' 'qwt' 'python-matplotlib')
-makedepends=('python-cairo' 'python-yaml' 'glu' 'pybind11' 'python-sphinx' 'cairo' 'swig' 'python-gobject' 'gtk3' 'python-pyqt5' 'pango' 'thrift' 'spdlog')
+makedepends=('python-cairo' 'python-yaml' 'glu' 'pybind11' 'python-sphinx' 'cairo' 'swig' 'python-gobject' 'gtk3' 'python-pyqt5' 'pango' 'thrift' 'spdlog' 'python-pyqtgraph')
 optdepends=('python-lxml: Some GRC modules use lxml optionally for improved performance')
 source=("git+https://github.com/gnuradio/gnuradio.git#branch=maint-3.10")
 md5sums=('SKIP')
