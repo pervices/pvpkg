@@ -5,11 +5,11 @@ RUN useradd -m notroot
 RUN echo "notroot ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/notroot
 # patched version of glibc 2.33 is installed as a workaround for Docker compatibility issue present after glibc was updated in early 2021
 # the Archlinux keyring, git, wget are installed for later use, as well as the base-devel package group
-RUN patched_glibc=glibc-linux4-2.33-4-x86_64.pkg.tar.zst && \
-    curl -LO "https://repo.archlinuxcn.org/x86_64/$patched_glibc" && \
-   bsdtar -C / -xvf "$patched_glibc"
+# RUN patched_glibc=glibc-linux4-2.33-4-x86_64.pkg.tar.zst && \
+#     curl -LO "https://repo.archlinuxcn.org/x86_64/$patched_glibc" && \
+#    bsdtar -C / -xvf "$patched_glibc"
 RUN pacman -Sy --noconfirm archlinux-keyring&& \
-    pacman -Sy --noconfirm git cmake gcc clang && \
+    pacman -Sy --noconfirm git cmake clang && \
  pacman -Sy --noconfirm inetutils iproute2 && \
  pacman -Sy --noconfirm wget
 # Allow notroot to run stuff as root (to install dependencies): 
@@ -17,7 +17,7 @@ RUN pacman -Sy --noconfirm archlinux-keyring&& \
 USER notroot
 WORKDIR /home/notroot
 # install yay for later use in install
-RUN ls && git clone https://aur.archlinux.org/yay-bin.git && \
+RUN git clone https://aur.archlinux.org/yay-bin.git && \
 cd yay-bin && \
   makepkg --noconfirm --syncdeps --rmdeps --install --clean 
 # clone pvtest repo to allow for installation of previous versions of boost and boost-libs; current versions of these resulted in build issues
@@ -26,11 +26,11 @@ WORKDIR /home/notroot
 RUN git clone https://github.com/pervices/pvpkg.git && \
 cd pvpkg/Arch  && \
 # building icu63, boost, and boost-libs; which UHD will not build without
-yay -Sy --noconfirm icu63 && \
-sudo pacman -U --noconfirm boost-libs-1.69.0-1-x86_64.pkg.tar.xz && \ 
-sudo pacman -U --noconfirm boost-1.69.0-1-x86_64.pkg.tar.xz && \
-sudo pacman -U --noconfirm shared-mime-info-2.0+57+gc1d1c70-1-x86_64.pkg.tar.zst && \
-sudo pacman -U --noconfirm gtk3-1_3.24.30+62+g8d04980f38-2-x86_64.pkg.tar.zst
+yay -Sy --noconfirm icu63
+# sudo pacman -U --noconfirm boost-libs-1.69.0-1-x86_64.pkg.tar.xz && \ 
+# sudo pacman -U --noconfirm boost-1.69.0-1-x86_64.pkg.tar.xz && \
+# sudo pacman -U --noconfirm shared-mime-info-2.0+57+gc1d1c70-1-x86_64.pkg.tar.zst && \
+# sudo pacman -U --noconfirm gtk3-1_3.24.30+62+g8d04980f38-2-x86_64.pkg.tar.zst
 #sudo pacman -U --noconfirm qwt-6.1.6-1-x86_64.pkg.tar.zst
 WORKDIR /home/notroot/testing
 WORKDIR /home/notroot/libuhd

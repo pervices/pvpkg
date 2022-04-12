@@ -17,7 +17,7 @@ RUN pacman -Sy --noconfirm archlinux-keyring && \
 USER notroot
 WORKDIR /home/notroot
 # install yay for later use in install
-RUN ls && git clone https://aur.archlinux.org/yay-bin.git && \
+RUN git clone https://aur.archlinux.org/yay-bin.git && \
 cd yay-bin && \
 makepkg --noconfirm --syncdeps --rmdeps --install --clean 
 # clone pvtest repo to allow for installation of previous versions of boost and boost-libs; current versions of these resulted in build issues
