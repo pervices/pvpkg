@@ -3,6 +3,7 @@ FROM archlinux:base-devel
 # makepkg cannot (and should not) be run as root, so a dummy user is created:
 RUN useradd -m notroot 
 RUN echo "notroot ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/notroot
+RUN sleep 10000
 # patched version of glibc 2.33 is installed as a workaround for Docker compatibility issue present after glibc was updated in early 2021
 # the Archlinux keyring, git, wget are installed for later use, as well as the base-devel package group
 RUN patched_glibc=glibc-linux4-2.33-4-x86_64.pkg.tar.zst && \

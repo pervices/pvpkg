@@ -255,10 +255,10 @@ post {
         else { echo 'This build is finished. Not running clean.'}
         }
         }
-    failure {
- 			mail to: 'tech@pervices.com',
- 			subject: "Failed Pipeline: ${currentBuild.fullDisplayName}",
- 			body: "Something is wrong with the build ${env.BUILD_URL}"
- 		}
+//     failure {
+//  			mail to: 'tech@pervices.com',
+//  			subject: "Failed Pipeline: ${currentBuild.fullDisplayName}",
+//  			body: "Something is wrong with the build ${env.BUILD_URL}"
+//  		}
 }
 }
