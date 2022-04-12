@@ -1,8 +1,7 @@
-FROM archlinux:latest
+FROM archlinux:base-devel
 # build from most recent Archlinux base image
 # makepkg cannot (and should not) be run as root, so a dummy user is created:
 RUN useradd -m notroot 
-RUN sleep 10000 
 RUN echo "notroot ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/notroot
 # patched version of glibc 2.33 is installed as a workaround for Docker compatibility issue present after glibc was updated in early 2021
 # the Archlinux keyring, git, wget are installed for later use, as well as the base-devel package group
