@@ -1,4 +1,4 @@
-FROM archlinux:latest
+FROM archlinux:base-devel
 # build from most recent Archlinux base image
 # makepkg cannot (and should not) be run as root, so a dummy user is created:
 RUN useradd -m notroot 
