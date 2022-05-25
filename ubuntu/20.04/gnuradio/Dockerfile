@@ -18,7 +18,7 @@ pip3 install pygccxml && \
 # clone pvpkg repo to get uhd and gnuradio Debian directories, as well as modified cmake and uhd_types files to patch
 git clone https://github.com/pervices/pvpkg.git && \
 cd pvpkg/ubuntu/20.04 && \
-mv gnuradio uhd InstallInstructionsUbuntu /home/notroot && \
+mv gnuradio uhd volk InstallInstructionsUbuntu /home/notroot && \
 cd ../../Testing && \
 mv variables.sh /home/notroot/testing && \
 mv tests /home/notroot/testing && \
@@ -38,10 +38,18 @@ cd .. && \
 dpkg -i uhd*.deb
 WORKDIR /home/notroot/volk
 RUN git clone --branch v2.4.1 --recursive https://github.com/gnuradio/volk.git && \
+cd debian && \
+mk-build-deps -i --tool 'apt-get -f --yes' control
+RUN ls && tar -czvf volkpv_2.4.1.orig.tar.gz volk && \
+mv debian volk && \
 cd volk && \
-mkdir build && cd build && \
-cmake -DCMAKE_BUILD_TYPE=Release -DPYTHON_EXECUTABLE=/usr/bin/python3 ../ && \
-make && make install
+dpkg-buildpackage -us -uc -b && \
+cd .. && \
+ls && dpkg -i volk*.deb
+#cd volk && \
+#mkdir build && cd build && \
+#cmake -DCMAKE_BUILD_TYPE=Release -DPYTHON_EXECUTABLE=/usr/bin/python3 ../ && \
+#make && make install
 WORKDIR /home/notroot/gnuradio
 # clone gnuradio 3.9 from github, replace Cmake and uhd types files from Github with those from pvpkg to allow for successful build
 RUN git clone -b maint-3.10 https://github.com/gnuradio/gnuradio.git && \
