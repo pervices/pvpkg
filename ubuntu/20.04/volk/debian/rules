@@ -7,14 +7,13 @@ export DEB_HOST_MULTIARCH
 	dh $@ --with python3
 
 override_dh_auto_configure:
-	- mv cpu-features/* cpu_features/
 	dh_auto_configure -- -DLIB_SUFFIX="/$(DEB_HOST_MULTIARCH)" \
-	-DENABLE_STATIC_LIBS=On -DPYTHON_EXECUTABLE=/usr/bin/python3 \
-	-DCMAKE_BUILD_TYPE=RelWithDebInfo
+	-DPYTHON_EXECUTABLE=/usr/bin/python3 \
+	-DCMAKE_BUILD_TYPE=Release
 
 override_dh_auto_build-indep:
 	cmake --build obj-* --target all
 	cmake --build obj-* --target volk_doc
 
-override_dh_auto_test:
-	- dh_auto_test -- CTEST_TEST_TIMEOUT=60
+override_dh_shlibdeps:
+	dh_shlibdeps --dpkg-shlibdeps-params=--ignore-missing-info	
