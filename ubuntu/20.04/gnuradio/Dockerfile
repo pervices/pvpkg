@@ -38,18 +38,18 @@ cd .. && \
 dpkg -i uhd*.deb
 WORKDIR /home/notroot/volk
 RUN git clone --branch v2.4.1 --recursive https://github.com/gnuradio/volk.git && \
-cd debian && \
-mk-build-deps -i --tool 'apt-get -f --yes' control
-RUN ls && tar -czvf volkpv_2.4.1.orig.tar.gz volk && \
-mv debian volk && \
-cd volk && \
-dpkg-buildpackage -us -uc -b && \
-cd .. && \
-ls && dpkg -i volk*.deb
+#cd debian && \
+#mk-build-deps -i --tool 'apt-get -f --yes' control
+#RUN ls && tar -czvf volkpv_2.4.1.orig.tar.gz volk && \
+#mv debian volk && \
 #cd volk && \
-#mkdir build && cd build && \
-#cmake -DCMAKE_BUILD_TYPE=Release -DPYTHON_EXECUTABLE=/usr/bin/python3 ../ && \
-#make && make install
+#dpkg-buildpackage -us -uc -b && \
+#cd .. && \
+#ls && dpkg -i volk*.deb
+cd volk && \
+mkdir build && cd build && \
+cmake -DCMAKE_BUILD_TYPE=Release -DPYTHON_EXECUTABLE=/usr/bin/python3 ../ && \
+make && make install
 WORKDIR /home/notroot/gnuradio
 # clone gnuradio 3.9 from github, replace Cmake and uhd types files from Github with those from pvpkg to allow for successful build
 RUN git clone -b maint-3.10 https://github.com/gnuradio/gnuradio.git && \
