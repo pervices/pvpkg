@@ -131,10 +131,9 @@ exit 0
 %{_datadir}/uhd
 %{python3_sitearch}/uhd
 %{python3_sitearch}/usrp_mpm/*
-%exclude /usr/lib/debug/*
+# %exclude /usr/lib/debug/*
 /usr/lib/*
-/usr/lib64/libuhd.so
-/usr/lib64/libuhd.so.3.13.0
+/usr/lib64/libuhd.*
 /usr/lib64/cmake/*
 /usr/lib64/pkgconfig/uhd.pc
 
