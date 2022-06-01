@@ -1,4 +1,4 @@
-FROM oraclelinux:8.5
+FROM oraclelinux:8.6
 #FROM centos:8
 WORKDIR /home/notroot
 WORKDIR /home/notroot/testing
