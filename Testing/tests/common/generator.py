@@ -1,6 +1,41 @@
 import inspect
 import sys
 
+
+def ship_test():
+    print(sys._getframe().f_code.co_name)
+    channels = list(range(4))
+    wave_freq = 50000
+    sample_rate=int(325000000/325)
+    sample_count = 4096
+    tx_gain = 25
+    rx_gain = 25
+    for center_freq in [50000000, 300000000, 600000000, 1200000000, 2400000000, 4000000000, 5000000000, 5500000000 ]:
+        yield locals()
+        
+def ship_test_low():
+    print(sys._getframe().f_code.co_name)
+    channels = list(range(4))
+    center_freq = 800000000 #80MHz
+    sample_rate=int(325000000/5) #162500000
+    sample_count = 4096
+    tx_gain = 25
+    rx_gain = 25
+    for wave_freq in [-30000000, 160000000]:
+        yield locals()
+        
+def ship_test_high():
+    print(sys._getframe().f_code.co_name)
+    channels = list(range(4))
+    sample_rate=int(325000000/5) 
+    sample_count = 4096
+    tx_gain = 25
+    rx_gain = 25
+    center_freq=1000000000 #1GHz
+    for wave_freq in [-162000000, 162000000]:
+        yield locals()
+
+
 def hi_band_wave_sweep():
 
     print(sys._getframe().f_code.co_name)
@@ -17,7 +52,7 @@ def hi_band_wave_sweep():
 def hi_band_wave_easy():
     print(sys._getframe().f_code.co_name)
 
-    channels = list(range(1))
+    channels = list(range(4))
     sample_rate = 9848485
     sample_count = int((round(9848485/1000)))
     #sample_count_tx = 9848485
