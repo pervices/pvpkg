@@ -49,6 +49,22 @@ def dump_file(vsnk, wave_freq):
     return None
 
 
+def dump_file_shiptest(vsnk, wave_freq, center_freq, sample_rate, tx_gain, sample_count):
+
+    sample_count = range(len(vsnk[0].data()))
+    channels = range(len(vsnk))
+
+    for sample in sample_count:
+
+        for channel in channels:
+            datum = (vsnk[channel].data()[sample])
+            #Writing to a file
+            f = open(path + "/CH_" + str(channel) + "_WF_" + str(wave_freq) + "_CF_" + str(center_freq) + "_SR_" + str(sample_rate) + "_gain_" + str(tx_gain) + "_SC_" + str(len(sample_count)) + ".dat", "a")
+            f.write("%10.5f %10.5f\t" % (datum.real, datum.imag) + "\n")
+
+    return None
+    
+
 def fundamental(real_wave, sample_rate):
 
     N = len(real_wave)
