@@ -24,17 +24,20 @@ import re
 from scipy.signal import find_peaks
 import scipy.fftpack
 
-#loop over .dat files in the dump_file directory
 
 ####-------------------------------INPUT DATA--------------------------------------------------------------------------------####
 #path="/home/jade/bmch/Testing/tests/dump_20220621204459.728612" ## TODO: how to update this regardless of dump_file and ensure that it's sorted by time modified/created?? theres some os function that does this
-path="/home/jade/bmch/Testing/tests/dump_20220302172229.661865" ## TODO: how to update this regardless of dump_file and ensure that it's sorted by time modified/created?? theres some os function that does this
+path="/home/jade/bmch/Testing/tests/dump_20220624191343.443462" ## TODO: how to update this regardless of dump_file and ensure that it's sorted by time modified/created?? theres some os function that does this
 
 file_list=os.listdir(path)        
 directory = os.fsencode(path)
 
-
-CF_table = ["CF_50000000_", "CF_300000000_", "CF_600000000_", "CF_1200000000_", "CF_2400000000_", "CF_4000000000_", "CF_5000000000_", "CF_5500000000_"] #from generator program TODO: have this automatically taken from gen file
+#CF_table = np.asarray(gen.center_freq_list)
+# print(CF_table)
+#CF_table_2=''.join('"' + item + '"' for item in CF_table)
+#print(CF_table_2)
+CF_table=["CF_50000000_", "CF_300000000_", "CF_600000000_", "CF_1200000000_", "CF_2400000000_", "CF_4000000000_", "CF_5000000000_", "CF_5500000000_"] #from generator program TODO: have this automatically taken from gen file
+print(len(CF_table))
 #WF_table=["WF_-30000000_", "WF_160000000_", "WF_-162000000_", "WF_162000000_"]
 center_freq_array=[]
 wave_freq_array=[]
@@ -170,9 +173,9 @@ for vec in IQ_array_2:
 ywf_array_2=[]
 xf_array_2=[]
 x=0
-for x in range(0,8,1):
-    new_ywf=ywf_array[4*x:4*x+4]
-    new_xf=xf_array[4*x:4*x+4]
+for x in range(0,len(CF_table),1):
+    new_ywf=ywf_array[len(channels_array)*x:len(channels_array)*x+len(channels_array)]
+    new_xf=xf_array[len(channels_array)*x:len(channels_array)*x+len(channels_array)]
     print(len(new_ywf))
     print(len(new_xf))
     x+=1
@@ -207,6 +210,45 @@ for Fy in ywf_array_2:
     amp_dB_new=20*np.log(Fy)
     amp_dB_fs_new=amp_dB_new - max_amp_new
     ywf_array_normalized.append(amp_dB_fs_new)
+
+    
+#peak finding using scipy
+#determining the height - 50dB will be the threshold for peak finding
+max_peaks=[]
+for h in ywf_array_normalized:
+    for h_2 in h:
+        height_max=max(h_2) 
+        max_peaks.append(height_max)
+
+height= np.array(max_peaks) - 50
+
+height_array=[]
+for x in range(0,len(CF_table),1):
+    new_height_array=height[len(channels_array)*x:len(channels_array)*x + len(channels_array)]
+    height_array.append(new_height_array)
+    
+
+#peaks_fx=[]
+peaks_fy=[]
+for ywf in ywf_array_normalized:
+    for y in ywf:
+        peaks_y=find_peaks(np.real(y), height=50)
+        peaks,_=find_peaks(np.real(y), height=50)
+        peaks_y = peaks_y[1]["peak_heights"]
+        peaks_fy.append(peaks_y)
+        #peaks_fx.append(peaks,_)
+
+peaks_fy_array=[]
+for f in peaks_fy:
+    new_fy=peaks_fy[len(channels_array)*x:len(channels_array)*x+len(channels_array)]
+    x+=1
+    peaks_fy_array.append(new_fy)
+
+    
+# real= np.conj(109.80679111376648+15.710884618874793j) * (109.80679111376648+15.710884618874793j)
+# print(real)
+
+
     
 # #plotting normalized FFT
 x=0
@@ -226,6 +268,7 @@ for Fx, Fy in zip(xf_array_2, ywf_array_normalized):
     axis[1,1].set_title("Normalized FFT of channel {} with Center Freq {} Hz".format(channels_array[3], center_freq_array[x]), loc='center')
     x+=4
     plt.show()
+
         
 
     # #plotting normalized FFT
