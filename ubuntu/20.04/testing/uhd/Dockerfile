@@ -24,7 +24,7 @@ mv uhd /home/notroot
 RUN apt-get update
 WORKDIR /home/notroot/uhd
 # clone latest pervices uhd version, tar repo as orig.tar.gz, and build debian package
-RUN git clone -b  ops/dwil/serial_get_buffer_level https://github.com/pervices/uhd.git && \
+RUN git clone -b  ops/dwil/series_get_buffer_level https://github.com/pervices/uhd.git && \
 cd debian && \
 mk-build-deps -i --tool 'apt-get -f --yes' control
 WORKDIR /home/notroot/uhd
