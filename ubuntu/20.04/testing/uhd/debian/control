@@ -1,0 +1,43 @@
+Source: uhdpv
+Section: unknown
+Priority: optional
+Maintainer: pvlt4 <pvlt4@unknown>
+Build-Depends: cmake,
+               debhelper (>= 12),
+            dh-python,
+            doxygen,
+            doxygen-latex,
+		dpdk,
+            graphviz [!powerpcspe],
+            libboost-all-dev,
+               libgps-dev,
+               libncurses5-dev,
+               liborc-0.4-dev,
+               libudev-dev [linux-any],
+               libusb-1.0-0-dev [linux-any],
+               libusb2-dev [kfreebsd-any],
+            ninja-build,
+		octave,
+            pkgconf,
+            python3-all-dev,
+            python3-cheetah,
+               python3-docutils,
+               python3-mako,
+            python3-numpy,
+               python3-pyqt5,
+            python3-requests,
+               python3-retrying,
+               python3-ruamel.yaml,
+            python3-setuptools
+Standards-Version: 4.4.1
+Homepage: <insert the upstream URL, if relevant>
+#Vcs-Browser: https://salsa.debian.org/debian/uhdpv
+#Vcs-Git: https://salsa.debian.org/debian/uhdpv.git
+
+Package: uhdpv
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Provides: libuhd-dev, uhd, libuhd
+Conflicts: libuhd-dev, uhd, libuhd
+Description: <insert up to 60 chars description>
+ <insert long description, indented with spaces>

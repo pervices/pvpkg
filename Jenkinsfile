@@ -6,11 +6,12 @@ pipeline {
     }
 parameters {
         choice(name: "CI_BUILD_TYPE", choices: ["UHD_ONLY", "FULL"], description: "Select whether to only build UHD package or to build Gnuradio with UHD. Gnuradio has a considerably longer compile time, so FULL should not be slected if a new UHD package is required quickly.")
+        choice(name: "BRANCH", choices: ["master", "testing"], description: "Select whether to build package from master branch and push to latest on the fileserver or to build from a testing branch and push to testing on the fileserver.")
 		booleanParam(name: "ENABLE_ARCH", defaultValue: true, description: "Select whether to generate packages for Archlinux.")
 		booleanParam(name: "ENABLE_UBUNTU", defaultValue: true, description: "Select whether to generate packages for Ubuntu 20.04.")
 		booleanParam(name: "ENABLE_ORACLE", defaultValue: true, description: "Select whether to generate packages for Oracle Linux 8.")
 		booleanParam(name: "CLEAN", defaultValue: true, description: "Select whether to clean Docker cache and remove all Docker images after build. This step is necessary in order to ensure all Git commits and changes are applied to the subsequent build. Cleaning should be disabled for failing builds that require troubleshooting.")
-		booleanParam(name: "ENABLE_TESTING", defaultValue: false, description: "Select whether to run CI tests for enabled build distributions after successful build.")
+		booleanParam(name: "ENABLE_TESTING", defaultValue: true, description: "Select whether to run CI tests for enabled build distributions after successful build.")
 	}
     stages {
 
@@ -24,6 +25,7 @@ parameters {
                         allOf {
                           expression {params.ENABLE_ARCH == true}
                           expression {params.CI_BUILD_TYPE == 'UHD_ONLY'}
+                          expression {params.BRANCH == 'master'}
                         }
                         }
                             steps { 
@@ -51,6 +53,7 @@ parameters {
                          allOf {
                           expression {params.ENABLE_ARCH == true}
                           expression {params.CI_BUILD_TYPE == 'FULL'}
+                          expression {params.BRANCH == 'master'}
                         }
                         }
                              steps { 
@@ -77,6 +80,7 @@ parameters {
                           allOf {
                            expression {params.ENABLE_UBUNTU == true}
                            expression {params.CI_BUILD_TYPE == 'UHD_ONLY'}
+                           expression {params.BRANCH == 'master'}
                        }
                        }
                             steps { 
@@ -94,12 +98,39 @@ parameters {
                        }
                        }
                        }
+                       
+                         stage('Ubuntu 20.04 UHD Testing Branch') { 
+               //Build UHD
+                     when {
+                          allOf {
+                           expression {params.ENABLE_UBUNTU == true}
+                           expression {params.CI_BUILD_TYPE == 'UHD_ONLY'}
+                           expression {params.BRANCH == 'testing'}
+                       }
+                       }
+                            steps { 
+                        script { 
+                                dir("${env.WORKSPACE}/ubuntu/20.04/testing/uhd") {
+                                dockerImageUbuntu2004 = docker.build("ubuntu:$BUILD_NUMBER", "--network host .") 
+                                env.IID = "\$(docker images ubuntu:$BUILD_NUMBER --format \"{{.ID}}\")"
+                                env.CID="\$(docker create $IID)"
+                                sh "docker cp ${CID}:/home/artifacts/. $WORKSPACE/ubuntu/20.04/testing/uhd"
+                                sshagent(credentials: ['sshfilespervices']) {
+                                sh "ssh -T -p 237 filespervices@files.pervices.com 'rm -f /home/filespervices/www/testing/sw/ubuntu20.04/uhd/*' && \
+                                scp -P 237 uhdpv*.tar.gz filespervices@files.pervices.com:/home/filespervices/www/testing/sw/ubuntu20.04/uhd/"
+                       } 
+                       }
+                       }
+                       }
+                       }
+                       
                 stage('Ubuntu 20.04 Full') {
                //Build UHD
                      when {
                           allOf {
                             expression {params.ENABLE_UBUNTU == true}
                             expression {params.CI_BUILD_TYPE == 'FULL'}
+                            expression {params.BRANCH == 'master'}
                        }
                        }
                                steps { 
@@ -126,6 +157,7 @@ parameters {
                           allOf {
                            expression {params.ENABLE_ORACLE == true}
                            expression {params.CI_BUILD_TYPE == 'UHD_ONLY'}
+                           expression {params.BRANCH == 'master'}
                         }
                         } 
                               steps { 
@@ -149,6 +181,7 @@ parameters {
                           allOf {
                            expression {params.ENABLE_ORACLE == true}
                            expression {params.CI_BUILD_TYPE == 'FULL'} 
+                           expression {params.BRANCH == 'master'}
                         }
                         }
                               steps { 
