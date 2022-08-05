@@ -27,7 +27,9 @@ import scipy.fftpack
 
 ####-------------------------------INPUT DATA--------------------------------------------------------------------------------####
 #path="/home/jade/bmch/Testing/tests/dump_20220621204459.728612" ## TODO: how to update this regardless of dump_file and ensure that it's sorted by time modified/created?? theres some os function that does this
-path="/home/jade/bmch/Testing/tests/dump_20220624191343.443462" ## TODO: how to update this regardless of dump_file and ensure that it's sorted by time modified/created?? theres some os function that does this
+#path="/home/jade/bmch/Testing/tests/dump_20220624191343.443462" ## TODO: how to update this regardless of dump_file and ensure that it's sorted by time modified/created?? theres some os function that does this
+path="/home/bmch/Desktop/dump_20220801183448.236882"
+
 
 file_list=os.listdir(path)        
 directory = os.fsencode(path)
@@ -50,7 +52,7 @@ for i in range(len(CF_table)):
     IQ_array=[]
     channels_array=[]
     for file in os.listdir(directory):
-    #print('the file name is', file)
+        print('the file name is', file)
         filename = os.fsdecode(file)
         #channels_array=[]
         if filename.endswith(".dat") and CF_table[i] in filename:
