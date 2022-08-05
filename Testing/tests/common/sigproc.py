@@ -50,6 +50,23 @@ def dump_file(vsnk, wave_freq):
 
 
 def dump_file_shiptest(vsnk, wave_freq, center_freq, sample_rate, tx_gain, sample_count):
+    sample_count = range(len(vsnk[0].data()))
+    channels = range(len(vsnk))
+
+    for sample in sample_count:
+        i=0
+        for channel in channels:
+            datum = (vsnk[channel].data()[sample])
+            #Writing to a file
+            f = open(path + "/file_num_" + str(i) + "_CH_" + str(channel) + "_WF_" + str(wave_freq) + "_CF_" + str(center_freq) + "_SR_" + str(sample_rate) + "_gain_" + str(tx_gain) + "_SC_" + str(len(sample_count)) + ".dat", "a")
+            f.write("%10.5f %10.5f\t" % (datum.real, datum.imag) + "\n")
+            i+=1
+    
+
+    return None
+
+
+def dump_file_shiptest_bin(vsnk, wave_freq, center_freq, sample_rate, tx_gain, sample_count):
 
     sample_count = range(len(vsnk[0].data()))
     channels = range(len(vsnk))
@@ -60,7 +77,11 @@ def dump_file_shiptest(vsnk, wave_freq, center_freq, sample_rate, tx_gain, sampl
             datum = (vsnk[channel].data()[sample])
             #Writing to a file
             f = open(path + "/CH_" + str(channel) + "_WF_" + str(wave_freq) + "_CF_" + str(center_freq) + "_SR_" + str(sample_rate) + "_gain_" + str(tx_gain) + "_SC_" + str(len(sample_count)) + ".dat", "a")
-            f.write("%10.5f %10.5f\t" % (datum.real, datum.imag) + "\n")
+            byte_array=("%10.5f %10.5f\t" % (datum.real, datum.imag) + "\n")
+            binary_format=bytearray(byte_array, encoding="ascii")
+            #f.write( (datum.real, datum.imag) )
+            #Or, try this - this should just store the array.
+            f.write(binary_format)
 
     return None
     
