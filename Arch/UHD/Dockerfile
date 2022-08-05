@@ -9,7 +9,7 @@ RUN echo "notroot ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/notroot
  #   curl -LO "https://repo.archlinuxcn.org/x86_64/$patched_glibc" && \
  #  bsdtar -C / -xvf "$patched_glibc"
 RUN pacman -Sy --noconfirm archlinux-keyring && \
-    pacman -Sy --noconfirm git cmake clang && \
+    pacman -Sy --noconfirm git cmake clang icu && \
  pacman -Sy --noconfirm inetutils iproute2 && \
  pacman -Sy --noconfirm wget
 # Allow notroot to run stuff as root (to install dependencies): 
@@ -23,10 +23,10 @@ makepkg --noconfirm --syncdeps --rmdeps --install --clean
 # clone pvtest repo to allow for installation of previous versions of boost and boost-libs; current versions of these resulted in build issues
 WORKDIR /home/artifacts
 WORKDIR /home/notroot
-RUN git clone https://github.com/pervices/pvpkg.git && \
-cd pvpkg/Arch  && \
+RUN git clone https://github.com/pervices/pvpkg.git 
+#cd pvpkg/Arch  && \
 # building icu63, boost, and boost-libs; which UHD will not build without
-yay -Sy --noconfirm icu63 
+#yay -Sy --noconfirm icu63 
 #sudo pacman -U --noconfirm boost-libs-1.69.0-1-x86_64.pkg.tar.xz && \ 
 #sudo pacman -U --noconfirm boost-1.69.0-1-x86_64.pkg.tar.xz && \
 #sudo pacman -U --noconfirm shared-mime-info-2.0+57+gc1d1c70-1-x86_64.pkg.tar.zst && \
