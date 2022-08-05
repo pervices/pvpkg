@@ -5,6 +5,14 @@ Created on Mon Feb 28 15:39:24 2022
 
 @author: bmcq55
 """
+import os
+from common import sigproc
+from common import engine
+from common import generator as gen
+from retrying import retry
+import numpy as np
+import matplotlib.pyplot as plt
+import sys
 
 from gnuradio import blocks
 from gnuradio import uhd
@@ -12,7 +20,7 @@ from gnuradio import gr
 from common import sigproc
 from common import engine
 from common import generator as gen
-from common import crimson
+#from common import crimson
 from retrying import retry
 import numpy as np
 import matplotlib.pyplot as plt
@@ -27,19 +35,21 @@ import time
 
 
 def test(it):
-
     gen.dump(it)
-
     # Collect.
-    tx_stack = [ (10.0, it["sample_count" ]) ] # One seconds worth.
-    rx_stack = [ (10.0, it["sample_count"]) ]
+    #tx_stack = [ (10.0, it["sample_count" ]) ] # One seconds worth.
+    #rx_stack = [ (10.0, it["sample_count"]) ]
+    tx_stack = [ (10.0, it["sample_count"]) ] # One seconds worth.
+    rx_stack = [ (10.0, int(it["sample_count"]) ) ]
     vsnk = engine.run(it["channels"], it["wave_freq"], it["sample_rate"], it["center_freq"], it["tx_gain"], it["rx_gain"], tx_stack, rx_stack)
+    
     error_detected = 0
     # Process.
     reals = []
     imags = []
+    #i=0
     for ch, channel in enumerate(vsnk):
-
+    
         real = [datum.real for datum in channel.data()]
         imag = [datum.imag for datum in channel.data()]
         #print('the value of the real array is', real)
@@ -52,7 +62,8 @@ def test(it):
         
 
         sigproc.dump_file_shiptest(vsnk, it["wave_freq"], it["center_freq"], it["sample_rate"], it["tx_gain"], it["sample_count"])
-        print(it["sample_count"])
+        #sigproc.dump_file_shiptest_bin(vsnk, it["wave_freq"], it["center_freq"], it["sample_rate"], it["tx_gain"], it["sample_count"])
+        #i=i+1
         
         
 
