@@ -252,8 +252,8 @@ peaks_fx=[]
 max_fy=[]
 for ywf in ywf_array_normalized:
     for y in ywf:
-        peaks_y=find_peaks(np.real(y), height=-80)
-        peaks_x,_=find_peaks(np.real(y), height=-80)
+        peaks_y=find_peaks(np.real(y), height=-200)
+        peaks_x,_=find_peaks(np.real(y), height=-200)
         peak_max_fy=max(y)
         peaks_y = peaks_y[1]["peak_heights"]
         peaks_fy.append(peaks_y)
@@ -262,12 +262,13 @@ for ywf in ywf_array_normalized:
 
 peaks_fy_array=[]
 peaks_fx_array=[]
-x=center_freq_array[x]
+x=0
 for x2,y2 in zip(peaks_fx, peaks_fy):
     new_fy=peaks_fy[len(chan)*x:len(chan)*x+len(chan)]
     new_fx=peaks_fx[len(chan)*x:len(chan)*x+len(chan)]
     peaks_fy_array.append(new_fy)
     peaks_fx_array.append(new_fx)
+    x+=1
 
 max_fy_array=np.array(max_fy)
 max_fy_peaks=[]
@@ -317,55 +318,59 @@ peaks_fx_array_np=np.asarray(peaks_fx_array)
 #print(peaks_fx)
 #plotting normalized FFT
 
-# x=0
-# for Fx, Fy in zip(xf_array_2, ywf_array_normalized):
-#     x+=1
-#     for f,NF in zip(xf_array_2, avg_noise_floor_array):
-#        # print("the value of x is:", x)
-#         plt.figure(3)
-#         fig3, axis= plt.subplots(2,2, figsize=(20,15))    
-#         #plt.figtext(0.1 ,0,("wave_Freq=",wave_freq, "center_freq=",center_freq_array[x], "sample rate=", sample_rate,"gain=",gain))        
-#         #fig4, axis= plt.subplots(2,2, figsize=(20,15)) 
-        
-#         axis[0,0].plot(scipy.fftpack.fftshift(Fx[0]), scipy.fftpack.fftshift(Fy[0]))
-#         axis[0,1].plot(scipy.fftpack.fftshift(Fx[1]), scipy.fftpack.fftshift(Fy[1]))
-#         axis[1,0].plot(scipy.fftpack.fftshift(Fx[2]), scipy.fftpack.fftshift(Fy[2]))
-#         axis[1,1].plot(scipy.fftpack.fftshift(Fx[3]), scipy.fftpack.fftshift(Fy[3]))
-            
-#         axis[0,0].set_title("Normalized FFT of channel {} with Center Freq {} Hz".format(channels_array_2[0], center_freq_array_2[0]), loc='center')
-#         axis[0,1].set_title("Normalized FFT of channel {} with Center Freq {} Hz".format(channels_array_2[1], center_freq_array_2[1]), loc='center')
-#         axis[1,0].set_title("Normalized FFT of channel {} with Center Freq {} Hz".format(channels_array_2[2], center_freq_array_2[2]), loc='center')
-#         axis[1,1].set_title("Normalized FFT ofchannel {} with Center Freq {} Hz".format(channels_array_2[3], center_freq_array_2[3]), loc='center')
-#         axis[0,0].plot(scipy.fftpack.fftshift(f[0]), NF[0], label='NF= {} dB'.format(avg_noise_floor_array[0]))
-#         axis[0,1].plot(scipy.fftpack.fftshift(f[1]), NF[1], label='NF= {} dB'.format(avg_noise_floor_array[1]))
-#         axis[1,0].plot(scipy.fftpack.fftshift(f[2]), NF[2],label='NF= {} dB'.format(avg_noise_floor_array[2]))
-#         axis[1,1].plot(scipy.fftpack.fftshift(f[3]), NF[3],label='NF= {} dB'.format(avg_noise_floor_array[3]))
-#         axis[0,0].legend()
-#         axis[0,1].legend()
-#         axis[1,0].legend()
-#         axis[1,1].legend()
-        
-#         for j in ywf_max_array_2:
-#            # print('the value is',j)
-#             i_new=0
-#             j_new1=j[0]
-#             j_new2=j[1]
-#             j_new3=j[2]
-#             j_new4=j[3]
-#             #print(i_new,j_new)
-#             #text=(int(j_new))
-#             #print('the text is',text)
-#             #plt.plot(peaks_y)
-#             axis[0,0].annotate(text=j_new1,xy=(i_new,j_new1), arrowprops=dict(facecolor='black', shrink=0.00005, width=0))
-#             axis[0,1].annotate(text=j_new2,xy=(i_new,j_new2), arrowprops=dict(facecolor='black', shrink=0.00005, width=0))
-#             axis[1,0].annotate(text=j_new3,xy=(i_new,j_new3), arrowprops=dict(facecolor='black', shrink=0.00005, width=0))
-#             axis[1,1].annotate(text=j_new4,xy=(i_new,j_new4), arrowprops=dict(facecolor='black', shrink=0.00005, width=0))
-#             plt.show(fig3)
-            
-                
-    #plt.show(fig3)
-        
+x=0
+for Fx, Fy, NF,  in zip(xf_array_2, ywf_array_normalized, avg_noise_floor_array):
+    x+=1
+    print(Fx, Fy, NF)
+    #for f,NF in zip(xf_array_2, avg_noise_floor_array):
 
+
+    print("the value of x is:", x)
+    plt.figure(3)
+    fig3, axis= plt.subplots(2,2, figsize=(20,15))    
+    #plt.figtext(0.1 ,0,("wave_Freq=",wave_freq, "center_freq=",center_freq_array[x], "sample rate=", sample_rate,"gain=",gain))        
+    #fig4, axis= plt.subplots(2,2, figsize=(20,15)) 
+    axis[0,0].plot(scipy.fftpack.fftshift(Fx[0]), scipy.fftpack.fftshift(Fy[0]))
+    axis[0,1].plot(scipy.fftpack.fftshift(Fx[1]), scipy.fftpack.fftshift(Fy[1]))
+    axis[1,0].plot(scipy.fftpack.fftshift(Fx[2]), scipy.fftpack.fftshift(Fy[2]))
+    axis[1,1].plot(scipy.fftpack.fftshift(Fx[3]), scipy.fftpack.fftshift(Fy[3]))
+        
+    axis[0,0].set_title("Normalized FFT of channel {} with Center Freq {} Hz".format(channels_array_2[x][0], center_freq_array_2[x][0]), loc='center')
+    axis[0,1].set_title("Normalized FFT of channel {} with Center Freq {} Hz".format(channels_array_2[x][1], center_freq_array_2[x][1]), loc='center')
+    axis[1,0].set_title("Normalized FFT of channel {} with Center Freq {} Hz".format(channels_array_2[x][2], center_freq_array_2[x][2]), loc='center')
+    axis[1,1].set_title("Normalized FFT ofchannel {} with Center Freq {} Hz".format(channels_array_2[x][3], center_freq_array_2[x][3]), loc='center')
+        
+    axis[0,0].plot(scipy.fftpack.fftshift(Fx[0]), NF[0], label='NF= {} dB'.format(NF[0][0]))
+    axis[0,1].plot(scipy.fftpack.fftshift(Fx[1]), NF[1], label='NF= {} dB'.format(NF[1][0]))
+    axis[1,0].plot(scipy.fftpack.fftshift(Fx[2]), NF[2],label='NF= {} dB'.format(NF[2][0]))
+    axis[1,1].plot(scipy.fftpack.fftshift(Fx[3]), NF[3],label='NF= {} dB'.format(NF[3][0]))
+    # axis[0,0].plot(scipy.fftpack.fftshift(Fx[0]), NF[0])
+    # axis[0,1].plot(scipy.fftpack.fftshift(Fx[1]), NF[1])
+    # axis[1,0].plot(scipy.fftpack.fftshift(Fx[2]), NF[2])
+    # axis[1,1].plot(scipy.fftpack.fftshift(Fx[3]), NF[3])
+    axis[0,0].legend()
+    axis[0,1].legend()
+    axis[1,0].legend()
+    axis[1,1].legend()
+    
+    for j in ywf_max_array_2:
+        # print('the value is',j)
+        i_new=0
+        j_new1=j[0]
+        j_new2=j[1]
+        j_new3=j[2]
+        j_new4=j[3]
+        #print(i_new,j_new)
+        #text=(int(j_new))
+        #print('the text is',text)
+        #plt.plot(peaks_y)
+        axis[0,0].annotate(text=j_new1,xy=(i_new,j_new1), arrowprops=dict(facecolor='black', shrink=0.00005, width=0))
+        axis[0,1].annotate(text=j_new2,xy=(i_new,j_new2), arrowprops=dict(facecolor='black', shrink=0.00005, width=0))
+        axis[1,0].annotate(text=j_new3,xy=(i_new,j_new3), arrowprops=dict(facecolor='black', shrink=0.00005, width=0))
+        axis[1,1].annotate(text=j_new4,xy=(i_new,j_new4), arrowprops=dict(facecolor='black', shrink=0.00005, width=0))
+        plt.show(fig3)
+      
+                
 
 
 #####----------------------------Testing PASS/FAIL--------------------------------------------------------------------####  
