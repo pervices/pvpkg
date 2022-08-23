@@ -37,7 +37,7 @@ RUN sudo chown -R notroot /home/notroot/testing && \
 sudo wget https://raw.githubusercontent.com/pervices/pvpkg/master/Arch/UHD/PKGBUILD && \
 sudo chown -R notroot /home/notroot/libuhd && \
 yay -Sy --noconfirm \
-   $(pacman --deptest $(source ./PKGBUILD && echo ${depends[@]} ${makedepends[@]})) && \
+   $(pacman --deptest $(source ./PKGBUILD && echo ${depends[@]})) && \
  makepkg --noconfirm --syncdeps --install --needed && \
 sudo mv libuhdpv*.tar.zst /home/artifacts
 #creating directory to move CI tests to in order to run tests on UHD and Gnuradio installs before deployment
@@ -54,7 +54,7 @@ RUN sudo wget https://raw.githubusercontent.com/pervices/pvpkg/master/Arch/GnuRa
 sudo chown -R notroot /home/notroot/gnuradio && \
   makepkg --noconfirm --syncdeps --install && \
  yay -Sy --noconfirm \
-$(pacman --deptest $(source ./PKGBUILD && echo ${depends[@]} ${makedepends[@]})) && \ 
+$(pacman --deptest $(source ./PKGBUILD && echo ${depends[@]})) && \ 
 makepkg --noconfirm --install --needed && \
 sudo mv gnuradio*.tar.zst /home/artifacts
 #make tests executable to allow for CI testing before deployment of packages to fileserver

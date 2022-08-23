@@ -39,7 +39,7 @@ RUN sudo chown -R notroot /home/notroot/testing && \
 sudo wget https://raw.githubusercontent.com/pervices/pvpkg/master/Arch/UHD/PKGBUILD && \
 sudo chown -R notroot /home/notroot/libuhd && \
 yay -Sy --noconfirm \
-   $(pacman --deptest $(source ./PKGBUILD && echo ${depends[@]} ${makedepends[@]})) && \
+   $(pacman --deptest $(source ./PKGBUILD && echo ${depends[@]})) && \
  makepkg --noconfirm --syncdeps --install --needed && \
 sudo mv libuhdpv*.tar.zst /home/artifacts
 #creating directory to move CI tests to in order to run tests on UHD install before deployment
