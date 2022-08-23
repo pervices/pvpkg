@@ -1,0 +1,59 @@
+pipeline { 
+
+// citests agents used to build and test repo.
+    agent {
+	label 'waveci'
+    }
+
+    stages {
+
+                stage('Arch Testing'){  
+                    options {
+                    timeout(time: 3, unit: "HOURS")
+                    } 
+                    steps {
+                    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                    script{
+                    dir("${env.WORKSPACE}/Arch") {
+                    dockerImageArch = docker.build("arch:$BUILD_NUMBER", "--network host .")
+                    }
+                    }
+                    }
+                    }
+                    }
+                    
+
+
+                stage('Ubuntu Testing'){    
+                    options {
+                    timeout(time: 3, unit: "HOURS")
+                    } 
+                    steps {
+                    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                    script{
+                    dir("${env.WORKSPACE}/ubuntu") {
+                   dockerImageUbuntu = docker.build("ubuntu:$BUILD_NUMBER", "--network host .")
+                    }
+                    }
+                    }
+                    }
+                    }
+
+
+               stage('Oracle Testing'){    
+                    options {
+                    timeout(time: 3, unit: "HOURS")
+                        } 
+                    steps {
+                    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                    script{
+                        dir("${env.WORKSPACE}/Oracle") {
+                             dockerImageOracle = docker.build("oracle:$BUILD_NUMBER", "--network host .")
+                    }
+                    }
+                    }
+                    }
+                    }
+}
+}
+
