@@ -30,7 +30,8 @@ parameters {
                         }
                             steps { 
                         script { 
-                                dir("${env.WORKSPACE}/Arch/UHD") {
+                                dir("${env.WORKSPACE}") {
+                                sh "ls"
                                 dockerImageArch = docker.build("arch:$BUILD_NUMBER", "--network host .") 
                                 env.IID = "\$(docker images arch:$BUILD_NUMBER --format \"{{.ID}}\")"
                                 env.CID="\$(docker create $IID)"
