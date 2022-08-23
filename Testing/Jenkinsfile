@@ -14,7 +14,7 @@ pipeline {
                     steps {
                     catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
                     script{
-                    dir("${env.WORKSPACE}/Arch") {
+                    dir("${env.WORKSPACE}/Testing/Arch") {
                     dockerImageArch = docker.build("arch:$BUILD_NUMBER", "--network host .")
                     }
                     }
@@ -31,7 +31,7 @@ pipeline {
                     steps {
                     catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
                     script{
-                    dir("${env.WORKSPACE}/ubuntu") {
+                    dir("${env.WORKSPACE}/Testing/Ubuntu") {
                    dockerImageUbuntu = docker.build("ubuntu:$BUILD_NUMBER", "--network host .")
                     }
                     }
@@ -47,7 +47,7 @@ pipeline {
                     steps {
                     catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
                     script{
-                        dir("${env.WORKSPACE}/Oracle") {
+                        dir("${env.WORKSPACE}/Testing/Oracle") {
                              dockerImageOracle = docker.build("oracle:$BUILD_NUMBER", "--network host .")
                     }
                     }
