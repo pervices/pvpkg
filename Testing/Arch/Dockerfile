@@ -30,9 +30,8 @@ WORKDIR /home/notroot/pvpkg/Testing
 RUN mv test-only-Arch.sh variables.sh /home/notroot/testing && \
 mv tests /home/notroot/testing
 # copying examples directory to libuhd folder to enable test to be found in same location as for other distributions to enable test_tx_trigger to be run
-WORKDIR /home/notroot/libuhd/src/uhd/host
-RUN sudo chown -R notroot /home/notroot/libuhd/src/uhd/host && \
-sudo find / -name "examples" && \
+WORKDIR /usr/lib/uhd/examples
+RUN sudo chown -R notroot /usr/share/uhd/examples && \
 cp -R examples /home/notroot/libuhd
 WORKDIR /home/notroot/gnuradio
 # use wget to collect GnuRadio PKGBUILD from Github, and create the package with the dependencies specified from the PKGBUILD; sudo chown command allows user notroot to build in this directory
