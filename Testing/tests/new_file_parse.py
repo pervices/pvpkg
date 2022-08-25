@@ -36,7 +36,7 @@ I_array=[]
 Q_array=[]
 channels_array=[]
 IQ_array=[]
-path="/home/jade/Desktop/dump_20220805153333.187244"
+path="/home/bmch/Desktop/dump_20220805153333.187244"
 #os.chdir("/home/jade/Desktop/dump_20220802140032.762811")
 # files = list(filter(os.path.isfile, glob.glob("*.dat")))
 # new_dir=files.sort(key=lambda x: os.path.getmtime(x))
@@ -95,8 +95,8 @@ for i in range(len(CF_table)):
             IQ_array.append(IQ)
         
             
-        I_array_2=[] #8 array of I grouped in 4 Channels of same center frequency
-        Q_array_2=[] #8 array of Q grouped in 4 Channels of same center frequency
+        I_array_2=[] #8 arrays of I grouped in 4 Channels of same center frequency
+        Q_array_2=[] #8 arrays of Q grouped in 4 Channels of same center frequency
         IQ_array_2=[]
         channels_array_2=[]
         center_freq_array_2=[]
@@ -252,30 +252,36 @@ peaks_fx=[]
 max_fy=[]
 for ywf in ywf_array_normalized:
     for y in ywf:
-        peaks_y=find_peaks(np.real(y), height=-200)
-        peaks_x,_=find_peaks(np.real(y), height=-200)
+        peaks_y=find_peaks(np.real(y), height=[-500, 100], width=5)
+        peaks_x,_=find_peaks(np.real(y), height=[-500, 100], width=5)
         peak_max_fy=max(y)
         peaks_y = peaks_y[1]["peak_heights"]
         peaks_fy.append(peaks_y)
         peaks_fx.append(peaks_x)
         max_fy.append(peak_max_fy)
 
-peaks_fy_array=[]
 peaks_fx_array=[]
 x=0
-for x2,y2 in zip(peaks_fx, peaks_fy):
-    new_fy=peaks_fy[len(chan)*x:len(chan)*x+len(chan)]
+for x in range(0,len(CF_table),1):
     new_fx=peaks_fx[len(chan)*x:len(chan)*x+len(chan)]
-    peaks_fy_array.append(new_fy)
-    peaks_fx_array.append(new_fx)
+    peaks_fx_array.append(new_fx) 
     x+=1
+
+
+peaks_fy_array=[]
+for x in range(0,len(CF_table),1):
+    new_fy=peaks_fy[len(chan)*x:len(chan)*x+len(chan)]
+    peaks_fy_array.append(new_fy)
+    x+=1
+        
+
 
 max_fy_array=np.array(max_fy)
 max_fy_peaks=[]
 for y in range(0, len(CF_table),1):
-    print("the value of y is:", y)
+    #print("the value of y is:", y)
     new_max=max_fy_array[len(chan)*y:len(chan)*y+len(chan)]
-    print(new_max)
+    #print(new_max)
     max_fy_peaks.append(new_max)
 
 
@@ -315,17 +321,41 @@ for m in range(0, len(CF_table),1):
 xf_array_2_np=np.asarray(xf_array_2)
 peaks_fx_array_np=np.asarray(peaks_fx_array)
 
-#print(peaks_fx)
-#plotting normalized FFT
+#x-y coordinates of peaks
+peak_x=[]
+peak_y=[] 
+for i, j in zip(peaks_fx_array, peaks_fy_array):
+    #print('value issss', i, j)
+    for a, b in zip(i,j):
+        maxim=np.real(max(b))
+        index, =np.where(b==maxim)
+        print('the value 0 is', str(a[index]),maxim)
+        peak_x.append(np.asscalar((a[index])))
+        peak_y.append(maxim)
+        
+peak_x_array_2=[]
+x=0
+for c in range(0, len(CF_table),1):
+    new_peak=peak_x[len(chan)*x:len(chan)*x+len(chan)]
+    x+=1
+    peak_x_array_2.append(new_peak)
+
+peak_y_array_2=[]
+x=0
+for d in range(0, len(CF_table),1):
+    new_peak=peak_y[len(chan)*x:len(chan)*x+len(chan)]
+    x+=1
+    peak_y_array_2.append(new_peak)
+
 
 x=0
-for Fx, Fy, NF,  in zip(xf_array_2, ywf_array_normalized, avg_noise_floor_array):
+for Fx, Fy, NF, xf,yf  in zip(xf_array_2, ywf_array_normalized, avg_noise_floor_array,peak_x_array_2, peak_y_array_2):
     x+=1
-    print(Fx, Fy, NF)
+    print("the value of xf,yf is:", xf[0],yf[0])
     #for f,NF in zip(xf_array_2, avg_noise_floor_array):
 
 
-    print("the value of x is:", x)
+    #print("the value of x is:", x)
     plt.figure(3)
     fig3, axis= plt.subplots(2,2, figsize=(20,15))    
     #plt.figtext(0.1 ,0,("wave_Freq=",wave_freq, "center_freq=",center_freq_array[x], "sample rate=", sample_rate,"gain=",gain))        
@@ -338,7 +368,7 @@ for Fx, Fy, NF,  in zip(xf_array_2, ywf_array_normalized, avg_noise_floor_array)
     axis[0,0].set_title("Normalized FFT of channel {} with Center Freq {} Hz".format(channels_array_2[x][0], center_freq_array_2[x][0]), loc='center')
     axis[0,1].set_title("Normalized FFT of channel {} with Center Freq {} Hz".format(channels_array_2[x][1], center_freq_array_2[x][1]), loc='center')
     axis[1,0].set_title("Normalized FFT of channel {} with Center Freq {} Hz".format(channels_array_2[x][2], center_freq_array_2[x][2]), loc='center')
-    axis[1,1].set_title("Normalized FFT ofchannel {} with Center Freq {} Hz".format(channels_array_2[x][3], center_freq_array_2[x][3]), loc='center')
+    axis[1,1].set_title("Normalized FFT of channel {} with Center Freq {} Hz".format(channels_array_2[x][3], center_freq_array_2[x][3]), loc='center')
         
     axis[0,0].plot(scipy.fftpack.fftshift(Fx[0]), NF[0], label='NF= {} dB'.format(NF[0][0]))
     axis[0,1].plot(scipy.fftpack.fftshift(Fx[1]), NF[1], label='NF= {} dB'.format(NF[1][0]))
@@ -352,23 +382,51 @@ for Fx, Fy, NF,  in zip(xf_array_2, ywf_array_normalized, avg_noise_floor_array)
     axis[0,1].legend()
     axis[1,0].legend()
     axis[1,1].legend()
+    axis[0,0].annotate(text=str(round(yf[0])),xy=(xf[0],yf[0]), xytext=(xf[0],yf[0]), arrowprops=dict(facecolor='black', shrink=0.00005, width=0))
+    axis[0,1].annotate(text=str(round(yf[1])),xy=(xf[1],yf[1]),xytext=(xf[1],yf[1]), arrowprops=dict(facecolor='black', shrink=0.00005, width=0))
+    axis[1,0].annotate(text=str(round(yf[2])),xy=(xf[2],yf[2]),xytext=(xf[2],yf[2]), arrowprops=dict(facecolor='black', shrink=0.00005, width=0))
+    axis[1,1].annotate(text=str(round(yf[3])),xy=(xf[3],yf[3]),xytext=(xf[3],yf[3]), arrowprops=dict(facecolor='black', shrink=0.00005, width=0))
+    plt.show(fig3)
+
     
-    for j in ywf_max_array_2:
-        # print('the value is',j)
-        i_new=0
-        j_new1=j[0]
-        j_new2=j[1]
-        j_new3=j[2]
-        j_new4=j[3]
-        #print(i_new,j_new)
-        #text=(int(j_new))
-        #print('the text is',text)
-        #plt.plot(peaks_y)
-        axis[0,0].annotate(text=j_new1,xy=(i_new,j_new1), arrowprops=dict(facecolor='black', shrink=0.00005, width=0))
-        axis[0,1].annotate(text=j_new2,xy=(i_new,j_new2), arrowprops=dict(facecolor='black', shrink=0.00005, width=0))
-        axis[1,0].annotate(text=j_new3,xy=(i_new,j_new3), arrowprops=dict(facecolor='black', shrink=0.00005, width=0))
-        axis[1,1].annotate(text=j_new4,xy=(i_new,j_new4), arrowprops=dict(facecolor='black', shrink=0.00005, width=0))
-        plt.show(fig3)
+    # for i,j in zip(peaks_fx_array,peaks_fy_array):
+    #     print('the value is',i,j)
+    #     #i_new=0
+    #     # j_new1=j[0]
+    #     # j_new2=j[1]
+    #     # j_new3=j[2]
+    #     # j_new4=j[3]
+    #     # #print(i_new,j_new)
+    #     # #text=(int(j_new))
+    #     # #print('the text is',text)
+    #     # #plt.plot(peaks_y)
+    #     # axis[0,0].annotate(text=j_new1,xy=(i,j), arrowprops=dict(facecolor='black', shrink=0.00005, width=0))
+    #     # axis[0,1].annotate(text=j_new2,xy=(i_new,j_new2), arrowprops=dict(facecolor='black', shrink=0.00005, width=0))
+    #     # axis[1,0].annotate(text=j_new3,xy=(i_new,j_new3), arrowprops=dict(facecolor='black', shrink=0.00005, width=0))
+    #     # axis[1,1].annotate(text=j_new4,xy=(i_new,j_new4), arrowprops=dict(facecolor='black', shrink=0.00005, width=0))
+    #     # plt.show(fig3)
+    
+    # for i, j in zip(peaks_fx_array, peaks_fy_array):
+    #     #print('value issss', i, j)
+    #     peak_x=[]
+    #     peak_y=[]
+    #     for a, b in zip(i,j):
+    #         maxim=np.real(max(b))
+    #         index, =np.where(b==maxim)
+    #         print('the value 0 is', str(a[index]),maxim)
+    #         peak_x.append(str(a[index]))
+    #         peak_y.append(maxim)
+            # print('the value 1 is', a[index][1],maxim[1])
+            # print('the value 2 is', a[index][2],maxim[2])
+            # print('the value 3 is', a[index][3],maxim[3])
+            # text1=(int(maxim[1]))
+            # print('the text is',text)
+            # plt.plot(peaks_y)
+            # axis[0,0].annotate(text=j_new1,xy=(i[0],np.real(j[0])), arrowprops=dict(facecolor='black', shrink=0.00005, width=0))
+            # axis[0,1].annotate(text=j_new2,xy=(i_new,j_new2), arrowprops=dict(facecolor='black', shrink=0.00005, width=0))
+            # axis[1,0].annotate(text=j_new3,xy=(i_new,j_new3), arrowprops=dict(facecolor='black', shrink=0.00005, width=0))
+            # axis[1,1].annotate(text=j_new4,xy=(i_new,j_new4), arrowprops=dict(facecolor='black', shrink=0.00005, width=0))
+
       
                 
 
@@ -391,5 +449,26 @@ for i in max_fy_peaks:
             print("channels are within 5dB of one another", i)
         except:
             print("channels are not within 5dB of one another", i)
+            
+            
+            
+#####----------------------------Report Generation--------------------------------------------------------------------####  
+    
+import pandas as pd
+from reportlab.pdfgen import canvas
+
+#p1: TITLE PAGE (date, serial number, UHD version, FPGA image version, MCU)
+
+c=canvas.Canvas("title_page.pdf")
+c.drawString(100, 100, "Crimson Shiptest")
+c.showPage()
+            
+            
+            
+            
+            
+            
+            
+            
             
  
