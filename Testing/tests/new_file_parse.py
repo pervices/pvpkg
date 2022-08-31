@@ -274,8 +274,6 @@ for x in range(0,len(CF_table),1):
     peaks_fy_array.append(new_fy)
     x+=1
         
-
-
 max_fy_array=np.array(max_fy)
 max_fy_peaks=[]
 for y in range(0, len(CF_table),1):
@@ -346,11 +344,21 @@ for d in range(0, len(CF_table),1):
     new_peak=peak_y[len(chan)*x:len(chan)*x+len(chan)]
     x+=1
     peak_y_array_2.append(new_peak)
+    
+#sorting peaks highest to lowest
+top_5_peaks=[]
+x=0
+for peak in range(0,len(CF_table),1):
+    sort=peaks_fy_array[len(chan)*x:len(chan)*x+len(chan)]
+    rank=np.sort(sort)
+    ranked=rank[0:5]
+    top_5_peaks.append(ranked)
+    x+=1
+    
 
 
 x=0
 for Fx, Fy, NF, xf,yf  in zip(xf_array_2, ywf_array_normalized, avg_noise_floor_array,peak_x_array_2, peak_y_array_2):
-    x+=1
     print("the value of xf,yf is:", xf[0],yf[0])
     #for f,NF in zip(xf_array_2, avg_noise_floor_array):
 
@@ -378,64 +386,23 @@ for Fx, Fy, NF, xf,yf  in zip(xf_array_2, ywf_array_normalized, avg_noise_floor_
     # axis[0,1].plot(scipy.fftpack.fftshift(Fx[1]), NF[1])
     # axis[1,0].plot(scipy.fftpack.fftshift(Fx[2]), NF[2])
     # axis[1,1].plot(scipy.fftpack.fftshift(Fx[3]), NF[3])
-    axis[0,0].legend()
-    axis[0,1].legend()
-    axis[1,0].legend()
-    axis[1,1].legend()
+    axis[0,0].legend(loc='best')
+    axis[0,1].legend(loc='best')
+    axis[1,0].legend(loc='best')
+    axis[1,1].legend(loc='best')
     axis[0,0].annotate(text=str(round(yf[0])),xy=(xf[0],yf[0]), xytext=(xf[0],yf[0]), arrowprops=dict(facecolor='black', shrink=0.00005, width=0))
     axis[0,1].annotate(text=str(round(yf[1])),xy=(xf[1],yf[1]),xytext=(xf[1],yf[1]), arrowprops=dict(facecolor='black', shrink=0.00005, width=0))
     axis[1,0].annotate(text=str(round(yf[2])),xy=(xf[2],yf[2]),xytext=(xf[2],yf[2]), arrowprops=dict(facecolor='black', shrink=0.00005, width=0))
     axis[1,1].annotate(text=str(round(yf[3])),xy=(xf[3],yf[3]),xytext=(xf[3],yf[3]), arrowprops=dict(facecolor='black', shrink=0.00005, width=0))
     plt.show(fig3)
+    x+=1
 
-    
-    # for i,j in zip(peaks_fx_array,peaks_fy_array):
-    #     print('the value is',i,j)
-    #     #i_new=0
-    #     # j_new1=j[0]
-    #     # j_new2=j[1]
-    #     # j_new3=j[2]
-    #     # j_new4=j[3]
-    #     # #print(i_new,j_new)
-    #     # #text=(int(j_new))
-    #     # #print('the text is',text)
-    #     # #plt.plot(peaks_y)
-    #     # axis[0,0].annotate(text=j_new1,xy=(i,j), arrowprops=dict(facecolor='black', shrink=0.00005, width=0))
-    #     # axis[0,1].annotate(text=j_new2,xy=(i_new,j_new2), arrowprops=dict(facecolor='black', shrink=0.00005, width=0))
-    #     # axis[1,0].annotate(text=j_new3,xy=(i_new,j_new3), arrowprops=dict(facecolor='black', shrink=0.00005, width=0))
-    #     # axis[1,1].annotate(text=j_new4,xy=(i_new,j_new4), arrowprops=dict(facecolor='black', shrink=0.00005, width=0))
-    #     # plt.show(fig3)
-    
-    # for i, j in zip(peaks_fx_array, peaks_fy_array):
-    #     #print('value issss', i, j)
-    #     peak_x=[]
-    #     peak_y=[]
-    #     for a, b in zip(i,j):
-    #         maxim=np.real(max(b))
-    #         index, =np.where(b==maxim)
-    #         print('the value 0 is', str(a[index]),maxim)
-    #         peak_x.append(str(a[index]))
-    #         peak_y.append(maxim)
-            # print('the value 1 is', a[index][1],maxim[1])
-            # print('the value 2 is', a[index][2],maxim[2])
-            # print('the value 3 is', a[index][3],maxim[3])
-            # text1=(int(maxim[1]))
-            # print('the text is',text)
-            # plt.plot(peaks_y)
-            # axis[0,0].annotate(text=j_new1,xy=(i[0],np.real(j[0])), arrowprops=dict(facecolor='black', shrink=0.00005, width=0))
-            # axis[0,1].annotate(text=j_new2,xy=(i_new,j_new2), arrowprops=dict(facecolor='black', shrink=0.00005, width=0))
-            # axis[1,0].annotate(text=j_new3,xy=(i_new,j_new3), arrowprops=dict(facecolor='black', shrink=0.00005, width=0))
-            # axis[1,1].annotate(text=j_new4,xy=(i_new,j_new4), arrowprops=dict(facecolor='black', shrink=0.00005, width=0))
+#####----------------------------Analysis and Testing PASS/FAIL--------------------------------------------------------------------####  
 
-      
-                
-
-
-#####----------------------------Testing PASS/FAIL--------------------------------------------------------------------####  
+#Dynamic Range
 
 
 #Test that all channels at the frequency have equivalent gain (within 5dB of eachother)
-
 
 for i in max_fy_peaks:
     max_fy=np.real(max(i))
