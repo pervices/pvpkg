@@ -28,7 +28,7 @@ import glob
 ####-------------------------------INPUT DATA--------------------------------------------------------------------------------####
 
 CF_table=["CF_50000000_", "CF_300000000_", "CF_600000000_", "CF_1200000000_", "CF_2400000000_", "CF_4000000000_", "CF_5000000000_", "CF_5500000000_"] #from generator program TODO: have this automatically taken from gen file
-file_num_table=["file_num_0", "file_num_1", "file_num_2", "file_num_3"] #TODO: automatically generate table 
+#file_num_table=["file_num_0", "file_num_1", "file_num_2", "file_num_3"] #TODO: automatically generate table 
 wave_freq_array=[]
 center_freq_array=[]
 IQ_array_2=[] #array of IQ grouped in 4 Channels of same center frequency
@@ -55,7 +55,6 @@ files = filter(os.path.isfile, os.listdir(path))
 files = [os.path.join(path, f) for f in files] # add path to each file
 
 #print(sorted(files))
-
 chan=[0,1,2,3] #TODO: deduce this from generator
 for i in range(len(CF_table)):
     for file in sorted(files):
@@ -345,25 +344,55 @@ for d in range(0, len(CF_table),1):
     x+=1
     peak_y_array_2.append(new_peak)
     
-#sorting peaks highest to lowest
-top_5_peaks=[]
+#sorting top 5 peaks highest to lowest
 x=0
+top_5_peaks=[]
 for peak in range(0,len(CF_table),1):
     sort=peaks_fy_array[len(chan)*x:len(chan)*x+len(chan)]
-    rank=np.sort(sort)
-    ranked=rank[0:5]
-    top_5_peaks.append(ranked)
+    #print("the sorted number is",sort)
+    for array in sort:
+        #print("the value of i is",i)
+        rank0=sorted(array[0], reverse=True)
+        rank1=sorted(array[1], reverse=True)
+        rank2=sorted(array[2], reverse=True)
+        rank3=sorted(array[3], reverse=True)
+        ranked0=rank0[0:5]
+        ranked1=rank1[0:5]
+        ranked2=rank2[0:5]
+        ranked3=rank3[0:5]
+        top_5_peaks.append(ranked0)
+        top_5_peaks.append(ranked1)
+        top_5_peaks.append(ranked2)
+        top_5_peaks.append(ranked3)
     x+=1
     
-
+top_5_peaks_by_CF=[]
+x=0
+for i in range(0, len(CF_table),1):
+    new_peak=top_5_peaks[len(chan)*x:len(chan)*x+len(chan)]
+    x+=1
+    top_5_peaks_by_CF.append(new_peak)
+    
+#Dynamic Range
+dynamic_range_array=[]
+for p,NF in zip(top_5_peaks_by_CF, avg_noise_floor_array):
+    for i,j in zip(p, NF):
+        #print("the value of dynamic range is", p, NF[0:5])
+        dynamic_range=abs(np.subtract(i,j[0:5]))
+        dynamic_range_array.append(dynamic_range)
+        
+dynamic_range_by_CF=[]
+x=0
+for i in range(0, len(CF_table),1):
+    new_dr=dynamic_range[len(chan)*x:len(chan)*x+len(chan)]
+    x+=1
+    dynamic_range_by_CF.append(new_dr)
 
 x=0
 for Fx, Fy, NF, xf,yf  in zip(xf_array_2, ywf_array_normalized, avg_noise_floor_array,peak_x_array_2, peak_y_array_2):
-    print("the value of xf,yf is:", xf[0],yf[0])
-    #for f,NF in zip(xf_array_2, avg_noise_floor_array):
+    #print("the value of xf,yf is:", xf[0],yf[0])
+    #print("the value of xf,yf is:", xf[1],yf[1])
 
-
-    #print("the value of x is:", x)
     plt.figure(3)
     fig3, axis= plt.subplots(2,2, figsize=(20,15))    
     #plt.figtext(0.1 ,0,("wave_Freq=",wave_freq, "center_freq=",center_freq_array[x], "sample rate=", sample_rate,"gain=",gain))        
@@ -399,11 +428,83 @@ for Fx, Fy, NF, xf,yf  in zip(xf_array_2, ywf_array_normalized, avg_noise_floor_
 
 #####----------------------------Analysis and Testing PASS/FAIL--------------------------------------------------------------------####  
 
-#Dynamic Range
+# #Dynamic Range
+# dynamic_range_array=[]
+# for p,NF in zip(top_5_peaks_by_CF, avg_noise_floor_array):
+#     for i,j in zip(p, NF):
+#         #print("the value of dynamic range is", p, NF[0:5])
+#         dynamic_range=abs(np.subtract(i,j[0:5]))
+#         dynamic_range_array.append(dynamic_range)
+
+import matplotlib.patches as patches
+print('the top 5 peaks are', top_5_peaks_by_CF[0][0][0], top_5_peaks_by_CF[4][0][0])
+
+#dynamic range of CF= 50MHz
+fig, ax = plt.subplots(figsize=(8,6))
+rows=4
+cols=7
+ax.set_ylim(-1, rows + 1)
+ax.set_xlim(0, cols + .5)
+
+data=[{'freq': None,                                'channel': chan[0], 'Highest Peak': round(top_5_peaks_by_CF[0][0][0]), '2nd Highest Peak': round(top_5_peaks_by_CF[0][0][1]), '3rd Highest Peak': round(top_5_peaks_by_CF[0][0][2]), '4th Highest Peak':round(top_5_peaks_by_CF[0][0][3]),'5th Highest Peak': round(top_5_peaks_by_CF[0][0][4])},
+      {'freq': None,                                'channel': chan[1], 'Highest Peak': round(top_5_peaks_by_CF[0][1][0]), '2nd Highest Peak': round(top_5_peaks_by_CF[0][1][1]), '3rd Highest Peak': round(top_5_peaks_by_CF[0][1][2]), '4th Highest Peak': round(top_5_peaks_by_CF[0][1][3]),'5th Highest Peak': round(top_5_peaks_by_CF[0][1][4])},
+      {'freq': None,                                'channel': chan[2], 'Highest Peak': round(top_5_peaks_by_CF[0][2][0]), '2nd Highest Peak': round(top_5_peaks_by_CF[0][2][1]), '3rd Highest Peak': round(top_5_peaks_by_CF[0][2][2]), '4th Highest Peak': round(top_5_peaks_by_CF[0][2][3]),'5th Highest Peak': round(top_5_peaks_by_CF[0][2][4])},
+      {'freq': round(center_freq_array_2[0][0]/1e6),'channel': chan[3], 'Highest Peak': round(top_5_peaks_by_CF[0][3][0]), '2nd Highest Peak': round(top_5_peaks_by_CF[0][3][1]), '3rd Highest Peak': round(top_5_peaks_by_CF[0][3][2]), '4th Highest Peak': round(top_5_peaks_by_CF[0][3][3]),'5th Highest Peak': round(top_5_peaks_by_CF[0][3][4])}
+      ]
+
+for row in range(rows):
+    d=data[row]
+    #freq column
+    ax.text(x=.5, y=row, s=d['freq'], va='center', ha='left')
+    #channel column
+    ax.text(x=2, y=row, s=d['channel'], va='center', ha='center')
+    #highest peaks columns
+    ax.text(x=3, y=row, s=d['Highest Peak'], va='center', ha='right')
+    ax.text(x=4, y=row, s=d['2nd Highest Peak'], va='center', ha='right')
+    ax.text(x=5, y=row, s=d['3rd Highest Peak'], va='center', ha='right')
+    ax.text(x=6, y=row, s=d['4th Highest Peak'], va='center', ha='right')
+    ax.text(x=7, y=row, s=d['5th Highest Peak'], va='center', ha='right')
+
+    ax.text(.2, 3.5, 'Freq(MHz)', weight='bold', ha='left')
+    ax.text(2, 3.5, 'Channel', weight='bold', ha='center')
+    ax.text(3, 3.5, 'Top Peak\n(dBm)', weight='bold', ha='right')
+    ax.text(4, 3.5, '2nd Peak\n(dBm)', weight='bold', ha='right')
+    ax.text(5, 3.5, '3rd Peak\n(dBm)', weight='bold', ha='right')
+    ax.text(6, 3.5, '4th Peak\n(dBm)', weight='bold', ha='right')
+    ax.text(7, 3.5, '5th Peak\n(dBm)', weight='bold', ha='right', va='bottom')
+    ax.axis('off')
+    for row in range(rows):
+        ax.plot(
+    	[0, cols + 1],
+    	[row -.5, row - .5],
+    	ls=':',
+    	lw='.5',
+    	c='grey'
+    )
+
+    ax.plot([0, cols + 1], [9.5, 9.5], lw='.5', c='black')
+
+#dynamic range of CF=300MHz
+
+
+
+#dynamic range of CF=600MHz
+
+
+
+#dynamic range of CF=1.2GHz
+
+#dynamic range of CF=2.4GHz
+
+#dynamic range of CF=4GHz
+
+#dynamic range of CF=5GHz
+
+#dynamic range of CF=5.5GHz
+    
 
 
 #Test that all channels at the frequency have equivalent gain (within 5dB of eachother)
-
 for i in max_fy_peaks:
     max_fy=np.real(max(i))
     min_fy=np.real(min(i))
