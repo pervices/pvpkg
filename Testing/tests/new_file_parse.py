@@ -373,7 +373,7 @@ for i in range(0, len(CF_table),1):
     x+=1
     top_5_peaks_by_CF.append(new_peak)
     
-#Dynamic Range
+#Dynamic Range of top 5 peaks
 dynamic_range_array=[]
 for p,NF in zip(top_5_peaks_by_CF, avg_noise_floor_array):
     for i,j in zip(p, NF):
@@ -384,7 +384,7 @@ for p,NF in zip(top_5_peaks_by_CF, avg_noise_floor_array):
 dynamic_range_by_CF=[]
 x=0
 for i in range(0, len(CF_table),1):
-    new_dr=dynamic_range[len(chan)*x:len(chan)*x+len(chan)]
+    new_dr=dynamic_range_array[len(chan)*x:len(chan)*x+len(chan)]
     x+=1
     dynamic_range_by_CF.append(new_dr)
 
@@ -439,17 +439,17 @@ for Fx, Fy, NF, xf,yf  in zip(xf_array_2, ywf_array_normalized, avg_noise_floor_
 import matplotlib.patches as patches
 print('the top 5 peaks are', top_5_peaks_by_CF[0][0][0], top_5_peaks_by_CF[4][0][0])
 
-#dynamic range of CF= 50MHz
-fig, ax = plt.subplots(figsize=(8,6))
+#top 5 peaks and dynamic range of CF= 50MHz
+fig1, ax = plt.subplots(figsize=(10,6))
 rows=4
-cols=7
+cols=8
 ax.set_ylim(-1, rows + 1)
 ax.set_xlim(0, cols + .5)
 
-data=[{'freq': None,                                'channel': chan[0], 'Highest Peak': round(top_5_peaks_by_CF[0][0][0]), '2nd Highest Peak': round(top_5_peaks_by_CF[0][0][1]), '3rd Highest Peak': round(top_5_peaks_by_CF[0][0][2]), '4th Highest Peak':round(top_5_peaks_by_CF[0][0][3]),'5th Highest Peak': round(top_5_peaks_by_CF[0][0][4])},
-      {'freq': None,                                'channel': chan[1], 'Highest Peak': round(top_5_peaks_by_CF[0][1][0]), '2nd Highest Peak': round(top_5_peaks_by_CF[0][1][1]), '3rd Highest Peak': round(top_5_peaks_by_CF[0][1][2]), '4th Highest Peak': round(top_5_peaks_by_CF[0][1][3]),'5th Highest Peak': round(top_5_peaks_by_CF[0][1][4])},
-      {'freq': None,                                'channel': chan[2], 'Highest Peak': round(top_5_peaks_by_CF[0][2][0]), '2nd Highest Peak': round(top_5_peaks_by_CF[0][2][1]), '3rd Highest Peak': round(top_5_peaks_by_CF[0][2][2]), '4th Highest Peak': round(top_5_peaks_by_CF[0][2][3]),'5th Highest Peak': round(top_5_peaks_by_CF[0][2][4])},
-      {'freq': round(center_freq_array_2[0][0]/1e6),'channel': chan[3], 'Highest Peak': round(top_5_peaks_by_CF[0][3][0]), '2nd Highest Peak': round(top_5_peaks_by_CF[0][3][1]), '3rd Highest Peak': round(top_5_peaks_by_CF[0][3][2]), '4th Highest Peak': round(top_5_peaks_by_CF[0][3][3]),'5th Highest Peak': round(top_5_peaks_by_CF[0][3][4])}
+data=[{'freq': None,                                'channel': chan[0], 'Highest Peak': round(top_5_peaks_by_CF[0][0][0]), 'Dynamic Range':round(dynamic_range_by_CF[0][0][0]),  '2nd Highest Peak': round(top_5_peaks_by_CF[0][0][1]), '3rd Highest Peak': round(top_5_peaks_by_CF[0][0][2]), '4th Highest Peak':round(top_5_peaks_by_CF[0][0][3]),'5th Highest Peak': round(top_5_peaks_by_CF[0][0][4])},
+      {'freq': None,                                'channel': chan[1], 'Highest Peak': round(top_5_peaks_by_CF[0][1][0]), 'Dynamic Range':round(dynamic_range_by_CF[0][1][0]),'2nd Highest Peak': round(top_5_peaks_by_CF[0][1][1]), '3rd Highest Peak': round(top_5_peaks_by_CF[0][1][2]), '4th Highest Peak': round(top_5_peaks_by_CF[0][1][3]),'5th Highest Peak': round(top_5_peaks_by_CF[0][1][4])},
+      {'freq': None,                                'channel': chan[2], 'Highest Peak': round(top_5_peaks_by_CF[0][2][0]), 'Dynamic Range':round(dynamic_range_by_CF[0][2][0]),'2nd Highest Peak': round(top_5_peaks_by_CF[0][2][1]), '3rd Highest Peak': round(top_5_peaks_by_CF[0][2][2]), '4th Highest Peak': round(top_5_peaks_by_CF[0][2][3]),'5th Highest Peak': round(top_5_peaks_by_CF[0][2][4])},
+      {'freq': round(center_freq_array_2[0][0]/1e6),'channel': chan[3], 'Highest Peak': round(top_5_peaks_by_CF[0][3][0]), 'Dynamic Range':round(dynamic_range_by_CF[0][3][0]),'2nd Highest Peak': round(top_5_peaks_by_CF[0][3][1]), '3rd Highest Peak': round(top_5_peaks_by_CF[0][3][2]), '4th Highest Peak': round(top_5_peaks_by_CF[0][3][3]),'5th Highest Peak': round(top_5_peaks_by_CF[0][3][4])}
       ]
 
 for row in range(rows):
@@ -460,18 +460,20 @@ for row in range(rows):
     ax.text(x=2, y=row, s=d['channel'], va='center', ha='center')
     #highest peaks columns
     ax.text(x=3, y=row, s=d['Highest Peak'], va='center', ha='right')
-    ax.text(x=4, y=row, s=d['2nd Highest Peak'], va='center', ha='right')
-    ax.text(x=5, y=row, s=d['3rd Highest Peak'], va='center', ha='right')
-    ax.text(x=6, y=row, s=d['4th Highest Peak'], va='center', ha='right')
-    ax.text(x=7, y=row, s=d['5th Highest Peak'], va='center', ha='right')
+    ax.text(x=4, y=row, s=d['Dynamic Range'], va='center', ha='right')
+    ax.text(x=5, y=row, s=d['2nd Highest Peak'], va='center', ha='right')
+    ax.text(x=6, y=row, s=d['3rd Highest Peak'], va='center', ha='right')
+    ax.text(x=7, y=row, s=d['4th Highest Peak'], va='center', ha='right')
+    ax.text(x=8, y=row, s=d['5th Highest Peak'], va='center', ha='right')
 
     ax.text(.2, 3.5, 'Freq(MHz)', weight='bold', ha='left')
-    ax.text(2, 3.5, 'Channel', weight='bold', ha='center')
-    ax.text(3, 3.5, 'Top Peak\n(dBm)', weight='bold', ha='right')
-    ax.text(4, 3.5, '2nd Peak\n(dBm)', weight='bold', ha='right')
-    ax.text(5, 3.5, '3rd Peak\n(dBm)', weight='bold', ha='right')
-    ax.text(6, 3.5, '4th Peak\n(dBm)', weight='bold', ha='right')
-    ax.text(7, 3.5, '5th Peak\n(dBm)', weight='bold', ha='right', va='bottom')
+    ax.text(2, 3.5, 'Channel', weight='bold', ha='right')
+    ax.text(3, 3.5, '1st Peak\n(dB)', weight='bold', ha='right')
+    ax.text(4, 3.5, 'Dyn. Rng.\n(dB)', weight='bold', ha='right')
+    ax.text(5, 3.5, '2nd Peak\n(dB)', weight='bold', ha='right')
+    ax.text(6, 3.5, '3rd Peak\n(dB)', weight='bold', ha='right')
+    ax.text(7, 3.5, '4th Peak\n(dB)', weight='bold', ha='right')
+    ax.text(8, 3.5, '5th Peak\n(dB)', weight='bold', ha='right', va='bottom')
     ax.axis('off')
     for row in range(rows):
         ax.plot(
@@ -483,25 +485,346 @@ for row in range(rows):
     )
 
     ax.plot([0, cols + 1], [9.5, 9.5], lw='.5', c='black')
+    ax.set_title("Top 5 Peaks and Dynamic Range at Center Frequency = {} MHz".format((center_freq_array_2[0][0])/1e6))
 
-#dynamic range of CF=300MHz
+#top 5 peaks and dynamic range of CF=300MHz
+fig2, ax = plt.subplots(figsize=(10,6))
+rows=4
+cols=8
+ax.set_ylim(-1, rows + 1)
+ax.set_xlim(0, cols + .5)
+
+data=[{'freq': None,                                'channel': chan[0], 'Highest Peak': round(top_5_peaks_by_CF[1][0][0]), 'Dynamic Range':round(dynamic_range_by_CF[1][0][0]),  '2nd Highest Peak': round(top_5_peaks_by_CF[1][0][1]), '3rd Highest Peak': round(top_5_peaks_by_CF[1][0][2]), '4th Highest Peak':round(top_5_peaks_by_CF[1][0][3]),'5th Highest Peak': round(top_5_peaks_by_CF[1][0][4])},
+      {'freq': None,                                'channel': chan[1], 'Highest Peak': round(top_5_peaks_by_CF[1][1][0]), 'Dynamic Range':round(dynamic_range_by_CF[1][1][0]),'2nd Highest Peak': round(top_5_peaks_by_CF[1][1][1]), '3rd Highest Peak': round(top_5_peaks_by_CF[1][1][2]), '4th Highest Peak': round(top_5_peaks_by_CF[1][1][3]),'5th Highest Peak': round(top_5_peaks_by_CF[1][1][4])},
+      {'freq': None,                                'channel': chan[2], 'Highest Peak': round(top_5_peaks_by_CF[1][2][0]), 'Dynamic Range':round(dynamic_range_by_CF[1][2][0]),'2nd Highest Peak': round(top_5_peaks_by_CF[1][2][1]), '3rd Highest Peak': round(top_5_peaks_by_CF[1][2][2]), '4th Highest Peak': round(top_5_peaks_by_CF[1][2][3]),'5th Highest Peak': round(top_5_peaks_by_CF[1][2][4])},
+      {'freq': round(center_freq_array_2[1][0]/1e6),'channel': chan[3], 'Highest Peak': round(top_5_peaks_by_CF[1][3][0]), 'Dynamic Range':round(dynamic_range_by_CF[1][3][0]),'2nd Highest Peak': round(top_5_peaks_by_CF[1][3][1]), '3rd Highest Peak': round(top_5_peaks_by_CF[1][3][2]), '4th Highest Peak': round(top_5_peaks_by_CF[1][3][3]),'5th Highest Peak': round(top_5_peaks_by_CF[1][3][4])}
+      ]
+
+for row in range(rows):
+    d=data[row]
+    #freq column
+    ax.text(x=.5, y=row, s=d['freq'], va='center', ha='left')
+    #channel column
+    ax.text(x=2, y=row, s=d['channel'], va='center', ha='center')
+    #highest peaks columns
+    ax.text(x=3, y=row, s=d['Highest Peak'], va='center', ha='right')
+    ax.text(x=4, y=row, s=d['Dynamic Range'], va='center', ha='right')
+    ax.text(x=5, y=row, s=d['2nd Highest Peak'], va='center', ha='right')
+    ax.text(x=6, y=row, s=d['3rd Highest Peak'], va='center', ha='right')
+    ax.text(x=7, y=row, s=d['4th Highest Peak'], va='center', ha='right')
+    ax.text(x=8, y=row, s=d['5th Highest Peak'], va='center', ha='right')
+
+    ax.text(.2, 3.5, 'Freq(MHz)', weight='bold', ha='left')
+    ax.text(2, 3.5, 'Channel', weight='bold', ha='right')
+    ax.text(3, 3.5, '1st Peak\n(dB)', weight='bold', ha='right')
+    ax.text(4, 3.5, 'Dyn. Rng.\n(dB)', weight='bold', ha='right')
+    ax.text(5, 3.5, '2nd Peak\n(dB)', weight='bold', ha='right')
+    ax.text(6, 3.5, '3rd Peak\n(dB)', weight='bold', ha='right')
+    ax.text(7, 3.5, '4th Peak\n(dB)', weight='bold', ha='right')
+    ax.text(8, 3.5, '5th Peak\n(dB)', weight='bold', ha='right', va='bottom')
+    ax.axis('off')
+    for row in range(rows):
+        ax.plot(
+    	[0, cols + 1],
+    	[row -.5, row - .5],
+    	ls=':',
+    	lw='.5',
+    	c='grey'
+    )
+
+    ax.plot([0, cols + 1], [9.5, 9.5], lw='.5', c='black')
+    ax.set_title("Top 5 Peaks and Dynamic Range at Center Frequency = {} MHz".format((center_freq_array_2[1][0])/1e6))
 
 
+#top 5 peaks and dynamic range of CF=600MHz
+fig3, ax = plt.subplots(figsize=(10,6))
+rows=4
+cols=8
+ax.set_ylim(-1, rows + 1)
+ax.set_xlim(0, cols + .5)
 
-#dynamic range of CF=600MHz
+data=[{'freq': None,                                'channel': chan[0], 'Highest Peak': round(top_5_peaks_by_CF[2][0][0]), 'Dynamic Range':round(dynamic_range_by_CF[2][0][0]),  '2nd Highest Peak': round(top_5_peaks_by_CF[2][0][1]), '3rd Highest Peak': round(top_5_peaks_by_CF[2][0][2]), '4th Highest Peak':round(top_5_peaks_by_CF[2][0][3]),'5th Highest Peak': round(top_5_peaks_by_CF[2][0][4])},
+      {'freq': None,                                'channel': chan[1], 'Highest Peak': round(top_5_peaks_by_CF[2][1][0]), 'Dynamic Range':round(dynamic_range_by_CF[2][1][0]),'2nd Highest Peak': round(top_5_peaks_by_CF[2][1][1]), '3rd Highest Peak': round(top_5_peaks_by_CF[2][1][2]), '4th Highest Peak': round(top_5_peaks_by_CF[2][1][3]),'5th Highest Peak': round(top_5_peaks_by_CF[2][1][4])},
+      {'freq': None,                                'channel': chan[2], 'Highest Peak': round(top_5_peaks_by_CF[2][2][0]), 'Dynamic Range':round(dynamic_range_by_CF[2][2][0]),'2nd Highest Peak': round(top_5_peaks_by_CF[2][2][1]), '3rd Highest Peak': round(top_5_peaks_by_CF[2][2][2]), '4th Highest Peak': round(top_5_peaks_by_CF[2][2][3]),'5th Highest Peak': round(top_5_peaks_by_CF[2][2][4])},
+      {'freq': round(center_freq_array_2[2][0]/1e6),'channel': chan[3], 'Highest Peak': round(top_5_peaks_by_CF[2][3][0]), 'Dynamic Range':round(dynamic_range_by_CF[2][3][0]),'2nd Highest Peak': round(top_5_peaks_by_CF[2][3][1]), '3rd Highest Peak': round(top_5_peaks_by_CF[2][3][2]), '4th Highest Peak': round(top_5_peaks_by_CF[2][3][3]),'5th Highest Peak': round(top_5_peaks_by_CF[2][3][4])}
+      ]
+
+for row in range(rows):
+    d=data[row]
+    #freq column
+    ax.text(x=.5, y=row, s=d['freq'], va='center', ha='left')
+    #channel column
+    ax.text(x=2, y=row, s=d['channel'], va='center', ha='center')
+    #highest peaks columns
+    ax.text(x=3, y=row, s=d['Highest Peak'], va='center', ha='right')
+    ax.text(x=4, y=row, s=d['Dynamic Range'], va='center', ha='right')
+    ax.text(x=5, y=row, s=d['2nd Highest Peak'], va='center', ha='right')
+    ax.text(x=6, y=row, s=d['3rd Highest Peak'], va='center', ha='right')
+    ax.text(x=7, y=row, s=d['4th Highest Peak'], va='center', ha='right')
+    ax.text(x=8, y=row, s=d['5th Highest Peak'], va='center', ha='right')
+
+    ax.text(.2, 3.5, 'Freq(MHz)', weight='bold', ha='left')
+    ax.text(2, 3.5, 'Channel', weight='bold', ha='right')
+    ax.text(3, 3.5, '1st Peak\n(dB)', weight='bold', ha='right')
+    ax.text(4, 3.5, 'Dyn. Rng.\n(dB)', weight='bold', ha='right')
+    ax.text(5, 3.5, '2nd Peak\n(dB)', weight='bold', ha='right')
+    ax.text(6, 3.5, '3rd Peak\n(dB)', weight='bold', ha='right')
+    ax.text(7, 3.5, '4th Peak\n(dB)', weight='bold', ha='right')
+    ax.text(8, 3.5, '5th Peak\n(dB)', weight='bold', ha='right', va='bottom')
+    ax.axis('off')
+    for row in range(rows):
+        ax.plot(
+    	[0, cols + 1],
+    	[row -.5, row - .5],
+    	ls=':',
+    	lw='.5',
+    	c='grey'
+    )
+
+    ax.plot([0, cols + 1], [9.5, 9.5], lw='.5', c='black')
+    ax.set_title("Top 5 Peaks and Dynamic Range at Center Frequency = {} MHz".format((center_freq_array_2[2][0])/1e6))
 
 
+#top 5 peaks and dynamic range of CF=1.2GHz
+fig4, ax = plt.subplots(figsize=(10,6))
+rows=4
+cols=8
+ax.set_ylim(-1, rows + 1)
+ax.set_xlim(0, cols + .5)
 
-#dynamic range of CF=1.2GHz
+data=[{'freq': None,                                'channel': chan[0], 'Highest Peak': round(top_5_peaks_by_CF[3][0][0]), 'Dynamic Range':round(dynamic_range_by_CF[3][0][0]),  '2nd Highest Peak': round(top_5_peaks_by_CF[3][0][1]), '3rd Highest Peak': round(top_5_peaks_by_CF[3][0][2]), '4th Highest Peak':round(top_5_peaks_by_CF[3][0][3]),'5th Highest Peak': round(top_5_peaks_by_CF[3][0][4])},
+      {'freq': None,                                'channel': chan[1], 'Highest Peak': round(top_5_peaks_by_CF[3][1][0]), 'Dynamic Range':round(dynamic_range_by_CF[3][1][0]),'2nd Highest Peak': round(top_5_peaks_by_CF[3][1][1]),   '3rd Highest Peak': round(top_5_peaks_by_CF[3][1][2]), '4th Highest Peak': round(top_5_peaks_by_CF[3][1][3]),'5th Highest Peak': round(top_5_peaks_by_CF[3][1][4])},
+      {'freq': None,                                'channel': chan[2], 'Highest Peak': round(top_5_peaks_by_CF[3][2][0]), 'Dynamic Range':round(dynamic_range_by_CF[3][2][0]),'2nd Highest Peak': round(top_5_peaks_by_CF[3][2][1]),   '3rd Highest Peak': round(top_5_peaks_by_CF[3][2][2]), '4th Highest Peak': round(top_5_peaks_by_CF[3][2][3]),'5th Highest Peak': round(top_5_peaks_by_CF[3][2][4])},
+      {'freq': round(center_freq_array_2[3][0]/1e6),'channel': chan[3], 'Highest Peak': round(top_5_peaks_by_CF[3][3][0]), 'Dynamic Range':round(dynamic_range_by_CF[3][3][0]),'2nd Highest Peak': round(top_5_peaks_by_CF[3][3][1]),   '3rd Highest Peak': round(top_5_peaks_by_CF[3][3][2]), '4th Highest Peak': round(top_5_peaks_by_CF[3][3][3]),'5th Highest Peak': round(top_5_peaks_by_CF[3][3][4])}
+      ]
 
-#dynamic range of CF=2.4GHz
+for row in range(rows):
+    d=data[row]
+    #freq column
+    ax.text(x=.5, y=row, s=d['freq'], va='center', ha='left')
+    #channel column
+    ax.text(x=2, y=row, s=d['channel'], va='center', ha='center')
+    #highest peaks columns
+    ax.text(x=3, y=row, s=d['Highest Peak'], va='center', ha='right')
+    ax.text(x=4, y=row, s=d['Dynamic Range'], va='center', ha='right')
+    ax.text(x=5, y=row, s=d['2nd Highest Peak'], va='center', ha='right')
+    ax.text(x=6, y=row, s=d['3rd Highest Peak'], va='center', ha='right')
+    ax.text(x=7, y=row, s=d['4th Highest Peak'], va='center', ha='right')
+    ax.text(x=8, y=row, s=d['5th Highest Peak'], va='center', ha='right')
 
-#dynamic range of CF=4GHz
+    ax.text(.2, 3.5, 'Freq(MHz)', weight='bold', ha='left')
+    ax.text(2, 3.5, 'Channel', weight='bold', ha='right')
+    ax.text(3, 3.5, '1st Peak\n(dB)', weight='bold', ha='right')
+    ax.text(4, 3.5, 'Dyn. Rng.\n(dB)', weight='bold', ha='right')
+    ax.text(5, 3.5, '2nd Peak\n(dB)', weight='bold', ha='right')
+    ax.text(6, 3.5, '3rd Peak\n(dB)', weight='bold', ha='right')
+    ax.text(7, 3.5, '4th Peak\n(dB)', weight='bold', ha='right')
+    ax.text(8, 3.5, '5th Peak\n(dB)', weight='bold', ha='right', va='bottom')
+    ax.axis('off')
+    for row in range(rows):
+        ax.plot(
+    	[0, cols + 1],
+    	[row -.5, row - .5],
+    	ls=':',
+    	lw='.5',
+    	c='grey'
+    )
 
-#dynamic range of CF=5GHz
+    ax.plot([0, cols + 1], [9.5, 9.5], lw='.5', c='black')
+    ax.set_title("Top 5 Peaks and Dynamic Range at Center Frequency = {} MHz".format((center_freq_array_2[3][0])/1e6))
 
-#dynamic range of CF=5.5GHz
-    
+#top 5 peaks and dynamic range of CF=2.4GHz
+fig4, ax = plt.subplots(figsize=(10,6))
+rows=4
+cols=8
+ax.set_ylim(-1, rows + 1)
+ax.set_xlim(0, cols + .5)
+
+data=[{'freq': None,                                'channel': chan[0], 'Highest Peak': round(top_5_peaks_by_CF[4][0][0]), 'Dynamic Range':round(dynamic_range_by_CF[4][0][0]),  '2nd Highest Peak': round(top_5_peaks_by_CF[4][0][1]), '3rd Highest Peak': round(top_5_peaks_by_CF[4][0][2]), '4th Highest Peak':round(top_5_peaks_by_CF[4][0][3]),'5th Highest Peak': round(top_5_peaks_by_CF[4][0][4])},
+      {'freq': None,                                'channel': chan[1], 'Highest Peak': round(top_5_peaks_by_CF[4][1][0]), 'Dynamic Range':round(dynamic_range_by_CF[4][1][0]),'2nd Highest Peak': round(top_5_peaks_by_CF[4][1][1]),   '3rd Highest Peak': round(top_5_peaks_by_CF[4][1][2]), '4th Highest Peak': round(top_5_peaks_by_CF[4][1][3]),'5th Highest Peak': round(top_5_peaks_by_CF[4][1][4])},
+      {'freq': None,                                'channel': chan[2], 'Highest Peak': round(top_5_peaks_by_CF[4][2][0]), 'Dynamic Range':round(dynamic_range_by_CF[4][2][0]),'2nd Highest Peak': round(top_5_peaks_by_CF[4][2][1]),   '3rd Highest Peak': round(top_5_peaks_by_CF[4][2][2]), '4th Highest Peak': round(top_5_peaks_by_CF[4][2][3]),'5th Highest Peak': round(top_5_peaks_by_CF[4][2][4])},
+      {'freq': round(center_freq_array_2[4][0]/1e6),'channel': chan[3], 'Highest Peak': round(top_5_peaks_by_CF[4][3][0]), 'Dynamic Range':round(dynamic_range_by_CF[4][3][0]),'2nd Highest Peak': round(top_5_peaks_by_CF[4][3][1]),   '3rd Highest Peak': round(top_5_peaks_by_CF[4][3][2]), '4th Highest Peak': round(top_5_peaks_by_CF[4][3][3]),'5th Highest Peak': round(top_5_peaks_by_CF[4][3][4])}
+      ]
+
+for row in range(rows):
+    d=data[row]
+    #freq column
+    ax.text(x=.5, y=row, s=d['freq'], va='center', ha='left')
+    #channel column
+    ax.text(x=2, y=row, s=d['channel'], va='center', ha='center')
+    #highest peaks columns
+    ax.text(x=3, y=row, s=d['Highest Peak'], va='center', ha='right')
+    ax.text(x=4, y=row, s=d['Dynamic Range'], va='center', ha='right')
+    ax.text(x=5, y=row, s=d['2nd Highest Peak'], va='center', ha='right')
+    ax.text(x=6, y=row, s=d['3rd Highest Peak'], va='center', ha='right')
+    ax.text(x=7, y=row, s=d['4th Highest Peak'], va='center', ha='right')
+    ax.text(x=8, y=row, s=d['5th Highest Peak'], va='center', ha='right')
+
+    ax.text(.2, 3.5, 'Freq(MHz)', weight='bold', ha='left')
+    ax.text(2, 3.5, 'Channel', weight='bold', ha='right')
+    ax.text(3, 3.5, '1st Peak\n(dB)', weight='bold', ha='right')
+    ax.text(4, 3.5, 'Dyn. Rng.\n(dB)', weight='bold', ha='right')
+    ax.text(5, 3.5, '2nd Peak\n(dB)', weight='bold', ha='right')
+    ax.text(6, 3.5, '3rd Peak\n(dB)', weight='bold', ha='right')
+    ax.text(7, 3.5, '4th Peak\n(dB)', weight='bold', ha='right')
+    ax.text(8, 3.5, '5th Peak\n(dB)', weight='bold', ha='right', va='bottom')
+    ax.axis('off')
+    for row in range(rows):
+        ax.plot(
+    	[0, cols + 1],
+    	[row -.5, row - .5],
+    	ls=':',
+    	lw='.5',
+    	c='grey'
+    )
+
+    ax.plot([0, cols + 1], [9.5, 9.5], lw='.5', c='black')
+    ax.set_title("Top 5 Peaks and Dynamic Range at Center Frequency = {} MHz".format((center_freq_array_2[4][0])/1e6))
+
+
+#top 5 peaks and dynamic range of CF=4GHz
+fig5, ax = plt.subplots(figsize=(10,6))
+rows=4
+cols=8
+ax.set_ylim(-1, rows + 1)
+ax.set_xlim(0, cols + .5)
+
+data=[{'freq': None,                                'channel': chan[0], 'Highest Peak': round(top_5_peaks_by_CF[5][0][0]), 'Dynamic Range':round(dynamic_range_by_CF[5][0][0]),  '2nd Highest Peak': round(top_5_peaks_by_CF[5][0][1]), '3rd Highest Peak': round(top_5_peaks_by_CF[5][0][2]), '4th Highest Peak':round(top_5_peaks_by_CF[5][0][3]),'5th Highest Peak': round(top_5_peaks_by_CF[5][0][4])},
+      {'freq': None,                                'channel': chan[1], 'Highest Peak': round(top_5_peaks_by_CF[5][1][0]), 'Dynamic Range':round(dynamic_range_by_CF[5][1][0]),'2nd Highest Peak': round(top_5_peaks_by_CF[5][1][1]),   '3rd Highest Peak': round(top_5_peaks_by_CF[5][1][2]), '4th Highest Peak': round(top_5_peaks_by_CF[5][1][3]),'5th Highest Peak': round(top_5_peaks_by_CF[5][1][4])},
+      {'freq': None,                                'channel': chan[2], 'Highest Peak': round(top_5_peaks_by_CF[5][2][0]), 'Dynamic Range':round(dynamic_range_by_CF[5][2][0]),'2nd Highest Peak': round(top_5_peaks_by_CF[5][2][1]),   '3rd Highest Peak': round(top_5_peaks_by_CF[5][2][2]), '4th Highest Peak': round(top_5_peaks_by_CF[5][2][3]),'5th Highest Peak': round(top_5_peaks_by_CF[5][2][4])},
+      {'freq': round(center_freq_array_2[5][0]/1e6),'channel': chan[3], 'Highest Peak': round(top_5_peaks_by_CF[5][3][0]), 'Dynamic Range':round(dynamic_range_by_CF[5][3][0]),'2nd Highest Peak': round(top_5_peaks_by_CF[5][3][1]),   '3rd Highest Peak': round(top_5_peaks_by_CF[5][3][2]), '4th Highest Peak': round(top_5_peaks_by_CF[5][3][3]),'5th Highest Peak': round(top_5_peaks_by_CF[5][3][4])}
+      ]
+
+for row in range(rows):
+    d=data[row]
+    #freq column
+    ax.text(x=.5, y=row, s=d['freq'], va='center', ha='left')
+    #channel column
+    ax.text(x=2, y=row, s=d['channel'], va='center', ha='center')
+    #highest peaks columns
+    ax.text(x=3, y=row, s=d['Highest Peak'], va='center', ha='right')
+    ax.text(x=4, y=row, s=d['Dynamic Range'], va='center', ha='right')
+    ax.text(x=5, y=row, s=d['2nd Highest Peak'], va='center', ha='right')
+    ax.text(x=6, y=row, s=d['3rd Highest Peak'], va='center', ha='right')
+    ax.text(x=7, y=row, s=d['4th Highest Peak'], va='center', ha='right')
+    ax.text(x=8, y=row, s=d['5th Highest Peak'], va='center', ha='right')
+
+    ax.text(.2, 3.5, 'Freq(MHz)', weight='bold', ha='left')
+    ax.text(2, 3.5, 'Channel', weight='bold', ha='right')
+    ax.text(3, 3.5, '1st Peak\n(dB)', weight='bold', ha='right')
+    ax.text(4, 3.5, 'Dyn. Rng.\n(dB)', weight='bold', ha='right')
+    ax.text(5, 3.5, '2nd Peak\n(dB)', weight='bold', ha='right')
+    ax.text(6, 3.5, '3rd Peak\n(dB)', weight='bold', ha='right')
+    ax.text(7, 3.5, '4th Peak\n(dB)', weight='bold', ha='right')
+    ax.text(8, 3.5, '5th Peak\n(dB)', weight='bold', ha='right', va='bottom')
+    ax.axis('off')
+    for row in range(rows):
+        ax.plot(
+    	[0, cols + 1],
+    	[row -.5, row - .5],
+    	ls=':',
+    	lw='.5',
+    	c='grey'
+    )
+
+    ax.plot([0, cols + 1], [9.5, 9.5], lw='.5', c='black')
+    ax.set_title("Top 5 Peaks and Dynamic Range at Center Frequency = {} MHz".format((center_freq_array_2[5][0])/1e6))
+
+#top 5 peaks and dynamic range of CF=5GHz
+fig6, ax = plt.subplots(figsize=(10,6))
+rows=4
+cols=8
+ax.set_ylim(-1, rows + 1)
+ax.set_xlim(0, cols + .5)
+
+data=[{'freq': None,                                'channel': chan[0], 'Highest Peak': round(top_5_peaks_by_CF[6][0][0]), 'Dynamic Range':round(dynamic_range_by_CF[6][0][0]),'2nd Highest Peak': round(top_5_peaks_by_CF[6][0][1]),   '3rd Highest Peak': round(top_5_peaks_by_CF[6][0][2]), '4th Highest Peak':round(top_5_peaks_by_CF[6][0][3]),'5th Highest Peak': round(top_5_peaks_by_CF[6][0][4])},
+      {'freq': None,                                'channel': chan[1], 'Highest Peak': round(top_5_peaks_by_CF[6][1][0]), 'Dynamic Range':round(dynamic_range_by_CF[6][1][0]),'2nd Highest Peak': round(top_5_peaks_by_CF[6][1][1]),   '3rd Highest Peak': round(top_5_peaks_by_CF[6][1][2]), '4th Highest Peak': round(top_5_peaks_by_CF[6][1][3]),'5th Highest Peak': round(top_5_peaks_by_CF[6][1][4])},
+      {'freq': None,                                'channel': chan[2], 'Highest Peak': round(top_5_peaks_by_CF[6][2][0]), 'Dynamic Range':round(dynamic_range_by_CF[6][2][0]),'2nd Highest Peak': round(top_5_peaks_by_CF[6][2][1]),   '3rd Highest Peak': round(top_5_peaks_by_CF[6][2][2]), '4th Highest Peak': round(top_5_peaks_by_CF[6][2][3]),'5th Highest Peak': round(top_5_peaks_by_CF[6][2][4])},
+      {'freq': round(center_freq_array_2[6][0]/1e6),'channel': chan[3], 'Highest Peak': round(top_5_peaks_by_CF[6][3][0]), 'Dynamic Range':round(dynamic_range_by_CF[6][3][0]),'2nd Highest Peak': round(top_5_peaks_by_CF[6][3][1]),   '3rd Highest Peak': round(top_5_peaks_by_CF[6][3][2]), '4th Highest Peak': round(top_5_peaks_by_CF[6][3][3]),'5th Highest Peak': round(top_5_peaks_by_CF[6][3][4])}
+      ]
+
+for row in range(rows):
+    d=data[row]
+    #freq column
+    ax.text(x=.5, y=row, s=d['freq'], va='center', ha='left')
+    #channel column
+    ax.text(x=2, y=row, s=d['channel'], va='center', ha='center')
+    #highest peaks columns
+    ax.text(x=3, y=row, s=d['Highest Peak'], va='center', ha='right')
+    ax.text(x=4, y=row, s=d['Dynamic Range'], va='center', ha='right')
+    ax.text(x=5, y=row, s=d['2nd Highest Peak'], va='center', ha='right')
+    ax.text(x=6, y=row, s=d['3rd Highest Peak'], va='center', ha='right')
+    ax.text(x=7, y=row, s=d['4th Highest Peak'], va='center', ha='right')
+    ax.text(x=8, y=row, s=d['5th Highest Peak'], va='center', ha='right')
+
+    ax.text(.2, 3.5, 'Freq(MHz)', weight='bold', ha='left')
+    ax.text(2, 3.5, 'Channel', weight='bold', ha='right')
+    ax.text(3, 3.5, '1st Peak\n(dB)', weight='bold', ha='right')
+    ax.text(4, 3.5, 'Dyn. Rng.\n(dB)', weight='bold', ha='right')
+    ax.text(5, 3.5, '2nd Peak\n(dB)', weight='bold', ha='right')
+    ax.text(6, 3.5, '3rd Peak\n(dB)', weight='bold', ha='right')
+    ax.text(7, 3.5, '4th Peak\n(dB)', weight='bold', ha='right')
+    ax.text(8, 3.5, '5th Peak\n(dB)', weight='bold', ha='right', va='bottom')
+    ax.axis('off')
+    for row in range(rows):
+        ax.plot(
+    	[0, cols + 1],
+    	[row -.5, row - .5],
+    	ls=':',
+    	lw='.5',
+    	c='grey'
+    )
+
+    ax.plot([0, cols + 1], [9.5, 9.5], lw='.5', c='black')
+    ax.set_title("Top 5 Peaks and Dynamic Range at Center Frequency = {} MHz".format((center_freq_array_2[6][0])/1e6))
+
+#top 5 peaks and dynamic range of CF=5.5GHz
+fig7, ax = plt.subplots(figsize=(10,6))
+rows=4
+cols=8
+ax.set_ylim(-1, rows + 1)
+ax.set_xlim(0, cols + .5)
+
+data=[{'freq': None,                                'channel': chan[0], 'Highest Peak': round(top_5_peaks_by_CF[7][0][0]), 'Dynamic Range':round(dynamic_range_by_CF[7][0][0]),'2nd Highest Peak': round(top_5_peaks_by_CF[7][0][1]),   '3rd Highest Peak': round(top_5_peaks_by_CF[7][0][2]), '4th Highest Peak':round(top_5_peaks_by_CF[7][0][3]),'5th Highest Peak': round(top_5_peaks_by_CF[7][0][4])},
+      {'freq': None,                                'channel': chan[1], 'Highest Peak': round(top_5_peaks_by_CF[7][1][0]), 'Dynamic Range':round(dynamic_range_by_CF[7][1][0]),'2nd Highest Peak': round(top_5_peaks_by_CF[7][1][1]),   '3rd Highest Peak': round(top_5_peaks_by_CF[7][1][2]), '4th Highest Peak': round(top_5_peaks_by_CF[7][1][3]),'5th Highest Peak': round(top_5_peaks_by_CF[7][1][4])},
+      {'freq': None,                                'channel': chan[2], 'Highest Peak': round(top_5_peaks_by_CF[7][2][0]), 'Dynamic Range':round(dynamic_range_by_CF[7][2][0]),'2nd Highest Peak': round(top_5_peaks_by_CF[7][2][1]),   '3rd Highest Peak': round(top_5_peaks_by_CF[7][2][2]), '4th Highest Peak': round(top_5_peaks_by_CF[7][2][3]),'5th Highest Peak': round(top_5_peaks_by_CF[7][2][4])},
+      {'freq': round(center_freq_array_2[7][0]/1e6),'channel': chan[3], 'Highest Peak': round(top_5_peaks_by_CF[7][3][0]), 'Dynamic Range':round(dynamic_range_by_CF[7][3][0]),'2nd Highest Peak': round(top_5_peaks_by_CF[7][3][1]),   '3rd Highest Peak': round(top_5_peaks_by_CF[7][3][2]), '4th Highest Peak': round(top_5_peaks_by_CF[7][3][3]),'5th Highest Peak': round(top_5_peaks_by_CF[7][3][4])}
+      ]
+
+for row in range(rows):
+    d=data[row]
+    #freq column
+    ax.text(x=.5, y=row, s=d['freq'], va='center', ha='left')
+    #channel column
+    ax.text(x=2, y=row, s=d['channel'], va='center', ha='center')
+    #highest peaks columns
+    ax.text(x=3, y=row, s=d['Highest Peak'], va='center', ha='right')
+    ax.text(x=4, y=row, s=d['Dynamic Range'], va='center', ha='right')
+    ax.text(x=5, y=row, s=d['2nd Highest Peak'], va='center', ha='right')
+    ax.text(x=6, y=row, s=d['3rd Highest Peak'], va='center', ha='right')
+    ax.text(x=7, y=row, s=d['4th Highest Peak'], va='center', ha='right')
+    ax.text(x=8, y=row, s=d['5th Highest Peak'], va='center', ha='right')
+
+    ax.text(.2, 3.5, 'Freq(MHz)', weight='bold', ha='left')
+    ax.text(2, 3.5, 'Channel', weight='bold', ha='right')
+    ax.text(3, 3.5, '1st Peak\n(dB)', weight='bold', ha='right')
+    ax.text(4, 3.5, 'Dyn. Rng.\n(dB)', weight='bold', ha='right')
+    ax.text(5, 3.5, '2nd Peak\n(dB)', weight='bold', ha='right')
+    ax.text(6, 3.5, '3rd Peak\n(dB)', weight='bold', ha='right')
+    ax.text(7, 3.5, '4th Peak\n(dB)', weight='bold', ha='right')
+    ax.text(8, 3.5, '5th Peak\n(dB)', weight='bold', ha='right', va='bottom')
+    ax.axis('off')
+    for row in range(rows):
+        ax.plot(
+    	[0, cols + 1],
+    	[row -.5, row - .5],
+    	ls=':',
+    	lw='.5',
+    	c='grey'
+    )
+
+    ax.plot([0, cols + 1], [9.5, 9.5], lw='.5', c='black')
+    ax.set_title("Top 5 Peaks and Dynamic Range at Center Frequency = {} MHz".format((center_freq_array_2[7][0])/1e6))
 
 
 #Test that all channels at the frequency have equivalent gain (within 5dB of eachother)
