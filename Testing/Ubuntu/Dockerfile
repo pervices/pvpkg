@@ -41,7 +41,7 @@ WORKDIR /home/notroot/gnuradio
 RUN wget -r -np -nH --cut-dirs=4 --reject "index*"  http://files.pervices.com/latest/sw/ubuntu20.04/gnuradio/ && \
 mv gnuradio*.tar.gz gnuradio.tar.gz && \
 tar -xvzf gnuradio.tar.gz && \
-cd gnuardiopv* && \
+cd gnuradiopv* && \
 dpkg -i libgnuradio*.deb || true && \
 apt --fix-broken install && \
 dpkg -i gnuradio*.deb || true && \
