@@ -4,10 +4,16 @@ pipeline {
     agent {
 	label 'waveci'
     }
-
+  parameters {  
+        booleanParam(name: "ENABLE_ARCH", defaultValue: true, description: "Select whether to enable testing for Archlinux.")
+		booleanParam(name: "ENABLE_UBUNTU", defaultValue: true, description: "Select whether to enable testing for Ubuntu 20.04.")
+		booleanParam(name: "ENABLE_ORACLE", defaultValue: true, description: "Select whether to enable testing for Oracle Linux 8.")
     stages {
 
                 stage('Arch Testing'){  
+                 when {
+                          expression {params.ENABLE_ARCH == true}
+                     }
                     options {
                     timeout(time: 3, unit: "HOURS")
                     } 
@@ -24,7 +30,10 @@ pipeline {
                     
 
 
-                stage('Ubuntu Testing'){    
+                stage('Ubuntu Testing'){   
+                when {
+                          expression {params.ENABLE_UBUNTU == true}
+                     }
                     options {
                     timeout(time: 3, unit: "HOURS")
                     } 
@@ -41,6 +50,9 @@ pipeline {
 
 
                stage('Oracle Testing'){    
+               when {
+                          expression {params.ENABLE_ORACLE == true}
+                     }
                     options {
                     timeout(time: 3, unit: "HOURS")
                         } 
