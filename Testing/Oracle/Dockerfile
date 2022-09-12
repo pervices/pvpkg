@@ -29,7 +29,7 @@ WORKDIR /home/gnuradio
 RUN wget -r -np -nH --cut-dirs=4 --reject "index*"  http://files.pervices.com/latest/sw/centos8/gnuradio/ && \
 mv gnuradio*.tar.gz gnuradio.tar.gz && \
 tar -xvzf gnuradio.tar.gz && \
-cd gnuradiopv* && \
+cd gnuradio-* && \
 dnf builddep -y gnuradio.spec && \
 rpm -i volk*.rpm && rpm -i libgnuradio*.rpm && rpm -i python3*.rpm && rpm -i gnuradio*.rpm
 WORKDIR /home/notroot/testing
