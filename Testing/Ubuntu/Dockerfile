@@ -25,9 +25,9 @@ RUN apt-get update
 WORKDIR /home/notroot/uhd
 # build latest UHD debian package from fileserver
 RUN wget -r -np -nH --cut-dirs=4 --reject "index*"  http://files.pervices.com/latest/sw/ubuntu20.04/uhd/ && \
-tar -xvzf uhd*.tar.gz && \
-ls && \
-#cd uhdpv* && \
+mv uhd*.tar.gz uhd.tar.gz && \
+tar -xvzf uhd.tar.gz && \
+cd uhdpv* && \
 dpkg -i uhd*.deb || true && \
 apt --fix-broken install
 WORKDIR /home/notroot/volk
@@ -39,7 +39,8 @@ make && make install
 WORKDIR /home/notroot/gnuradio
 # build latest gnuradio debian package from fileserver
 RUN wget -r -np -nH --cut-dirs=4 --reject "index*"  http://files.pervices.com/latest/sw/ubuntu20.04/gnuradio/ && \
-tar -xvzf gnuradio*.tar.gz && \
+mv gnuradio*.tar.gz gnuradio.tar.gz && \
+tar -xvzf gnuradio.tar.gz && \
 cd gnuardiopv* && \
 dpkg -i libgnuradio*.deb || true && \
 apt --fix-broken install && \
