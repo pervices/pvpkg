@@ -43,9 +43,9 @@ mv gnuradio*.tar.gz gnuradio.tar.gz && \
 tar -xvzf gnuradio.tar.gz && \
 cd gnuradiopv* && \
 dpkg -i libgnuradio*.deb || true && \
-apt --fix-broken install && \
+apt --fix-broken -y install && \
 dpkg -i gnuradio*.deb || true && \
-apt --fix-broken install
+apt --fix-broken -y install
 WORKDIR /home/notroot/testing
 RUN chmod +x test-only.sh && \
 chmod +x variables.sh && \

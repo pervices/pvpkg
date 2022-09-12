@@ -36,7 +36,8 @@ WORKDIR /home/notroot/testing
 RUN pip3 install numpy==1.16.4 && \
 chmod +x test-only.sh && \
 chmod +x variables.sh && \
-chmod +x tests 
+chmod +x tests  && \
+./test-only.sh
 
 
 
