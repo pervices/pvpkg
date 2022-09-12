@@ -8,6 +8,7 @@ pipeline {
         booleanParam(name: "ENABLE_ARCH", defaultValue: true, description: "Select whether to enable testing for Archlinux.")
 		booleanParam(name: "ENABLE_UBUNTU", defaultValue: true, description: "Select whether to enable testing for Ubuntu 20.04.")
 		booleanParam(name: "ENABLE_ORACLE", defaultValue: true, description: "Select whether to enable testing for Oracle Linux 8.")
+		}
     stages {
 
                 stage('Arch Testing'){  
