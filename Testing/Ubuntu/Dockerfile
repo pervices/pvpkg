@@ -29,8 +29,6 @@ mv uhd*.tar.gz uhd.tar.gz && \
 tar -xvzf uhd.tar.gz && \
 cd uhdpv* && \
 dpkg -i uhd*.deb || true && \
-apt --fix-broken -y install && \
-dpkg -i uhd*.deb || true && \
 apt --fix-broken -y install
 WORKDIR /home/notroot/volk
 RUN git clone --branch v2.4.1 --recursive https://github.com/gnuradio/volk.git && \
