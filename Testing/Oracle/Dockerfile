@@ -20,7 +20,7 @@ mv test-only.sh /home/notroot/testing
 WORKDIR /home/uhd 
 RUN wget -r -np -nH --cut-dirs=4 --reject "index*"  http://files.pervices.com/latest/sw/centos8/uhd/ && \
 tar -xvzf uhd*.tar.gz && \
-cd uhd* && \
+#cd uhd* && \
 dnf builddep -y uhd.spec && \
 rpm -i uhd*.rpm
 WORKDIR /home/volk

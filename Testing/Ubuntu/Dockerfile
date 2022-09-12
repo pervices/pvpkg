@@ -6,8 +6,8 @@ WORKDIR /home/notroot/testing
 WORKDIR /home/notroot
 # installing basic essential packages to container to allow for rest of build to occur
 RUN apt-get update && \ 
-apt-get -y install dpkg-dev sudo apt-utils dh-make bzr-builddeb equivs xz-utils iputils-ping net-tools software-properties-common cmake git coreutils build-essential && \
-add-apt-repository ppa:ubuntu-toolchain-r/test wget && \
+apt-get -y install dpkg-dev sudo apt-utils dh-make bzr-builddeb equivs xz-utils iputils-ping net-tools software-properties-common cmake git coreutils build-essential wget && \
+add-apt-repository ppa:ubuntu-toolchain-r/test && \
 apt update && apt install -y gcc-11 g++-11
 RUN update-alternatives --remove-all cpp && \
 update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 90 --slave /usr/bin/g++ g++ /usr/bin/g++-9 --slave /usr/bin/gcov gcov /usr/bin/gcov-9 --slave /usr/bin/gcc-ar gcc-ar /usr/bin/gcc-ar-9 --slave /usr/bin/gcc-ranlib gcc-ranlib /usr/bin/gcc-ranlib-9  --slave /usr/bin/cpp cpp /usr/bin/cpp-9 && \
