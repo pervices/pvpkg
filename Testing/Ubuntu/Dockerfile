@@ -7,7 +7,7 @@ WORKDIR /home/notroot
 # installing basic essential packages to container to allow for rest of build to occur
 RUN apt-get update && \ 
 apt-get -y install dpkg-dev sudo apt-utils dh-make bzr-builddeb equivs xz-utils iputils-ping net-tools software-properties-common cmake git coreutils build-essential && \
-add-apt-repository ppa:ubuntu-toolchain-r/test && \
+add-apt-repository ppa:ubuntu-toolchain-r/test wget && \
 apt update && apt install -y gcc-11 g++-11
 RUN update-alternatives --remove-all cpp && \
 update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 90 --slave /usr/bin/g++ g++ /usr/bin/g++-9 --slave /usr/bin/gcov gcov /usr/bin/gcov-9 --slave /usr/bin/gcc-ar gcc-ar /usr/bin/gcc-ar-9 --slave /usr/bin/gcc-ranlib gcc-ranlib /usr/bin/gcc-ranlib-9  --slave /usr/bin/cpp cpp /usr/bin/cpp-9 && \
@@ -25,7 +25,9 @@ RUN apt-get update
 WORKDIR /home/notroot/uhd
 # build latest UHD debian package from fileserver
 RUN wget -r -np -nH --cut-dirs=4 --reject "index*"  http://files.pervices.com/latest/sw/ubuntu20.04/uhd/ && \
-tar -xvzf uhd*.tar.gz && \
+mv uhd*.tar.gz uhd.tar.gz
+tar -xvzf uhd.tar.gz && \
+cd uhdpv* && \
 dpkg -i uhd*.deb || true && \
 apt --fix-broken install
 WORKDIR /home/notroot/volk
@@ -38,6 +40,7 @@ WORKDIR /home/notroot/gnuradio
 # build latest gnuradio debian package from fileserver
 RUN wget -r -np -nH --cut-dirs=4 --reject "index*"  http://files.pervices.com/latest/sw/ubuntu20.04/gnuradio/ && \
 tar -xvzf gnuradio*.tar.gz && \
+cd gnuardiopv* && \
 dpkg -i libgnuradio*.deb || true && \
 apt --fix-broken install && \
 dpkg -i gnuradio*.deb || true && \
