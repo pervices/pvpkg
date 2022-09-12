@@ -26,7 +26,8 @@ WORKDIR /home/notroot/uhd
 # build latest UHD debian package from fileserver
 RUN wget -r -np -nH --cut-dirs=4 --reject "index*"  http://files.pervices.com/latest/sw/ubuntu20.04/uhd/ && \
 tar -xvzf uhd*.tar.gz && \
-cd uhdpv* && \
+ls && \
+#cd uhdpv* && \
 dpkg -i uhd*.deb || true && \
 apt --fix-broken install
 WORKDIR /home/notroot/volk
