@@ -28,7 +28,8 @@ import glob
 ####-------------------------------INPUT DATA--------------------------------------------------------------------------------####
 
 CF_table=["CF_50000000_", "CF_300000000_", "CF_600000000_", "CF_1200000000_", "CF_2400000000_", "CF_4000000000_", "CF_5000000000_", "CF_5500000000_"] #from generator program TODO: have this automatically taken from gen file
-#file_num_table=["file_num_0", "file_num_1", "file_num_2", "file_num_3"] #TODO: automatically generate table 
+#CF_table=str(gen.Shiptest_Crimson1.center_freq_list) ### NEED THE 'CF'??
+print('the CF table is', CF_table)
 wave_freq_array=[]
 center_freq_array=[]
 IQ_array_2=[] #array of IQ grouped in 4 Channels of same center frequency
@@ -36,10 +37,8 @@ I_array=[]
 Q_array=[]
 channels_array=[]
 IQ_array=[]
-path="/home/bmch/Desktop/dump_20220805153333.187244"
-#os.chdir("/home/jade/Desktop/dump_20220802140032.762811")
-# files = list(filter(os.path.isfile, glob.glob("*.dat")))
-# new_dir=files.sort(key=lambda x: os.path.getmtime(x))
+path='/home/jade/Desktop/dump_20220805153333.187244'
+
 
 numbers= re.compile(r'(\d+)')
 def  numerical_sort(value):
@@ -55,7 +54,7 @@ files = filter(os.path.isfile, os.listdir(path))
 files = [os.path.join(path, f) for f in files] # add path to each file
 
 #print(sorted(files))
-chan=[0,1,2,3] #TODO: deduce this from generator
+chan=gen.Shiptest_Crimson1.channels 
 for i in range(len(CF_table)):
     for file in sorted(files):
         if file.endswith(".dat") and CF_table[i] in file:
@@ -136,7 +135,7 @@ for i in range(len(CF_table)):
 # #####----------------------------TIME, SAMPLE AND FFT PLOTS--------------------------------------------------------------------####       
 
 
-output_path1="/home/bmch/Desktop/dump_20220805153333.187244/samp_vs_time"
+output_path1="/home/jade/Desktop/dump_20220805153333.187244/samp_vs_time" ###TODO: Make this directory inside of where the data files are
 os.chdir(output_path1)
 #time series plots
 x=0
@@ -148,8 +147,8 @@ for I, Q in zip(I_array_2, Q_array_2):
     #print(c,f)
     
     plt.figure(1)
-    fig1, axis= plt.subplots(2,2, figsize=(14,10))
-    plt.title("Amp vs. Sample Plot of center freq of {}".format(center_freq), loc='center')
+    fig1, axis= plt.subplots(2,2, figsize=(6,6))
+    #plt.title("Amp vs. Sample Plot of center freq of {}".format(center_freq), loc='center')
     plt.figtext(0.1 ,0,("wave_Freq=",wave_freq, "center_freq=", center_freq_array_2[x][1], "sample rate=", sample_rate,"gain=",gain))
     
     axis[0,0].plot(sample_count[0:100], I[0][0:100], label='in-phase')
@@ -161,10 +160,10 @@ for I, Q in zip(I_array_2, Q_array_2):
     axis[1,1].plot(sample_count[0:100], I[3][0:100], label='in-phase')
     axis[1,1].plot(sample_count[0:100],Q[3][0:100], label='quadrature')
 
-    axis[0,0].set_title("Amp vs. Sample Plot of channel {} with Center Freq {} Hz".format(channels_array_2[x][0], center_freq_array_2[x][0]), loc='center')
-    axis[0,1].set_title("Amp vs. Sample Plot of channel {} with Center Freq {} Hz".format(channels_array_2[x][1], center_freq_array_2[x][1]), loc='center')
-    axis[1,0].set_title("Amp vs. Sample Plot of channel {} with Center Freq {} Hz".format(channels_array_2[x][2], center_freq_array_2[x][2]), loc='center')
-    axis[1,1].set_title("Amp vs. Sample Plot of channel {} with Center Freq {} Hz".format(channels_array_2[x][3], center_freq_array_2[x][3]), loc='center')
+    axis[0,0].set_title("Channel {}".format(channels_array_2[x][0], loc='center'))
+    axis[0,1].set_title("Channel {}".format(channels_array_2[x][1], loc='center'))
+    axis[1,0].set_title("Channel {}".format(channels_array_2[x][2], loc='center'))
+    axis[1,1].set_title("Channel {}".format(channels_array_2[x][3], loc='center'))
     x+=1
     plt.savefig("samp_vs_time_{}.png".format(x))
     #plt.show()
@@ -209,7 +208,7 @@ for x in range(0,len(CF_table),1):
 x=0
 for Fx, Fy in zip(xf_array_2, ywf_array_2):
     plt.figure(2)
-    fig2, axis= plt.subplots(2,2, figsize=(14,10))
+    fig2, axis= plt.subplots(2,2, figsize=(6,6))
     # plt.title("Amp vs. Sample Plot of center freq of {}".format(center_freq), loc='center')
     plt.figtext(0.1 ,0,("wave_Freq=",wave_freq, "center_freq=", center_freq_array[x], "sample rate=", sample_rate,"gain=",gain))
     
@@ -218,10 +217,10 @@ for Fx, Fy in zip(xf_array_2, ywf_array_2):
     axis[1,0].plot(scipy.fftpack.fftshift(Fx[2]), scipy.fftpack.fftshift(np.abs(Fy[2])))
     axis[1,1].plot(scipy.fftpack.fftshift(Fx[3]), scipy.fftpack.fftshift(np.abs(Fy[3])))
 
-    axis[0,0].set_title("Amp vs. Sample Plot of channel {} with Center Freq {} Hz".format(channels_array_2[x][0], center_freq_array_2[x][0]), loc='center')
-    axis[0,1].set_title("Amp vs. Sample Plot of channel {} with Center Freq {} Hz".format(channels_array_2[x][1], center_freq_array_2[x][1]), loc='center')
-    axis[1,0].set_title("Amp vs. Sample Plot of channel {} with Center Freq {} Hz".format(channels_array_2[x][2], center_freq_array_2[x][2]), loc='center')
-    axis[1,1].set_title("Amp vs. Sample Plot of channel {} with Center Freq {} Hz".format(channels_array_2[x][3], center_freq_array_2[x][3]), loc='center')
+    axis[0,0].set_title("Channel {} with Center Freq {} Hz".format(channels_array_2[x][0], center_freq_array_2[x][0]), loc='center')
+    axis[0,1].set_title("Channel {} with Center Freq {} Hz".format(channels_array_2[x][1], center_freq_array_2[x][1]), loc='center')
+    axis[1,0].set_title("Channel {} with Center Freq {} Hz".format(channels_array_2[x][2], center_freq_array_2[x][2]), loc='center')
+    axis[1,1].set_title("Channel {} with Center Freq {} Hz".format(channels_array_2[x][3], center_freq_array_2[x][3]), loc='center')
     x+=1
     plt.show()
 
@@ -332,8 +331,9 @@ for i, j in zip(peaks_fx_array, peaks_fy_array):
         maxim=np.real(max(b))
         index, =np.where(b==maxim)
         print('the value 0 is', str(a[index]),maxim)
-        peak_x.append(np.asscalar((a[index])))
+        peak_x.append(np.ndarray.item((a[index])))
         peak_y.append(maxim)
+        
         
 peak_x_array_2=[]
 x=0
@@ -393,7 +393,7 @@ for i in range(0, len(CF_table),1):
     x+=1
     dynamic_range_by_CF.append(new_dr)
 
-output_path2="/home/bmch/Desktop/dump_20220805153333.187244/FFT_plots"
+output_path2="/home/jade/Desktop/dump_20220805153333.187244/FFT_plots" ###TODO: Make this directory inside of where the data files are
 os.chdir(output_path2)
 x=0
 for Fx, Fy, NF, xf,yf  in zip(xf_array_2, ywf_array_normalized, avg_noise_floor_array,peak_x_array_2, peak_y_array_2):
@@ -401,7 +401,7 @@ for Fx, Fy, NF, xf,yf  in zip(xf_array_2, ywf_array_normalized, avg_noise_floor_
     #print("the value of xf,yf is:", xf[1],yf[1])
 
     plt.figure(3)
-    fig3, axis= plt.subplots(2,2, figsize=(14,10))    
+    fig3, axis= plt.subplots(2,2, figsize=(6,6))    
     #plt.figtext(0.1 ,0,("wave_Freq=",wave_freq, "center_freq=",center_freq_array[x], "sample rate=", sample_rate,"gain=",gain))        
     #fig4, axis= plt.subplots(2,2, figsize=(20,15)) 
     axis[0,0].plot(scipy.fftpack.fftshift(Fx[0]), scipy.fftpack.fftshift(Fy[0]))
@@ -409,15 +409,15 @@ for Fx, Fy, NF, xf,yf  in zip(xf_array_2, ywf_array_normalized, avg_noise_floor_
     axis[1,0].plot(scipy.fftpack.fftshift(Fx[2]), scipy.fftpack.fftshift(Fy[2]))
     axis[1,1].plot(scipy.fftpack.fftshift(Fx[3]), scipy.fftpack.fftshift(Fy[3]))
         
-    axis[0,0].set_title("Normalized FFT of channel {} with Center Freq {} Hz".format(channels_array_2[x][0], center_freq_array_2[x][0]), loc='center')
-    axis[0,1].set_title("Normalized FFT of channel {} with Center Freq {} Hz".format(channels_array_2[x][1], center_freq_array_2[x][1]), loc='center')
-    axis[1,0].set_title("Normalized FFT of channel {} with Center Freq {} Hz".format(channels_array_2[x][2], center_freq_array_2[x][2]), loc='center')
-    axis[1,1].set_title("Normalized FFT of channel {} with Center Freq {} Hz".format(channels_array_2[x][3], center_freq_array_2[x][3]), loc='center')
+    axis[0,0].set_title("Channel {}".format(channels_array_2[x][0], loc='center'))
+    axis[0,1].set_title("Channel {}".format(channels_array_2[x][1], loc='center'))
+    axis[1,0].set_title("Channel {}".format(channels_array_2[x][2], loc='center'))
+    axis[1,1].set_title("Channel {}".format(channels_array_2[x][3], loc='center'))
         
-    axis[0,0].plot(scipy.fftpack.fftshift(Fx[0]), NF[0], label='NF= {} dB'.format(NF[0][0]))
-    axis[0,1].plot(scipy.fftpack.fftshift(Fx[1]), NF[1], label='NF= {} dB'.format(NF[1][0]))
-    axis[1,0].plot(scipy.fftpack.fftshift(Fx[2]), NF[2],label='NF= {} dB'.format(NF[2][0]))
-    axis[1,1].plot(scipy.fftpack.fftshift(Fx[3]), NF[3],label='NF= {} dB'.format(NF[3][0]))
+    axis[0,0].plot(scipy.fftpack.fftshift(Fx[0]), NF[0], label='NF= {} dB'.format(round(NF[0][0])))
+    axis[0,1].plot(scipy.fftpack.fftshift(Fx[1]), NF[1], label='NF= {} dB'.format(round(NF[1][0])))
+    axis[1,0].plot(scipy.fftpack.fftshift(Fx[2]), NF[2],label='NF= {} dB'.format(round(NF[2][0])))
+    axis[1,1].plot(scipy.fftpack.fftshift(Fx[3]), NF[3],label='NF= {} dB'.format(round(NF[3][0])))
     # axis[0,0].plot(scipy.fftpack.fftshift(Fx[0]), NF[0])
     # axis[0,1].plot(scipy.fftpack.fftshift(Fx[1]), NF[1])
     # axis[1,0].plot(scipy.fftpack.fftshift(Fx[2]), NF[2])
@@ -426,10 +426,10 @@ for Fx, Fy, NF, xf,yf  in zip(xf_array_2, ywf_array_normalized, avg_noise_floor_
     axis[0,1].legend(loc='best')
     axis[1,0].legend(loc='best')
     axis[1,1].legend(loc='best')
-    axis[0,0].annotate(text=str(round(yf[0])),xy=(xf[0],yf[0]), xytext=(xf[0],yf[0]), arrowprops=dict(facecolor='black', shrink=0.00005, width=0))
-    axis[0,1].annotate(text=str(round(yf[1])),xy=(xf[1],yf[1]),xytext=(xf[1],yf[1]), arrowprops=dict(facecolor='black', shrink=0.00005, width=0))
-    axis[1,0].annotate(text=str(round(yf[2])),xy=(xf[2],yf[2]),xytext=(xf[2],yf[2]), arrowprops=dict(facecolor='black', shrink=0.00005, width=0))
-    axis[1,1].annotate(text=str(round(yf[3])),xy=(xf[3],yf[3]),xytext=(xf[3],yf[3]), arrowprops=dict(facecolor='black', shrink=0.00005, width=0))
+    axis[0,0].annotate(text=str(round(yf[0])),xy=(xf[0],yf[0]), xytext=(xf[0],yf[0]), arrowprops=dict(facecolor='black', shrink=0.000005, width=0)) ###TODO: fix the arrow to the right x-y coord.
+    axis[0,1].annotate(text=str(round(yf[1])),xy=(xf[1],yf[1]),xytext=(xf[1],yf[1]), arrowprops=dict(facecolor='black', shrink=0.000005, width=0))
+    axis[1,0].annotate(text=str(round(yf[2])),xy=(xf[2],yf[2]),xytext=(xf[2],yf[2]), arrowprops=dict(facecolor='black', shrink=0.000005, width=0))
+    axis[1,1].annotate(text=str(round(yf[3])),xy=(xf[3],yf[3]),xytext=(xf[3],yf[3]), arrowprops=dict(facecolor='black', shrink=0.000005, width=0))
     #plt.show(fig3)
     plt.savefig("FFT_plot{}.png".format(x))
     x+=1
@@ -444,11 +444,11 @@ for Fx, Fy, NF, xf,yf  in zip(xf_array_2, ywf_array_normalized, avg_noise_floor_
 #         dynamic_range=abs(np.subtract(i,j[0:5]))
 #         dynamic_range_array.append(dynamic_range)
 
-
-output_path3="/home/bmch/Desktop/dump_20220805153333.187244/peaks_table"
+#Tables of 5 peaks, dynamic range
+output_path3="/home/jade/Desktop/dump_20220805153333.187244/peaks_table" ###TODO: Make this directory inside of where the data files are
 os.chdir(output_path3)
 for i in range(0,len(CF_table),1):
-    fig, ax=plt.subplots(figsize=(14,10))
+    fig, ax=plt.subplots(figsize=(6,6))
     rows=4
     cols=8
     ax.set_ylim(-1, rows + 1)
@@ -495,23 +495,52 @@ for i in range(0,len(CF_table),1):
         ax.plot([0, cols + 1], [9.5, 9.5], lw='.5', c='black')
         ax.set_title("Top 5 Peaks and Dynamic Range at Center Frequency = {} MHz".format((center_freq_array_2[i][0])/1e6))
         plt.savefig("Top_5_peaks_table{}.png".format(i))
+        #plt.show()
 
+output_path4="/home/jade/Desktop/dump_20220805153333.187244/version_info" ###TODO: Make this directory inside of where the data files are
+os.chdir(output_path4)
+#Version info
+fig, ax=plt.subplots(figsize=(4,3))
+output= str(gen.crimson_output)
+plt.text(0,0.8, output)
+plt.axis('off')
+plt.savefig('crimson_versions.png')
+plt.show()
 
+# def range_func(a):
+#     print(a)
+#     if np.logical_and((a > 0),(a < 2)).any():
+#         print('TRUE')
+#     else:
+#         print('False')
+        
 #Test that all channels at the frequency have equivalent gain (within 5dB of eachother)
+test_info=[]
 for i in max_fy_peaks:
     max_fy=np.real(max(i))
     min_fy=np.real(min(i))
-    #print("the max fy is:", max_fy)
-    #print("the min fy is:", min_fy)
-    for v in i:
-        print("the value being tested is:", np.real(v))
-        try:
-            assert (np.real(v)<= min_fy + 5 and np.real(v)>= max_fy - 5)
-            print("channels are within 5dB of one another", i)
-        except:
-            print("channels are not within 5dB of one another", i)
+    
+    #test_info=[]
+    if np.logical_and(i <= min_fy + 5, i >= max_fy - 5).all():
+        test_out_pass=("\nFFT peak of all channels are within 5dB of one another, PASS\n",np.real(i))
+        test_info.append(test_out_pass)
+        print(str(test_out_pass))
+
+    else:
+        test_out_fail=("\nFFT peak of all channels are NOT within 5dB of one another, FAIL\n",  np.real(i))
+        test_info.append(test_out_fail)
+        print(str(test_out_fail))
             
             
+output_path5="/home/jade/Desktop/dump_20220805153333.187244/test_info" ###TODO: Make this directory inside of where the data files are
+os.chdir(output_path5)
+#testing info
+fig, ax=plt.subplots(figsize=(14,10))
+output= str(test_info)
+plt.text(0,0.8, output)
+plt.axis('off')
+plt.savefig('testing.png')
+plt.show()        
             
 #####----------------------------Report Generation--------------------------------------------------------------------####  
 import pandas as pd
@@ -528,8 +557,8 @@ import matplotlib.image as mpimg
 from matplotlib.offsetbox import TextArea, DrawingArea, OffsetImage, AnnotationBbox
 
 #report directory
-output_path4="/home/bmch/Desktop/dump_20220805153333.187244/report"
-os.chdir(output_path4)
+output_path5="/home/jade/Desktop/dump_20220805153333.187244/report"
+os.chdir(output_path5)
 
 # set font
 plt.rcParams['font.family'] = 'sans-serif'
@@ -539,7 +568,7 @@ plt.rcParams['font.sans-serif'] = 'STIXGeneral'# set A4 paper
 fig, ax = plt.subplots(figsize=(8.5, 11))  # Decorative Lines
 ax.axvline(x=.01, ymin=0, ymax=1, color='grey', alpha=0.3, linewidth=120)
 plt.axvline(x=.99, color='grey', alpha=0.3, linewidth=120)
-logo = mpimg.imread('/home/bmch/Desktop/dump_20220805153333.187244/pv-logo.png')
+logo = mpimg.imread('/home/jade/Desktop/dump_20220805153333.187244/pv-logo.png')
 imagebox1 = OffsetImage(logo, zoom=1)
 a = AnnotationBbox(imagebox1, (0.5, 0.6),frameon=False)
 ax.add_artist(a)
@@ -554,14 +583,14 @@ plt.annotate(page, (.48,.02), weight='medium', fontsize=10)
 #plt.show()
 plt.savefig('Title_page_1', dpi=300, bbox_inches='tight')
 
-#Page 2: time plots
+#page 2: Version info
 fig, ax = plt.subplots(figsize=(8.5, 11))
 plt.axis('off')
-samp_time_plot_1 = mpimg.imread('/home/bmch/Desktop/dump_20220805153333.187244/samp_vs_time/samp_vs_time_1.png')
-imagebox1 = OffsetImage(samp_time_plot_1, zoom=.4)
-a1 = AnnotationBbox(imagebox1, (0.48, 0.6),frameon=False)
+crimson_info = mpimg.imread('/home/jade/Desktop/dump_20220805153333.187244/version_info/crimson_versions.png')
+imagebox1 = OffsetImage(crimson_info, zoom=0.3)
+a1 = AnnotationBbox(imagebox1,(0.48, 0.1), xybox=(0.48, 0.1),frameon=False)
 ax.add_artist(a1)
-Header = 'Time Plot of Center Frequency' ###TODO: add the value automatically
+Header = 'UHD and Crimson Information' ###TODO: add the value automatically
 page2= 'Page 2'
 # add text
 plt.annotate(Header, (.2,.9), weight='regular', fontsize=20, alpha=1)
@@ -569,33 +598,63 @@ plt.annotate(page2, (.48,.02), weight='medium', fontsize=10)
 #plt.show()
 plt.savefig('page_2', dpi=300, bbox_inches='tight')
 
-#Page 3: FFT plots
+#page 3: pass/fail
 fig, ax = plt.subplots(figsize=(8.5, 11))
 plt.axis('off')
-FFT_plot_1 = mpimg.imread('/home/bmch/Desktop/dump_20220805153333.187244/FFT_plots/FFT_plot0.png')
-imagebox2 = OffsetImage(FFT_plot_1, zoom=.4)
-a2 = AnnotationBbox(imagebox2, (0.48, 0.6),frameon=False)
+test_info = mpimg.imread("/home/jade/Desktop/dump_20220805153333.187244/test_info/testing.png" )
+imagebox1 = OffsetImage(test_info, zoom=0.3)
+a1 = AnnotationBbox(imagebox1, (0.48, 0.1),xybox=(0.48, 0.1),frameon=False)
+ax.add_artist(a1)
+Header = 'Testing Output' ###TODO: add the value automatically
+page3= 'Page 3'
+# add text
+plt.annotate(Header, (.2,.9), weight='regular', fontsize=20, alpha=1)
+plt.annotate(page2, (.48,.02), weight='medium', fontsize=10)
+#plt.show()
+plt.savefig('page_3', dpi=300, bbox_inches='tight')
+
+#Page 4: time plots
+fig, ax = plt.subplots(figsize=(8.5, 11))
+plt.axis('off')
+samp_time_plot_1 = mpimg.imread('/home/jade/Desktop/dump_20220805153333.187244/samp_vs_time/samp_vs_time_1.png')
+imagebox1 = OffsetImage(samp_time_plot_1, zoom=1)
+a1 = AnnotationBbox(imagebox1, (0.48, 0.5),frameon=False)
+ax.add_artist(a1)
+Header = 'Time Plot of Center Frequency' ###TODO: add the value automatically
+page2= 'Page 4'
+# add text
+plt.annotate(Header, (.2,.9), weight='regular', fontsize=20, alpha=1)
+plt.annotate(page2, (.48,.02), weight='medium', fontsize=10)
+#plt.show()
+plt.savefig('page_4', dpi=300, bbox_inches='tight')
+
+#Page 4: FFT plots
+fig, ax = plt.subplots(figsize=(8.5, 11))
+plt.axis('off')
+FFT_plot_1 = mpimg.imread('/home/jade/Desktop/dump_20220805153333.187244/FFT_plots/FFT_plot0.png')
+imagebox2 = OffsetImage(FFT_plot_1, zoom=1)
+a2 = AnnotationBbox(imagebox2, (0.48, 0.5),frameon=False)
 ax.add_artist(a2)
 Header = 'FFT of Center Frequency' ###TODO: add the value automatically
-page3= 'Page 3'
+page3= 'Page 5'
 # add text
 plt.annotate(Header, (.2,.9), weight='regular', fontsize=20, alpha=1 )
 plt.annotate(page3, (.48,.02), weight='medium', fontsize=10)
-plt.savefig('page_3',dpi=300, bbox_inches='tight')
+plt.savefig('page_5',dpi=300, bbox_inches='tight')
 
-#Page 4: Peaks table
+#Page 5: Peaks table
 fig, ax = plt.subplots(figsize=(8.5, 11))
 plt.axis('off')
-Table_1 = mpimg.imread('/home/bmch/Desktop/dump_20220805153333.187244/peaks_table/Top_5_peaks_table0.png')
-imagebox2 = OffsetImage(Table_1, zoom=.4)
-a3 = AnnotationBbox(imagebox2, (0.48, 0.6),frameon=False)
+Table_1 = mpimg.imread('/home/jade/Desktop/dump_20220805153333.187244/peaks_table/Top_5_peaks_table0.png')
+imagebox2 = OffsetImage(Table_1, zoom=1)
+a3 = AnnotationBbox(imagebox2, (0.48, 0.5),frameon=False)
 ax.add_artist(a3)
 Header = 'FFT Top 5 Peaks of Center Frequency' ###TODO: add the value automatically
-page4= 'Page 4'
+page4= 'Page 6'
 # add text
 plt.annotate(Header, (.2,.9), weight='regular', fontsize=20, alpha=1 )
 plt.annotate(page4, (.48,.02), weight='medium', fontsize=10)
-plt.savefig('page_4', dpi=300, bbox_inches='tight')
+plt.savefig('page_6', dpi=300, bbox_inches='tight')
 
             
             
