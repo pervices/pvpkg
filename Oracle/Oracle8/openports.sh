@@ -34,7 +34,7 @@ done
 
 echo -e "Adding nics to trusted zones.\n"
 
-firewall-cmd --zone=trusted --change-interface=enp58s0 --permanent
+firewall-cmd --zone=trusted --change-interface=$mgmt_nic --permanent
 for n in {0..3}
 do
 	firewall-cmd --zone=trusted --change-interface=$qSFP_nic_prefix$n --permanent
