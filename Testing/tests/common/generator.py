@@ -2,39 +2,45 @@ import inspect
 import sys
 
 center_freq_list=[50000000, 300000000, 600000000, 1200000000, 2400000000, 4000000000, 5000000000, 5500000000]
-def ship_test():
-    print(sys._getframe().f_code.co_name)
-    channels = list(range(4))
-    wave_freq = 50000
-    sample_rate=int(325000000/325)
-    sample_count = 4096
-    tx_gain = 25
-    rx_gain = 25
-    for center_freq in center_freq_list:
-        yield locals()
-        
-# def ship_test_low():
+# def ship_test():
 #     print(sys._getframe().f_code.co_name)
 #     channels = list(range(4))
-#     center_freq = 800000000 #80MHz
-#     sample_rate=int(325000000/5) #162500000
+#     wave_freq = 50000
+#     sample_rate=int(325000000/325)
 #     sample_count = 4096
 #     tx_gain = 25
 #     rx_gain = 25
-#     for wave_freq in [-30000000, 160000000]:
+#     for center_freq in center_freq_list:
 #         yield locals()
         
-# def ship_test_high():
-#     print(sys._getframe().f_code.co_name)
-#     channels = list(range(4))
-#     sample_rate=int(325000000/5) 
-#     sample_count = 4096
-#     tx_gain = 25
-#     rx_gain = 25
-#     center_freq=1000000000 #1GHz
-#     for wave_freq in [-162000000, 162000000]:
-#         yield locals()
+class Shiptest_Crimson():
+    def __init__(self, center_freq_list, channels, wave_freq, sample_rate, sample_count, tx_gain, rx_gain):
+        #print(sys._getframe().f_code.co_name)
+        self.center_freq_list=center_freq_list
+        self.channels=channels
+        self.sample_count=sample_count
+        self.wave_freq=wave_freq
+        self.sample_rate=sample_rate
+        self.tx_gain=tx_gain
+        self.rx_gain=rx_gain
+        #self.center_freq=center_freq
+        # for center_freq in self.center_freq_list:
+        #     yield locals()
+            
+Shiptest_Crimson1=Shiptest_Crimson([50000000, 300000000, 600000000, 1200000000, 2400000000, 4000000000, 5000000000, 5500000000], list(range(4)), 50000, int(325000000/325), 4096, 25, 25)
 
+#UHD_version
+import os
+stream = os.popen('uhd_find_devices')
+uhd_output = stream.read()
+print(uhd_output)
+
+#Crimson version info
+stream = os.popen('uhd_usrp_info -v')
+crimson_output = stream.read()
+print(crimson_output)
+        
+        
 
 def hi_band_wave_sweep():
 
