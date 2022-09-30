@@ -23,6 +23,7 @@ class Shiptest_Crimson():
         self.sample_rate=sample_rate
         self.tx_gain=tx_gain
         self.rx_gain=rx_gain
+        print(sample_rate, wave_freq, tx_gain)
         #self.center_freq=center_freq
         # for center_freq in self.center_freq_list:
         #     yield locals()
@@ -33,12 +34,12 @@ Shiptest_Crimson1=Shiptest_Crimson([50000000, 300000000, 600000000, 1200000000, 
 import os
 stream = os.popen('uhd_find_devices')
 uhd_output = stream.read()
-print(uhd_output)
+#print(uhd_output)
 
 #Crimson version info
 stream = os.popen('uhd_usrp_info -v')
 crimson_output = stream.read()
-print(crimson_output)
+#print(crimson_output)
         
         
 

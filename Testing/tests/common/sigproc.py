@@ -48,7 +48,11 @@ def dump_file(vsnk, wave_freq):
 
     return None
 
-
+leaf_dir_shiptest = "shiptest_dump" 
+#parent_dir = "./"
+shiptest_dump_dir = parent_dir + leaf_dir_shiptest
+shiptest_path=os.path.join("./", shiptest_dump_dir)
+os.makedirs(shiptest_path,exist_ok=True)
 def dump_file_shiptest(vsnk, wave_freq, center_freq, sample_rate, tx_gain, sample_count):
     sample_count = range(len(vsnk[0].data()))
     channels = range(len(vsnk))
@@ -58,7 +62,7 @@ def dump_file_shiptest(vsnk, wave_freq, center_freq, sample_rate, tx_gain, sampl
         for channel in channels:
             datum = (vsnk[channel].data()[sample])
             #Writing to a file
-            f = open(path + "/file_num_" + str(i) + "_CH_" + str(channel) + "_WF_" + str(wave_freq) + "_CF_" + str(center_freq) + "_SR_" + str(sample_rate) + "_gain_" + str(tx_gain) + "_SC_" + str(len(sample_count)) + ".dat", "a")
+            f = open(shiptest_path + "/file_num_" + str(i) + "_CH_" + str(channel) + "_WF_" + str(wave_freq) + "_CF_" + str(center_freq) + "_SR_" + str(sample_rate) + "_gain_" + str(tx_gain) + "_SC_" + str(len(sample_count)) + ".dat", "a")
             f.write("%10.5f %10.5f\t" % (datum.real, datum.imag) + "\n")
             i+=1
     
