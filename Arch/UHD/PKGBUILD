@@ -8,8 +8,7 @@ pkgdesc="Alternative USRP Hardware Driver (UHD) userspace driver for Per Vices C
 arch=('x86_64' 'i686')
 url="http://www.pervices.com"
 license=('GPL')
-depends=('orc' 'libusb' 'boost' 'boost' 'boost-libs')
-makedepends=('python-mako' 'python-requests' 'python-numpy' 'python-retrying' 'python-scipy' 'doxygen' 'gpsd' 'python-setuptools' 'gtk3')
+depends=('orc' 'libusb' 'boost' 'boost' 'boost-libs' 'icu' 'python-mako' 'python-requests' 'python-numpy' 'python-retrying' 'python-scipy' 'doxygen' 'gpsd' 'python-setuptools' 'gtk3')
 
 provides=('libuhd')
 conflicts=('libuhd')

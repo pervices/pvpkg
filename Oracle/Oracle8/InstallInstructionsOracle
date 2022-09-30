@@ -20,6 +20,9 @@ dnf builddep -y uhd.spec
 #Install uhd
 rpm -i uhd*.rpm
 
+#NOTE: If upgrading UHD, and after confirming that you are using the Per Vices UHD version, you can run:
+# rpm -i --nodeps --replacepkgs --replacefiles  uhd*.rpm
+
 #Ensure gcc-11 is set as compiler for application runtime (adjust path if gcc-toolset-11 is installed at different location)
 source /opt/rh/gcc-toolset-11/enable
 
@@ -28,3 +31,5 @@ dnf builddep -y gnuradio.spec
 
 #From directory where gnuradio files are extracted run this command to install gnruadio
 rpm -i volk*.rpm && rpm -i libgnuradio*.rpm && rpm -i python3*.rpm && rpm -i gnuradio*.rpm
+#NOTE: If upgrading gnuradio, you can use the following command;
+#rpm -iv --replacepkgs --replacefiles volk*.rpm libgnuradio*.rpm python3*.rpm gnuradio*.rpm
