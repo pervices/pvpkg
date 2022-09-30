@@ -30,8 +30,8 @@ import time
 #TODO: Make this be user input to creat the instance of the shiptest Class in the generatoe
 
 #UHD and SDR information
-print('the UHD output is', gen.uhd_output)
-print('the crimson output is', gen.crimson_output)
+#print('the UHD output is', gen.uhd_output)
+#print('the crimson output is', gen.crimson_output)
 
 def test(Shiptest_Crimson1):
     #gen.dump(it)

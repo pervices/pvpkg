@@ -31,6 +31,7 @@ from matplotlib import rcParams
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 from matplotlib.offsetbox import TextArea, DrawingArea, OffsetImage, AnnotationBbox
+import math
 
 ####-------------------------------INPUT DATA--------------------------------------------------------------------------------####
 
@@ -44,8 +45,11 @@ I_array=[]
 Q_array=[]
 channels_array=[]
 IQ_array=[]
-path='/home/jade/Desktop/dump_20220805153333.187244'
 
+#Directory where shiptest_collection data is
+#ath='/home/jade/Desktop/dump_20220805153333.187244'
+current_dir=os.getcwd()
+path= current_dir + '/shiptest_dump'
 
 numbers= re.compile(r'(\d+)')
 def  numerical_sort(value):
@@ -141,8 +145,9 @@ for i in range(len(CF_table)):
 
 # #####----------------------------TIME, SAMPLE AND FFT PLOTS--------------------------------------------------------------------####       
 
-
-output_path1="/home/jade/Desktop/dump_20220805153333.187244/samp_vs_time" ###TODO: Make this directory inside of where the data files are
+output_path1=path +'/samp_vs_time'
+os.makedirs(output_path1, exist_ok=True)
+#output_path1="/home/jade/Desktop/dump_20220805153333.187244/samp_vs_time" ###TODO: Make this directory inside of where the data files are
 os.chdir(output_path1)
 #time series plots
 x=0
@@ -400,7 +405,8 @@ for i in range(0, len(CF_table),1):
     x+=1
     dynamic_range_by_CF.append(new_dr)
 
-output_path2="/home/jade/Desktop/dump_20220805153333.187244/FFT_plots" ###TODO: Make this directory inside of where the data files are
+output_path2=path +'/FFT_plots'
+os.makedirs(output_path2, exist_ok=True)
 os.chdir(output_path2)
 x=0
 for Fx, Fy, NF, xf,yf  in zip(xf_array_2, ywf_array_normalized, avg_noise_floor_array,peak_x_array_2, peak_y_array_2):
@@ -444,7 +450,8 @@ for Fx, Fy, NF, xf,yf  in zip(xf_array_2, ywf_array_normalized, avg_noise_floor_
 #####----------------------------Table of Peaks, Dynamic range, SDR Info, and Testing PASS/FAIL--------------------------------------------------------------------####  
 
 #Tables of 5 peaks, dynamic range
-output_path3="/home/jade/Desktop/dump_20220805153333.187244/peaks_table" ###TODO: Make this directory inside of where the data files are
+output_path3=path +'/peaks_table'
+os.makedirs(output_path3, exist_ok=True)
 os.chdir(output_path3)
 for i in range(0,len(CF_table),1):
     fig, ax=plt.subplots(figsize=(6,6))
@@ -497,7 +504,8 @@ for i in range(0,len(CF_table),1):
         #plt.show()
 
 #image of uhd_usrp_info -v command 
-output_path4="/home/jade/Desktop/dump_20220805153333.187244/version_info" ###TODO: Make this directory inside of where the data files are
+output_path4=path +'/version_info'
+os.makedirs(output_path4, exist_ok=True)
 os.chdir(output_path4)
 #Version info
 fig, ax=plt.subplots(figsize=(14,10))
@@ -516,7 +524,7 @@ for i in max_fy_peaks:
     
     #test_info=[]
     if np.logical_and(i <= min_fy + 5, i >= max_fy - 5).all():
-        test_out_pass=("Center Peaks= {}. FFT peak of all channels are within 5dB of one another, PASS".format(np.real(i)))
+        test_out_pass=("Center Peaks= {}. \n FFT peak of all channels are within 5dB of one another, PASS".format(np.real(i)))
         test_info.append(test_out_pass)
         print(str(test_out_pass))
 
@@ -525,9 +533,9 @@ for i in max_fy_peaks:
         test_info.append(test_out_fail)
         print(str(test_out_fail))
             
-            
-output_path5="/home/jade/Desktop/dump_20220805153333.187244/test_info" ###TODO: Make this directory inside of where the data files are
-os.chdir(output_path5)
+output_path5=path +'/version_info'
+os.makedirs(output_path5, exist_ok=True)
+os.chdir(output_path5)            
 #testing info
 fig, ax=plt.subplots(figsize=(14,10))
 output= str(test_info)
@@ -540,8 +548,9 @@ plt.show()
 from PIL import Image
 
 #report directory
-output_path5="/home/jade/Desktop/dump_20220805153333.187244/report"
-os.chdir(output_path5)
+output_path6=path +'/report'
+os.makedirs(output_path6, exist_ok=True)
+os.chdir(output_path6)   
 
 # set font
 plt.rcParams['font.family'] = 'sans-serif'
@@ -606,7 +615,7 @@ Header = 'Testing Output' ###TODO: add the value automatically
 page3= 'Page 3'
 # add text
 plt.annotate(Header, (.2,.85), weight='regular', fontsize=20, alpha=1)
-plt.annotate(page2, (.48,.02), weight='medium', fontsize=10)
+plt.annotate(page3, (.48,.02), weight='medium', fontsize=10)
 #plt.show()
 plt.savefig('page_3', dpi=300, bbox_inches='tight')
 
