@@ -5,7 +5,7 @@ Created on Mon Aug  1 19:24:42 2022
 
 @author: bmch
 """
-
+#Libraries and modules
 from gnuradio import blocks
 from gnuradio import uhd
 from gnuradio import gr
@@ -24,11 +24,18 @@ import re
 from scipy.signal import find_peaks
 import scipy.fftpack
 import glob   
+import os
+import calendar
+from datetime import date
+from matplotlib import rcParams
+import matplotlib.pyplot as plt
+import matplotlib.image as mpimg
+from matplotlib.offsetbox import TextArea, DrawingArea, OffsetImage, AnnotationBbox
 
 ####-------------------------------INPUT DATA--------------------------------------------------------------------------------####
 
 CF_table=["CF_50000000_", "CF_300000000_", "CF_600000000_", "CF_1200000000_", "CF_2400000000_", "CF_4000000000_", "CF_5000000000_", "CF_5500000000_"] #from generator program TODO: have this automatically taken from gen file
-#CF_table=str(gen.Shiptest_Crimson1.center_freq_list) ### NEED THE 'CF'??
+#CF_table=str(gen.Shiptest_Crimson1.center_freq_list) ###TODO: get this automatically. NEED THE 'CF'??
 print('the CF table is', CF_table)
 wave_freq_array=[]
 center_freq_array=[]
@@ -59,7 +66,7 @@ for i in range(len(CF_table)):
     for file in sorted(files):
         if file.endswith(".dat") and CF_table[i] in file:
             #if file_num_table in file:
-            print("the file being procesed is:",file)
+            #print("the file being procesed is:",file)
             I,Q=np.loadtxt(file, unpack=True)
             I_array.append(I)
             Q_array.append(Q)
@@ -166,7 +173,7 @@ for I, Q in zip(I_array_2, Q_array_2):
     axis[1,1].set_title("Channel {}".format(channels_array_2[x][3], loc='center'))
     x+=1
     plt.savefig("samp_vs_time_{}.png".format(x))
-    #plt.show()
+    plt.show()
     
 
 
@@ -422,10 +429,10 @@ for Fx, Fy, NF, xf,yf  in zip(xf_array_2, ywf_array_normalized, avg_noise_floor_
     # axis[0,1].plot(scipy.fftpack.fftshift(Fx[1]), NF[1])
     # axis[1,0].plot(scipy.fftpack.fftshift(Fx[2]), NF[2])
     # axis[1,1].plot(scipy.fftpack.fftshift(Fx[3]), NF[3])
-    axis[0,0].legend(loc='best')
-    axis[0,1].legend(loc='best')
-    axis[1,0].legend(loc='best')
-    axis[1,1].legend(loc='best')
+    axis[0,0].legend(loc='lower center')
+    axis[0,1].legend(loc='lower center')
+    axis[1,0].legend(loc='lower center')
+    axis[1,1].legend(loc='lower center')
     axis[0,0].annotate(text=str(round(yf[0])),xy=(xf[0],yf[0]), xytext=(xf[0],yf[0]), arrowprops=dict(facecolor='black', shrink=0.000005, width=0)) ###TODO: fix the arrow to the right x-y coord.
     axis[0,1].annotate(text=str(round(yf[1])),xy=(xf[1],yf[1]),xytext=(xf[1],yf[1]), arrowprops=dict(facecolor='black', shrink=0.000005, width=0))
     axis[1,0].annotate(text=str(round(yf[2])),xy=(xf[2],yf[2]),xytext=(xf[2],yf[2]), arrowprops=dict(facecolor='black', shrink=0.000005, width=0))
@@ -434,15 +441,7 @@ for Fx, Fy, NF, xf,yf  in zip(xf_array_2, ywf_array_normalized, avg_noise_floor_
     plt.savefig("FFT_plot{}.png".format(x))
     x+=1
 
-#####----------------------------Analysis and Testing PASS/FAIL--------------------------------------------------------------------####  
-
-# #Dynamic Range
-# dynamic_range_array=[]
-# for p,NF in zip(top_5_peaks_by_CF, avg_noise_floor_array):
-#     for i,j in zip(p, NF):
-#         #print("the value of dynamic range is", p, NF[0:5])
-#         dynamic_range=abs(np.subtract(i,j[0:5]))
-#         dynamic_range_array.append(dynamic_range)
+#####----------------------------Table of Peaks, Dynamic range, SDR Info, and Testing PASS/FAIL--------------------------------------------------------------------####  
 
 #Tables of 5 peaks, dynamic range
 output_path3="/home/jade/Desktop/dump_20220805153333.187244/peaks_table" ###TODO: Make this directory inside of where the data files are
@@ -497,22 +496,17 @@ for i in range(0,len(CF_table),1):
         plt.savefig("Top_5_peaks_table{}.png".format(i))
         #plt.show()
 
+#image of uhd_usrp_info -v command 
 output_path4="/home/jade/Desktop/dump_20220805153333.187244/version_info" ###TODO: Make this directory inside of where the data files are
 os.chdir(output_path4)
 #Version info
-fig, ax=plt.subplots(figsize=(4,3))
-output= str(gen.crimson_output)
-plt.text(0,0.8, output)
+fig, ax=plt.subplots(figsize=(14,10))
 plt.axis('off')
+output= str(gen.crimson_output)
+plt.text(0,1, output)
 plt.savefig('crimson_versions.png')
 plt.show()
 
-# def range_func(a):
-#     print(a)
-#     if np.logical_and((a > 0),(a < 2)).any():
-#         print('TRUE')
-#     else:
-#         print('False')
         
 #Test that all channels at the frequency have equivalent gain (within 5dB of eachother)
 test_info=[]
@@ -522,12 +516,12 @@ for i in max_fy_peaks:
     
     #test_info=[]
     if np.logical_and(i <= min_fy + 5, i >= max_fy - 5).all():
-        test_out_pass=("\nFFT peak of all channels are within 5dB of one another, PASS\n",np.real(i))
+        test_out_pass=("Center Peaks= {}. FFT peak of all channels are within 5dB of one another, PASS".format(np.real(i)))
         test_info.append(test_out_pass)
         print(str(test_out_pass))
 
     else:
-        test_out_fail=("\nFFT peak of all channels are NOT within 5dB of one another, FAIL\n",  np.real(i))
+        test_out_fail=("Center Peaks= {}.FFT peak of all channels are NOT within 5dB of one another, FAIL".format(np.real(i)))
         test_info.append(test_out_fail)
         print(str(test_out_fail))
             
@@ -537,24 +531,13 @@ os.chdir(output_path5)
 #testing info
 fig, ax=plt.subplots(figsize=(14,10))
 output= str(test_info)
-plt.text(0,0.8, output)
+plt.text(0.2,1, output)
 plt.axis('off')
 plt.savefig('testing.png')
 plt.show()        
             
 #####----------------------------Report Generation--------------------------------------------------------------------####  
-import pandas as pd
-from reportlab.pdfgen import canvas
-import os
-import shutil
-import numpy as np
-import pandas as pd
-import calendar
-from datetime import date
-from matplotlib import rcParams
-import matplotlib.pyplot as plt
-import matplotlib.image as mpimg
-from matplotlib.offsetbox import TextArea, DrawingArea, OffsetImage, AnnotationBbox
+from PIL import Image
 
 #report directory
 output_path5="/home/jade/Desktop/dump_20220805153333.187244/report"
@@ -574,7 +557,7 @@ a = AnnotationBbox(imagebox1, (0.5, 0.6),frameon=False)
 ax.add_artist(a)
 ax.set_facecolor('white')
 plt.axis('off')   
-Header = 'SHIPTEST REPORT'
+Header = 'CRIMSON TNG:\n SHIPTEST REPORT'
 Contact = 'Date: {}'.format(date.today())
 page = 'Page 1'
 plt.annotate(Header, (.2,.7), weight='bold', fontsize=30, alpha=.6 )
@@ -586,14 +569,23 @@ plt.savefig('Title_page_1', dpi=300, bbox_inches='tight')
 #page 2: Version info
 fig, ax = plt.subplots(figsize=(8.5, 11))
 plt.axis('off')
+logo= Image.open('/home/jade/Desktop/dump_20220805153333.187244/pv-logo.png')
+rsize_logo=logo.resize((np.array(logo.size)/2).astype(int))
+#logo = mpimg.imread('/home/jade/Desktop/dump_20220805153333.187244/pv-logo.png')
+imagebox = OffsetImage(rsize_logo, zoom=1)
+a_logo = AnnotationBbox(imagebox, (0.48, 0.95),frameon=False)
+ax.add_artist(a_logo)
+#crimson_info= Image.open('/home/jade/Desktop/dump_20220805153333.187244/version_info/crimson_versions.png')
+#rsize_info=crimson_info.resize((np.array(crimson_info.size)/2).astype(int))
+
 crimson_info = mpimg.imread('/home/jade/Desktop/dump_20220805153333.187244/version_info/crimson_versions.png')
-imagebox1 = OffsetImage(crimson_info, zoom=0.3)
-a1 = AnnotationBbox(imagebox1,(0.48, 0.1), xybox=(0.48, 0.1),frameon=False)
+imagebox1 = OffsetImage(crimson_info, zoom=.3)
+a1 = AnnotationBbox(imagebox1,(0.48, 0.5))
 ax.add_artist(a1)
 Header = 'UHD and Crimson Information' ###TODO: add the value automatically
 page2= 'Page 2'
 # add text
-plt.annotate(Header, (.2,.9), weight='regular', fontsize=20, alpha=1)
+plt.annotate(Header, (.2,.85), weight='regular', fontsize=20, alpha=1)
 plt.annotate(page2, (.48,.02), weight='medium', fontsize=10)
 #plt.show()
 plt.savefig('page_2', dpi=300, bbox_inches='tight')
@@ -601,6 +593,11 @@ plt.savefig('page_2', dpi=300, bbox_inches='tight')
 #page 3: pass/fail
 fig, ax = plt.subplots(figsize=(8.5, 11))
 plt.axis('off')
+logo= Image.open('/home/jade/Desktop/dump_20220805153333.187244/pv-logo.png')
+rsize_logo=logo.resize((np.array(logo.size)/2).astype(int))
+imagebox = OffsetImage(rsize_logo, zoom=1)
+a_logo = AnnotationBbox(imagebox, (0.48, 0.95),frameon=False)
+ax.add_artist(a_logo)
 test_info = mpimg.imread("/home/jade/Desktop/dump_20220805153333.187244/test_info/testing.png" )
 imagebox1 = OffsetImage(test_info, zoom=0.3)
 a1 = AnnotationBbox(imagebox1, (0.48, 0.1),xybox=(0.48, 0.1),frameon=False)
@@ -608,53 +605,96 @@ ax.add_artist(a1)
 Header = 'Testing Output' ###TODO: add the value automatically
 page3= 'Page 3'
 # add text
-plt.annotate(Header, (.2,.9), weight='regular', fontsize=20, alpha=1)
+plt.annotate(Header, (.2,.85), weight='regular', fontsize=20, alpha=1)
 plt.annotate(page2, (.48,.02), weight='medium', fontsize=10)
 #plt.show()
 plt.savefig('page_3', dpi=300, bbox_inches='tight')
 
-#Page 4: time plots
-fig, ax = plt.subplots(figsize=(8.5, 11))
-plt.axis('off')
-samp_time_plot_1 = mpimg.imread('/home/jade/Desktop/dump_20220805153333.187244/samp_vs_time/samp_vs_time_1.png')
-imagebox1 = OffsetImage(samp_time_plot_1, zoom=1)
-a1 = AnnotationBbox(imagebox1, (0.48, 0.5),frameon=False)
-ax.add_artist(a1)
-Header = 'Time Plot of Center Frequency' ###TODO: add the value automatically
-page2= 'Page 4'
-# add text
-plt.annotate(Header, (.2,.9), weight='regular', fontsize=20, alpha=1)
-plt.annotate(page2, (.48,.02), weight='medium', fontsize=10)
-#plt.show()
-plt.savefig('page_4', dpi=300, bbox_inches='tight')
 
-#Page 4: FFT plots
-fig, ax = plt.subplots(figsize=(8.5, 11))
-plt.axis('off')
-FFT_plot_1 = mpimg.imread('/home/jade/Desktop/dump_20220805153333.187244/FFT_plots/FFT_plot0.png')
-imagebox2 = OffsetImage(FFT_plot_1, zoom=1)
-a2 = AnnotationBbox(imagebox2, (0.48, 0.5),frameon=False)
-ax.add_artist(a2)
-Header = 'FFT of Center Frequency' ###TODO: add the value automatically
-page3= 'Page 5'
-# add text
-plt.annotate(Header, (.2,.9), weight='regular', fontsize=20, alpha=1 )
-plt.annotate(page3, (.48,.02), weight='medium', fontsize=10)
-plt.savefig('page_5',dpi=300, bbox_inches='tight')
+#time plots report pages
+time_plots_path= '/home/jade/Desktop/dump_20220805153333.187244/samp_vs_time/' ##TODO: MAKE PATH RELATIVE TO WHERE COLLECTION DUMP IS STORED
+os.chdir(time_plots_path)
+files = filter(os.path.isfile, os.listdir(time_plots_path))
+files = [os.path.join(time_plots_path, f) for f in files] # add path to each file
 
-#Page 5: Peaks table
-fig, ax = plt.subplots(figsize=(8.5, 11))
-plt.axis('off')
-Table_1 = mpimg.imread('/home/jade/Desktop/dump_20220805153333.187244/peaks_table/Top_5_peaks_table0.png')
-imagebox2 = OffsetImage(Table_1, zoom=1)
-a3 = AnnotationBbox(imagebox2, (0.48, 0.5),frameon=False)
-ax.add_artist(a3)
-Header = 'FFT Top 5 Peaks of Center Frequency' ###TODO: add the value automatically
-page4= 'Page 6'
-# add text
-plt.annotate(Header, (.2,.9), weight='regular', fontsize=20, alpha=1 )
-plt.annotate(page4, (.48,.02), weight='medium', fontsize=10)
-plt.savefig('page_6', dpi=300, bbox_inches='tight')
+i=0
+for file in sorted(files):
+    print("the file being procesed is:",file)
+    fig, ax = plt.subplots(figsize=(8.5, 11))
+    plt.axis('off')
+    logo= Image.open('/home/jade/Desktop/dump_20220805153333.187244/pv-logo.png')
+    rsize_logo=logo.resize((np.array(logo.size)/2).astype(int))
+    imagebox = OffsetImage(rsize_logo, zoom=1)
+    a_logo = AnnotationBbox(imagebox, (0.48, 0.95),frameon=False)
+    ax.add_artist(a_logo)
+    samp_time_plot_1 = mpimg.imread(file)
+    imagebox1 = OffsetImage(samp_time_plot_1, zoom=1)
+    a1 = AnnotationBbox(imagebox1, (0.48, 0.5),frameon=False)
+    ax.add_artist(a1)
+    Header = 'Time Plot for Center Frequency {} MHz'.format(gen.Shiptest_Crimson1.center_freq_list[i]/1e6) 
+    page= 'Page {}'.format(4 + i)
+    # add text
+    plt.annotate(Header, (.1,.85), weight='regular', fontsize=20, alpha=1)
+    plt.annotate(page, (.48,.02), weight='medium', fontsize=10)
+    #plt.show()
+    plt.savefig('/home/jade/Desktop/dump_20220805153333.187244/report/page_{}'.format(4+i), dpi=300, bbox_inches='tight')
+    i+=1
+
+# FFT plots report pages
+FFT_plots_path= '/home/jade/Desktop/dump_20220805153333.187244/FFT_plots/' ##TODO: MAKE PATH RELATIVE TO WHERE COLLECTION DUMP IS STORED
+os.chdir(FFT_plots_path)
+files = filter(os.path.isfile, os.listdir(FFT_plots_path))
+files = [os.path.join(FFT_plots_path, f) for f in files] # add path to each file
+
+i=0
+for file in sorted(files):
+    print("the file being procesed is:",file)
+    fig, ax = plt.subplots(figsize=(8.5, 11))
+    plt.axis('off')
+    logo= Image.open('/home/jade/Desktop/dump_20220805153333.187244/pv-logo.png')
+    rsize_logo=logo.resize((np.array(logo.size)/2).astype(int))
+    imagebox = OffsetImage(rsize_logo, zoom=1)
+    a_logo = AnnotationBbox(imagebox, (0.48, 0.95),frameon=False)
+    ax.add_artist(a_logo)
+    FFT_plot_1 = mpimg.imread(file)
+    imagebox2 = OffsetImage(FFT_plot_1, zoom=1)
+    a2 = AnnotationBbox(imagebox2, (0.48, 0.5),frameon=False)
+    ax.add_artist(a2)
+    Header = 'FFT for Center Frequency {} MHz'.format((gen.Shiptest_Crimson1.center_freq_list[i]/1e6)) 
+    page= 'Page {}'.format(11+i)
+    # add text
+    plt.annotate(Header, (.1,.85), weight='regular', fontsize=20, alpha=1 )
+    plt.annotate(page3, (.48,.02), weight='medium', fontsize=10)
+    plt.savefig('/home/jade/Desktop/dump_20220805153333.187244/report/page_{}'.format(12+i),dpi=300, bbox_inches='tight')
+    i+=1
+
+#Peaks table report pages
+peaks_table_path= '/home/jade/Desktop/dump_20220805153333.187244/peaks_table/' ##TODO: MAKE PATH RELATIVE TO WHERE COLLECTION DUMP IS STORED
+os.chdir(peaks_table_path)
+files = filter(os.path.isfile, os.listdir(peaks_table_path))
+files = [os.path.join(peaks_table_path, f) for f in files] # add path to each file
+
+i=0
+for file in sorted(files):
+    print("the file being procesed is:",file)
+    fig, ax = plt.subplots(figsize=(8.5, 11))
+    plt.axis('off')
+    logo= Image.open('/home/jade/Desktop/dump_20220805153333.187244/pv-logo.png')
+    rsize_logo=logo.resize((np.array(logo.size)/2).astype(int))
+    imagebox = OffsetImage(rsize_logo, zoom=1)
+    a_logo = AnnotationBbox(imagebox, (0.48, 0.95),frameon=False)
+    ax.add_artist(a_logo)
+    Table_1 = mpimg.imread(file)
+    imagebox2 = OffsetImage(Table_1, zoom=1)
+    a3 = AnnotationBbox(imagebox2, (0.48, 0.5),frameon=False)
+    ax.add_artist(a3)
+    #Header = 'FFT Top 5 Peaks of Center Frequency' ###TODO: add the value automatically
+    page4= 'Page {}'.format(20 + i)
+    # add text
+    #plt.annotate(Header, (.2,.9), weight='regular', fontsize=20, alpha=1 )
+    plt.annotate(page4, (.48,.02), weight='medium', fontsize=10)
+    plt.savefig('/home/jade/Desktop/dump_20220805153333.187244/report/page_{}'.format(20+i), dpi=300, bbox_inches='tight')
+    i+=1
 
             
             
