@@ -13,7 +13,7 @@ yum -y install dnf-plugins-core oracle-epel-release-el8 make gcc rpm-build git r
 dnf config-manager --set-enabled ol8_codeready_builder && \
 pip3 install retrying pygccxml pyqtgraph==0.11.1 && \
 cd /usr/local/lib/python3.6/site-packages/ && \
-mv pygccxml  pygccxml-2.2.1.dist-info  pyqtgraph  pyqtgraph-0.11.1.dist-info  retrying-1.3.3-py3.6.egg-info  retrying.py /usr/lib/python3.6/site-packages
+mv pygccxml  pygccxml-2.2.1.dist-info  pyqtgraph  pyqtgraph-0.11.1.dist-info  retrying-1.3.6.dist-info  retrying.py /usr/lib/python3.6/site-packages
 WORKDIR /home
 RUN rpmdev-setuptree && \
 git clone -b master https://github.com/pervices/uhd.git && \
