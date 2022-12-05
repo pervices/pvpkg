@@ -159,6 +159,7 @@ cd build
 -DGR_PKG_DOC_DIR=%{_docdir}/%{name} \
 -DGR_PYTHON_DIR=%{python3_sitearch} \
 -DPYTHON_EXECUTABLE=%{__python3} \
+-DENABLE_UHD_RFNOC=OFF \
 -Dspdlog_DIR=/usr/lib64 \
 %{?mfpu_neon} \
 ..

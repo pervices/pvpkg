@@ -42,6 +42,7 @@ echo export path
         -DENABLE_GR_QTGUI=ON \
         -DENABLE_INTERNAL_VOLK=ON \
         -DCMAKE_INSTALL_PREFIX=/usr \
+	-DENABLE_UHD_RFNOC=OFF \
         -Wno-dev ../
 
     make -j 5
