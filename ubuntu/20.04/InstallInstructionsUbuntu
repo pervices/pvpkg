@@ -24,7 +24,7 @@ pip3 install pygccxml
 #Get latest gnuradio and uhd build file from files.pervices.com/latest/sw/ubuntu20.04/
 
 #Untar files
-tar -tar -xvzf <archive name ending in .tar.gz>
+tar -xvzf <archive name ending in .tar.gz>
 
 #Install UHD (First command will fail, second will grab all dependencies and install package)
 dpkg -i uhd*.deb 
