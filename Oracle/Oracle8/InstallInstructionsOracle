@@ -1,13 +1,22 @@
 ORACLE8 INSTALL INSTRUCTIONS
 
+#REDHAT SPECIFIC: we need to enable two repo;
+# sudo subscription-manager repos --enable codeready-builder-for-rhel-8-x86_64-rpms
+# sudo dnf config-manager --set-enabled PowerTools
+# See issue 10050 for additional notes.
+
 #Packages requiring installation Before Beginning UHD/Volk/Gnuradio Install
 yum -y install dnf-plugins-core oracle-epel-release-el8 make gcc rpm-build git rpmdevtools wget cmake python3-pip
 
+#REDHAT SPECIFIC:
+# yum -y install dnf-plugins-core epel-release-el8 make gcc rpm-build git rpmdevtools wget cmake python3-pip
 
 #needed for C++17 Python compatibility; move local install from pip to rpm site-packages to use in gnuradio install or else it won't be located
 pip3 install pygccxml
+pip3 install pybind11
 cd /usr/local/lib/python3.6/site-packages/
 mv  pygccxml  pygccxml-2.2.1.dist-info /usr/lib/python3.6/site-packages
+mv pybind* /usr/lib/python3.6/site-packages
 
 #Get latest gnuradio and uhd build file from files.pervices.com/latest/sw/centos8/
 
@@ -33,3 +42,6 @@ dnf builddep -y gnuradio.spec
 rpm -i volk*.rpm && rpm -i libgnuradio*.rpm && rpm -i python3*.rpm && rpm -i gnuradio*.rpm
 #NOTE: If upgrading gnuradio, you can use the following command;
 #rpm -iv --replacepkgs --replacefiles volk*.rpm libgnuradio*.rpm python3*.rpm gnuradio*.rpm
+
+# Ensure that gcc11 is always used when running uhd, by typing the following:
+# echo "source /opt/rh/gcc-toolset-11/enable" >> ~/.bashrc
