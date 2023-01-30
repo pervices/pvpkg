@@ -1,6 +1,6 @@
 ORACLE8 INSTALL INSTRUCTIONS
 
-#REDHAT SPECIFIC: we need to enable two repo;
+#REDHAT SPECIFIC: we need to enable a repo and powertools;
 # sudo subscription-manager repos --enable codeready-builder-for-rhel-8-x86_64-rpms
 # sudo dnf config-manager --set-enabled PowerTools
 # See issue 10050 for additional notes.
@@ -43,5 +43,7 @@ rpm -i volk*.rpm && rpm -i libgnuradio*.rpm && rpm -i python3*.rpm && rpm -i gnu
 #NOTE: If upgrading gnuradio, you can use the following command;
 #rpm -iv --replacepkgs --replacefiles volk*.rpm libgnuradio*.rpm python3*.rpm gnuradio*.rpm
 
-# Ensure that gcc11 is always used when running uhd, by typing the following:
+# For all users, we must ensure that gcc11 is always used when running uhd, by typing the following;
 # echo "source /opt/rh/gcc-toolset-11/enable" >> ~/.bashrc
+#
+# TODO: See whether we can make that the default for all users?
