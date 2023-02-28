@@ -1,0 +1,36 @@
+The following is a skeleton of default configuration files to
+facilitate the use of Per Vices SDR products.
+
+This skeleton is intended for you to modify some configuration 
+files and then be able to copy it over to the host machine, to
+automate some common configuration tasks, such as setting MTU
+settings, or network interfaces. 
+
+You may NOT require all the files. For example, you will only
+need to copy one of the default interface configurations, 
+depending on whether you are using netctl or network manager.
+
+Additionally, you SHALL have to modify the configuration files 
+to get them working properly. In particular;
+
+common-conf/etc/conf.d/setmtu
+	Change the contents of this file to reflect the adapter 
+	names.
+
+common-conf/etc/netctl
+	ARCHLINUX: If you use netctl, you can modify this 
+	directory to reflect adapter names.
+
+common-conf/etc/network/interfaces
+	UBUNTU: If you use the network interfaces file, you can 
+	modify this file to reflect adapter names.
+
+Once you copy over the setmtu utility, you should be able to set 
+the correct MTU by using a systemd script;
+
+systemctl enable setmtu@<adapter_name>
+
+Provided you correctly specified the adapters in the 
+/etc/conf.d/setmtu file, it should work next boot.
+
+

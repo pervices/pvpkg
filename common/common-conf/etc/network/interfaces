@@ -1,0 +1,19 @@
+allow-hotplug <mgmt-iface>
+    iface <mgmt-iface> inet static
+    address 192.168.10.4/24
+
+allow-hotplug <qsfp0-iface>
+    iface <qsfp0-iface> inet static
+    address 10.10.10.10/24
+
+allow-hotplug <qsfp1-iface>
+    iface <qsfp1-iface> inet static
+    address 10.10.11.10/24
+
+allow-hotplug <qsfp2-iface>
+    iface <qsfp2-iface> inet static
+    address 10.10.12.10/24
+
+allow-hotplug <qsfp3-iface>
+    iface <qsfp3-iface> inet static
+    address 10.10.13.10/24
