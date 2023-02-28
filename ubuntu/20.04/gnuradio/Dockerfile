@@ -52,7 +52,8 @@ cmake -DCMAKE_BUILD_TYPE=Release -DPYTHON_EXECUTABLE=/usr/bin/python3 ../ && \
 make && make install
 WORKDIR /home/notroot/gnuradio
 # clone gnuradio 3.9 from github, replace Cmake and uhd types files from Github with those from pvpkg to allow for successful build
-RUN git clone -b maint-3.10 https://github.com/gnuradio/gnuradio.git && git reset --hard v3.10.5.1 && \
+RUN git clone -b maint-3.10 https://github.com/gnuradio/gnuradio.git && \
+cd gnuradio && git reset --hard v3.10.5.1 && cd .. && \
 # create orig.tar.gz of gnuradio repo nad build debian package
 tar -czvf gnuradiopv_3.10.orig.tar.gz gnuradio && \
 mv debian gnuradio && \
