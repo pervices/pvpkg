@@ -44,10 +44,10 @@ def test(it):
             assert real_coherency > -thresh and real_coherency < thresh and \
                     imag_coherency > -thresh and imag_coherency < thresh
         except:
-            print('threshold not satisfied for channel {} at wave_freq = {}'.format(it["channels"], it["wave_freq"]))
+            print('threshold not satisfied for channel {} at wave_freq = {}'.format(ch, it["wave_freq"]))
             #plot and save real component
             plt.figure()
-            plt.title("Real sample data plot of {} for wave_freq = {} Hz".format(it["channels"],it["wave_freq"]))
+            plt.title("Real sample data plot of {} for wave_freq = {} Hz".format(ch,it["wave_freq"]))
             plt.xlabel("Sample")
             plt.ylabel("Amplitude")
             plt.plot(real[0:500], color='black',label='real')
@@ -57,13 +57,13 @@ def test(it):
 
             #plot and save imag component
             plt.figure()
-            plt.title("Imag Sample Data plot of {} for wave_freq = {} Hz".format(it["channels"],it["wave_freq"]))
+            plt.title("Imag Sample Data plot of {} for wave_freq = {} Hz".format(ch,it["wave_freq"]))
             plt.xlabel("Sample")
             plt.ylabel("Amplitude")
             plt.plot(imag[0:500], color='green', label='imag')
             plt.plot(imags[0][0:500], color='orange', label='imags[0]')
             plt.legend()
-            plt.savefig(fname='Imag lag plot for channel {} at wave_freq {}'.format(it["channels"], it["wave_freq"],format='png'))
+            plt.savefig(fname='Imag lag plot for channel {} at wave_freq {}'.format(ch, it["wave_freq"],format='png'))
 
             time=np.arange(0,len(real)/it["sample_rate"], 1/it["sample_rate"])
             #print(len(len(real)/it["sample_rate"]))
