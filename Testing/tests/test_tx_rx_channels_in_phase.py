@@ -32,8 +32,9 @@ def test(it):
         #print('the value of reals[0] is', reals[0])
         #print('the value of imags[0] is', imags[0])
 
-        real_coherency = sigproc.lag(real, reals[0], it["sample_rate"], it["wave_freq"])
-        imag_coherency = sigproc.lag(imag, imags[0], it["sample_rate"], it["wave_freq"])
+        # drop the first 150 samples because the first 100 or so are before the sine wave starts
+        real_coherency = sigproc.lag(real[150:len(real)-1], reals[0][150:len(real)-1], it["sample_rate"], it["wave_freq"])
+        imag_coherency = sigproc.lag(imag[150:len(imag)-1], imags[0][150:len(imag)-1], it["sample_rate"], it["wave_freq"])
 
         print("channel %2d: real coherency %f" % (ch, real_coherency))
         print("channel %2d: imag coherency %f" % (ch, imag_coherency))
