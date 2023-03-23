@@ -39,6 +39,19 @@ def test(it):
         print("channel %2d: imag coherency %f" % (ch, imag_coherency))
 
         sigproc.dump_file(vsnk, it["wave_freq"])
+
+        # lag returns a portion of the wave_freq, where:
+        #   0 lag is perfectly phase aligned
+        #   0.5 lag is 180degrees out of phase
+        # therefore alignment within nine degrees:
+        #   thresh = 9 degrees * 0.5 scale / 180 degrees = 0.1
+        # for our first test case:
+        #   sample_rate = 25MSPS
+        #   wave_freq = 500kHz
+        # therefore alignment within 200 nanoseconds:
+        #   thresh = 200 ns * wave_freq = 0.05
+        # therefore alignment within two samples:
+        #   thresh = 2 samples * wave_freq / sample_rate = 0.04
         thresh = 0.15
         try:
             assert real_coherency > -thresh and real_coherency < thresh and \

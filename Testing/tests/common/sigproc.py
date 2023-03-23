@@ -114,6 +114,12 @@ def lag(real_wave, imag_wave, sample_rate, wave_freq):
     #print("forwards value is", forewards)
     #print("backwards value is", backwards)
 
+    # This is the lag in number of samples
     lag = (abs(forewards) + abs(backwards)) / 2.0
+    # This is the lag in number of seconds:
+    #   lag /= float(sample_rate)
+    # This is the lag in wave_freq cycles, 0 = no lag, 0.5 = 180degrees lag:
+    #   lag *= float(wave_freq)
+    # Complete the above 2 steps in one to avoid rounding errors when dividing a small lag by a large sample rate
     return lag / (float(sample_rate) / float(wave_freq))
 
