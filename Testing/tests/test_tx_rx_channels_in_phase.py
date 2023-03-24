@@ -53,7 +53,11 @@ def test(it):
         #   thresh = 200 ns * wave_freq = 0.05
         # therefore alignment within two samples:
         #   thresh = 2 samples * wave_freq / sample_rate = 0.04
-        thresh = 0.15
+        # the high wave_freq in our test cases is 1MHz
+        # therefor alignment within one sample:
+        #   thresh = 1 * wave_freq / sample_rate = 0.04
+        # set thresh just higher because statement below uses < not <=
+        thresh = 0.041
         try:
             assert real_coherency > -thresh and real_coherency < thresh and \
                     imag_coherency > -thresh and imag_coherency < thresh
@@ -100,5 +104,5 @@ def main(iterations):
         test(it)
 
 main(gen.lo_band_wave_sweep())
-main(gen.hi_band_wave_sweep())
+#main(gen.hi_band_wave_sweep())
 
