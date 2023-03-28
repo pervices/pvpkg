@@ -183,9 +183,9 @@ cd build
 %exclude %{_docdir}/%{name}/html
 %exclude %{_docdir}/%{name}/xml
 %doc %{_docdir}/%{name}
-/usr/libexec/gnuradio/grc_setup_freedesktop
-/usr/share/icons/hicolor/*
-/usr/share/applications/gnuradio-grc.desktop
+#/usr/libexec/gnuradio/grc_setup_freedesktop
+#/usr/share/icons/hicolor/*
+#/usr/share/applications/gnuradio-grc.desktop
 
 
 %files -n libgnuradio
