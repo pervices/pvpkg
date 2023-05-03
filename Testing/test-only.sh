@@ -54,25 +54,34 @@ do
 	echo ":: Executing ${TEST_NAMES[$i]} test" >> log.txt
 	#echo "$i"
 	pwd
-	python3 -u /home/notroot/testing/tests/${TEST_FILES[$i]}.py
+	python -u /home/notroot/testing/tests/${TEST_FILES[$i]}.py
 	rv=$?
 	if [ $rv -eq 0 ]; then
 		PASSED_TESTS=$((PASSED_TESTS+1))
 		echo "${TEST_NAMES[$i]} test PASSED" >> log.txt
-	elif [ $i -eq 5 ]; then
+	elif [[ "${TEST_EXCEPTIONS[$i]}" == "true" ]]; then
 		EXCEPTIONS=$((EXCEPTIONS+1))
 		FAILED_TESTS=$((FAILED_TESTS+1))
 		echo "${TEST_NAMES[$i]} test FAILED but it is an exception" >> log.txt
-	else
+	elif [[ "${TEST_EXCEPTIONS[$i]}" == "false" ]]; then
 		FAILED_TESTS=$((FAILED_TESTS+1))
 		RETURN=$((RETURN+1))
 		echo "${TEST_NAMES[$i]} test FAILED" >> log.txt
+	else
+		FAILED_TESTS=$((FAILED_TESTS+1))
+		RETURN=$((RETURN+1))
+		echo "ERROR: Invalid or missing test exception for ${TEST_NAMES[$i]}: index $i may have a problem." >> log.txt
 	fi
 	echo "" >> log.txt
 done
+
 echo "=================Functional Test Results================="
-echo "Summary: There are total $NUM_TESTS test(s), $PASSED_TESTS passed, $FAILED_TESTS failed with $EXCEPTIONS exception(s)" 
-echo "Execption is a type of failure that is known to us, currently the in_phase test is allowed to fail. Please see below for more details"
+echo "Summary: There are total $NUM_TESTS test(s), $PASSED_TESTS passed, $FAILED_TESTS failed with the following $EXCEPTIONS exception(s):"
+for (( i=0; i<$NUM_TESTS; i++)) do
+    if [[ "${TEST_EXCEPTIONS[$i]}" == "true" ]]; then
+        echo "EXCEPTION:: ${TEST_NAMES[$i]} , ${TEST_FILES[$i]} "
+done
+echo "Exceptions are tests that are presently allowed to fail. Please see below for more details"
 echo "=================begin of log.txt================="
 echo ""
 cat log.txt
