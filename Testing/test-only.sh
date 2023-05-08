@@ -80,6 +80,7 @@ echo "Summary: There are total $NUM_TESTS test(s), $PASSED_TESTS passed, $FAILED
 for (( i=0; i<$NUM_TESTS; i++)) do
     if [[ "${TEST_EXCEPTIONS[$i]}" == "true" ]]; then
         echo "EXCEPTION:: ${TEST_NAMES[$i]} , ${TEST_FILES[$i]} "
+    fi
 done
 echo "Exceptions are tests that are presently allowed to fail. Please see below for more details"
 echo "=================begin of log.txt================="
