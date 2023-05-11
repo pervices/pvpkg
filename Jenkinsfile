@@ -2,7 +2,7 @@ pipeline {
 
 // citests agents used to build and test repo.
     agent {
-	label 'waveci'
+	label 'citests'
     }
 parameters {
         choice(name: "CI_BUILD_TYPE", choices: ["UHD_ONLY", "FULL"], description: "Select whether to only build UHD package or to build Gnuradio with UHD. Gnuradio has a considerably longer compile time, so FULL should not be slected if a new UHD package is required quickly.")
