@@ -11,7 +11,7 @@ RUN echo "notroot ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/notroot
 RUN pacman -Sy --noconfirm archlinux-keyring&& \
     pacman -Sy --noconfirm git cmake clang icu && \
  pacman -Sy --noconfirm inetutils iproute2 && \
- pacman -Sy --noconfirm wget
+ pacman -Sy --noconfirm wget net-tools
 # Allow notroot to run stuff as root (to install dependencies): 
 # Continue execution (and CMD) as notroot:
 USER notroot
