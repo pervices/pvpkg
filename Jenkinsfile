@@ -35,10 +35,10 @@ parameters {
                                 env.IID = "\$(docker images arch:$BUILD_NUMBER --format \"{{.ID}}\")"
                                 env.CID="\$(docker create $IID)"
                                 sh "docker cp ${CID}:/home/artifacts/. $WORKSPACE/Arch/UHD"
-                                sshagent(credentials: ['sshfilespervices']) {
-                                sh "ssh -T -p 237 filespervices@files.pervices.com 'rm -f /home/filespervices/www/latest/sw/archlinux/uhd/*' && \
-                                scp -P 237 libuhdpv* filespervices@files.pervices.com:/home/filespervices/www/latest/sw/archlinux/uhd/"
-                        }
+//                                 sshagent(credentials: ['sshfilespervices']) {
+//                                 sh "ssh -T -p 237 filespervices@files.pervices.com 'rm -f /home/filespervices/www/latest/sw/archlinux/uhd/*' && \
+//                                 scp -P 237 libuhdpv* filespervices@files.pervices.com:/home/filespervices/www/latest/sw/archlinux/uhd/"
+//                         }
                         }
                         }
                         }
@@ -63,11 +63,11 @@ parameters {
                                 env.IID = "\$(docker images arch:$BUILD_NUMBER --format \"{{.ID}}\")"
                                 env.CID="\$(docker create $IID)"
                                 sh "docker cp ${CID}:/home/artifacts/. $WORKSPACE/Arch/GnuRadio"
-                                sshagent(credentials: ['sshfilespervices']) {
-                                sh "ssh -T -p 237 filespervices@files.pervices.com 'rm -f /home/filespervices/www/latest/sw/archlinux/uhd/* && rm -f /home/filespervices/www/latest/sw/archlinux/gnuradio/*' && \
-                                scp -P 237 libuhdpv* filespervices@files.pervices.com:/home/filespervices/www/latest/sw/archlinux/uhd/ && \
-                                scp -P 237 gnuradio* filespervices@files.pervices.com:/home/filespervices/www/latest/sw/archlinux/gnuradio/"                        
-                        }
+//                                 sshagent(credentials: ['sshfilespervices']) {
+//                                 sh "ssh -T -p 237 filespervices@files.pervices.com 'rm -f /home/filespervices/www/latest/sw/archlinux/uhd/* && rm -f /home/filespervices/www/latest/sw/archlinux/gnuradio/*' && \
+//                                 scp -P 237 libuhdpv* filespervices@files.pervices.com:/home/filespervices/www/latest/sw/archlinux/uhd/ && \
+//                                 scp -P 237 gnuradio* filespervices@files.pervices.com:/home/filespervices/www/latest/sw/archlinux/gnuradio/"                        
+//                         }
                         } 
                         }
                         }
@@ -90,10 +90,10 @@ parameters {
                                 env.IID = "\$(docker images ubuntu:$BUILD_NUMBER --format \"{{.ID}}\")"
                                 env.CID="\$(docker create $IID)"
                                 sh "docker cp ${CID}:/home/artifacts/. $WORKSPACE/ubuntu/20.04/uhd"
-                                sshagent(credentials: ['sshfilespervices']) {
-                                sh "ssh -T -p 237 filespervices@files.pervices.com 'rm -f /home/filespervices/www/latest/sw/ubuntu20.04/uhd/*' && \
-                                scp -P 237 uhdpv*.tar.gz filespervices@files.pervices.com:/home/filespervices/www/latest/sw/ubuntu20.04/uhd/"
-                       } 
+//                                 sshagent(credentials: ['sshfilespervices']) {
+//                                 sh "ssh -T -p 237 filespervices@files.pervices.com 'rm -f /home/filespervices/www/latest/sw/ubuntu20.04/uhd/*' && \
+//                                 scp -P 237 uhdpv*.tar.gz filespervices@files.pervices.com:/home/filespervices/www/latest/sw/ubuntu20.04/uhd/"
+//                        } 
                        }
                        }
                        }
@@ -115,10 +115,10 @@ parameters {
                                 env.IID = "\$(docker images ubuntu:$BUILD_NUMBER --format \"{{.ID}}\")"
                                 env.CID="\$(docker create $IID)"
                                 sh "docker cp ${CID}:/home/artifacts/. $WORKSPACE/ubuntu/20.04/testing/uhd"
-                                sshagent(credentials: ['sshfilespervices']) {
-                                sh "ssh -T -p 237 filespervices@files.pervices.com 'rm -f /home/filespervices/www/testing/sw/ubuntu20.04/uhd/*' && \
-                                scp -P 237 uhdpv*.tar.gz filespervices@files.pervices.com:/home/filespervices/www/testing/sw/ubuntu20.04/uhd/"
-                       } 
+//                                 sshagent(credentials: ['sshfilespervices']) {
+//                                 sh "ssh -T -p 237 filespervices@files.pervices.com 'rm -f /home/filespervices/www/testing/sw/ubuntu20.04/uhd/*' && \
+//                                 scp -P 237 uhdpv*.tar.gz filespervices@files.pervices.com:/home/filespervices/www/testing/sw/ubuntu20.04/uhd/"
+//                        } 
                        }
                        }
                        }
@@ -140,11 +140,11 @@ parameters {
                                 env.IID = "\$(docker images ubuntu:$BUILD_NUMBER --format \"{{.ID}}\")"
                                 env.CID="\$(docker create $IID)"
                                 sh "docker cp ${CID}:/home/artifacts/. $WORKSPACE/ubuntu/20.04/gnuradio"
-                                sshagent(credentials: ['sshfilespervices']) {
-                                sh "ssh -T -p 237 filespervices@files.pervices.com 'rm -f /home/filespervices/www/latest/sw/ubuntu20.04/uhd/* && rm -f /home/filespervices/www/latest/sw/ubuntu20.04/gnuradio/*' && \
-                                scp -P 237 uhdpv*.tar.gz filespervices@files.pervices.com:/home/filespervices/www/latest/sw/ubuntu20.04/uhd/ && \
-                                scp -P 237 gnuradio*.tar.gz filespervices@files.pervices.com:/home/filespervices/www/latest/sw/ubuntu20.04/gnuradio/"
-                       } 
+//                                 sshagent(credentials: ['sshfilespervices']) {
+//                                 sh "ssh -T -p 237 filespervices@files.pervices.com 'rm -f /home/filespervices/www/latest/sw/ubuntu20.04/uhd/* && rm -f /home/filespervices/www/latest/sw/ubuntu20.04/gnuradio/*' && \
+//                                 scp -P 237 uhdpv*.tar.gz filespervices@files.pervices.com:/home/filespervices/www/latest/sw/ubuntu20.04/uhd/ && \
+//                                 scp -P 237 gnuradio*.tar.gz filespervices@files.pervices.com:/home/filespervices/www/latest/sw/ubuntu20.04/gnuradio/"
+//                        } 
                        }
                        }
                        }
@@ -167,10 +167,10 @@ parameters {
                                env.IID = "\$(docker images oracle:$BUILD_NUMBER --format \"{{.ID}}\")"
                                env.CID="\$(docker create $IID)"
                                sh "docker cp ${CID}:/home/artifacts/. $WORKSPACE/Oracle/Oracle8/UHD"
-                               sshagent(credentials: ['sshfilespervices']) {
-                               sh "ssh -T -p 237 filespervices@files.pervices.com 'rm -f /home/filespervices/www/latest/sw/centos8/uhd/*' && \
-                               scp -P 237 uhd*.tar.gz filespervices@files.pervices.com:/home/filespervices/www/latest/sw/centos8/uhd/"
-                        }
+//                                sshagent(credentials: ['sshfilespervices']) {
+//                                sh "ssh -T -p 237 filespervices@files.pervices.com 'rm -f /home/filespervices/www/latest/sw/centos8/uhd/*' && \
+//                                scp -P 237 uhd*.tar.gz filespervices@files.pervices.com:/home/filespervices/www/latest/sw/centos8/uhd/"
+//                         }
                         }
                         }
                         }
@@ -191,11 +191,11 @@ parameters {
                                env.IID = "\$(docker images oracle:$BUILD_NUMBER --format \"{{.ID}}\")"
                                env.CID="\$(docker create $IID)"
                                sh "docker cp ${CID}:/home/artifacts/. $WORKSPACE/Oracle/Oracle8/GnuRadio"
-                               sshagent(credentials: ['sshfilespervices']) {
-                               sh "ssh -T -p 237 filespervices@files.pervices.com 'rm -f /home/filespervices/www/latest/sw/centos8/uhd/* && rm -f /home/filespervices/www/latest/sw/centos8/gnuradio/*' && \
-                               scp -P 237 uhd*.tar.gz filespervices@files.pervices.com:/home/filespervices/www/latest/sw/centos8/uhd/ && \
-                               scp -P 237 gnuradio*.tar.gz filespervices@files.pervices.com:/home/filespervices/www/latest/sw/centos8/gnuradio/"
-                        }
+//                                sshagent(credentials: ['sshfilespervices']) {
+//                                sh "ssh -T -p 237 filespervices@files.pervices.com 'rm -f /home/filespervices/www/latest/sw/centos8/uhd/* && rm -f /home/filespervices/www/latest/sw/centos8/gnuradio/*' && \
+//                                scp -P 237 uhd*.tar.gz filespervices@files.pervices.com:/home/filespervices/www/latest/sw/centos8/uhd/ && \
+//                                scp -P 237 gnuradio*.tar.gz filespervices@files.pervices.com:/home/filespervices/www/latest/sw/centos8/gnuradio/"
+//                         }
                         }
                         }
                         }
@@ -288,10 +288,10 @@ post {
         else { echo 'This build is finished. Not running clean.'}
         }
         }
-    failure {
- 			mail to: 'tech@pervices.com',
- 			subject: "Failed Pipeline: ${currentBuild.fullDisplayName}",
- 			body: "Something is wrong with the build ${env.BUILD_URL}"
- 		}
+//     failure {
+//  			mail to: 'tech@pervices.com',
+//  			subject: "Failed Pipeline: ${currentBuild.fullDisplayName}",
+//  			body: "Something is wrong with the build ${env.BUILD_URL}"
+//  		}
 }
 }

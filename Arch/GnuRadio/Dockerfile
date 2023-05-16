@@ -35,6 +35,7 @@ WORKDIR /home/notroot/libuhd
 # use wget to collect UHD PKGBUILD from Github, and create the package with the dependencies specified from the PKGBUILD; sudo chown command allows user notroot to build in this directory
 RUN sudo chown -R notroot /home/notroot/testing && \
 sudo wget https://raw.githubusercontent.com/pervices/pvpkg/master/Arch/UHD/PKGBUILD && \
+sed -i s_branch=master_branch=ops/dwil/master_ PKGBUILD &&\
 sudo chown -R notroot /home/notroot/libuhd && \
 yay -Sy --noconfirm \
    $(pacman --deptest $(source ./PKGBUILD && echo ${depends[@]})) && \
