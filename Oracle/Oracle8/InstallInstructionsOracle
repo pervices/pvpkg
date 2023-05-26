@@ -2,6 +2,9 @@ ORACLE8 INSTALL INSTRUCTIONS
 
 #REDHAT SPECIFIC: we need to enable a repo and powertools;
 # sudo subscription-manager repos --enable codeready-builder-for-rhel-8-x86_64-rpms
+# sudo dnf config-manager --set-enabled ol8_codeready_builder
+
+# Oracle Specific:
 # sudo dnf config-manager --set-enabled PowerTools
 # See issue 10050 for additional notes.
 
