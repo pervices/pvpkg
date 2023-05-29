@@ -2,7 +2,6 @@ from common import sigproc
 from common import engine
 from common import generator as gen
 
-
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.optimize import curve_fit
@@ -50,8 +49,6 @@ phase_std_thresh = 0.002
 #SHOULD ALL PLOTS BE MADE?
             #Frequency , Ampl, Phase
 plot_toggle = [True, True, True]
-
-
 #Calling date and time for simplicity - NOTE: THIS WOULD BE HELPFUL IN MOST CODES, SHOULD WE MAKE FILE IN COMMON FOR IT??
 date = datetime.datetime.now()
 formattedDate = date.isoformat()
@@ -75,20 +72,19 @@ x_time = []
 offsets = []
 
 '''
-Represents the wave equation
+Represents the wave equation 
+>>>>>>> 55c60a17 (Creating Phase Consistency Test)
 PARAMS: time, ampl, freq, phase
 RETUNRS: y'''
 def waveEquation(time, ampl, freq, phase, dc_offset):
 
     y = ampl*np.cos((2*np.pi*freq*time + phase)) + dc_offset #model for wave equation
-
     return y
 
 '''Plots the subplots all in the same format
 PARAMS: x, y, ax, best_fit, title
 RETURNS: NONE'''
 def subPlot(x, y, ax, best_fit, offset, title):
-
     ax.set_title(title)
     ax.set_xlabel("Time")
     ax.set_ylabel("Amplitude")
@@ -140,7 +136,6 @@ def check(criteria, mean, std, mins, maxs):
         return_array.append(True)
     else:
         return_array.append(False)
-
     #check max
     if (maxs <= criteria[2]):
         return_array.append(True)
@@ -148,6 +143,7 @@ def check(criteria, mean, std, mins, maxs):
         return_array.append(False)
 
     #check std
+
     if (std < criteria[0]):
         return_array.append(True)
     else:
@@ -175,6 +171,7 @@ def subtestTable(table, min_crit, max_crit, std_crit, boolean, bounds=True):
     table.addRow("STD Deviation", ("<" + std_crit), boolToWord(boolean[0][2]), boolToWord(boolean[1][2]), boolToWord(boolean[2][2]))
 
     table.printData()
+
 
 '''Makes summary table and prints to console
 PARAMS: run_all, table, mean, minimum, maximum, std, data
@@ -283,7 +280,6 @@ def main(iterations):
     for it in iterations:
 
         gen.dump(it) #pulling info from generator
-
         #connecting and setting up the uniti
         '''Note how each step of time is equiv to 1/sample_rate
         When you reach sample_rate/sample_rate, one second has passed.
@@ -361,9 +357,6 @@ def main(iterations):
         phase_AB_diff.append(phase[1]-phase[0])
         phase_AC_diff.append(phase[2]-phase[0])
         phase_AD_diff.append(phase[3]-phase[0])
-
-
-    # f.close()git
 
     #Formatting into easily referencable 3D array
     data.append((freq_A, freq_AB_diff, freq_AC_diff, freq_AD_diff))
@@ -502,5 +495,4 @@ def main(iterations):
     dc_offset_table.printData()
 
 main(gen.lo_band_phaseCoherency(4))                  
-
 
