@@ -11,22 +11,30 @@ def main(iterations):
     vsnks = []
 
     sample_count = 0
-
+    
     for it in iterations:
+        print (iterations)
+
         gen.dump(it)
+
         #Due to a bug that makes start times have no effect, tx will run for 3 seconds, rx will run for 1.5 seconds but only use the last sample_count samples
         sample_count = it["sample_count"]
         tx_stack = [ (10.0, int(it["sample_count" ])) ]
         rx_stack = [ (10.0, int(it["sample_count"])) ]
-        vsnk = engine.run(it["channels"], it["wave_freq"], it["sample_rate"], it["center_freq"], it["tx_gain"], it["rx_gain"], tx_stack, rx_stack)
+        vsnk = engine.run(it["channels"], it["wave_freq"], it["sample_rate"], it["centre_freq"], it["tx_gain"], it["rx_gain"], tx_stack, rx_stack)
         vsnks.append(vsnk)
-        #print("a")
-        #print(len(vsnks))
+        print("printing vsnk len")
+        print(len(vsnks))
+        
+        print("printing vsnk")
+        print(vsnks)
 
         iteration_areas = []
         for vsnk in vsnks:
             channel_areas = []
+            print("in iterations")
             for ch, channel in enumerate(vsnk):
+                print("in channel")
 
                 real = [datum.real for datum in channel.data()]
                 imag = [datum.imag for datum in channel.data()]
@@ -57,11 +65,11 @@ def main(iterations):
                         plt.plot(real[0:300], label='imags')
                         plt.legend()
                         plt.savefig(fname='Gain plot for channel {} at wave_freq {} at Tx gain {}'.format(ch, it["wave_freq"],it["tx_gain"],format='png'))
-                        sys.exit(1)
+   # sys.exit(1)
 
 
 #Change the argument in the following function to select how many channels to test
-main(gen.lo_band_gain_tx(4))
-main(gen.lo_band_gain_rx(4))
-main(gen.hi_band_gain_tx(4))
+#main(gen.lo_band_gain_tx(4))
+#main(gen.lo_band_gain_rx(4))
+#main(gen.hi_band_gain_tx(4))
 main(gen.hi_band_gain_rx(4))

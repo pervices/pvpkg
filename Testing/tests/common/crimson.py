@@ -1,5 +1,7 @@
 from gnuradio import uhd
 
+default_ampl = 9830.1 #default amplitude usually 0.3, just formatted it to be SC
+
 def calibrate(end, channels, sample_rate, center_freq, gain):
 
     end.set_samp_rate(sample_rate)
@@ -8,7 +10,8 @@ def calibrate(end, channels, sample_rate, center_freq, gain):
     for channel in channels:
         end.set_center_freq(center_freq, channel)
         end.set_gain(gain, channel)
-
+        '''if (ampl != default_ampl):
+            end.set_amplitude(ampl, channel)'''
 
     end.set_time_now(uhd.time_spec(0.0))
 

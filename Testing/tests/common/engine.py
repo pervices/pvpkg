@@ -7,6 +7,8 @@ from . import crimson
 import threading
 import time
 
+default_amp = 9830.1 #the same as gnu radio, but in sc
+
 def run_tx(csnk, channels, stack, sample_rate, wave_freq):
 
     """                                       +-----------+
