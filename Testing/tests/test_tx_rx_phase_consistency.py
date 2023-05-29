@@ -17,6 +17,7 @@ import sys
 import os
 import time, datetime
 
+
 #USER CHOSEN VALUES
 num_channel = 4 #dependent on unit
 num_output_waves =1 #depends what plots look like
@@ -64,6 +65,7 @@ test_plots = phase_plot_dir + "/" + formattedDate
 os.makedirs(phase_plot_dir, exist_ok = True)
 os.makedirs(test_plots, exist_ok = True)
 
+
 #important variables
 data = [] #This will hold all output information
 reals = []
@@ -73,7 +75,6 @@ offsets = []
 
 '''
 Represents the wave equation 
->>>>>>> 55c60a17 (Creating Phase Consistency Test)
 PARAMS: time, ampl, freq, phase
 RETUNRS: y'''
 def waveEquation(time, ampl, freq, phase, dc_offset):
@@ -84,6 +85,7 @@ def waveEquation(time, ampl, freq, phase, dc_offset):
 '''Plots the subplots all in the same format
 PARAMS: x, y, ax, best_fit, title
 RETURNS: NONE'''
+
 def subPlot(x, y, ax, best_fit, offset, title):
     ax.set_title(title)
     ax.set_xlabel("Time")
@@ -99,6 +101,7 @@ def subPlot(x, y, ax, best_fit, offset, title):
     f.write("\n" + title + ": " + str(y[find_peaks(y)[0][0]]))
     f.write("\n" + str(y))
     f.close()
+
 
 '''Creates the line of best fit for the given x and y
 PARAMS: x,y
@@ -119,6 +122,7 @@ PARAMS: criteria, mean, std, mins, maxs
 RETURNS: return_array'''
 def check(criteria, mean, std, mins, maxs):
     return_array = []
+
     # #check individual means
     # if criteria[4]:
     #     if (mean < criteria[0] and mean > (-1*criteria[0])):
@@ -143,6 +147,7 @@ def check(criteria, mean, std, mins, maxs):
         return_array.append(False)
 
     #check std
+
 
     if (std < criteria[0]):
         return_array.append(True)
@@ -289,7 +294,6 @@ def main(iterations):
         sample_rate = int(it["sample_rate"])
         tx_stack = [ (tx_burst , sample_rate)]
         rx_stack = [ (rx_burst, int(it["sample_count"]))]
-
         #this is the code that will actually tell the unit what values to run at
         vsnk = engine.run(it["channels"], it["wave_freq"], it["sample_rate"], it["center_freq"], it["tx_gain"], it["rx_gain"], tx_stack, rx_stack)
 
@@ -362,6 +366,7 @@ def main(iterations):
     data.append((freq_A, freq_AB_diff, freq_AC_diff, freq_AD_diff))
     data.append((ampl_A, ampl_AB_diff, ampl_AC_diff, ampl_AD_diff))
     data.append((phase_A, phase_AB_diff, phase_AC_diff, phase_AD_diff))
+
 
     #STARTING THE CHECKS
     #2D arrays containting summary values
@@ -446,11 +451,13 @@ def main(iterations):
             overall_bool[test] =  False
 
     #Checking if plots should print
+
     if (np.prod(overall_bool) == 0 or plot_toggle or np.prod(abs_bool) == 0):
         makePlots()
 
     #Outputting tables
     #Output tables and their flags- This allows me to always reference them - no matter the iteration
+
     overall_tests = out.Table("Overall Tests")
     overall_tests.addColumn("Test")
     overall_tests.addColumn("Status")
