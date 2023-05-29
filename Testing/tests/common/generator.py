@@ -180,8 +180,37 @@ def hi_band_gain_rx(channels):
     for rx_gain in [ 5, 10, 20 ]:
         yield locals()
 
+def lo_band_phaseCoherency_tx(channels):
+    print(sys._getframe().f_code.co_name)
+    
+    channnels = list(range(channels))
+    wave_freq = 20312500
+    center_freq = 0
+    sample_rate = 81250000
+    sample_count = (sample_rate/2)
+    amplitude = 30000
+    tx_gain = 10
+    rx_gain = 10
+    burst_start = 10
+    yield locals()
 
-def dump(iteration):
+def lo_band_phaseCoherency_rx(channels):
+    print(sys._getframe().f_code.co_name)
+    
+    channnels = list(range(channels))
+    wave_freq = 20312500
+    center_freq = 0
+    sample_rate = 162500000
+    sample_count = 300
+    amplitude = 30000
+    tx_gain = 10
+    rx_gain = 10
+    burst_start = 10.25
+    yield locals()
+
+
+
+ dump(iteration):
 
     for key, value in iteration.items():
         print("%20s : %r" % (key, value))
