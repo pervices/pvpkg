@@ -1,3 +1,4 @@
+
 from common import sigproc
 from common import engine
 from common import generator as gen
@@ -23,8 +24,21 @@ def main(iterations):
         #print("a")
         #print(len(vsnks))
 
-        iteration_areas = []
-        for vsnk in vsnks:
+         iteration_areas = []
+       
+       for vsnk in vsnks:
+
+            plt.figure()
+            plt.title("Gain plot of {} for wave_freq = {} Hz".format(ch,it["wave_freq"]))
+            plt.xlabel("Sample")
+            plt.ylabel("Amplitude")
+            plt.plot(imag[0:300], label='reals')
+            plt.plot(real[0:300], label='imags')
+            plt.legend()
+            plt.savefig(fname='Gain plot for channel {} at wave_freq {} at Tx gain {}'.format(ch, it["wave_freq"],it["tx_gain"],format='png'))
+            plt.show(block=True)
+
+
             channel_areas = []
             for ch, channel in enumerate(vsnk):
 
@@ -49,19 +63,11 @@ def main(iterations):
                         assert iteration_areas[b+1][a] - iteration_areas[b][a] > 1 #makes sure the difference in area is significant
                     except:
                         #plot and save real component
-                        plt.figure()
-                        plt.title("Gain plot of {} for wave_freq = {} Hz".format(ch,it["wave_freq"]))
-                        plt.xlabel("Sample")
-                        plt.ylabel("Amplitude")
-                        plt.plot(imag[0:300], label='reals')
-                        plt.plot(real[0:300], label='imags')
-                        plt.legend()
-                        plt.savefig(fname='Gain plot for channel {} at wave_freq {} at Tx gain {}'.format(ch, it["wave_freq"],it["tx_gain"],format='png'))
-                        sys.exit(1)
+                                                sys.exit(1)
 
 
 #Change the argument in the following function to select how many channels to test
-main(gen.lo_band_gain_tx(4))
-main(gen.lo_band_gain_rx(4))
-main(gen.hi_band_gain_tx(4))
+#main(gen.lo_band_gain_tx(4))
+#main(gen.lo_band_gain_rx(4))
+#main(gen.hi_band_gain_tx(4))
 main(gen.hi_band_gain_rx(4))
