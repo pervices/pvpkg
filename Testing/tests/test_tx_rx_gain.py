@@ -14,7 +14,6 @@ def main(iterations):
 
     for it in iterations:
         gen.dump(it)
-        #Due to a bug that makes start times have no effect, tx will run for 3 seconds, rx will run for 1.5 seconds but only use the last sample_count samples
         sample_count = it["sample_count"]
         tx_stack = [ (10.0, int(it["sample_count" ])) ]
         rx_stack = [ (10.0, int(it["sample_count"])) ]
