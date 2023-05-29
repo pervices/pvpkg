@@ -177,7 +177,7 @@ def hi_band_gain_rx(channels):
     center_freq = 2000000000
     sample_rate = 9848485
     tx_gain = 40#increasing the fixed gain may cause saturation
-    for rx_gain in [ 5, 10, 20 ]:
+    for rx_gain in [ 10, 20, 30 ]:
         yield locals()
 
 
