@@ -208,7 +208,7 @@ def lo_band_phaseCoherency_rx(channels):
 
 
 
- dump(iteration):
+def dump(iteration):
 
     for key, value in iteration.items():
         print("%20s : %r" % (key, value))

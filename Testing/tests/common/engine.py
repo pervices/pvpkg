@@ -7,6 +7,8 @@ from . import crimson
 import threading
 import time
 
+default_amp = 9830.1 #the same as gnu radio, but in sc
+
 def run_tx(csnk, channels, stack, sample_rate, wave_freq):
 
     """                                       +-----------+
@@ -100,11 +102,11 @@ def run_rx(csrc, channels, stack, sample_rate, _vsnk):
     _vsnk.extend(vsnk)
 
 
-def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stack, rx_stack):
+def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stack, rx_stack, ampl=default_amp):
 
     # Setup.
-    csnk = crimson.get_snk_s(channels, sample_rate, center_freq, tx_gain)
-    csrc = crimson.get_src_c(channels, sample_rate, center_freq, rx_gain)
+    csnk = crimson.get_snk_s(channels, sample_rate, center_freq, tx_gain, ampl)
+    csrc = crimson.get_src_c(channels, sample_rate, center_freq, rx_gain, ampl)
 
     # Run.
     vsnk = [] # Will be extended when using stacked commands.
