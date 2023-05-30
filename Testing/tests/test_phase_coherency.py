@@ -46,4 +46,4 @@ def main(iterations):
     for it in iterations:
         test(it)
 
-main(gen.lo_band_tx_ph_coherency())
+main(gen.lo_band_tx_ph_coherency(4))
