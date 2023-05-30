@@ -184,13 +184,13 @@ def lo_band_tx_ph_coherency(channels):
 
     print(sys._getframe().f_code.co_name)
     channels = list(range(4))
-    sample_count = int(round(25000000/10000))
+    sample_count = int(round(81250000/2))
     tx_gain = 25
     rx_gain = 25
-    center_freq = 10000000
-    sample_rate = 25000000
-    for wave_freq in [ 500000, 600000, 700000, 800000, 900000, 1000000 ]:
-        yield locals()
+    center_freq = 1000000000
+    sample_rate = 81250000
+    wave_freq = 20312500
+    yield locals()
     #print(sys._getframe().f_code.co_name)
     #channels = list(range(channels))
     #sample_count = int(round(81250000/2))
@@ -205,9 +205,9 @@ def lo_band_rx_ph_coherency(channels):
     print(sys._getframe().f_code.co_name)
     channels = list(range(channels))
     sample_count = 300
-    tx_gain = 30
-    rx_gain = 30
-    center_freq = 2000000
+    tx_gain = 25
+    rx_gain = 25
+    center_freq = 1000000000
     sample_rate = 162500000
     yield locals()
 
