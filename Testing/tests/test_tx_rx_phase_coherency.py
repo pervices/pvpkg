@@ -122,12 +122,18 @@ def main(iterations):
 
     #X-Y plot of the data, with time as the X-axis, and amplitude as the Y-axis
     fig, ((ax1, ax2), (ax3, ax4)) = plt.subplot(2,2) #Setting up a base for the plots
+    
     #set up sub plots -- NOTE: would love to find out how to make this a callable function, but for now  this will do
     fig.suptitle("Amplitude versus Time for Recieve Channels")
     subPlot(a, a_x, ax1, a_vsnk, "Channel A")
     subPlot(b, b_x, ax2, b_vsnk, "Channel B")
     subPlot(c, c_x, ax3, c_vsnk, "Channel C")
     subPlot(d, d_x, ax4, d_vsnk, "Channel D")
+
+    #plotting
+    plt.tight_layout()
+    plt.show(block=True)
+
 
 main(gen.lo_band_phaseCoherency_rx(4))                  
 main(gen.lo_band_phaseCoherency_tx(4))                  
