@@ -12,7 +12,7 @@ center_freq_list=[50000000, 300000000, 600000000, 1200000000, 2400000000, 400000
 #     rx_gain = 25
 #     for center_freq in center_freq_list:
 #         yield locals()
-        
+
 class Shiptest_Crimson():
     def __init__(self, center_freq_list, channels, wave_freq, sample_rate, sample_count, tx_gain, rx_gain):
         #print(sys._getframe().f_code.co_name)
@@ -27,7 +27,7 @@ class Shiptest_Crimson():
         #self.center_freq=center_freq
         # for center_freq in self.center_freq_list:
         #     yield locals()
-            
+
 Shiptest_Crimson1=Shiptest_Crimson([50000000, 300000000, 600000000, 1200000000, 2400000000, 4000000000, 5000000000, 5500000000], list(range(4)), 50000, int(325000000/325), 4096, 25, 25)
 
 #UHD_version
@@ -40,8 +40,8 @@ uhd_output = stream.read()
 stream = os.popen('uhd_usrp_info -v')
 crimson_output = stream.read()
 #print(crimson_output)
-        
-        
+
+
 
 def hi_band_wave_sweep():
 
@@ -180,19 +180,19 @@ def hi_band_gain_rx(channels):
     for rx_gain in [ 10, 20, 30 ]:
         yield locals()
 
-def hi_band_tx_ph_coherency():
+def lo_band_tx_ph_coherency(channels):
 
     print(sys._getframe().f_code.co_name)
     channels = list(range(4))
-    sample_count = int(round(81250000/2))
+    sample_count = int(round(8125000/2))
     tx_gain = 25
     rx_gain = 25
     center_freq = 0
-    sample_rate = 81250000
-    wave_freq = 20312500
+    sample_rate = 8125000
+    wave_freq = 2031250
     yield locals()
 
-def hi_band_rx_ph_coherency():
+def lo_band_rx_ph_coherency(channels):
     print(sys._getframe().f_code.co_name)
     channels = list(range(channels))
     sample_count = 300
