@@ -180,34 +180,25 @@ def hi_band_gain_rx(channels):
     for rx_gain in [ 10, 20, 30 ]:
         yield locals()
 
-def lo_band_tx_ph_coherency(channels):
+def hi_band_tx_ph_coherency():
 
     print(sys._getframe().f_code.co_name)
     channels = list(range(4))
     sample_count = int(round(81250000/2))
     tx_gain = 25
     rx_gain = 25
-    center_freq = 1000000000
+    center_freq = 0
     sample_rate = 81250000
     wave_freq = 20312500
     yield locals()
-    #print(sys._getframe().f_code.co_name)
-    #channels = list(range(channels))
-    #sample_count = int(round(81250000/2))
-    #tx_gain = 30
-    #rx_gain = 30
-    #center_freq = 2000000
-    #sample_rate = 81250000
-    #for wave_freq in [ 20312500 ]:
-        #yield locals()
 
-def lo_band_rx_ph_coherency(channels):
+def hi_band_rx_ph_coherency():
     print(sys._getframe().f_code.co_name)
     channels = list(range(channels))
     sample_count = 300
     tx_gain = 25
     rx_gain = 25
-    center_freq = 1000000000
+    center_freq = 0
     sample_rate = 162500000
     yield locals()
 
