@@ -41,7 +41,8 @@ def interpretComplex(real, imag):
 ##RETURNS: vsnk, sample_count
 '''
 def setInputs(channel):
-    
+    print("setting inputs")
+
     gen.dump(channel) #pulling info from generator
 
     #the actual collecting
@@ -58,7 +59,8 @@ def setInputs(channel):
 ##RETURNS: data_points, x_time
 '''
 def getInputs(channel, vsnk, sample_count):
-    
+    print("Getting inputs")
+
     data_points = []
     for ch, channel in enumerate(vsnk):
 
@@ -92,6 +94,8 @@ def timeGet(samp_rate, sample_count):
 ##RETURNS: plot, which can be assigned as a subplot
 '''
 def subPlot(data, x_val, ax, snk_data, name):
+    print("subplot {}".format(ax))
+
     #General formatting
     ax.set_title(name)
     ax.xlabel("Time (defined by Sample Rate)")
@@ -113,7 +117,8 @@ def subPlot(data, x_val, ax, snk_data, name):
 ##Returns: N/A
 '''
 def main(iterations):                                                 
-    
+    print("in main")
+
     #setting up channels and retriving x and y information ~Must be better way to get snk values but im not sure how~
     a, a_x, a_vsnk  = getInputs(0, setInputs(0)) 
     b, b_x, b_vsnk  = getInputs(1, setInputs(1))  
