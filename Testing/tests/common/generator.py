@@ -54,7 +54,7 @@ def hi_band_wave_sweep():
     center_freq = 1000000000
     sample_rate = 25000000
     for wave_freq in [ 500000, 600000, 700000, 800000, 900000, 1000000 ]:
-        yield locals()
+    yield locals()
 
 def hi_band_wave_easy():
     print(sys._getframe().f_code.co_name)
@@ -179,6 +179,28 @@ def hi_band_gain_rx(channels):
     tx_gain = 40#increasing the fixed gain may cause saturation
     for rx_gain in [ 10, 20, 30 ]:
         yield locals()
+
+def lo_band_tx_ph_coherency(channels)
+    print(sys._getframe().f_code.co_name)
+    channels = list(range(channels))
+    sample_count = int(round(81250000/2))
+    tx_gain = 30
+    rx_gain = 30
+    center_freq = 10000000
+    sample_rate = 81250000
+    for wave_freq in [ 20312500 ]:
+    yield locals()
+
+def lo_band_rx_ph_coherency(channels)
+    print(sys._getframe().f_code.co_name)
+    channels = list(range(channels))
+    sample_count = 300
+    tx_gain = 30
+    rx_gain = 30
+    center_freq = 10000000
+    sample_rate = 162500000
+    yield locals()
+
 
 
 def dump(iteration):
