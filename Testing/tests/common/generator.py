@@ -188,10 +188,9 @@ def lo_band_phaseCoherency_tx(channels):
     center_freq = 0
     sample_rate = 81250000
     sample_count = (sample_rate/2)
-    amplitude = 30000
+    ampl = 30000
     tx_gain = 10
     rx_gain = 10
-    burst_start = 10
     yield locals()
 
 def lo_band_phaseCoherency_rx(channels):
@@ -202,10 +201,9 @@ def lo_band_phaseCoherency_rx(channels):
     center_freq = 0
     sample_rate = 162500000
     sample_count = 300
-    amplitude = 30000
+    ampl = 30000
     tx_gain = 10
     rx_gain = 10
-    burst_start = 10.25
     yield locals()
 
 
