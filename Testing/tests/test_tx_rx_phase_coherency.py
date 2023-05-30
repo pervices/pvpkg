@@ -107,6 +107,11 @@ def subPlot(data, x_val, ax, snk_data, name):
     
     return ax.plot()
 
+'''
+##plots input info, merged info, and prints table of other info
+##PARAMS: iterations
+##Returns: N/A
+'''
 def main(iterations):                                                 
     
     #setting up channels and retriving x and y information ~Must be better way to get snk values but im not sure how~
@@ -124,5 +129,6 @@ def main(iterations):
     subPlot(c, c_x, ax3, c_vsnk, "Channel C")
     subPlot(d, d_x, ax4, d_vsnk, "Channel D")
 
-                  
+main(gen.lo_band_phaseCoherency_rx(4))                  
+main(gen.lo_band_phaseCoherency_tx(4))                  
 
