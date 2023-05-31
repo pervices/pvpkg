@@ -186,8 +186,8 @@ def lo_band_tx_ph_coherency(channels):
     name="lo_band_tx_ph_coherency"
     channels = list(range(channels))
     sample_count = int(round(8125000/2))
-    tx_gain = 25
-    rx_gain = 25
+    tx_gain = 10
+    rx_gain = 10
     center_freq = 0
     sample_rate = 8125000
     wave_freq = 2031250
@@ -198,8 +198,8 @@ def lo_band_rx_ph_coherency(channels):
     name="lo_band_rx_ph_coherency"
     channels = list(range(channels))
     sample_count = 300
-    tx_gain = 25
-    rx_gain = 25
+    tx_gain = 10
+    rx_gain = 10
     center_freq = 0
     sample_rate = 16250000
     wave_freq = 2031250
