@@ -23,8 +23,8 @@ def test(it):
         imag = [datum.imag for datum in channel.data()]
         #print('the value of the real array is', real)
         #print('the value of the imag array is', imag)
-        for b in range(ch):
-                print('range is', ch)
+        for b in range(len(it["channels"])):
+                #print('range is',b)
                 time=np.arange(0,len(real)/it["sample_rate"], 1/it["sample_rate"])
                 plt.figure()
                 plt.title("Time plot of {} for wave_freq = {} Hz".format(ch,it["wave_freq"]))
@@ -33,7 +33,7 @@ def test(it):
                 plt.plot(time[0:500], real[0:500], color='red', label='real')
                 plt.plot(time[0:500], imag[0:500], color='green', label='imag')
                 plt.legend()
-                plt.savefig(fname='Time plot for channel {} at wave_freq {}'.format(ch,it["wave_freq"],format='png'))
+                plt.savefig(fname='Time plot for channel {} at wave_freq {}'.format(b,it["wave_freq"],format='png'))
                 sys.exit(1)
 
 def main(iterations):

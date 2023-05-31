@@ -183,7 +183,7 @@ def hi_band_gain_rx(channels):
 def lo_band_tx_ph_coherency(channels):
 
     print(sys._getframe().f_code.co_name)
-    channels = list(range(4))
+    channels = list(range(channels))
     sample_count = int(round(8125000/2))
     tx_gain = 25
     rx_gain = 25
