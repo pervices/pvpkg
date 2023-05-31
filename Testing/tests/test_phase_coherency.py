@@ -20,6 +20,9 @@ def main(iterations):
 
             real = [datum.real for datum in channel.data()]
             imag = [datum.imag for datum in channel.data()]
+
+            lag = sigproc.lag(real, imag, it["sample_rate"], it["wave_freq"])
+            print("channel %2d: lag %f" % (ch, lag))
             #print('the value of the real array is', real)
             #print('the value of the imag array is', imag)
             #for b in it["channels"]:fig, axs = plt.subplots(2, 2)
