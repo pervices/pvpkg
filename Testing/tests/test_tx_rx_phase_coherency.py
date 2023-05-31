@@ -41,6 +41,7 @@ def interpretComplex(real, imag):
 ##RETURNS: vsnk, sample_count
 '''
 def setInputs(channel):
+    
     print("setting inputs")
 
     gen.dump(channel) #pulling info from generator
@@ -120,20 +121,20 @@ def main(iterations):
     print("in main")
 
     #setting up channels and retriving x and y information ~Must be better way to get snk values but im not sure how~
-    a, a_x, a_vsnk  = getInputs(0, setInputs(0)) 
-    b, b_x, b_vsnk  = getInputs(1, setInputs(1))  
-    c, c_x, c_vsnk  = getInputs(2, setInputs(2))  
-    d, d_x, d_vsnk  = getInputs(3, setInputs(3))  
+    
+    for i in iterations:
+        data, x_values, vsnks = getInputs(i, setInputs(i))
+                                                       
 
     #X-Y plot of the data, with time as the X-axis, and amplitude as the Y-axis
     fig, ((ax1, ax2), (ax3, ax4)) = plt.subplot(2,2) #Setting up a base for the plots
     
     #set up sub plots -- NOTE: would love to find out how to make this a callable function, but for now  this will do
     fig.suptitle("Amplitude versus Time for Recieve Channels")
-    subPlot(a, a_x, ax1, a_vsnk, "Channel A")
-    subPlot(b, b_x, ax2, b_vsnk, "Channel B")
-    subPlot(c, c_x, ax3, c_vsnk, "Channel C")
-    subPlot(d, d_x, ax4, d_vsnk, "Channel D")
+    subPlot(data[0], x_values[0], ax1, vsnk[0], "Channel A")
+    subPlot(data[1], x_values[1], ax2, vsnk[1],"Channel B")
+    subPlot(data[2], x_values[2], ax3, vsnk[2],  "Channel C")
+    subPlot(data[3], x_values[3], ax4, vsnk[3], "Channel D")
 
     #plotting
     plt.tight_layout()
