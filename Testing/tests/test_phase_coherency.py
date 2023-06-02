@@ -8,14 +8,16 @@ from scipy.optimize import curve_fit
 import sys
 
 def fit_func(xdata, A, f_wave, abs_phase):
-    fit_y = A*np.exp((2*np.pi*f_wave*xdata)+abs_phase)
+    #fit_y = A*np.exp((2*np.pi*f_wave*xdata)+abs_phase)
+    fit_y = A*np.cos(2*np.pi*f_wave*xdata+abs_phase)
     return fit_y
+
 def main(iterations):
     for it in iterations:
         gen.dump(it)
         # Collect.
-        tx_stack = [ (10, 2*it["sample_rate" ]) ] # Two seconds worth.
-        rx_stack = [ (11, it["sample_count"]) ]   # Half a seconds worth.
+        tx_stack = [ (10,     it["sample_rate" ]) ]     # One seconds worth.
+        rx_stack = [ (10.5,   it["sample_count"]) ]     # Half a seconds worth.
         vsnk = engine.run(it["channels"], it["wave_freq"], it["sample_rate"], it["center_freq"], it["tx_gain"], it["rx_gain"], tx_stack, rx_stack)
         error_detected = 0
         # Process.
@@ -34,13 +36,15 @@ def main(iterations):
             rdata = np.asarray(real)
             idata = np.asarray(imag)
 
-            real_data = idata*1j + real
-            f_data = np.asarray(real_data)
+            #real_data = idata*1j + real #Numpy curve fit doesn't handle complex numbers
+            f_data = np.asarray(rdata)
 
 
             rdata_max = max(rdata)
             plt.plot(xdata, f_data, 'o')
             plt.savefig(fname='dataplot-for-time-amp')
+
+
             w_freq = it["wave_freq"]
             print(rdata_max)
             print(w_freq)
