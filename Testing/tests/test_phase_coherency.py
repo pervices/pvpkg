@@ -7,13 +7,13 @@ import matplotlib.pyplot as plt
 from scipy.optimize import curve_fit
 import sys
 def fit_func(xdata, A, lag_abs):
-    fit_y = A*np.exp((2*np.pi)/xdata+lag_abs)
+    fit_y = A*np.exp((2*np.pi)+lag_abs)
     return fit_y
 def main(iterations):
     for it in iterations:
         gen.dump(it)
         # Collect.
-        tx_stack = [ (10.5, it["sample_count" ]) ] # One seconds worth.
+        tx_stack = [ (10, it["sample_count" ]) ] # One seconds worth.
         rx_stack = [ (10.5, it["sample_count"]) ]
         vsnk = engine.run(it["channels"], it["wave_freq"], it["sample_rate"], it["center_freq"], it["tx_gain"], it["rx_gain"], tx_stack, rx_stack)
         error_detected = 0
@@ -26,7 +26,7 @@ def main(iterations):
 
             lag = sigproc.lag(real, imag, it["sample_rate"], it["wave_freq"])
             lag_abs = abs(lag)
-            #w_freq = abs(it["wave_freq"])
+
             print("channel %2d: lag %f" % (ch, lag))
             #print('the value of the real array is', real)
             #print('the value of the imag array is', imag)
@@ -42,8 +42,9 @@ def main(iterations):
             #print("fdata xdata",size,size_t)
             fit_data = fit_func(xdata, f_data, lag_abs)
             p_opt,p_cov = curve_fit(fit_func, xdata, fit_data)
+            y_data = fit_func(xdata, *p_opt)
             plt.plot(xdata, f_data, 'o')
-            plt.plot(xdata, fit_func(xdata, *p_opt), '-', label='fit')
+            plt.plot(xdata, y_data, '-', label='fit',color='red')
             plt.savefig(fname='fitplot for time amp')
 
             plt.figure()
