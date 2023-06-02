@@ -14,8 +14,8 @@ def main(iterations):
     for it in iterations:
         gen.dump(it)
         # Collect.
-        tx_stack = [ (10, it["sample_rate" ]) ] # One seconds worth.
-        rx_stack = [ (10.75, it["sample_count"]) ]
+        tx_stack = [ (10, 2*it["sample_rate" ]) ] # Two seconds worth.
+        rx_stack = [ (11, it["sample_count"]) ]   # Half a seconds worth.
         vsnk = engine.run(it["channels"], it["wave_freq"], it["sample_rate"], it["center_freq"], it["tx_gain"], it["rx_gain"], tx_stack, rx_stack)
         error_detected = 0
         # Process.
