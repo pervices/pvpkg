@@ -56,7 +56,7 @@ def main(iterations):
             abs_phase=p_opt[2]
             fit_data = fit_func(xdata, A, f_wave, abs_phase)
             plt.plot(xdata, fit_data, '-')
-            plt.savefig(fname='fitplot-for-time-amp')
+            plt.savefig(fname='fitplot-for-time-amp for {}'.format(it["name"]))
 
             plt.figure()
             plt.title("Time plot of {} for wave_freq = {} Hz".format(ch,it["wave_freq"]))
