@@ -202,7 +202,7 @@ def lo_band_rx_ph_coherency(channels):
     rx_gain = 10
     center_freq = 0
     sample_rate = 16250000
-    wave_freq = 2031250
+    wave_freq = 812500
     yield locals()
 
 
