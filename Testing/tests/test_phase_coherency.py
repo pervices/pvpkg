@@ -7,44 +7,99 @@ import matplotlib.pyplot as plt
 from scipy.optimize import curve_fit
 import sys
 import statistics
-
+freq_array = []
+run_array =[]
+amp_array = []
+phase_array = []
+AB_f_data = []
+AC_f_data = []
+AD_f_data = []
+AB_a_data = []
+AC_a_data = []
+AD_a_data = []
+AB_p_data = []
+AC_p_data = []
+AD_p_data = []
 def fit_func(xdata, A, f_wave, abs_phase):
     #fit_y = A*np.exp((2*np.pi*f_wave*xdata)+abs_phase)
     fit_y = A*np.cos(2*np.pi*f_wave*xdata+abs_phase)
     return fit_y
+def table_freq(run_array,freq_array):
+
+    print("FREQUENCY")
+    print("{:^10}|{:^10}|{:^10}|{:^10}|".format("Runs", "AB", "AC", "AD"))
+    print("---------------------------------------------------------\n")
+    for run_val in range(len(run_array)):
+        print("{:^10}|".format(run_val),end=" ")
+        index_val = run_val*4
+        #stop_val = start_val +3
+        AB = np.subtract(freq_array[index_val+1], freq_array[index_val])
+        np.array(AB_f_data.append(AB))
+        AC = np.subtract(freq_array[index_val+2], freq_array[index_val])
+        np.array(AC_f_data.append(AC))
+        AD = np.subtract(freq_array[index_val+3], freq_array[index_val])
+        np.array(AD_f_data.append(AD))
+        print("{:^10.8f}|{:^10.8f}|{:^10.8f}|".format(AB,AC,AD))
+        if(run_val == 1):
+          print("{:^10}|{:^11.8f}|{:^11.8f}|{:^11.8f}|".format("Min diff",min(AB_f_data),min(AC_f_data),min(AD_f_data)))
+          print("{:^10}|{:^11.8f}|{:^11.8f}|{:^11.8f}|".format("Max diff",max(AB_f_data),max(AC_f_data),max(AD_f_data)))
+          print("{:^10}|{:^11.8f}|{:^11.8f}|{:^11.8f}|".format("Mean Value",np.mean(AB_f_data),np.mean(AC_f_data), np.mean(AD_f_data)))
+          print("{:^10}|{:^11.8f}|{:^11.8f}|{:^11.8f}|".format("Std Dev",np.std(AB_f_data), np.std(AC_f_data), np.std(AD_f_data)))
+def table_amp(run_array,amp_array):
+        print("AMPLITUDE")
+        print("{:^10}|{:^10}|{:^10}|{:^10}|".format("Runs", "AB", "AC", "AD"))
+        print("---------------------------------------------------------\n")
+        for run_val in range(len(run_array)):
+            print("{:^10}|".format(run_val),end=" ")
+            index_val = run_val*4
+        #stop_val = start_val +3
+            AB = np.subtract(amp_array[index_val+1], amp_array[index_val])
+            np.array(AB_a_data.append(AB))
+            AC = np.subtract(amp_array[index_val+2], amp_array[index_val])
+            np.array(AC_a_data.append(AC))
+            AD = np.subtract(amp_array[index_val+3], amp_array[index_val])
+            np.array(AD_a_data.append(AD))
+            print("{:^10.8f}|{:^10.8f}|{:^10.8f}|".format(AB,AC,AD))
+            if(run_val == 1):
+               print("{:^10}|{:^11.8f}|{:^11.8f}|{:^11.8f}|".format("Min diff",min(AB_a_data),min(AC_a_data),min(AD_a_data)))
+               print("{:^10}|{:^11.8f}|{:^11.8f}|{:^11.8f}|".format("Max diff",max(AB_a_data),max(AC_a_data),max(AD_a_data)))
+               print("{:^10}|{:^11.8f}|{:^11.8f}|{:^11.8f}|".format("Mean Value",np.mean(AB_a_data),np.mean(AC_a_data), np.mean(AD_a_data)))
+               print("{:^10}|{:^11.8f}|{:^11.8f}|{:^11.8f}|".format("Std Dev",np.std(AB_a_data), np.std(AC_a_data), np.std(AD_a_data)))
+def table_phase(run_array,phase_array):
+        print("PHASE")
+        print("{:^10}|{:^10}|{:^10}|{:^10}|".format("Runs", "AB", "AC", "AD"))
+        print("---------------------------------------------------------\n")
+        for run_val in range(len(run_array)):
+            print("{:^10}|".format(run_val),end=" ")
+            index_val = run_val*4
+            #stop_val = start_val +3
+            AB = np.subtract(phase_array[index_val+1], phase_array[index_val])
+            np.array(AB_p_data.append(AB))
+            AC = np.subtract(phase_array[index_val+2], phase_array[index_val])
+            np.array(AC_p_data.append(AC))
+            AD = np.subtract(phase_array[index_val+3], phase_array[index_val])
+            np.array(AD_p_data.append(AD))
+            print("{:^10.8f}|{:^10.8f}|{:^10.8f}|".format(AB,AC,AD))
+            if(run_val == 1):
+               print("{:^10}|{:^11.8f}|{:^11.8f}|{:^11.8f}|".format("Min diff",min(AB_p_data),min(AC_p_data),min(AD_p_data)))
+               print("{:^10}|{:^11.8f}|{:^11.8f}|{:^11.8f}|".format("Max diff",max(AB_p_data),max(AC_p_data),max(AD_p_data)))
+               print("{:^10}|{:^11.8f}|{:^11.8f}|{:^11.8f}|".format("Mean Value",np.mean(AB_p_data),np.mean(AC_p_data), np.mean(AD_p_data)))
+               print("{:^10}|{:^11.8f}|{:^11.8f}|{:^11.8f}|".format("Std Dev",np.std(AB_p_data), np.std(AC_p_data), np.std(AD_p_data)))
 
 def main(iterations):
-
     for it in iterations:
-        gen.dump(it)
+        if(runs == 0):
+          gen.dump(it)
         # Collect.
         tx_stack = [ (10,     it["sample_rate" ]) ]     # One seconds worth.
         rx_stack = [ (10.5,   it["sample_count"]) ]     # Half a seconds worth.
         vsnk = engine.run(it["channels"], it["wave_freq"], it["sample_rate"], it["center_freq"], it["tx_gain"], it["rx_gain"], tx_stack, rx_stack)
         error_detected = 0
         heading_names = ["FREQUENCY","AMPLITUDE","PHASE"]
-        ch0 = []
-        ch1 = []
-        ch2 = []
-        ch3 = []
-        AB_data = []
-        AC_data = []
-        AD_data = []
-        print("Difference in Frequency, Amplitude and Phase of channels with respect to channel A \n")
-        for index , h in enumerate(heading_names, start = 0):
-            print(h)
-            print("{:^10}|{:^10}|{:^10}|{:^10}|".format("Runs", "AB", "AC", "AD"))
-            print("---------------------------------------------------------\n")
-            for runs in range(2):
-               print("{:^10}|".format(runs),end=" ")
-               ch0.clear()
-               ch1.clear()
-               ch2.clear()
-               ch3.clear()
-               AB_data.clear()
-               AC_data.clear()
-               AD_data.clear()
-               for ch, channel in enumerate(vsnk):
+
+        run_array.append(runs)
+
+        for ch, channel in enumerate(vsnk):
 
                      real = [datum.real for datum in channel.data()]
                      imag = [datum.imag for datum in channel.data()]
@@ -70,33 +125,23 @@ def main(iterations):
                      f_wave=p_opt[1]
                      abs_phase=p_opt[2]
                      if ch == 0:
-                        if index == 0:
-                            np.array(ch0.append(w_freq))
-                        elif index == 1:
-                            np.asarray(ch0.append(max(real)))
-                        else:
-                            np.asarray(ch0.append(abs_phase))
+                            np.array(freq_array.append(w_freq))
+                            np.asarray(amp_array.append(max(real)))
+                            np.asarray(phase_array.append(abs_phase))
                      elif ch == 1:
-                         if index == 0:
-                            np.array(ch1.append(w_freq))
-                         elif index == 1:
-                            np.asarray(ch1.append(max(real)))
-                         else:
-                            np.asarray(ch1.append(abs_phase))
+                            np.array(freq_array.append(w_freq))
+                            np.asarray(amp_array.append(max(real)))
+                            np.asarray(phase_array.append(abs_phase))
                      elif ch == 2:
-                         if index == 0:
-                            np.array(ch2.append(w_freq))
-                         elif index == 1:
-                            np.asarray(ch2.append(max(real)))
-                         else:
-                            np.asarray(ch2.append(abs_phase))
+                            np.array(freq_array.append(w_freq))
+                            np.asarray(amp_array.append(max(real)))
+                            np.asarray(phase_array.append(abs_phase))
                      else:
-                         if index == 0:
-                            np.array(ch3.append(w_freq))
-                         elif index == 1:
-                            np.asarray(ch3.append(max(real)))
-                         else:
-                            np.asarray(ch3.append(abs_phase))
+                            np.array(freq_array.append(w_freq))
+                            np.asarray(amp_array.append(max(real)))
+                            np.asarray(phase_array.append(abs_phase))
+
+                     #table_phase(heading_names,run_array,ch0_p,ch1_p,ch2_p,ch3_p)
                      fit_data = fit_func(xdata, rdata_max, f_wave, abs_phase)
                      # plt.plot(xdata, fit_data, '-')
                      # plt.legend(["blue", "green"],fontsize="large",loc ="lower right")
@@ -112,29 +157,8 @@ def main(iterations):
                      # plt.savefig(fname='timeplot-{}-channel{}-wavefreq-{}'.format(ch,it["wave_freq"],it["name"],format='png'))
 
 
-               AB = np.subtract(ch1, ch0)
-               np.array(AB_data.append(AB))
-               AC = np.subtract(ch2, ch0)
-               np.array(AC_data.append(AC))
-               AD = np.subtract(ch3, ch0)
-               np.array(AD_data.append(AD))
-               #print("Channel parameters",*ch0,*ch1,*ch2,*ch3, sep = " ")
-               print("{:^10.8f}|{:^10.8f}|{:^10.8f}|".format(*AB,*AC,*AD))
-               # print("                      ",end=" ")
-               #print(*AB,*AC,*AD, sep = "                   ")
-               if(runs == 1):
-                  print("{:^10}|{:^11.8f}|{:^11.8f}|{:^11.8f}|".format("Min diff",min(AB),min(AC),min(AD)))
-                  # print("Min difference", min(AB), min(AC), min(AD), sep = "                    ")
-                  # print("\n")
-                  print("{:^10}|{:^11.8f}|{:^11.8f}|{:^11.8f}|".format("Max diff",max(AB),max(AC),max(AD)))
-                  # print("Max difference", max(AB), max(AC), max(AD), sep = "                    ")
-                  # print("\n")
-                  print("{:^10}|{:^11.8f}|{:^11.8f}|{:^11.8f}|".format("Mean Value",np.mean(AB_data),np.mean(AC_data), np.mean(AD_data)))
-                  # print("Mean Value", np.mean(AB_data), np.mean(AC_data), np.mean(AD_data), sep = "                    ")
-                  # print("\n")
-                  print("{:^10}|{:^11.8f}|{:^11.8f}|{:^11.8f}|".format("Std Dev",np.std(AB_data), np.std(AC_data), np.std(AD_data)))
-                  # print("Std Deviation", np.std(AB_data), np.std(AC_data), np.std(AD_data), sep = "                     ")
-                  print("\n\n")
+    #table_amp(heading_names,run_array,ch0_a,ch1_a,ch2_a,ch3_a)
+
 
         # for i, channel in enumerate(vsnk):
         #     fig = plt.figure()
@@ -153,6 +177,9 @@ def main(iterations):
 #def fit_func(idata,rdata, xdata, w_freq, lag):
     #fit_y = (idata * np.cos((2*np.pi*w_freq*xdata)+lag))+(1j * (idata * np.cos((2*np.pi*w_freq*xdata)+lag)))
     #return fit_y
-
-main(gen.lo_band_tx_ph_coherency(4))
+for runs in range(2):
+    main(gen.lo_band_tx_ph_coherency(4,runs))
+table_freq(run_array,freq_array)
+table_amp(run_array,amp_array)
+table_phase(run_array,phase_array)
 main(gen.lo_band_rx_ph_coherency(4))
