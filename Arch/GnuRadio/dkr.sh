@@ -14,9 +14,13 @@ dkr() {
                --tty \
                --env DISPLAY \
                --network host \
+	       --volume $(pwd):$(pwd) \
+	       --workdir $(pwd) \
+	       --env GGID=$(id -g) \
+	       --env UUID=$(id -u) \
                $PV_DOCKER \
                /bin/bash -c \
-               "xauth add $DISPLAY_HOST . $AUTH_COOKIE && $1"
+               "xauth add $DISPLAY_HOST . $AUTH_COOKIE && $1 $2"
 }
 
 PS1='[\[\e[1;31m\]\u-docker\[\e[1;0m\]@\h \[\e[1;34m\]\W\[\e[1;0m\]]\$ '
