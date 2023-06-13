@@ -35,6 +35,7 @@ RUN chmod +x test-only-Arch.sh && chmod +x variables.sh && chmod +x tests
 WORKDIR /home/$DOCKER_USER
 RUN touch touch .Xauthority
 RUN yay -Sy --noconfirm su-exec
+RUN sudo pacman -Sy --noconfirm python-rich python-reportlab
 USER root
 
 COPY files /
