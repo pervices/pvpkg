@@ -5,6 +5,7 @@ DISPLAY_NUMBER=$(echo $DISPLAY | cut -d. -f1 | cut -d: -f2)
 AUTH_COOKIE=$(xauth list | grep "^$(hostname)/unix:${DISPLAY_NUMBER} " | awk '{print $3}')
 DISPLAY_HOST=$DISPLAY
 dkr() {
+    CMD=$@
     docker run --rm \
                --interactive \
                --privileged \
@@ -17,7 +18,7 @@ dkr() {
                --env UUID=$(id -u) \
                $PV_DOCKER \
                /bin/bash -c \
-               "xauth add $DISPLAY_HOST . $AUTH_COOKIE && $1 $2"
+               "xauth add $DISPLAY_HOST . $AUTH_COOKIE && $CMD"
 }
 
 PS1='[\[\e[1;31m\]\u-docker\[\e[1;0m\]@\h \[\e[1;34m\]\W\[\e[1;0m\]]\$ '
