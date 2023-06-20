@@ -1,12 +1,13 @@
 from common import sigproc
 from common import engine
 from common import generator as gen
+from common import outputs as out
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.optimize import curve_fit
-from rich.console import Console
-from rich.table import Table
-from rich.text import Text
+# from rich.console import Console
+# from rich.table import Table
+# from rich.text import Text
 import sys
 import os
 import time, datetime
@@ -22,7 +23,6 @@ formattedDate = formattedDate.replace('-','')
 formattedDate = formattedDate.replace(':','')
 
 #Setting up directories for plots
-con = Console()
 current_dir = os.getcwd()
 phase_plot_dir = current_dir + "/phase_coherency_fails"
 test_plots = phase_plot_dir + "/" + formattedDate
@@ -118,40 +118,39 @@ PARAMS: table, abs_crit, min_crit, max_crit, std_crit, boolean
 RETURNS: NONE'''
 def subtestTable(table, abs_crit, min_crit, max_crit, std_crit, boolean):
 
-    table.add_column("Test")
-    table.add_column("Criteria")
-    table.add_column("\u0394BA")
-    table.add_column("\u0394CA")
-    table.add_column("\u0394DA")
+    table.addColumn("Test")
+    table.addColumn("Criteria")
+    table.addColumn("\u0394BA")
+    table.addColumn("\u0394CA")
+    table.addColumn("\u0394DA")
 
-    table.add_row("Mean Absolute Variant", ("\u00B1" + abs_crit), boolToWord(boolean[0][0]), boolToWord(boolean[1][0]), boolToWord(boolean[2][0]))
-    table.add_row("Min Value Outliers", (">" + min_crit), boolToWord(boolean[0][1]), boolToWord(boolean[1][1]), boolToWord(boolean[2][1]))
-    table.add_row("Max Value Outiers", ("<" + max_crit), boolToWord(boolean[0][2]), boolToWord(boolean[1][2]), boolToWord(boolean[2][2]))
-    table.add_row("STD Deviation", ("<" + std_crit), boolToWord(boolean[0][3]), boolToWord(boolean[1][3]), boolToWord(boolean[2][3]))
+    table.addRow("Mean Absolute Variant", ("\u00B1" + abs_crit), boolToWord(boolean[0][0]), boolToWord(boolean[1][0]), boolToWord(boolean[2][0]))
+    table.addRow("Min Value Outliers", (">" + min_crit), boolToWord(boolean[0][1]), boolToWord(boolean[1][1]), boolToWord(boolean[2][1]))
+    table.addRow("Max Value Outiers", ("<" + max_crit), boolToWord(boolean[0][2]), boolToWord(boolean[1][2]), boolToWord(boolean[2][2]))
+    table.addRow("STD Deviation", ("<" + std_crit), boolToWord(boolean[0][3]), boolToWord(boolean[1][3]), boolToWord(boolean[2][3]))
 
-    con.print(table)
+    table.printData()
 
 '''Makes summary table and prints to console
 PARAMS: run_all, table, mean, minimum, maximum, std, data
 RETURNS: NONE'''
 def summaryTable(run_all, table, mean, minimum, maximum, std, data):
-    table.add_column("Run") #TODO: find better name for this lol
-    table.add_column("Baseline A")
-    table.add_column("\u0394BA")
-    table.add_column("\u0394CA")
-    table.add_column("\u0394DA")
+    table.addColumn("Run") #TODO: find better name for this lol
+    table.addColumn("Baseline A")
+    table.addColumn("\u0394BA")
+    table.addColumn("\u0394CA")
+    table.addColumn("\u0394DA")
 
-    table.add_row("Mean", str(mean[0]), str(mean[1]), str(mean[2]), str(mean[3]))
-    table.add_row("Minimum", str(minimum[0]), str(minimum[1]), str(minimum[2]), str(minimum[3]))
-    table.add_row("Maximum", str(maximum[0]), str(maximum[1]), str(maximum[2]), str(maximum[3]))
-    table.add_row("STD Deviations", str(std[0]), str(std[1]), str(std[2]), str(std[3]))
+    table.addRow("Mean", str(mean[0]), str(mean[1]), str(mean[2]), str(mean[3]))
+    table.addRow("Minimum", str(minimum[0]), str(minimum[1]), str(minimum[2]), str(minimum[3]))
+    table.addRow("Maximum", str(maximum[0]), str(maximum[1]), str(maximum[2]), str(maximum[3]))
+    table.addRow("STD Deviations", str(std[0]), str(std[1]), str(std[2]), str(std[3]))
 
     if not run_all:
-        for i in range(runs):
-            table.add_row(str(i), str(data[0][i]), str(data[1][i]), str(data[2][i]), str(data[3][i]))
+        for i in range(runs + 1):
+            table.addRow(str(i), str(data[0][i]), str(data[1][i]), str(data[2][i]), str(data[3][i]))
 
-    con.print(table)
-
+    table.printData()
 
 def makePlots():
 
@@ -352,13 +351,13 @@ def main(iterations):
 
     #Outputting tables
     #Output tables and their flags- This allows me to always reference them - no matter the iteration
-    overall_tests = Table(title="Overall Tests", show_lines=True)
-    overall_tests.add_column("Test")
-    overall_tests.add_column("Status")
-    overall_tests.add_row("Frequency", boolToWord(overall_bool[0]))
-    overall_tests.add_row("Amplitude", boolToWord(overall_bool[1]))
-    overall_tests.add_row("Phase", boolToWord(overall_bool[2]))
-    con.print(overall_tests)
+    overall_tests = out.Table("Overall Tests")
+    overall_tests.addColumn("Test")
+    overall_tests.addColumn("Status")
+    overall_tests.addRow("Frequency", boolToWord(overall_bool[0]))
+    overall_tests.addRow("Amplitude", boolToWord(overall_bool[1]))
+    overall_tests.addRow("Phase", boolToWord(overall_bool[2]))
+    overall_tests.printData()
 
     #Outputting the subtests
     max_crit = "< mean + 3*std"
@@ -366,33 +365,33 @@ def main(iterations):
 
     #Print subtables of failed overall tests and make their plots
     if not overall_bool[1]:
-        st_freq  = Table(title="SubTest Results - Frequency Tests", show_lines=True)
+        st_freq  = out.Table(title="SubTest Results - Frequency Tests")
         subtestTable(st_freq, str(freq_mean_thresh), min_crit, max_crit, str(freq_std_thresh), subtest_bool[0])
     if not overall_bool[2]:
-        st_ampl  = Table(title="SubTest Results - Amplitude Tests", show_lines=True)
+        st_ampl  = out.Table(title="SubTest Results - Amplitude Tests")
         subtestTable(st_ampl, "3 * STD", min_crit, max_crit, str(ampl_std_thresh), subtest_bool[1])
     if not overall_bool[0]:
-        st_phase = Table(title="SubTest Results - Phase Tests", show_lines=True)
+        st_phase = out.Table(title="SubTest Results - Phase Tests")
         subtestTable(st_phase, str(phase_mean_thresh), min_crit, max_crit, str(phase_std_thresh), subtest_bool[2])
 
     #Summary Statistics
-    sum_freq  = Table(title="Summary Frequency", show_lines=True)
+    sum_freq  = out.Table(title="Summary Frequency")
     summaryTable(overall_bool[0], sum_freq, means[0], mins[0], maxs[0], stds[0], data[0])
 
-    sum_ampl  = Table(title="Summary Amplitude", show_lines=True)
+    sum_ampl  = out.Table(title="Summary Amplitude")
     summaryTable(overall_bool[1], sum_ampl, means[1], mins[1], maxs[1], stds[1], data[1])
 
-    sum_phase  = Table(title="Summary Phase", show_lines=True)
+    sum_phase  = out.Table(title="Summary Phase")
     summaryTable(overall_bool[2], sum_phase, means[2], mins[2], maxs[2], stds[2], data[2])
 
     #DC Offset Table
-    dc_offset_table = Table(title="DC Offsets", show_lines=True)
-    dc_offset_table.add_column("Run")
-    dc_offset_table.add_column("\u0394BA")
-    dc_offset_table.add_column("\u0394CA")
-    dc_offset_table.add_column("\u0394DA")
+    dc_offset_table = out.Table(title="DC Offsets")
+    dc_offset_table.addColumn("Run")
+    dc_offset_table.addColumn("\u0394BA")
+    dc_offset_table.addColumn("\u0394CA")
+    dc_offset_table.addColumn("\u0394DA")
     for i in range(len(offsets)):
-        dc_offset_table.add_row(str(i), str(offsets[i][0]), str(offsets[i][1]), str(offsets[i][2]))
-    con.print(dc_offset_table)
+        dc_offset_table.addRow(str(i), str(offsets[i][0]), str(offsets[i][1]), str(offsets[i][2]))
+    dc_offset_table.printData()
 main(gen.lo_band_phaseCoherency(4))                  
 

@@ -193,7 +193,7 @@ def lo_band_phaseCoherency(channels):
     sample_rate = 25000000
     wave_freq = 500000
     
-    for i in range(3):
+    for i in range(10):
         yield locals()
 
 
