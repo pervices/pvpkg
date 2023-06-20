@@ -166,6 +166,7 @@ def subtestTable(table, min_crit, max_crit, std_crit, boolean, bounds=True):
     table.addColumn("\u0394BA")
     table.addColumn("\u0394CA")
     table.addColumn("\u0394DA")
+
     #print(boolean)
     # if bounds:
     #     table.addRow("Mean Absolute Variant", ("\u00B1" + abs_crit), boolToWord(boolean[0][0]), boolToWord(boolean[1][0]), boolToWord(boolean[2][0]))
@@ -177,10 +178,10 @@ def subtestTable(table, min_crit, max_crit, std_crit, boolean, bounds=True):
 
     table.printData()
 
-
 '''Makes summary table and prints to console
 PARAMS: run_all, table, mean, minimum, maximum, std, data
 RETURNS: NONE'''
+
 def summaryTable(run_all, abs_bool, table, mean, minimum, maximum, std, data):
     table.addColumn("Run") #TODO: find better name for this lol
     table.addColumn("Baseline A")
@@ -196,7 +197,6 @@ def summaryTable(run_all, abs_bool, table, mean, minimum, maximum, std, data):
     if not run_all or abs_bool > 0:
         for i in range(runs + 1):
             table.addRow(str(i), str(data[0][i]), str(data[1][i]), str(data[2][i]), str(data[3][i]))
-
 
     table.printData()
 
@@ -457,7 +457,6 @@ def main(iterations):
 
     #Outputting tables
     #Output tables and their flags- This allows me to always reference them - no matter the iteration
-
     overall_tests = out.Table("Overall Tests")
     overall_tests.addColumn("Test")
     overall_tests.addColumn("Status")
@@ -500,6 +499,5 @@ def main(iterations):
     for i in range(len(offsets)):
         dc_offset_table.addRow(str(i), str(offsets[i][0]), str(offsets[i][1]), str(offsets[i][2]), str(offsets[i][3]))
     dc_offset_table.printData()
-
-main(gen.lo_band_phaseCoherency(4))                  
+main(gen.lo_band_phaseCoherency(4))
 

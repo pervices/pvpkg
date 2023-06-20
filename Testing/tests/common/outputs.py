@@ -24,6 +24,10 @@ class Table:
         #Setting Table Width
         lenSum = np.vectorize(len)
         width = sum(lenSum(self.columns))
+<<<<<<< HEAD
+=======
+        print(width)
+>>>>>>> f0ade7ea (Making a new Common Outports file)
 
         print("\n")
         print("{:^{}}".format(self.title, width) + "\n")
