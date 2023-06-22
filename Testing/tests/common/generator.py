@@ -1,6 +1,6 @@
 import inspect
 import sys
-
+''''
 center_freq_list=[50000000, 300000000, 600000000, 1200000000, 2400000000, 4000000000, 5000000000, 5500000000]
 # def ship_test():
 #     print(sys._getframe().f_code.co_name)
@@ -29,6 +29,27 @@ class Shiptest_Crimson():
         #     yield locals()
             
 Shiptest_Crimson1=Shiptest_Crimson([50000000, 300000000, 600000000, 1200000000, 2400000000, 4000000000, 5000000000, 5500000000], list(range(4)), 50000, int(325000000/325), 4096, 25, 25)
+'''
+def ship_test_tx(channels):    #TODO: ENSURE FIRST RUN DOESN'T HAVE TO HAVE EACH CHANNEL RUNNING A DIFFERENT VAL
+
+    print(sys._getframe().f_code.co_name)
+
+    channels = list(range(channels))
+    wave_freq = 100000
+    sample_rate = 9848485
+    sample_count = int(sample_rate/2)
+    tx_gain = 25
+    rx_gain = 25
+    #name = "Tx Operation"
+    for center_freq in [50000000]: #Just so my tests can go faster
+        yield locals()
+    # for center_freq in [50000000, 300000000, 600000000, 1200000000, 2400000000, 4000000000, 5000000000, 5500000000]:
+    #     yield locals()
+
+
+    '''for wave_freq, tx_gain, center_freq in zip(wave_freq, tx_gain, center_freq): #
+          yield locals()'''
+
 
 #UHD_version
 import os
