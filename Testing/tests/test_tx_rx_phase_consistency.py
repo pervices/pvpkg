@@ -65,7 +65,6 @@ test_plots = phase_plot_dir + "/" + formattedDate
 os.makedirs(phase_plot_dir, exist_ok = True)
 os.makedirs(test_plots, exist_ok = True)
 
-
 #important variables
 data = [] #This will hold all output information
 reals = []
