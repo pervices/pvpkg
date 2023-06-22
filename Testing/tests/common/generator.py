@@ -132,7 +132,7 @@ def lo_band_gain_rx(channels):
     channels = list(range(channels))
     wave_freq = 1000000
     sample_count = 1000
-    center_freq = 15000000
+    center_freq = 150000
     sample_rate = 9848485
     tx_gain = 10 #increasing the fixed gain may cause saturation
     for rx_gain in [ 5, 10, 20 ]:
@@ -146,7 +146,7 @@ def lo_band_gain_tx(channels):
     channels = list(range(channels))
     wave_freq = 1000000
     sample_count = 1000
-    center_freq = 15000000
+    center_freq = 150000
     sample_rate = 9848485
     rx_gain = 10#increasing the fixed gain may cause saturation
     for tx_gain in [ 5, 10, 20 ]:
@@ -172,17 +172,19 @@ def hi_band_gain_rx(channels):
     print(sys._getframe().f_code.co_name)
 
     channels = list(range(channels))
+    #print(channels)
     wave_freq = 1000000
     sample_count = 1000
-    center_freq = 2000000000
-    sample_rate = 9848485
+    centre_freq = 2031250
+    sample_rate = 4062500
     tx_gain = 40#increasing the fixed gain may cause saturation
     for rx_gain in [ 5, 10, 20 ]:
         yield locals()
 
 def lo_band_phaseCoherency(channels):
-
+    
     print(sys._getframe().f_code.co_name)
+    
 
     channels = list(range(4))
     sample_count = int(round(25000000/10000))
@@ -191,11 +193,11 @@ def lo_band_phaseCoherency(channels):
     center_freq = 10000000
     sample_rate = 25000000
     wave_freq = 500000
+
     for i in range(10):
         yield locals()
 
 def dump(iteration):
-
     for key, value in iteration.items():
         print("%20s : %r" % (key, value))
 
