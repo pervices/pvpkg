@@ -24,7 +24,6 @@ class Table:
         #Setting Table Width
         lenSum = np.vectorize(len)
         width = sum(lenSum(self.columns))
-        print(width)
 
         print("\n")
         print("{:^{}}".format(self.title, width) + "\n")

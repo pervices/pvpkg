@@ -37,11 +37,16 @@ os.makedirs(test_plots, exist_ok = True)
 
 #Hard coded values - changing dependent on user
 num_channel = 4
+num_output_waves =1.5
+begin_cutoff_waves = 1
 
 #changing global variables - referenced in multiple functions
 wave_freq = -1 #set later, when runs are called
 runs = -1 #set later when runs are called
 iteration_count = -1
+sample_rate = -1
+plotted_samples = -1
+begin_cuttoff = -1
 
 #important variables
 data = [] #This will hold all output information
@@ -67,8 +72,8 @@ def subPlot(x, y, ax, best_fit, title):
     ax.set_title(title)
     ax.set_xlabel("Time")
     ax.set_ylabel("Amplitude")
-    ax.plot(x, y, 'o', color='magenta', label='Real')
-    ax.plot(x, best_fit[0], '-', color='black', label='Best Fit')
+    ax.plot(x, y, '.', color='magenta', label='Real')
+    ax.plot(x, best_fit[0][0:plotted_samples], '-', color='black', label='Best Fit')
     ax.axhline(y = best_fit[1], color='green', label='DC Offset')
     ax.legend()
 
@@ -163,33 +168,50 @@ def summaryTable(run_all, table, mean, minimum, maximum, std, data):
 def makePlots():
 
     os.chdir(test_plots)
+    global plotted_samples
+    plotted_samples = int(round(1/(int(wave_freq)/sample_rate))*num_output_waves)
 
+    print(plotted_samples)
+
+    #reals
+    print("reals")
+    print(len(reals))
+    print(len(reals[0]))
     for z in range(runs):
         fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2,2)
-        plt.suptitle("Individual Channels for Run {}".format(z))
+        plt.suptitle("Amplitude versus Samples: Individual Channels for Run {}".format(z))
+        shift = z*num_channel
 
-        subPlot(x_time, reals[0+(z*num_channel)], ax1, bestFit(x_time, reals[0])[0], "Amplitude versus Samples: Channel A")
-        subPlot(x_time, reals[1+(z*num_channel)], ax2, bestFit(x_time, reals[1])[0], "Amplitude versus Samples: Channel B")
-        subPlot(x_time, reals[2+(z*num_channel)], ax3, bestFit(x_time, reals[2])[0], "Amplitude versus Samples: Channel C")
-        subPlot(x_time, reals[3+(z*num_channel)], ax4, bestFit(x_time, reals[3])[0], "Amplitude versus Samples: Channel D")
+        subPlot(x_time[0:plotted_samples], reals[0][0:plotted_samples], ax1, bestFit(x_time, reals[0])[0], "Channel A")
+        subPlot(x_time[0:plotted_samples], reals[1][0:plotted_samples], ax2, bestFit(x_time, reals[1])[0], "Channel B")
+        subPlot(x_time[0:plotted_samples], reals[2][0:plotted_samples], ax3, bestFit(x_time, reals[2])[0], "Channel C")
+        subPlot(x_time[0:plotted_samples], reals[3][0:plotted_samples], ax4, bestFit(x_time, reals[3])[0], "Channel D")
+        plt.tight_layout(pad=0.4, w_pad=0.5, h_pad=1.0) #Formatting the plots nicely
 
-        #fig.show()
-        fig.savefig(("run{}_indiv".format(z) + ".svg"), dpi = 300)
+        # plt.show()
+        fig.savefig(("run{}_indiv".format(z) + ".svg"))
 
         #Layout of the combined plot -- NOTE: ONLY CONTAINS LINE OF BEST FIT, could i some how use the previous answers as guesses, avg
         fig2 = plt.figure()
-        plt.title("All Channels for Run {}".format(z))
+        plt.title("Amplitude versus Samples: All Channels for Run {}".format(z))
         plt.xlabel("Time")
         plt.ylabel("Amplitude")
-        plt.plot(x_time, reals[0+(z*num_channel)], 'o',  color='lightcoral', label='Real A')
-        plt.plot(x_time, reals[1+(z*num_channel)], 'o',  color='indianred', label='Real B')
-        plt.plot(x_time, reals[2+(z*num_channel)], 'o',  color='firebrick', label='Real C')
-        plt.plot(x_time, reals[3+(z*num_channel)], 'o',  color='salmon', label='Real D')
-        plt.plot(x_time, bestFit(x_time, reals[0+(z*num_channel)])[0][0], '-', color='black', label='Best Fit')
+
+        #dots
+        plt.plot(x_time[0:plotted_samples], reals[0][0:plotted_samples], '.', markersize=3,  color='lightcoral', label='Real A')
+        plt.plot(x_time[0:plotted_samples], reals[1][0:plotted_samples], '.', markersize=3, color='coral', label='Real B')
+        plt.plot(x_time[0:plotted_samples], reals[2][0:plotted_samples], '.', markersize=3, color='lightgreen', label='Real C')
+        plt.plot(x_time[0:plotted_samples], reals[3][0:plotted_samples], '.', markersize=3, color='paleturquoise', label='Real D')
+
+        #Best fits
+        plt.plot(x_time[0:plotted_samples], bestFit(x_time, reals[0+shift])[0][0][0:plotted_samples], '-', color='red', linewidth= 0.75, label='Best Fit A')
+        plt.plot(x_time[0:plotted_samples], bestFit(x_time, reals[1+shift])[0][0][0:plotted_samples], '-', color='darkorange', linewidth= 0.75, label='Best Fit B')
+        plt.plot(x_time[0:plotted_samples], bestFit(x_time, reals[2+shift])[0][0][0:plotted_samples], '-', color='limegreen', linewidth= 0.75, label='Best Fit C')
+        plt.plot(x_time[0:plotted_samples], bestFit(x_time, reals[3+shift])[0][0][0:plotted_samples], '-', color='darkslategrey', linewidth= 0.75, label='Best Fit D')
         plt.legend()
 
-        #fig2.show()
-        fig2.savefig(("run{}_together".format(z) + ".svg"), dpi = 300)
+        # plt.show()
+        fig2.savefig(("run{}_together".format(z) + ".svg"))
 
 '''Turns the boolean into pass/fail NOTE: NOT SURE IF I NEED THIS
 PARAM: Word
@@ -231,6 +253,7 @@ def main(iterations):
         When you reach sample_rate/sample_rate, one second has passed.
         TX: Below, we will be sending oiut samples equiv. to sample_rate after 10 seconds, so this will end at 11 secondi
         RX: Calculate the oversampling rate to find the number of samples to intake that match your ideal (sample count)'''
+        global sample_rate
         sample_rate = int(it["sample_rate"])
         tx_stack = [ (10.0 , sample_rate)]
         rx_stack = [ (10.25, int(it["sample_count"]))]
@@ -244,7 +267,9 @@ def main(iterations):
         runs = it["i"] #equal sign because we only care about the last value
         global wave_freq
         wave_freq = it["wave_freq"]
-        time = np.arange(0,it["sample_count"]/it["sample_rate"], 1/it["sample_rate"])
+        global begin_cutoff_waves
+        begin_cutoff = plotted_samples = int(round(1/(int(wave_freq)/sample_rate))*begin_cutoff_waves)
+        time = np.arange(begin_cutoff/it["sample_rate"],it["sample_count"]/it["sample_rate"], 1/it["sample_rate"])
         global x_time
         x_time = np.asarray(time)
         vsnks.append(vsnk) #This will loop us through the channels an appropriate amount of time
@@ -257,10 +282,10 @@ def main(iterations):
 
                 real = [datum.real for datum in channel.data()] # saves data of real data in an array               
               
-                reals.append(real) #Used for plots, but doesn't need to be reformatted
+                reals.append(real[begin_cutoff:]) #Used for plots, but doesn't need to be reformatted
 
                 #used for charts 
-                hold, param = bestFit(x_time, real)
+                hold, param = bestFit(x_time, real[begin_cutoff:])
                 ampl.append(param[0])
                 freq.append(param[1])
                 phase.append(param[2])
