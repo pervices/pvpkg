@@ -308,7 +308,7 @@ def main(iterations):
         plot_img_pos_y = 50
 
         #calculating plot_sample_ratio
-        plotted_samples = int(round(((1/int(it["wave_freq"]))/sample_rate)*num_output_waves))
+        plotted_samples = int(round(1/int(it["wave_freq"])/sample_rate)*num_output_waves)
 
         print(plotted_samples) #TODO: CALCULATE  THIS DIFFERENTLY FOR THE FFTs
 
