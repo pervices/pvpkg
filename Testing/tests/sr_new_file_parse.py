@@ -50,6 +50,10 @@ plots_dir = output_dir + "/plots_" + formattedDate
 os.makedirs(output_dir, exist_ok=True)
 os.makedirs(plots_dir, exist_ok=True)
 
+#USER SET VARIABLES
+begin_cutoff_waves = 1 #how many waves to cut off before tracking data
+num_output_waves = 4 #number of waves shown on the final plots (IQ)
+
 #Globals that will be changed later
 center_freq = -1
 
@@ -191,6 +195,9 @@ def magnitude(a, b):
     ans = np.sqrt( a**2 + b**2)
     return ans
 
+def normalize(vector):
+    peak = max(vector)
+    return(vector/peak)
 
 '''Turns the values recieved into values for the FFT plots
 PARAMS: sample_count, reals, imags
@@ -198,9 +205,14 @@ RETURNS: freq, normalized_ys'''
 def fftValues(x, reals, imags): #TODO: Not sure if it's more efficent to pass in sample count, make a sample count, or just use len'
 
     comp = np.vectorize(magnitude)
-    complex_y = comp(reals, imags)#Make complex
-    fft_y = abs(np.fft.fftshift(np.fft.fft(complex_y)*np.blackman(len(x)))) #Blackman will smooth the discontinuties out at the beginign and end of sample
-    #fft_y = ((1/len(x)) * temp_y) #normalizing by scaling factor 1/N
+    mag_y = comp(reals, imags)#Make complex
+    temp = []
+
+    #normalizing
+    for i in range(num_channels-1):
+        temp.append(normalize(mag_y))
+
+    fft_y = abs(np.fft.fftshift(np.fft.fft(temp)*np.blackman(len(x))))
 
     #Setting up the X values
     freq = np.fft.fftshift(x/center_freq)*10000000 #ensures plot window is looking @ right area (also in MHz)
@@ -263,17 +275,14 @@ def main(iterations):
         tx_stack = [ (10.0 , sample_rate)] #Equivalent to 1 second
         rx_stack = [ (10.0, int(it["sample_count"]))] #TODO: Maybe add the burst start times to table
 
-        #engine.run sends and recieves the data, but stores it in a GNU radio format. CAN ONLY BE REFERENCED WITHIN THE ITERATION LOOP -- it gets reset each loop
-        vsnk = engine.run(it["channels"], it["wave_freq"], it["sample_rate"], it["center_freq"], it["tx_gain"], it["rx_gain"], tx_stack, rx_stack)
-
-        #X values, for when plotting is required
-        x = np.arange(0,it["sample_count"]/it["sample_rate"], 1/it["sample_rate"]) #0 to max time, taking the 1/sr step
-        x_time = np.asarray(x*1000000)
-
         #Other Variables
         global center_freq
         center_freq = int(it["center_freq"])
+        begin_cutoff = plotted_samples = int(round(1/(int(wave_freq)/sample_rate))*begin_cutoff_waves)
 
+        #X values, for when plotting is required
+        x = np.arange(begin_cutoff/it["sample_rate"],it["sample_count"]/it["sample_rate"], 1/it["sample_rate"]) #0 to max time, taking the 1/sr step
+        x_time = np.asarray(x*1000000)
 
         vsnks.append(vsnk) #This will loop us through the channels an appropriate amount of time
         for vsnk in vsnks:
@@ -282,8 +291,8 @@ def main(iterations):
                 real = [datum.real for datum in channel.data()]
                 imag = [datum.imag for datum in channel.data()]
 
-                reals.append(real) #Formats real data into a 2D array
-                imags.append(imag)
+                reals.append(real[begin_cutoff:]) #Formats real data into a 2D array
+                imags.append(imag[begin_cutoff:])
 
 
         #PLOTTING
@@ -297,8 +306,7 @@ def main(iterations):
         plot_img_pos_y = 50
 
         #calculating plot_sample_ratio
-        num_output_waves = 4
-        plotted_samples = int(round(1/(int(it["wave_freq"])/sample_rate)))*num_output_waves
+        plotted_samples = int(round(1/(int(it["wave_freq"])/sample_rate))num_output_waves)
         print(plotted_samples) #TODO: CALCULATE  THIS DIFFERENTLY FOR THE FFTs
 
         #Plotting the imaginary and real values
