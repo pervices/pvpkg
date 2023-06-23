@@ -278,7 +278,7 @@ def main(iterations):
         #Other Variables
         global center_freq
         center_freq = int(it["center_freq"])
-        begin_cutoff = plotted_samples = int(round(1/(int(wave_freq)/sample_rate))*begin_cutoff_waves)
+        begin_cutoff = int(round(1/(int(wave_freq)/sample_rate))*begin_cutoff_waves)
 
         #X values, for when plotting is required
         x = np.arange(begin_cutoff/it["sample_rate"],it["sample_count"]/it["sample_rate"], 1/it["sample_rate"]) #0 to max time, taking the 1/sr step
