@@ -37,6 +37,7 @@ os.makedirs(test_plots, exist_ok = True)
 
 #Hard coded values - changing dependent on user
 num_channel = 4
+std_ratio = 4 #number std gets multiplied by for checks
 num_output_waves =1.5
 begin_cutoff_waves = 1
 
@@ -47,6 +48,17 @@ iteration_count = -1
 sample_rate = -1
 plotted_samples = -1
 begin_cuttoff = -1
+
+#Frequeny Checks
+freq_mean_thresh = 5 #Hz bound
+freq_std_thresh = 0.23
+
+#Amplitude Checks
+ampl_std_thresh = 0.001
+
+#phase CHecks
+phase_mean_thresh = 0.0349066 #rad bound
+phase_std_thresh = 0.001
 
 #important variables
 data = [] #This will hold all output information
@@ -171,12 +183,7 @@ def makePlots():
     global plotted_samples
     plotted_samples = int(round(1/(int(wave_freq)/sample_rate))*num_output_waves)
 
-    print(plotted_samples)
-
     #reals
-    print("reals")
-    print(len(reals))
-    print(len(reals[0]))
     for z in range(runs):
         fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2,2)
         plt.suptitle("Amplitude versus Samples: Individual Channels for Run {}".format(z))
@@ -315,16 +322,16 @@ def main(iterations):
 
     #STARTING THE CHECKS
     #2D arrays containting summary values
-    means = []
+    means = [] #[test (with base)][ch]
     stds = []
     mins = []
     maxs = []
-    for test in range(len(data)):
+    for test in range(len(data)): #freq, ampl, phase
         mean_temp = []
         std_temp = []
         mins_temp = []
         maxs_temp = []
-        for ch in range(4):
+        for ch in range(num_channel): #column of chart
             mean_temp.append(np.mean(data[test][ch]))
             std_temp.append(np.std(data[test][ch]))
             mins_temp.append(min(data[test][ch]))
@@ -336,29 +343,23 @@ def main(iterations):
 
     #Calculating the Criteria
     #2D array holding thresholds of: mean, std, min, max
-    criteria = []
-
+    criteria = [] #[Test][crit]
     #Frequency
-    freq_mean_thresh = 0.1 #Hz bound
-    freq_std_thresh = 0.0001
     freq_criteria = []
     for ch in range(1, 4): #starting at 1 because index 0 is A baseline
-        freq_criteria.append((freq_mean_thresh, freq_std_thresh, (means[0][ch] - (3*stds[0][ch])), (means[0][ch] + (3*stds[0][ch]))))
+        freq_criteria.append((freq_mean_thresh, freq_std_thresh, (means[0][ch] - (std_ratio*stds[0][ch])), (means[0][ch] + (std_ratio*stds[0][ch]))))
     criteria.append(freq_criteria) #Formatting
 
     #Amplitude
-    ampl_std_thresh = 0.0002
     ampl_criteria = []
     for ch in range(1, 4): #starting at 1 because index 0 is A baseline
-        ampl_criteria.append((3*stds[1][ch], ampl_std_thresh, (means[1][ch] - (3*stds[1][ch])), (means[1][ch] + (3*stds[1][ch]))))
+        ampl_criteria.append((std_ratio*stds[1][ch], ampl_std_thresh, (means[1][ch] - (std_ratio*stds[1][ch])), (means[1][ch] + (std_ratio*stds[1][ch]))))
     criteria.append(ampl_criteria)
 
     #phase
-    phase_mean_thresh = 0.0349066 #rad bound
-    phase_std_thresh = 0.006
     phase_criteria = []
     for ch in range(1, 4): #starting at 1 because index 0 is A baseline
-        phase_criteria.append((phase_mean_thresh, phase_std_thresh, (means[2][ch] - (3*stds[2][ch])), (means[2][ch] + (3*stds[2][ch]))))
+        phase_criteria.append((phase_mean_thresh, phase_std_thresh, (means[2][ch] - (std_ratio*stds[2][ch])), (means[2][ch] + (std_ratio*stds[2][ch]))))
     criteria.append(phase_criteria)
 
     #doing the checks, setting up subtest booleans
@@ -366,8 +367,8 @@ def main(iterations):
 
     for test in range(len(criteria)):
         temp_hold = []
-        for ch in range(len(criteria[test])):
-            temp_hold.append((check(criteria[test][ch], means[test][ch], stds[test][ch], mins[test][ch], maxs[test][ch])))
+        for ch in range(num_channel-1): #columns, account for the extra baseline
+            temp_hold.append((check(criteria[test][ch], means[test][ch+1], stds[test][ch+1], mins[test][ch+1], maxs[test][ch+1])))
         subtest_bool.append((temp_hold))
 
     #print(subtest_bool)
@@ -395,17 +396,17 @@ def main(iterations):
 
 
     #Outputting the subtests
-    max_crit = "< mean + 3*std"
-    min_crit = "> mean - 3*std"
+    max_crit = "< mean + " + str(std_ratio) + "*std"
+    min_crit = "> mean - " + str(std_ratio) + "*std"
 
     #Print subtables of failed overall tests and make their plots
-    if not overall_bool[1]:
+    if not overall_bool[0]:
         st_freq  = out.Table(title="SubTest Results - Frequency Tests")
         subtestTable(st_freq, str(freq_mean_thresh), min_crit, max_crit, str(freq_std_thresh), subtest_bool[0])
-    if not overall_bool[2]:
+    if not overall_bool[1]:
         st_ampl  = out.Table(title="SubTest Results - Amplitude Tests")
-        subtestTable(st_ampl, "3 * STD", min_crit, max_crit, str(ampl_std_thresh), subtest_bool[1])
-    if not overall_bool[0]:
+        subtestTable(st_ampl, (str(std_ratio) + " * STD"), min_crit, max_crit, str(ampl_std_thresh), subtest_bool[1])
+    if not overall_bool[2]:
         st_phase = out.Table(title="SubTest Results - Phase Tests")
         subtestTable(st_phase, str(phase_mean_thresh), min_crit, max_crit, str(phase_std_thresh), subtest_bool[2])
 
