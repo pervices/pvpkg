@@ -35,14 +35,16 @@ def ship_test_tx(channels):    #TODO: ENSURE FIRST RUN DOESN'T HAVE TO HAVE EACH
     print(sys._getframe().f_code.co_name)
 
     channels = list(range(channels))
-    wave_freq = 50000
-    sample_rate=int(325000000/325)
-    sample_count = 4096
-    tx_gain = 10 #Min and max's of gain (found on website)
-    rx_gain = 20
-    name = "Tx Operation"
-    for center_freq in [945000000, 1045000000, 1145000000, 1245000000, 300000000, 600000000, 1200000000, 2700000000, 4000000000, 5500000000, 15000000]:
+    wave_freq = 100000
+    sample_rate = 9848485
+    sample_count = sample_rate/2
+    tx_gain = 25
+    rx_gain = 25
+    #name = "Tx Operation"
+    for center_freq in [50000000, 300000000, 600000000]: #Just so my tests can go faster
         yield locals()
+    # for center_freq in [50000000, 300000000, 600000000, 1200000000, 2400000000, 4000000000, 5000000000, 5500000000]:
+    #     yield locals()
 
 
     '''for wave_freq, tx_gain, center_freq in zip(wave_freq, tx_gain, center_freq): #
