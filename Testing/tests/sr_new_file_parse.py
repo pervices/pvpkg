@@ -178,13 +178,13 @@ def inputTable(pdf, center_freq, wave_freq, sample_rate, sample_count, tx_gain, 
 '''Plots the subplots all in the same format
 PARAMS: x, rea;, ax, imag, title
 RETURNS: NONE'''
-def subPlot(x, y, ax, title, y_name, x_name, y2=(-1,-1), labels=("","")):
+def subPlot(x, y, ax, title, y_name, x_name, y2=(0,0), labels=("","")):
 
     ax.set_title(title)
     ax.set_xlabel(x_name)
     ax.set_ylabel(y_name) #NOTE: I HOPE THIS IS RIGHT
     ax.plot(x, y, '-', color='crimson', label=labels[0])
-    if (y2[0] != -1): #if it has two variables, it will plot the second
+    if (y2[0] != 0): #if it has two variables, it will plot the second
         ax.plot(x, y2, '-', color='darkviolet', label=labels[1])
         ax.legend()
 
