@@ -275,10 +275,12 @@ def main(iterations):
         tx_stack = [ (10.0 , sample_rate)] #Equivalent to 1 second
         rx_stack = [ (10.0, int(it["sample_count"]))] #TODO: Maybe add the burst start times to table
 
+        vsnk = engine.run(it["channels"], it["wave_freq"], it["sample_rate"], it["center_freq"], it["tx_gain"], it["rx_gain"], tx_stack, rx_stack)
+
         #Other Variables
         global center_freq
         center_freq = int(it["center_freq"])
-        begin_cutoff = int(round(1/(int(wave_freq)/sample_rate))*begin_cutoff_waves)
+        begin_cutoff = int(round(1/(int(it["wave_freq"])/sample_rate))*begin_cutoff_waves)
 
         #X values, for when plotting is required
         x = np.arange(begin_cutoff/it["sample_rate"],it["sample_count"]/it["sample_rate"], 1/it["sample_rate"]) #0 to max time, taking the 1/sr step
@@ -306,7 +308,8 @@ def main(iterations):
         plot_img_pos_y = 50
 
         #calculating plot_sample_ratio
-        plotted_samples = int(round(1/(int(it["wave_freq"])/sample_rate))num_output_waves)
+        plotted_samples = int(round((1/int(it["wave_freq"]))/sample_rate)*num_output_waves)
+
         print(plotted_samples) #TODO: CALCULATE  THIS DIFFERENTLY FOR THE FFTs
 
         #Plotting the imaginary and real values

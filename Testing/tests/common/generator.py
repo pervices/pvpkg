@@ -41,11 +41,11 @@ def ship_test_tx(channels):    #TODO: ENSURE FIRST RUN DOESN'T HAVE TO HAVE EACH
     tx_gain = 10 #Min and max's of gain (found on website)
     rx_gain = 20
     name = "Tx Operation"
-    for center_freq in [945000000, 1045000000, 1145000000, 1245000000, 300000000, 600000000, 1200000000, 2700000000, 4000000000, 5500000000. 15000000]:
+    for center_freq in [945000000, 1045000000, 1145000000, 1245000000, 300000000, 600000000, 1200000000, 2700000000, 4000000000, 5500000000, 15000000]:
         yield locals()
 
 
-      '''for wave_freq, tx_gain, center_freq in zip(wave_freq, tx_gain, center_freq): #
+    '''for wave_freq, tx_gain, center_freq in zip(wave_freq, tx_gain, center_freq): #
           yield locals()'''
 
 
