@@ -5,12 +5,13 @@ from common import generator as gen
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.optimize import curve_fit
+from scipy import stats
 
 from common import outputs as out
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.optimize import curve_fit
-
+from scipy.stats import norm
 import sys
 import os
 import time, datetime
@@ -48,6 +49,7 @@ iteration_count = -1
 sample_rate = -1
 plotted_samples = -1
 begin_cuttoff = -1
+sample_count = -1
 
 #Frequeny Checks
 freq_mean_thresh = 5 #Hz bound
@@ -67,13 +69,13 @@ x_time = []
 offsets = []
 
 '''
-Represents the wave equation 
+Represents the wave equation
 PARAMS: time, ampl, freq, phase
 RETUNRS: y'''
 def waveEquation(time, ampl, freq, phase, dc_offset):
 
     y = ampl*np.cos((2*np.pi*freq*time + phase)) + dc_offset #model for wave equation
-    
+
     return y
 
 '''Plots the subplots all in the same format
@@ -95,13 +97,13 @@ PARAMS: x,y
 RETURNS: best_fit (y values of the line of best fit '''
 def bestFit(x, y):
     guess = [max(y), wave_freq, 0.25, 0] #Based off generator code
-    param, covariance  = curve_fit(waveEquation, x, y, p0=guess) #using curve fit to give parameters 
+    param, covariance  = curve_fit(waveEquation, x, y, p0=guess) #using curve fit to give parameters
     fit_amp = param[0]                                           #for wave equation that make a line of best fit
     fit_freq = param[1]
     fit_phase = param[2]
     fit_offset = param[3]
     best_fit = waveEquation(x, fit_amp, fit_freq, fit_phase, 0) #making the line of best fit
-    
+
     return (best_fit, fit_offset), (fit_amp, fit_freq, fit_phase) #returns other values as tuple, so they can be easily referenced
 
 '''Does all the comparisons of the data with the givens
@@ -208,7 +210,7 @@ def makePlots():
         fig.savefig(("run{}_indiv".format(z) + ".svg"))
 
         #Layout of the combined plot -- NOTE: ONLY CONTAINS LINE OF BEST FIT, could i some how use the previous answers as guesses, avg
-        fig2 = plt.figure()
+        fig2 = plt.figure("Amplitude vs Time All Channels")
         plt.title("Amplitude versus Samples: All Channels for Run {}".format(z))
         plt.xlabel("Time")
         plt.ylabel("Amplitude")
@@ -229,6 +231,56 @@ def makePlots():
         # plt.show()
         fig2.savefig(("run{}_together".format(z) + ".svg"))
 
+        plt.close(fig)
+        plt.close(fig2)
+
+'''Code used to debug issues - NOT ALWAYS CALLED
+PARAMS: mean, std, minimum, maximum
+RETURNS: NONE'''
+def normalDistribution(data, mean, std, minimum, maximum, name, coun):
+    os.chdir(test_plots)
+
+    #Setting up Plot
+    fig3 = plt.figure("Normal Distribution")
+    plt.suptitle("Normal Distriubutions of Run {}".format(name))
+
+    #Historgram
+    '''q3, q1 = np.percentile(data, [75,25])
+    iqr = q3 - q1
+    bin_width = 2*iqr*(sample_count**(-1/3)) #Freedmasn-diaconis
+    bins = int(round(((maximum - minimum)*10000)/bin_width))'''
+
+    data.sort()
+    plt.hist(data, bins=10)
+
+    #X-values
+    x = np.linspace(minimum, maximum, 100) #NOTE: Guessing with the bins
+
+    #Fitted Normal
+    y = norm.pdf(x, mean, std)
+    plt.plot(x, y, color="darkslategray", linewidth=2, label="Normal Distribution")
+    plt.ylim(0,1)
+
+    #Adding other important markers to plot
+    plt.plot(maximum, (max(y)/2),  color="purple", linewidth=0.5, marker=".", label="Maximum")
+    plt.plot(minimum, (max(y)/2), color="indigo", linewidth=0.5, marker=".", label="Minimum")
+
+    #The Mean
+    plt.axvline(x = mean, color = "orange", linewidth=0.5, label = "Mean")
+
+    #STD
+    plt.axvline(x = (mean-std), color = "crimson", linewidth=0.5, label = "Mean - STD")
+    plt.axvline(x = (mean+std), color = "crimson", linewidth=0.5, label = "Mean + STD")
+
+    #Larger stds
+    plt.axvline(x = (mean-(std_ratio*std)), color = "cyan",linewidth=0.5,  label = "Mean - STD*4")
+    plt.axvline(x = (mean+(std_ratio*std)), color = "cyan",linewidth=0.5,  label = "Mean + STD*4")
+
+    plt.ylim(0, (runs+5))
+    plt.legend()
+    plt.show()
+    fig3.savefig(("NormalDist_{}".format(coun) + ".svg"))
+
 '''Turns the boolean into pass/fail NOTE: NOT SURE IF I NEED THIS
 PARAM: Word
 RETURNS: Pass or Fail'''
@@ -244,7 +296,7 @@ RETURNS: <on console>'''
 def main(iterations):
 
     '''This iteration loop will run through setting up the channels to the values associated to the generator code. It will also loop through
-    each channel and save the information to temp arrays. These temp arrays allow us to format our data into 2D arrays, so it's easier to 
+    each channel and save the information to temp arrays. These temp arrays allow us to format our data into 2D arrays, so it's easier to
     reference later'''
     vsnks = []
     freq_A = []
@@ -263,7 +315,7 @@ def main(iterations):
     for it in iterations:
 
         gen.dump(it) #pulling info from generator
-        
+
         #connecting and setting up the uniti
         '''Note how each step of time is equiv to 1/sample_rate
         When you reach sample_rate/sample_rate, one second has passed.
@@ -273,12 +325,14 @@ def main(iterations):
         sample_rate = int(it["sample_rate"])
         tx_stack = [ (10.0 , sample_rate)]
         rx_stack = [ (10.25, int(it["sample_count"]))]
-        
+
         #this is the code that will actually tell the unit what values to run at
         vsnk = engine.run(it["channels"], it["wave_freq"], it["sample_rate"], it["center_freq"], it["tx_gain"], it["rx_gain"], tx_stack, rx_stack)
 
 
         #Other important variables that require connection to the unit
+        global sample_count
+        sample_count = int(it["sample_count"])
         global runs
         runs = it["i"] #equal sign because we only care about the last value
         global wave_freq
@@ -290,22 +344,23 @@ def main(iterations):
         x_time = np.asarray(time)
         vsnks.append(vsnk) #This will loop us through the channels an appropriate amount of time
         for vsnk in vsnks:
-            ampl  = []
+            ampl = []
             freq = []
             phase = []
             offset = []
             for ch, channel in enumerate(vsnk): #Goes through each channel to sve data
 
-                real = [datum.real for datum in channel.data()] # saves data of real data in an array               
-              
+                real = [datum.real for datum in channel.data()] # saves data of real data in an array
+
                 reals.append(real[begin_cutoff:]) #Used for plots, but doesn't need to be reformatted
 
-                #used for charts 
+                #used for charts
                 hold, param = bestFit(x_time, real[begin_cutoff:])
                 ampl.append(param[0])
                 freq.append(param[1])
                 phase.append(param[2])
                 offset.append(hold[1])
+
 
         #APPENDING Info
         offsets.append(offset)
@@ -350,6 +405,14 @@ def main(iterations):
         mins.append(mins_temp)
         maxs.append(maxs_temp)
 
+    try:
+        means[0][0] < wave_freq + (stds[0][0]*std_ratio)
+        means[0][0] > wave_freq - (stds[0][0]*std_ratio)
+        print("Mean of the Wave Frequency mean is within \u00B1" + str(std_ratio) +" *std bounds of " + str(wave_freq))
+    except:
+        print("The Wave Frequency mean failed to be within \u00B1" + str(std_ratio) +" *std bounds of " + str(wave_freq))
+        print("exiting program")
+        sys.exit()
     #Calculating the Criteria
     #2D array holding thresholds of: mean, std, min, max
     criteria = [] #[Test][crit]
@@ -425,6 +488,13 @@ def main(iterations):
         st_phase = out.Table(title="SubTest Results - Phase Tests")
         subtestTable(st_phase, str(phase_mean_thresh), min_crit, max_crit, str(phase_std_thresh), subtest_bool[2])
 
+    #Normal Distributio
+    print(len(data))
+    print(len(data[1]))
+    print(len(data[1][0]))
+    for ch in range(1, len(criteria[test])+1): #columns, account for the extra baseline
+        normalDistribution(data[1][ch], means[test][ch], stds[test][ch], mins[test][ch], maxs[test][ch], ("Normal Distribution for {}".format(ch)), ch)
+
     #Summary Statistics
     sum_freq  = out.Table(title="Summary Frequency")
     summaryTable(overall_bool[0], sum_freq, means[0], mins[0], maxs[0], stds[0], data[0])
@@ -445,5 +515,6 @@ def main(iterations):
         dc_offset_table.addRow(str(i), str(offsets[i][0]), str(offsets[i][1]), str(offsets[i][2]))
     dc_offset_table.printData()
 
-main(gen.lo_band_phaseCoherency(4))                  
+
+main(gen.lo_band_phaseCoherency(4))
 
