@@ -201,7 +201,7 @@ parameters {
                        }
                        }
                        
-                stage('Ubuntu 20.04 Full') {
+                stage('Ubuntu 22.04 Full') {
                //Build UHD
                      when {
                           allOf {
