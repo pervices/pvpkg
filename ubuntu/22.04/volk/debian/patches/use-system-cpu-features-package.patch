@@ -1,0 +1,37 @@
+Description: use system cpu_features package
+
+Author: Shengjing Zhu <zhsj@debian.org>
+Last-Update: 2020-12-26
+
+--- volk-2.4.1.orig/CMakeLists.txt
++++ volk-2.4.1/CMakeLists.txt
+@@ -124,17 +124,7 @@ else()
+   option(VOLK_CPU_FEATURES "Volk uses cpu_features" OFF)
+ endif()
+ if (VOLK_CPU_FEATURES)
+-  if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/cpu_features/CMakeLists.txt" )
+-    message(FATAL_ERROR "cpu_features/CMakeLists.txt not found. Did you forget to git clone recursively?\nFix with: git submodule update --init")
+-  endif()
+-  message(STATUS "Building Volk with cpu_features")
+-  set(BUILD_PIC ON CACHE BOOL
+-    "Build cpu_features with Position Independent Code (PIC)."
+-    FORCE)
+-  set(BUILD_SHARED_LIBS_SAVED "${BUILD_SHARED_LIBS}")
+-  set(BUILD_SHARED_LIBS OFF)
+-  add_subdirectory(cpu_features)
+-  set(BUILD_SHARED_LIBS "${BUILD_SHARED_LIBS_SAVED}")
++  find_package(CpuFeatures)
+ else()
+   message(STATUS "Building Volk without cpu_features")
+ endif()
+--- volk-2.4.1.orig/lib/CMakeLists.txt
++++ volk-2.4.1/lib/CMakeLists.txt
+@@ -517,7 +517,7 @@ target_include_directories(volk_obj
+ if(VOLK_CPU_FEATURES)
+   set_source_files_properties(volk_cpu.c PROPERTIES COMPILE_DEFINITIONS "VOLK_CPU_FEATURES=1")
+   target_include_directories(volk_obj
+-    PRIVATE $<TARGET_PROPERTY:cpu_features,INTERFACE_INCLUDE_DIRECTORIES>
++    PRIVATE $<TARGET_PROPERTY:CpuFeatures::cpu_features,INTERFACE_INCLUDE_DIRECTORIES>
+ )
+ endif()
+ 

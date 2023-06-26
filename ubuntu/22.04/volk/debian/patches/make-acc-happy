@@ -1,0 +1,60 @@
+From 799245ea6e9e05cc0ed0fabe783fbbe1a5054fd4 Mon Sep 17 00:00:00 2001
+From: "A. Maitland Bottoms" <bottoms@debian.org>
+Date: Tue, 27 Mar 2018 22:02:59 -0400
+Subject: [PATCH 2/6] make acc happy
+
+The abi-compliance-checker grabs all the .h files it finds
+and tries to compile them all. Even though some are not
+appropriate for the architecture being run on. Being careful
+with preprocessor protections avoids problems.
+---
+ include/volk/volk_neon_intrinsics.h                 | 2 ++
+ kernels/volk/volk_32f_8u_polarbutterflypuppet_32f.h | 1 +
+ kernels/volk/volk_8u_x2_encodeframepolar_8u.h       | 3 ---
+ 3 files changed, 3 insertions(+), 3 deletions(-)
+
+--- a/include/volk/volk_neon_intrinsics.h
++++ b/include/volk/volk_neon_intrinsics.h
+@@ -79,6 +79,7 @@
+ 
+ #ifndef INCLUDE_VOLK_VOLK_NEON_INTRINSICS_H_
+ #define INCLUDE_VOLK_VOLK_NEON_INTRINSICS_H_
++#ifdef LV_HAVE_NEON
+ #include <arm_neon.h>
+ 
+ 
+@@ -278,4 +279,5 @@
+ }
+ 
+ 
++#endif /*LV_HAVE_NEON*/
+ #endif /* INCLUDE_VOLK_VOLK_NEON_INTRINSICS_H_ */
+--- a/kernels/volk/volk_32f_8u_polarbutterflypuppet_32f.h
++++ b/kernels/volk/volk_32f_8u_polarbutterflypuppet_32f.h
+@@ -31,6 +31,7 @@
+ #include <volk/volk_32f_8u_polarbutterfly_32f.h>
+ #include <volk/volk_8u_x3_encodepolar_8u_x2.h>
+ #include <volk/volk_8u_x3_encodepolarpuppet_8u.h>
++#include <volk/volk_8u_x2_encodeframepolar_8u.h>
+ 
+ 
+ static inline void sanitize_bytes(unsigned char* u, const int elements)
+--- a/kernels/volk/volk_8u_x2_encodeframepolar_8u.h
++++ b/kernels/volk/volk_8u_x2_encodeframepolar_8u.h
+@@ -60,8 +60,6 @@
+     }
+ }
+ 
+-#ifdef LV_HAVE_GENERIC
+-
+ static inline void volk_8u_x2_encodeframepolar_8u_generic(unsigned char* frame,
+                                                           unsigned char* temp,
+                                                           unsigned int frame_size)
+@@ -81,7 +79,6 @@
+         --stage;
+     }
+ }
+-#endif /* LV_HAVE_GENERIC */
+ 
+ #ifdef LV_HAVE_SSSE3
+ #include <tmmintrin.h>

@@ -1,0 +1,5 @@
+make-acc-happy
+optional-static-apps
+remove-external-HTML-resources
+skip-cpu_features-on-kfreebsd
+use-system-cpu-features-package.patch
