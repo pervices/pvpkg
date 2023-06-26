@@ -8,7 +8,8 @@ parameters {
         choice(name: "CI_BUILD_TYPE", choices: ["UHD_ONLY", "FULL"], description: "Select whether to only build UHD package or to build Gnuradio with UHD. Gnuradio has a considerably longer compile time, so FULL should not be slected if a new UHD package is required quickly.")
         choice(name: "BRANCH", choices: ["master", "test-branch"], description: "Select whether to build package from master branch and push to latest on the fileserver or to build from a testing branch and push to testing on the fileserver.")
 		booleanParam(name: "ENABLE_ARCH", defaultValue: true, description: "Select whether to generate packages for Archlinux.")
-		booleanParam(name: "ENABLE_UBUNTU", defaultValue: true, description: "Select whether to generate packages for Ubuntu 20.04.")
+		booleanParam(name: "ENABLE_UBUNTU20", defaultValue: true, description: "Select whether to generate packages for Ubuntu 20.04.")
+		booleanParam(name: "ENABLE_UBUNTU22", defaultValue: true, description: "Select whether to generate packages for Ubuntu 22.04.")
 		booleanParam(name: "ENABLE_ORACLE", defaultValue: true, description: "Select whether to generate packages for Oracle Linux 8.")
 		booleanParam(name: "CLEAN", defaultValue: true, description: "Select whether to clean Docker cache and remove all Docker images after build. This step is necessary in order to ensure all Git commits and changes are applied to the subsequent build. Cleaning should be disabled for failing builds that require troubleshooting.")
 		booleanParam(name: "ENABLE_TESTING", defaultValue: true, description: "Select whether to run CI tests for enabled build distributions after successful build.")
@@ -78,7 +79,7 @@ parameters {
                //Build UHD
                      when {
                           allOf {
-                           expression {params.ENABLE_UBUNTU == true}
+                           expression {params.ENABLE_UBUNTU20 == true}
                            expression {params.CI_BUILD_TYPE == 'UHD_ONLY'}
                            expression {params.BRANCH == 'master'}
                        }
@@ -103,7 +104,7 @@ parameters {
                //Build UHD
                      when {
                           allOf {
-                           expression {params.ENABLE_UBUNTU == true}
+                           expression {params.ENABLE_UBUNTU20 == true}
                            expression {params.CI_BUILD_TYPE == 'UHD_ONLY'}
                            expression {params.BRANCH == 'testing'}
                        }
@@ -128,7 +129,7 @@ parameters {
                //Build UHD
                      when {
                           allOf {
-                            expression {params.ENABLE_UBUNTU == true}
+                            expression {params.ENABLE_UBUNTU20 == true}
                             expression {params.CI_BUILD_TYPE == 'FULL'}
                             expression {params.BRANCH == 'master'}
                        }
@@ -144,6 +145,82 @@ parameters {
                                 sh "ssh -T -p 237 filespervices@files.pervices.com 'rm -f /home/filespervices/www/latest/sw/ubuntu20.04/uhd/* && rm -f /home/filespervices/www/latest/sw/ubuntu20.04/gnuradio/*' && \
                                 scp -P 237 uhdpv*.tar.gz filespervices@files.pervices.com:/home/filespervices/www/latest/sw/ubuntu20.04/uhd/ && \
                                 scp -P 237 gnuradio*.tar.gz filespervices@files.pervices.com:/home/filespervices/www/latest/sw/ubuntu20.04/gnuradio/"
+                       } 
+                       }
+                       }
+                       }
+                       }
+
+               stage('Ubuntu 22.04 UHD') { 
+               //Build UHD
+                     when {
+                          allOf {
+                           expression {params.ENABLE_UBUNTU22 == true}
+                           expression {params.CI_BUILD_TYPE == 'UHD_ONLY'}
+                           expression {params.BRANCH == 'master'}
+                       }
+                       }
+                            steps { 
+                        script { 
+                                dir("${env.WORKSPACE}/ubuntu/22.04/uhd") {
+                                dockerImageUbuntu2004 = docker.build("ubuntu:$BUILD_NUMBER", "--network host .") 
+                                env.IID = "\$(docker images ubuntu:$BUILD_NUMBER --format \"{{.ID}}\")"
+                                env.CID="\$(docker create $IID)"
+                                sh "docker cp ${CID}:/home/artifacts/. $WORKSPACE/ubuntu/22.04/uhd"
+                                sshagent(credentials: ['sshfilespervices']) {
+                                sh "ssh -T -p 237 filespervices@files.pervices.com 'rm -f /home/filespervices/www/latest/sw/ubuntu22.04/uhd/*' && \
+                                scp -P 237 uhdpv*.tar.gz filespervices@files.pervices.com:/home/filespervices/www/latest/sw/ubuntu22.04/uhd/"
+                       } 
+                       }
+                       }
+                       }
+                       }
+                       
+                         stage('Ubuntu 22.04 UHD Testing Branch') { 
+               //Build UHD
+                     when {
+                          allOf {
+                           expression {params.ENABLE_UBUNTU22 == true}
+                           expression {params.CI_BUILD_TYPE == 'UHD_ONLY'}
+                           expression {params.BRANCH == 'testing'}
+                       }
+                       }
+                            steps { 
+                        script { 
+                                dir("${env.WORKSPACE}/ubuntu/22.04/test-branch-build/uhd") {
+                                dockerImageUbuntu2004 = docker.build("ubuntu:$BUILD_NUMBER", "--network host .") 
+                                env.IID = "\$(docker images ubuntu:$BUILD_NUMBER --format \"{{.ID}}\")"
+                                env.CID="\$(docker create $IID)"
+                                sh "docker cp ${CID}:/home/artifacts/. $WORKSPACE/ubuntu/22.04/testing/uhd"
+                                sshagent(credentials: ['sshfilespervices']) {
+                                sh "ssh -T -p 237 filespervices@files.pervices.com 'rm -f /home/filespervices/www/testing/sw/ubuntu22.04/uhd/*' && \
+                                scp -P 237 uhdpv*.tar.gz filespervices@files.pervices.com:/home/filespervices/www/testing/sw/ubuntu22.04/uhd/"
+                       } 
+                       }
+                       }
+                       }
+                       }
+                       
+                stage('Ubuntu 20.04 Full') {
+               //Build UHD
+                     when {
+                          allOf {
+                            expression {params.ENABLE_UBUNTU22 == true}
+                            expression {params.CI_BUILD_TYPE == 'FULL'}
+                            expression {params.BRANCH == 'master'}
+                       }
+                       }
+                               steps { 
+                        script { 
+                                dir("${env.WORKSPACE}/ubuntu/22.04/gnuradio") {
+                                dockerImageUbuntu2004 = docker.build("ubuntu:$BUILD_NUMBER", "--network host .") 
+                                env.IID = "\$(docker images ubuntu:$BUILD_NUMBER --format \"{{.ID}}\")"
+                                env.CID="\$(docker create $IID)"
+                                sh "docker cp ${CID}:/home/artifacts/. $WORKSPACE/ubuntu/22.04/gnuradio"
+                                sshagent(credentials: ['sshfilespervices']) {
+                                sh "ssh -T -p 237 filespervices@files.pervices.com 'rm -f /home/filespervices/www/latest/sw/ubuntu22.04/uhd/* && rm -f /home/filespervices/www/latest/sw/ubuntu22.04/gnuradio/*' && \
+                                scp -P 237 uhdpv*.tar.gz filespervices@files.pervices.com:/home/filespervices/www/latest/sw/ubuntu22.04/uhd/ && \
+                                scp -P 237 gnuradio*.tar.gz filespervices@files.pervices.com:/home/filespervices/www/latest/sw/ubuntu22.04/gnuradio/"
                        } 
                        }
                        }
@@ -229,11 +306,11 @@ parameters {
                     
 
 
-                stage('Ubuntu Testing'){    
+                stage('Ubuntu20 Testing'){    
                 when {
                           allOf {
                            expression {params.CI_BUILD_TYPE == 'FULL'}
-                           expression {params.ENABLE_UBUNTU == true}
+                           expression {params.ENABLE_UBUNTU20 == true}
                            expression {params.ENABLE_TESTING == true}
                         }
                         }
@@ -244,6 +321,29 @@ parameters {
                     catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
                     script{
                     dir("${env.WORKSPACE}/ubuntu/20.04/gnuradio") {
+                    env.IID = "\$(docker images ubuntu:$BUILD_NUMBER --format \"{{.ID}}\")"
+                    sh "docker run --net=host -i $IID /bin/bash -c './test-only.sh'"
+                    }
+                    }
+                    }
+                    }
+                    }
+
+                stage('Ubuntu22 Testing'){    
+                when {
+                          allOf {
+                           expression {params.CI_BUILD_TYPE == 'FULL'}
+                           expression {params.ENABLE_UBUNTU22 == true}
+                           expression {params.ENABLE_TESTING == true}
+                        }
+                        }
+                    options {
+                    timeout(time: 3, unit: "HOURS")
+                    } 
+                    steps {
+                    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                    script{
+                    dir("${env.WORKSPACE}/ubuntu/22.04/gnuradio") {
                     env.IID = "\$(docker images ubuntu:$BUILD_NUMBER --format \"{{.ID}}\")"
                     sh "docker run --net=host -i $IID /bin/bash -c './test-only.sh'"
                     }
