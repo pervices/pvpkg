@@ -12,7 +12,7 @@ apt update && apt-get -y install python3-pip && \
 pip3 install pygccxml && \
 # clone pvpkg repo to get uhd  Debian directory.
 git clone https://github.com/pervices/pvpkg.git && \
-cd pvpkg/ubuntu/20.04 && \
+cd pvpkg/ubuntu/22.04 && \
 mv InstallInstructionsUbuntu /home/notroot && \
 cd testing && \
 mv uhd /home/notroot
