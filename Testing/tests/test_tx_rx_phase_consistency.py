@@ -51,7 +51,7 @@ begin_cuttoff = -1
 
 #Frequeny Checks
 freq_mean_thresh = 5 #Hz bound
-freq_std_thresh = 0.23
+freq_std_thresh = 0.3
 
 #Amplitude Checks
 ampl_std_thresh = 0.001
@@ -110,14 +110,20 @@ RETURNS: return_array'''
 def check(criteria, mean, std, mins, maxs):
     return_array = []
     #check mean
-    if (mean < criteria[0] and mean > (-1*criteria[0])): #NOTE: CHECK IF AMPLITUDE NEEDS TO BE A THRESDHOLD - IS OK TO CHECK AS THRESH
-        return_array.append(True)
-    else:
-        return_array.append(False)
+    if criteria[4]:
+        if (mean < criteria[0] and mean > (-1*criteria[0])):
+            return_array.append(True)
+        else:
+            return_array.append(False)
+    else: #if it's ampl it only checks greater than
+        if (mean > criteria[0]):
+            return_array.append(True)
+        else:
+            return_array.append(False)
 
     #check min
     if (mins >= criteria[2]):
-                return_array.append(True)
+        return_array.append(True)
     else:
         return_array.append(False)
 
@@ -138,15 +144,18 @@ def check(criteria, mean, std, mins, maxs):
 '''Makes the subtestTables and printst them to console
 PARAMS: table, abs_crit, min_crit, max_crit, std_crit, boolean
 RETURNS: NONE'''
-def subtestTable(table, abs_crit, min_crit, max_crit, std_crit, boolean):
+def subtestTable(table, abs_crit, min_crit, max_crit, std_crit, boolean, bounds=True):
 
     table.addColumn("Test")
     table.addColumn("Criteria")
     table.addColumn("\u0394BA")
     table.addColumn("\u0394CA")
     table.addColumn("\u0394DA")
-
-    table.addRow("Mean Absolute Variant", ("\u00B1" + abs_crit), boolToWord(boolean[0][0]), boolToWord(boolean[1][0]), boolToWord(boolean[2][0]))
+    #print(boolean)
+    if bounds:
+        table.addRow("Mean Absolute Variant", ("\u00B1" + abs_crit), boolToWord(boolean[0][0]), boolToWord(boolean[1][0]), boolToWord(boolean[2][0]))
+    else:
+        table.addRow("Mean Absolute Variant", (">" + abs_crit), boolToWord(boolean[0][0]), boolToWord(boolean[1][0]), boolToWord(boolean[2][0]))
     table.addRow("Min Value Outliers", (">" + min_crit), boolToWord(boolean[0][1]), boolToWord(boolean[1][1]), boolToWord(boolean[2][1]))
     table.addRow("Max Value Outiers", ("<" + max_crit), boolToWord(boolean[0][2]), boolToWord(boolean[1][2]), boolToWord(boolean[2][2]))
     table.addRow("STD Deviation", ("<" + std_crit), boolToWord(boolean[0][3]), boolToWord(boolean[1][3]), boolToWord(boolean[2][3]))
@@ -347,19 +356,25 @@ def main(iterations):
     #Frequency
     freq_criteria = []
     for ch in range(1, 4): #starting at 1 because index 0 is A baseline
-        freq_criteria.append((freq_mean_thresh, freq_std_thresh, (means[0][ch] - (std_ratio*stds[0][ch])), (means[0][ch] + (std_ratio*stds[0][ch]))))
+        freq_criteria.append((freq_mean_thresh, freq_std_thresh, (means[0][ch] - (std_ratio*stds[0][ch])), (means[0][ch] + (std_ratio*stds[0][ch])), True))
     criteria.append(freq_criteria) #Formatting
 
     #Amplitude
     ampl_criteria = []
-    for ch in range(1, 4): #starting at 1 because index 0 is A baseline
-        ampl_criteria.append((std_ratio*stds[1][ch], ampl_std_thresh, (means[1][ch] - (std_ratio*stds[1][ch])), (means[1][ch] + (std_ratio*stds[1][ch]))))
-    criteria.append(ampl_criteria)
+    # print((std_ratio*stds[1][ch]))
+    # print(means[1])
+    # print(mins[1])
+    # print(maxs[1])
 
+
+    for ch in range(1, 4): #starting at 1 because index 0 is A baseline
+        ampl_criteria.append(((std_ratio*stds[1][ch]), ampl_std_thresh, (means[1][ch] - (std_ratio*stds[1][ch])), (means[1][ch] + (std_ratio*stds[1][ch])), False)) #final variable toggles the boundaries
+    criteria.append(ampl_criteria)
+    # print(ampl_criteria)
     #phase
     phase_criteria = []
     for ch in range(1, 4): #starting at 1 because index 0 is A baseline
-        phase_criteria.append((phase_mean_thresh, phase_std_thresh, (means[2][ch] - (std_ratio*stds[2][ch])), (means[2][ch] + (std_ratio*stds[2][ch]))))
+        phase_criteria.append((phase_mean_thresh, phase_std_thresh, (means[2][ch] - (std_ratio*stds[2][ch])), (means[2][ch] + (std_ratio*stds[2][ch])), True))
     criteria.append(phase_criteria)
 
     #doing the checks, setting up subtest booleans
@@ -367,7 +382,7 @@ def main(iterations):
 
     for test in range(len(criteria)):
         temp_hold = []
-        for ch in range(num_channel-1): #columns, account for the extra baseline
+        for ch in range(len(criteria[test])): #columns, account for the extra baseline
             temp_hold.append((check(criteria[test][ch], means[test][ch+1], stds[test][ch+1], mins[test][ch+1], maxs[test][ch+1])))
         subtest_bool.append((temp_hold))
 
@@ -405,7 +420,7 @@ def main(iterations):
         subtestTable(st_freq, str(freq_mean_thresh), min_crit, max_crit, str(freq_std_thresh), subtest_bool[0])
     if not overall_bool[1]:
         st_ampl  = out.Table(title="SubTest Results - Amplitude Tests")
-        subtestTable(st_ampl, (str(std_ratio) + " * STD"), min_crit, max_crit, str(ampl_std_thresh), subtest_bool[1])
+        subtestTable(st_ampl, (str(std_ratio) + " * STD"), min_crit, max_crit, str(ampl_std_thresh), subtest_bool[1], bounds=False)
     if not overall_bool[2]:
         st_phase = out.Table(title="SubTest Results - Phase Tests")
         subtestTable(st_phase, str(phase_mean_thresh), min_crit, max_crit, str(phase_std_thresh), subtest_bool[2])
