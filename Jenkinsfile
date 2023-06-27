@@ -245,8 +245,8 @@ parameters {
                                env.CID="\$(docker create $IID)"
                                sh "docker cp ${CID}:/home/artifacts/. $WORKSPACE/Oracle/Oracle8/UHD"
                                sshagent(credentials: ['sshfilespervices']) {
-                               sh "ssh -T -p 237 filespervices@files.pervices.com 'rm -f /home/filespervices/www/latest/sw/centos8/uhd/*' && \
-                               scp -P 237 uhd*.tar.gz filespervices@files.pervices.com:/home/filespervices/www/latest/sw/centos8/uhd/"
+                               sh "ssh -T -p 237 filespervices@files.pervices.com 'rm -f /home/filespervices/www/latest/sw/oracle8/uhd/*' && \
+                               scp -P 237 uhd*.tar.gz filespervices@files.pervices.com:/home/filespervices/www/latest/sw/oracle8/uhd/"
                         }
                         }
                         }
@@ -269,9 +269,9 @@ parameters {
                                env.CID="\$(docker create $IID)"
                                sh "docker cp ${CID}:/home/artifacts/. $WORKSPACE/Oracle/Oracle8/GnuRadio"
                                sshagent(credentials: ['sshfilespervices']) {
-                               sh "ssh -T -p 237 filespervices@files.pervices.com 'rm -f /home/filespervices/www/latest/sw/centos8/uhd/* && rm -f /home/filespervices/www/latest/sw/centos8/gnuradio/*' && \
-                               scp -P 237 uhd*.tar.gz filespervices@files.pervices.com:/home/filespervices/www/latest/sw/centos8/uhd/ && \
-                               scp -P 237 gnuradio*.tar.gz filespervices@files.pervices.com:/home/filespervices/www/latest/sw/centos8/gnuradio/"
+                               sh "ssh -T -p 237 filespervices@files.pervices.com 'rm -f /home/filespervices/www/latest/sw/oracle8/uhd/* && rm -f /home/filespervices/www/latest/sw/oracle8/gnuradio/*' && \
+                               scp -P 237 uhd*.tar.gz filespervices@files.pervices.com:/home/filespervices/www/latest/sw/oracle8/uhd/ && \
+                               scp -P 237 gnuradio*.tar.gz filespervices@files.pervices.com:/home/filespervices/www/latest/sw/oracle8/gnuradio/"
                         }
                         }
                         }
