@@ -228,7 +228,7 @@ parameters {
                        }
 
                                       
-               stage('RPM_OracleLinux UHD') {
+               stage('OracleLinux86 UHD') {
                //Build UHD
                     when {
                           allOf {
@@ -252,7 +252,7 @@ parameters {
                         }
                         }
                         }
-                stage('RPM_OracleLinux Full') {
+                stage('OracleLinux86 Full') {
                  //Build UHD and Gnuradio
                     when {
                           allOf {
@@ -353,7 +353,7 @@ parameters {
                     }
 
 
-               stage('Oracle Testing'){    
+               stage('OracleLinux86 Testing'){    
                when {
                           allOf {
                            expression {params.CI_BUILD_TYPE == 'FULL'}
