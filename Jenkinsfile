@@ -10,7 +10,7 @@ parameters {
 		booleanParam(name: "ENABLE_ARCH", defaultValue: true, description: "Select whether to generate packages for Archlinux.")
 		booleanParam(name: "ENABLE_UBUNTU20", defaultValue: true, description: "Select whether to generate packages for Ubuntu 20.04.")
 		booleanParam(name: "ENABLE_UBUNTU22", defaultValue: true, description: "Select whether to generate packages for Ubuntu 22.04.")
-		booleanParam(name: "ENABLE_ORACLE", defaultValue: true, description: "Select whether to generate packages for Oracle Linux 8.")
+		booleanParam(name: "ENABLE_ORACLE8", defaultValue: true, description: "Select whether to generate packages for Oracle Linux 8.")
 		booleanParam(name: "CLEAN", defaultValue: true, description: "Select whether to clean Docker cache and remove all Docker images after build. This step is necessary in order to ensure all Git commits and changes are applied to the subsequent build. Cleaning should be disabled for failing builds that require troubleshooting.")
 		booleanParam(name: "ENABLE_TESTING", defaultValue: true, description: "Select whether to run CI tests for enabled build distributions after successful build.")
 	}
@@ -232,7 +232,7 @@ parameters {
                //Build UHD
                     when {
                           allOf {
-                           expression {params.ENABLE_ORACLE == true}
+                           expression {params.ENABLE_ORACLE8 == true}
                            expression {params.CI_BUILD_TYPE == 'UHD_ONLY'}
                            expression {params.BRANCH == 'master'}
                         }
@@ -256,7 +256,7 @@ parameters {
                  //Build UHD and Gnuradio
                     when {
                           allOf {
-                           expression {params.ENABLE_ORACLE == true}
+                           expression {params.ENABLE_ORACLE8 == true}
                            expression {params.CI_BUILD_TYPE == 'FULL'} 
                            expression {params.BRANCH == 'master'}
                         }
@@ -357,7 +357,7 @@ parameters {
                when {
                           allOf {
                            expression {params.CI_BUILD_TYPE == 'FULL'}
-                           expression {params.ENABLE_ORACLE == true}
+                           expression {params.ENABLE_ORACLE8 == true}
                            expression {params.ENABLE_TESTING == true}
                         }
                         }
