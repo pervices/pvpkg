@@ -33,7 +33,7 @@ dpkg-buildpackage -us -uc -b && \
 cd .. && \
 dpkg -i uhd*.deb
 WORKDIR /home/notroot/volk
-RUN git clone --branch v2.4.1 --recursive https://github.com/gnuradio/volk.git && \
+RUN git clone --branch v2.5.1 --recursive https://github.com/gnuradio/volk.git && \
 #cd debian && \
 #mk-build-deps -i --tool 'apt-get -f --yes' control
 #RUN ls && tar -czvf volkpv_2.4.1.orig.tar.gz volk && \
