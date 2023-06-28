@@ -16,8 +16,17 @@ import sys
 import os
 import time, datetime
 
+#USER CHOSEN VALUES
+num_channel = 4 #dependent on unit
+std_ratio = 4 #number std gets multiplied by for checks
+num_output_waves =1.5 #depends what plots look like
+begin_cutoff_waves = 1 #0.00000425 #e(-5) - guessed from previous diagrams (but seconds)
+tx_burst = 10.0 #burst should be slightly delayed to ensure all data is being collected
+rx_burst = 10.25
 #SHOULD ALL PLOTS BE MADE?
-plot_toggle = False
+            #Frequency , Ampl, Phase
+plot_toggle = [False, False, False]
+
 
 #Calling date and time for simplicity - NOTE: THIS WOULD BE HELPFUL IN MOST CODES, SHOULD WE MAKE FILE IN COMMON FOR IT??
 date = datetime.datetime.now()
@@ -27,8 +36,6 @@ formattedDate = formattedDate.replace('-','')
 formattedDate = formattedDate.replace(':','')
 
 #Setting up directories for plots
-
-
 current_dir = os.getcwd()
 phase_plot_dir = current_dir + "/phase_coherency_fails"
 test_plots = phase_plot_dir + "/" + formattedDate
@@ -36,11 +43,6 @@ test_plots = phase_plot_dir + "/" + formattedDate
 os.makedirs(phase_plot_dir, exist_ok = True)
 os.makedirs(test_plots, exist_ok = True)
 
-#Hard coded values - changing dependent on user
-num_channel = 4
-std_ratio = 4 #number std gets multiplied by for checks
-num_output_waves =1.5
-begin_cutoff_waves = 1
 
 #changing global variables - referenced in multiple functions
 wave_freq = -1 #set later, when runs are called
@@ -86,6 +88,7 @@ def subPlot(x, y, ax, best_fit, title):
     ax.set_title(title)
     ax.set_xlabel("Time")
     ax.set_ylabel("Amplitude")
+    ax.set_ylim(-0.6, 0.6)
     ax.plot(x, y, '.', color='magenta', label='Real')
     ax.plot(x, best_fit[0][0:plotted_samples], '-', color='black', label='Best Fit')
     ax.axhline(y = best_fit[1], color='green', label='DC Offset')
@@ -111,32 +114,32 @@ PARAMS: criteria, mean, std, mins, maxs
 RETURNS: return_array'''
 def check(criteria, mean, std, mins, maxs):
     return_array = []
-    #check mean
-    if criteria[4]:
-        if (mean < criteria[0] and mean > (-1*criteria[0])):
-            return_array.append(True)
-        else:
-            return_array.append(False)
-    else: #if it's ampl it only checks greater than
-        if (mean > criteria[0]):
-            return_array.append(True)
-        else:
-            return_array.append(False)
+    # #check individual means
+    # if criteria[4]:
+    #     if (mean < criteria[0] and mean > (-1*criteria[0])):
+    #         return_array.append(True)
+    #     else:
+    #         return_array.append(False)
+    # else: #if it's ampl it only checks greater than
+    #     if (mean > criteria[0]):
+    #         return_array.append(True)
+    #     else:
+    #         return_array.append(False)
 
     #check min
-    if (mins >= criteria[2]):
+    if (mins >= criteria[1]):
         return_array.append(True)
     else:
         return_array.append(False)
 
     #check max
-    if (maxs <= criteria[3]):
+    if (maxs <= criteria[2]):
         return_array.append(True)
     else:
         return_array.append(False)
 
     #check std
-    if (std < criteria[1]):
+    if (std < criteria[0]):
         return_array.append(True)
     else:
         return_array.append(False)
@@ -144,9 +147,9 @@ def check(criteria, mean, std, mins, maxs):
     return return_array
 
 '''Makes the subtestTables and printst them to console
-PARAMS: table, abs_crit, min_crit, max_crit, std_crit, boolean
+PARAMS: table, min_crit, max_crit, std_crit, boolean
 RETURNS: NONE'''
-def subtestTable(table, abs_crit, min_crit, max_crit, std_crit, boolean, bounds=True):
+def subtestTable(table, min_crit, max_crit, std_crit, boolean, bounds=True):
 
     table.addColumn("Test")
     table.addColumn("Criteria")
@@ -154,13 +157,13 @@ def subtestTable(table, abs_crit, min_crit, max_crit, std_crit, boolean, bounds=
     table.addColumn("\u0394CA")
     table.addColumn("\u0394DA")
     #print(boolean)
-    if bounds:
-        table.addRow("Mean Absolute Variant", ("\u00B1" + abs_crit), boolToWord(boolean[0][0]), boolToWord(boolean[1][0]), boolToWord(boolean[2][0]))
-    else:
-        table.addRow("Mean Absolute Variant", (">" + abs_crit), boolToWord(boolean[0][0]), boolToWord(boolean[1][0]), boolToWord(boolean[2][0]))
-    table.addRow("Min Value Outliers", (">" + min_crit), boolToWord(boolean[0][1]), boolToWord(boolean[1][1]), boolToWord(boolean[2][1]))
-    table.addRow("Max Value Outiers", ("<" + max_crit), boolToWord(boolean[0][2]), boolToWord(boolean[1][2]), boolToWord(boolean[2][2]))
-    table.addRow("STD Deviation", ("<" + std_crit), boolToWord(boolean[0][3]), boolToWord(boolean[1][3]), boolToWord(boolean[2][3]))
+    # if bounds:
+    #     table.addRow("Mean Absolute Variant", ("\u00B1" + abs_crit), boolToWord(boolean[0][0]), boolToWord(boolean[1][0]), boolToWord(boolean[2][0]))
+    # else:
+    #     table.addRow("Mean Absolute Variant", (">" + abs_crit), boolToWord(boolean[0][0]), boolToWord(boolean[1][0]), boolToWord(boolean[2][0]))
+    table.addRow("Min Value Outliers", (">" + min_crit), boolToWord(boolean[0][0]), boolToWord(boolean[1][0]), boolToWord(boolean[2][0]))
+    table.addRow("Max Value Outiers", ("<" + max_crit), boolToWord(boolean[0][1]), boolToWord(boolean[1][1]), boolToWord(boolean[2][1]))
+    table.addRow("STD Deviation", ("<" + std_crit), boolToWord(boolean[0][2]), boolToWord(boolean[1][2]), boolToWord(boolean[2][2]))
 
     table.printData()
 
@@ -168,7 +171,7 @@ def subtestTable(table, abs_crit, min_crit, max_crit, std_crit, boolean, bounds=
 '''Makes summary table and prints to console
 PARAMS: run_all, table, mean, minimum, maximum, std, data
 RETURNS: NONE'''
-def summaryTable(run_all, table, mean, minimum, maximum, std, data):
+def summaryTable(run_all, abs_bool, table, mean, minimum, maximum, std, data):
 
     table.addColumn("Run") #TODO: find better name for this lol
     table.addColumn("Baseline A")
@@ -181,7 +184,7 @@ def summaryTable(run_all, table, mean, minimum, maximum, std, data):
     table.addRow("Maximum", str(maximum[0]), str(maximum[1]), str(maximum[2]), str(maximum[3]))
     table.addRow("STD Deviations", str(std[0]), str(std[1]), str(std[2]), str(std[3]))
 
-    if not run_all:
+    if not run_all or abs_bool:
         for i in range(runs + 1):
             table.addRow(str(i), str(data[0][i]), str(data[1][i]), str(data[2][i]), str(data[3][i]))
 
@@ -228,15 +231,15 @@ def makePlots():
         plt.plot(x_time[0:plotted_samples], bestFit(x_time, reals[3+shift])[0][0][0:plotted_samples], '-', color='darkslategrey', linewidth= 0.75, label='Best Fit D')
         plt.legend()
 
-        # plt.show()
+        #plt.show()
         fig2.savefig(("run{}_together".format(z) + ".svg"))
 
         plt.close(fig)
         plt.close(fig2)
-
-'''Code used to debug issues - NOT ALWAYS CALLED
+'''
+Code used to debug issues - NOT ALWAYS CALLED
 PARAMS: mean, std, minimum, maximum
-RETURNS: NONE'''
+RETURNS: NONE
 def normalDistribution(data, mean, std, minimum, maximum, name, coun):
     os.chdir(test_plots)
 
@@ -245,10 +248,10 @@ def normalDistribution(data, mean, std, minimum, maximum, name, coun):
     plt.suptitle("Normal Distriubutions of Run {}".format(name))
 
     #Historgram
-    '''q3, q1 = np.percentile(data, [75,25])
+    q3, q1 = np.percentile(data, [75,25])
     iqr = q3 - q1
     bin_width = 2*iqr*(sample_count**(-1/3)) #Freedmasn-diaconis
-    bins = int(round(((maximum - minimum)*10000)/bin_width))'''
+    bins = int(round(((maximum - minimum)*10000)/bin_width))
 
     data.sort()
     plt.hist(data, bins=10)
@@ -280,6 +283,8 @@ def normalDistribution(data, mean, std, minimum, maximum, name, coun):
     plt.legend()
     plt.show()
     fig3.savefig(("NormalDist_{}".format(coun) + ".svg"))
+'''
+
 
 '''Turns the boolean into pass/fail NOTE: NOT SURE IF I NEED THIS
 PARAM: Word
@@ -323,8 +328,8 @@ def main(iterations):
         RX: Calculate the oversampling rate to find the number of samples to intake that match your ideal (sample count)'''
         global sample_rate
         sample_rate = int(it["sample_rate"])
-        tx_stack = [ (10.0 , sample_rate)]
-        rx_stack = [ (10.25, int(it["sample_count"]))]
+        tx_stack = [ (tx_burst , sample_rate)]
+        rx_stack = [ (rx_burst, int(it["sample_count"]))]
 
         #this is the code that will actually tell the unit what values to run at
         vsnk = engine.run(it["channels"], it["wave_freq"], it["sample_rate"], it["center_freq"], it["tx_gain"], it["rx_gain"], tx_stack, rx_stack)
@@ -336,12 +341,20 @@ def main(iterations):
         global runs
         runs = it["i"] #equal sign because we only care about the last value
         global wave_freq
-        wave_freq = it["wave_freq"]
+        wave_freq = int(it["wave_freq"])
+
+        #Making this start after specified number of waves have passed
         global begin_cutoff_waves
-        begin_cutoff = plotted_samples = int(round(1/(int(wave_freq)/sample_rate))*begin_cutoff_waves)
-        time = np.arange(begin_cutoff/it["sample_rate"],it["sample_count"]/it["sample_rate"], 1/it["sample_rate"])
+        begin_cutoff = int(round((1/(wave_freq/sample_rate))*begin_cutoff_waves))
+
+        #Making the time array, starting at the cut off
         global x_time
-        x_time = np.asarray(time)
+        x_time = np.arange(begin_cutoff/sample_rate, sample_count/sample_rate, 1/sample_rate)
+        print(len(x_time))
+
+
+        #print(len(time))
+
         vsnks.append(vsnk) #This will loop us through the channels an appropriate amount of time
         for vsnk in vsnks:
             ampl = []
@@ -354,6 +367,8 @@ def main(iterations):
 
                 reals.append(real[begin_cutoff:]) #Used for plots, but doesn't need to be reformatted
 
+                #print(len(x_time))
+                #print(len(real[begin_cutoff:]))
                 #used for charts
                 hold, param = bestFit(x_time, real[begin_cutoff:])
                 ampl.append(param[0])
@@ -361,6 +376,7 @@ def main(iterations):
                 phase.append(param[2])
                 offset.append(hold[1])
 
+        #del x_time[len(x_time)-1]
 
         #APPENDING Info
         offsets.append(offset)
@@ -405,21 +421,13 @@ def main(iterations):
         mins.append(mins_temp)
         maxs.append(maxs_temp)
 
-    try:
-        means[0][0] < wave_freq + (stds[0][0]*std_ratio)
-        means[0][0] > wave_freq - (stds[0][0]*std_ratio)
-        print("Mean of the Wave Frequency mean is within \u00B1" + str(std_ratio) +" *std bounds of " + str(wave_freq))
-    except:
-        print("The Wave Frequency mean failed to be within \u00B1" + str(std_ratio) +" *std bounds of " + str(wave_freq))
-        print("exiting program")
-        sys.exit()
     #Calculating the Criteria
     #2D array holding thresholds of: mean, std, min, max
     criteria = [] #[Test][crit]
     #Frequency
     freq_criteria = []
     for ch in range(1, 4): #starting at 1 because index 0 is A baseline
-        freq_criteria.append((freq_mean_thresh, freq_std_thresh, (means[0][ch] - (std_ratio*stds[0][ch])), (means[0][ch] + (std_ratio*stds[0][ch])), True))
+        freq_criteria.append((freq_std_thresh, (means[0][ch] - (std_ratio*stds[0][ch])), (means[0][ch] + (std_ratio*stds[0][ch])), True))
     criteria.append(freq_criteria) #Formatting
 
     #Amplitude
@@ -429,20 +437,42 @@ def main(iterations):
     # print(mins[1])
     # print(maxs[1])
 
-
     for ch in range(1, 4): #starting at 1 because index 0 is A baseline
-        ampl_criteria.append(((std_ratio*stds[1][ch]), ampl_std_thresh, (means[1][ch] - (std_ratio*stds[1][ch])), (means[1][ch] + (std_ratio*stds[1][ch])), False)) #final variable toggles the boundaries
+        ampl_criteria.append((ampl_std_thresh, (means[1][ch] - (std_ratio*stds[1][ch])), (means[1][ch] + (std_ratio*stds[1][ch])), False)) #final variable toggles the boundaries
     criteria.append(ampl_criteria)
     # print(ampl_criteria)
     #phase
     phase_criteria = []
     for ch in range(1, 4): #starting at 1 because index 0 is A baseline
-        phase_criteria.append((phase_mean_thresh, phase_std_thresh, (means[2][ch] - (std_ratio*stds[2][ch])), (means[2][ch] + (std_ratio*stds[2][ch])), True))
+        phase_criteria.append((phase_std_thresh, (means[2][ch] - (std_ratio*stds[2][ch])), (means[2][ch] + (std_ratio*stds[2][ch])), True))
     criteria.append(phase_criteria)
 
-    #doing the checks, setting up subtest booleans
-    subtest_bool = [] #[test][channel diff][pass/fail]
+    #Absolute checks (from baseline)
+    abs_bool = [False, False, False] #if the summary tables will fully print
+    try:
+        means[0][0] < wave_freq + (stds[0][0]*std_ratio)
+        means[0][0] > wave_freq - (stds[0][0]*std_ratio)
+        print("Mean of the Wave Frequency mean is within \u00B1" + str(std_ratio) +" * std bounds of " + str(wave_freq))
+    except:
+        print("The Wave Frequency mean failed to be within \u00B1" + str(std_ratio) +" * std bounds of " + str(wave_freq))
+        abs_bool[0] = True
 
+    try:
+        means[1][0] > std_ratio*stds[1][0]
+        print("The Amplitude is greater than " + str(std_ratio) +" * std" )
+    except:
+        print("The Amplitude failed to be greater than " + str(std_ratio) +" * std" )
+        abs_bool[1] = True
+
+    try:
+        means[3][0] < phase_mean_thresh
+        means[3][0] > -1*phase_mean_thresh
+    except:
+        print("The Phase failed to be within \u00B1" + str(phase_mean_thresh) +" rads")
+        abs_bool[2] = True
+
+    #doing the checks for the differnces, setting up subtest booleans
+    subtest_bool = [] #[test][channel diff][pass/fail]
     for test in range(len(criteria)):
         temp_hold = []
         for ch in range(len(criteria[test])): #columns, account for the extra baseline
@@ -458,7 +488,7 @@ def main(iterations):
             overall_bool[test] =  False
 
     #Checking if plots should print
-    if (np.prod(overall_bool) == 0 or plot_toggle):
+    if (np.prod(overall_bool) == 0 or plot_toggle or np.prod(abs_bool) == 0):
         makePlots()
 
     #Outputting tables
@@ -480,30 +510,23 @@ def main(iterations):
     #Print subtables of failed overall tests and make their plots
     if not overall_bool[0]:
         st_freq  = out.Table(title="SubTest Results - Frequency Tests")
-        subtestTable(st_freq, str(freq_mean_thresh), min_crit, max_crit, str(freq_std_thresh), subtest_bool[0])
+        subtestTable(st_freq, min_crit, max_crit, str(freq_std_thresh), subtest_bool[0])
     if not overall_bool[1]:
         st_ampl  = out.Table(title="SubTest Results - Amplitude Tests")
-        subtestTable(st_ampl, (str(std_ratio) + " * STD"), min_crit, max_crit, str(ampl_std_thresh), subtest_bool[1], bounds=False)
+        subtestTable(st_ampl, min_crit, max_crit, str(ampl_std_thresh), subtest_bool[1], bounds=False)
     if not overall_bool[2]:
         st_phase = out.Table(title="SubTest Results - Phase Tests")
-        subtestTable(st_phase, str(phase_mean_thresh), min_crit, max_crit, str(phase_std_thresh), subtest_bool[2])
-
-    #Normal Distributio
-    print(len(data))
-    print(len(data[1]))
-    print(len(data[1][0]))
-    for ch in range(1, len(criteria[test])+1): #columns, account for the extra baseline
-        normalDistribution(data[1][ch], means[test][ch], stds[test][ch], mins[test][ch], maxs[test][ch], ("Normal Distribution for {}".format(ch)), ch)
+        subtestTable(st_phase, min_crit, max_crit, str(phase_std_thresh), subtest_bool[2])
 
     #Summary Statistics
     sum_freq  = out.Table(title="Summary Frequency")
-    summaryTable(overall_bool[0], sum_freq, means[0], mins[0], maxs[0], stds[0], data[0])
+    summaryTable(overall_bool[0], abs_bool[0], sum_freq, means[0], mins[0], maxs[0], stds[0], data[0])
 
     sum_ampl  = out.Table(title="Summary Amplitude")
-    summaryTable(overall_bool[1], sum_ampl, means[1], mins[1], maxs[1], stds[1], data[1])
+    summaryTable(overall_bool[1], abs_bool[1], sum_ampl, means[1], mins[1], maxs[1], stds[1], data[1])
 
     sum_phase  = out.Table(title="Summary Phase")
-    summaryTable(overall_bool[2], sum_phase, means[2], mins[2], maxs[2], stds[2], data[2])
+    summaryTable(overall_bool[2], abs_bool[2], sum_phase, means[2], mins[2], maxs[2], stds[2], data[2])
 
     #DC Offset Table
     dc_offset_table = out.Table(title="DC Offsets")
