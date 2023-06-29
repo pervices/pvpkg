@@ -67,6 +67,7 @@ phase_std_thresh = 0.001
 #important variables
 data = [] #This will hold all output information
 reals = []
+best_fits = []
 x_time = []
 offsets = []
 
@@ -90,7 +91,7 @@ def subPlot(x, y, ax, best_fit, title):
     ax.set_ylabel("Amplitude")
     ax.set_ylim(-0.6, 0.6)
     ax.plot(x, y, '.', color='magenta', label='Real')
-    ax.plot(x, best_fit[0][0:plotted_samples], '-', color='black', label='Best Fit')
+    ax.plot(x, best_fit, '-', color='black', label='Best Fit')
     ax.axhline(y = best_fit[1], color='green', label='DC Offset')
     ax.legend()
 
@@ -203,10 +204,10 @@ def makePlots():
         plt.suptitle("Amplitude versus Samples: Individual Channels for Run {}".format(z))
         shift = z*num_channel
 
-        subPlot(x_time[0:plotted_samples], reals[0][0:plotted_samples], ax1, bestFit(x_time, reals[0])[0], "Channel A")
-        subPlot(x_time[0:plotted_samples], reals[1][0:plotted_samples], ax2, bestFit(x_time, reals[1])[0], "Channel B")
-        subPlot(x_time[0:plotted_samples], reals[2][0:plotted_samples], ax3, bestFit(x_time, reals[2])[0], "Channel C")
-        subPlot(x_time[0:plotted_samples], reals[3][0:plotted_samples], ax4, bestFit(x_time, reals[3])[0], "Channel D")
+        subPlot(x_time[0:plotted_samples], reals[0][0:plotted_samples], ax1, best_fits[0][0:plotted_samples], "Channel A")
+        subPlot(x_time[0:plotted_samples], reals[1][0:plotted_samples], ax2, best_fits[1][0:plotted_samples], "Channel B")
+        subPlot(x_time[0:plotted_samples], reals[2][0:plotted_samples], ax3, best_fits[2][0:plotted_samples], "Channel C")
+        subPlot(x_time[0:plotted_samples], reals[3][0:plotted_samples], ax4, best_fits[3][0:plotted_samples], "Channel D")
         plt.tight_layout(pad=0.4, w_pad=0.5, h_pad=1.0) #Formatting the plots nicely
 
         # plt.show()
@@ -225,10 +226,10 @@ def makePlots():
         plt.plot(x_time[0:plotted_samples], reals[3][0:plotted_samples], '.', markersize=3, color='paleturquoise', label='Real D')
 
         #Best fits
-        plt.plot(x_time[0:plotted_samples], bestFit(x_time, reals[0+shift])[0][0][0:plotted_samples], '-', color='red', linewidth= 0.75, label='Best Fit A')
-        plt.plot(x_time[0:plotted_samples], bestFit(x_time, reals[1+shift])[0][0][0:plotted_samples], '-', color='darkorange', linewidth= 0.75, label='Best Fit B')
-        plt.plot(x_time[0:plotted_samples], bestFit(x_time, reals[2+shift])[0][0][0:plotted_samples], '-', color='limegreen', linewidth= 0.75, label='Best Fit C')
-        plt.plot(x_time[0:plotted_samples], bestFit(x_time, reals[3+shift])[0][0][0:plotted_samples], '-', color='darkslategrey', linewidth= 0.75, label='Best Fit D')
+        plt.plot(x_time[0:plotted_samples], best_fits[0][0:plotted_samples], '-', color='red', linewidth= 0.75, label='Best Fit A')
+        plt.plot(x_time[0:plotted_samples], best_fits[1][0:plotted_samples], '-', color='darkorange', linewidth= 0.75, label='Best Fit B')
+        plt.plot(x_time[0:plotted_samples], best_fits[2][0:plotted_samples], '-', color='limegreen', linewidth= 0.75, label='Best Fit C')
+        plt.plot(x_time[0:plotted_samples], best_fits[3][0:plotted_samples], '-', color='darkslategrey', linewidth= 0.75, label='Best Fit D')
         plt.legend()
 
         #plt.show()
@@ -239,7 +240,7 @@ def makePlots():
 '''
 Code used to debug issues - NOT ALWAYS CALLED
 PARAMS: mean, std, minimum, maximum
-RETURNS: NONE
+RETURNS: NONE'''
 def normalDistribution(data, mean, std, minimum, maximum, name, coun):
     os.chdir(test_plots)
 
@@ -283,7 +284,7 @@ def normalDistribution(data, mean, std, minimum, maximum, name, coun):
     plt.legend()
     plt.show()
     fig3.savefig(("NormalDist_{}".format(coun) + ".svg"))
-'''
+
 
 
 '''Turns the boolean into pass/fail NOTE: NOT SURE IF I NEED THIS
@@ -350,10 +351,6 @@ def main(iterations):
         #Making the time array, starting at the cut off
         global x_time
         x_time = np.arange(begin_cutoff/sample_rate, sample_count/sample_rate, 1/sample_rate)
-        print(len(x_time))
-
-
-        #print(len(time))
 
         vsnks.append(vsnk) #This will loop us through the channels an appropriate amount of time
         for vsnk in vsnks:
@@ -370,11 +367,12 @@ def main(iterations):
                 #print(len(x_time))
                 #print(len(real[begin_cutoff:]))
                 #used for charts
-                hold, param = bestFit(x_time, real[begin_cutoff:])
+                best_fit, param = bestFit(x_time, real[begin_cutoff:])
+                best_fits.append(best_fit[0])
                 ampl.append(param[0])
                 freq.append(param[1])
                 phase.append(param[2])
-                offset.append(hold[1])
+                offset.append(best_fit[1])
 
         #del x_time[len(x_time)-1]
 
