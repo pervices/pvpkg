@@ -12,6 +12,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.optimize import curve_fit
 from scipy.stats import norm
+from scipy.signal import find_peaks
 import sys
 import os
 import time, datetime
@@ -19,13 +20,13 @@ import time, datetime
 #USER CHOSEN VALUES
 num_channel = 4 #dependent on unit
 std_ratio = 4 #number std gets multiplied by for checks
-num_output_waves =1.5 #depends what plots look like
+num_output_waves =1 #depends what plots look like
 begin_cutoff_waves = 1 #0.00000425 #e(-5) - guessed from previous diagrams (but seconds)
 tx_burst = 10.0 #burst should be slightly delayed to ensure all data is being collected
 rx_burst = 10.25
 #SHOULD ALL PLOTS BE MADE?
             #Frequency , Ampl, Phase
-plot_toggle = [False, False, False]
+plot_toggle = [True, True, True]
 
 
 #Calling date and time for simplicity - NOTE: THIS WOULD BE HELPFUL IN MOST CODES, SHOULD WE MAKE FILE IN COMMON FOR IT??
@@ -84,17 +85,22 @@ def waveEquation(time, ampl, freq, phase, dc_offset):
 '''Plots the subplots all in the same format
 PARAMS: x, y, ax, best_fit, title
 RETURNS: NONE'''
-def subPlot(x, y, ax, best_fit, title):
+def subPlot(x, y, ax, best_fit, offset, title):
 
     ax.set_title(title)
     ax.set_xlabel("Time")
     ax.set_ylabel("Amplitude")
-    ax.set_ylim(-0.6, 0.6)
+    ax.set_ylim(-0.475, 0.475)
     ax.plot(x, y, '.', color='magenta', label='Real')
     ax.plot(x, best_fit, '-', color='black', label='Best Fit')
-    ax.axhline(y = best_fit[1], color='green', label='DC Offset')
+    #ax.plot(x, offset, color='green', label='DC Offset')
+    ax.axhline(y = offset, color='green', label='DC Offset')
     ax.legend()
 
+    f = open("Data_Plots.txt", "a")
+    f.write("\n" + title + ": " + str(y[find_peaks(y)[0][0]]))
+    f.write("\n" + str(y))
+    f.close()
 
 '''Creates the line of best fit for the given x and y
 PARAMS: x,y
@@ -185,7 +191,7 @@ def summaryTable(run_all, abs_bool, table, mean, minimum, maximum, std, data):
     table.addRow("Maximum", str(maximum[0]), str(maximum[1]), str(maximum[2]), str(maximum[3]))
     table.addRow("STD Deviations", str(std[0]), str(std[1]), str(std[2]), str(std[3]))
 
-    if not run_all or abs_bool:
+    if not run_all or abs_bool > 0:
         for i in range(runs + 1):
             table.addRow(str(i), str(data[0][i]), str(data[1][i]), str(data[2][i]), str(data[3][i]))
 
@@ -194,98 +200,54 @@ def summaryTable(run_all, abs_bool, table, mean, minimum, maximum, std, data):
 
 def makePlots():
 
-    os.chdir(test_plots)
     global plotted_samples
     plotted_samples = int(round(1/(int(wave_freq)/sample_rate))*num_output_waves)
+    f = open("Data_Plots.txt", "w")
+    f.close()
 
     #reals
-    for z in range(runs):
+    for z in range(runs+1):
         fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2,2)
         plt.suptitle("Amplitude versus Samples: Individual Channels for Run {}".format(z))
         shift = z*num_channel
 
-        subPlot(x_time[0:plotted_samples], reals[0][0:plotted_samples], ax1, best_fits[0][0:plotted_samples], "Channel A")
-        subPlot(x_time[0:plotted_samples], reals[1][0:plotted_samples], ax2, best_fits[1][0:plotted_samples], "Channel B")
-        subPlot(x_time[0:plotted_samples], reals[2][0:plotted_samples], ax3, best_fits[2][0:plotted_samples], "Channel C")
-        subPlot(x_time[0:plotted_samples], reals[3][0:plotted_samples], ax4, best_fits[3][0:plotted_samples], "Channel D")
+        os.chdir(test_plots) #To save to a filels
+
+        subPlot(x_time[0:plotted_samples], reals[z][0][0:plotted_samples], ax1, best_fits[z][0][0:plotted_samples], offsets[z][0], "Channel A")
+        subPlot(x_time[0:plotted_samples], reals[z][1][0:plotted_samples], ax2, best_fits[z][1][0:plotted_samples], offsets[z][1], "Channel B")
+        subPlot(x_time[0:plotted_samples], reals[z][2][0:plotted_samples], ax3, best_fits[z][2][0:plotted_samples], offsets[z][2], "Channel C")
+        subPlot(x_time[0:plotted_samples], reals[z][3][0:plotted_samples], ax4, best_fits[z][3][0:plotted_samples], offsets[z][3], "Channel D")
         plt.tight_layout(pad=0.4, w_pad=0.5, h_pad=1.0) #Formatting the plots nicely
 
         # plt.show()
+        os.chdir(test_plots)
         fig.savefig(("run{}_indiv".format(z) + ".svg"))
+        plt.clf()
+
 
         #Layout of the combined plot -- NOTE: ONLY CONTAINS LINE OF BEST FIT, could i some how use the previous answers as guesses, avg
-        fig2 = plt.figure("Amplitude vs Time All Channels")
+        fig = plt.figure("Amplitude vs Time All Channels")
         plt.title("Amplitude versus Samples: All Channels for Run {}".format(z))
         plt.xlabel("Time")
         plt.ylabel("Amplitude")
+        plt.ylim(-0.475, 0.475)
 
         #dots
-        plt.plot(x_time[0:plotted_samples], reals[0][0:plotted_samples], '.', markersize=3,  color='lightcoral', label='Real A')
-        plt.plot(x_time[0:plotted_samples], reals[1][0:plotted_samples], '.', markersize=3, color='coral', label='Real B')
-        plt.plot(x_time[0:plotted_samples], reals[2][0:plotted_samples], '.', markersize=3, color='lightgreen', label='Real C')
-        plt.plot(x_time[0:plotted_samples], reals[3][0:plotted_samples], '.', markersize=3, color='paleturquoise', label='Real D')
+        plt.plot(x_time[0:plotted_samples], reals[z][0][0:plotted_samples], '.', markersize=3,  color='lightcoral', label='Real A')
+        plt.plot(x_time[0:plotted_samples], reals[z][1][0:plotted_samples], '.', markersize=3, color='coral', label='Real B')
+        plt.plot(x_time[0:plotted_samples], reals[z][2][0:plotted_samples], '.', markersize=3, color='lightgreen', label='Real C')
+        plt.plot(x_time[0:plotted_samples], reals[z][3][0:plotted_samples], '.', markersize=3, color='paleturquoise', label='Real D')
 
         #Best fits
-        plt.plot(x_time[0:plotted_samples], best_fits[0][0:plotted_samples], '-', color='red', linewidth= 0.75, label='Best Fit A')
-        plt.plot(x_time[0:plotted_samples], best_fits[1][0:plotted_samples], '-', color='darkorange', linewidth= 0.75, label='Best Fit B')
-        plt.plot(x_time[0:plotted_samples], best_fits[2][0:plotted_samples], '-', color='limegreen', linewidth= 0.75, label='Best Fit C')
-        plt.plot(x_time[0:plotted_samples], best_fits[3][0:plotted_samples], '-', color='darkslategrey', linewidth= 0.75, label='Best Fit D')
+        plt.plot(x_time[0:plotted_samples], best_fits[z][0][0:plotted_samples], '-', color='red', linewidth= 0.75, label='Best Fit A')
+        plt.plot(x_time[0:plotted_samples], best_fits[z][1][0:plotted_samples], '-', color='darkorange', linewidth= 0.75, label='Best Fit B')
+        plt.plot(x_time[0:plotted_samples], best_fits[z][2][0:plotted_samples], '-', color='limegreen', linewidth= 0.75, label='Best Fit C')
+        plt.plot(x_time[0:plotted_samples], best_fits[z][3][0:plotted_samples], '-', color='darkslategrey', linewidth= 0.75, label='Best Fit D')
         plt.legend()
 
         #plt.show()
-        fig2.savefig(("run{}_together".format(z) + ".svg"))
-
-        plt.close(fig)
-        plt.close(fig2)
-'''
-Code used to debug issues - NOT ALWAYS CALLED
-PARAMS: mean, std, minimum, maximum
-RETURNS: NONE'''
-def normalDistribution(data, mean, std, minimum, maximum, name, coun):
-    os.chdir(test_plots)
-
-    #Setting up Plot
-    fig3 = plt.figure("Normal Distribution")
-    plt.suptitle("Normal Distriubutions of Run {}".format(name))
-
-    #Historgram
-    q3, q1 = np.percentile(data, [75,25])
-    iqr = q3 - q1
-    bin_width = 2*iqr*(sample_count**(-1/3)) #Freedmasn-diaconis
-    bins = int(round(((maximum - minimum)*10000)/bin_width))
-
-    data.sort()
-    plt.hist(data, bins=10)
-
-    #X-values
-    x = np.linspace(minimum, maximum, 100) #NOTE: Guessing with the bins
-
-    #Fitted Normal
-    y = norm.pdf(x, mean, std)
-    plt.plot(x, y, color="darkslategray", linewidth=2, label="Normal Distribution")
-    plt.ylim(0,1)
-
-    #Adding other important markers to plot
-    plt.plot(maximum, (max(y)/2),  color="purple", linewidth=0.5, marker=".", label="Maximum")
-    plt.plot(minimum, (max(y)/2), color="indigo", linewidth=0.5, marker=".", label="Minimum")
-
-    #The Mean
-    plt.axvline(x = mean, color = "orange", linewidth=0.5, label = "Mean")
-
-    #STD
-    plt.axvline(x = (mean-std), color = "crimson", linewidth=0.5, label = "Mean - STD")
-    plt.axvline(x = (mean+std), color = "crimson", linewidth=0.5, label = "Mean + STD")
-
-    #Larger stds
-    plt.axvline(x = (mean-(std_ratio*std)), color = "cyan",linewidth=0.5,  label = "Mean - STD*4")
-    plt.axvline(x = (mean+(std_ratio*std)), color = "cyan",linewidth=0.5,  label = "Mean + STD*4")
-
-    plt.ylim(0, (runs+5))
-    plt.legend()
-    plt.show()
-    fig3.savefig(("NormalDist_{}".format(coun) + ".svg"))
-
-
+        fig.savefig(("run{}_together".format(z) + ".svg"))
+        plt.clf()
 
 '''Turns the boolean into pass/fail NOTE: NOT SURE IF I NEED THIS
 PARAM: Word
@@ -352,31 +314,46 @@ def main(iterations):
         global x_time
         x_time = np.arange(begin_cutoff/sample_rate, sample_count/sample_rate, 1/sample_rate)
 
-        vsnks.append(vsnk) #This will loop us through the channels an appropriate amount of time
+        os.chdir(test_plots) #To save to a file
+        f = open("Data_Channels.txt", "w")
+
+        ampl = []
+        freq = []
+        phase = []
+        offset = []
+        best = []
+        real_hold = []
+
+        vsnks.append(vsnk)
         for vsnk in vsnks:
-            ampl = []
-            freq = []
-            phase = []
-            offset = []
+            #Clearing, so the appended values after this loop are only related to the latest channels
+            ampl.clear()
+            freq.clear()
+            phase.clear()
+            offset.clear()
+            best.clear()
+            real_hold.clear()
+
             for ch, channel in enumerate(vsnk): #Goes through each channel to sve data
 
                 real = [datum.real for datum in channel.data()] # saves data of real data in an array
 
-                reals.append(real[begin_cutoff:]) #Used for plots, but doesn't need to be reformatted
+                real_hold.append(real[begin_cutoff:])
+                f.write("\n" + "Channel - " + str(ch) + " Run - " + str(runs) + ":: ")
+                f.write(str(real[find_peaks(real[begin_cutoff:], height=0.4)[0][0]]))
+                f.write("\n" + str(real[begin_cutoff:]))
 
-                #print(len(x_time))
-                #print(len(real[begin_cutoff:]))
-                #used for charts
                 best_fit, param = bestFit(x_time, real[begin_cutoff:])
-                best_fits.append(best_fit[0])
+
                 ampl.append(param[0])
                 freq.append(param[1])
                 phase.append(param[2])
-                offset.append(best_fit[1])
+                best.append(best_fit[0])
+                offset.append((best_fit[1]))
 
-        #del x_time[len(x_time)-1]
-
-        #APPENDING Info
+        #Appending to the temp variables
+        reals.append(real_hold)
+        best_fits.append(best)
         offsets.append(offset)
         freq_A.append(freq[0])
         freq_AB_diff.append(freq[1]-freq[0])
@@ -391,12 +368,16 @@ def main(iterations):
         phase_AC_diff.append(phase[2]-phase[0])
         phase_AD_diff.append(phase[3]-phase[0])
 
+
+    # f.close()git
+
     #Formatting into easily referencable 3D array
     data.append((freq_A, freq_AB_diff, freq_AC_diff, freq_AD_diff))
     data.append((ampl_A, ampl_AB_diff, ampl_AC_diff, ampl_AD_diff))
     data.append((phase_A, phase_AB_diff, phase_AC_diff, phase_AD_diff))
 
-    #print(data)
+    print(len(data[0]))
+    print(len(data[0][0]))
 
     #STARTING THE CHECKS
     #2D arrays containting summary values
@@ -421,7 +402,7 @@ def main(iterations):
 
     #Calculating the Criteria
     #2D array holding thresholds of: mean, std, min, max
-    criteria = [] #[Test][crit]
+    criteria = [] #[Test][crit]ls
     #Frequency
     freq_criteria = []
     for ch in range(1, 4): #starting at 1 because index 0 is A baseline
@@ -466,7 +447,7 @@ def main(iterations):
         means[3][0] < phase_mean_thresh
         means[3][0] > -1*phase_mean_thresh
     except:
-        print("The Phase failed to be within \u00B1" + str(phase_mean_thresh) +" rads")
+        print("The Phase failed to be within \u00B1" + str(phase_mean_thresh) +" rads of 0")
         abs_bool[2] = True
 
     #doing the checks for the differnces, setting up subtest booleans
@@ -533,7 +514,7 @@ def main(iterations):
     dc_offset_table.addColumn("\u0394CA")
     dc_offset_table.addColumn("\u0394DA")
     for i in range(len(offsets)):
-        dc_offset_table.addRow(str(i), str(offsets[i][0]), str(offsets[i][1]), str(offsets[i][2]))
+        dc_offset_table.addRow(str(i), str(offsets[i][0]), str(offsets[i][1]), str(offsets[i][2]), str(offsets[i][3]))
     dc_offset_table.printData()
 
 
