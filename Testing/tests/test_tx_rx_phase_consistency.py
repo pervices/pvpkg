@@ -112,7 +112,7 @@ def bestFit(x, y):
     fit_freq = param[1]
     fit_phase = param[2]
     fit_offset = param[3]
-    best_fit = waveEquation(x, fit_amp, fit_freq, fit_phase, 0) #making the line of best fit
+    best_fit = waveEquation(x, fit_amp, fit_freq, fit_phase, fit_offset) #making the line of best fit
 
     return (best_fit, fit_offset), (fit_amp, fit_freq, fit_phase) #returns other values as tuple, so they can be easily referenced
 
