@@ -79,7 +79,7 @@ build() {
            -DENABLE_CYAN_4R4T=ON \
            ..
         
-        make -j4
+        make -j$(nproc)
 }
 
 check() {

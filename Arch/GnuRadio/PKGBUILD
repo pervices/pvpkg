@@ -45,7 +45,7 @@ echo export path
 	-DENABLE_UHD_RFNOC=OFF \
         -Wno-dev ../
 
-    make -j 5
+    make -j$(nproc)
 }
 
 check() {

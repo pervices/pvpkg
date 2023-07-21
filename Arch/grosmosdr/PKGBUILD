@@ -51,7 +51,7 @@ build() {
            -DCMAKE_INSTALL_PREFIX=/usr/ \
            -DPYTHON_EXECUTABLE=/usr/bin/python3 \
            ..
-        make -j4
+        make -j$(nproc)
 }
 
 check() {
