@@ -381,7 +381,7 @@ def fivePeaks(x, y, ampl):
         max_five.append((x_peak, y_peak))
         max_five_rounded.append((round(x_peak, decimal_round), round(y_peak, decimal_round)))
 
-        peaks = np.delete(peaks, (max_peak in np.ndenumerate(array)))
+        peaks = np.delete(peaks, (max_peak in np.ndenumerate(peaks)))
 
     return max_five_rounded, max_five
 
