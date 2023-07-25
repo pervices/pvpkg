@@ -249,6 +249,7 @@ RETURNS: NONE'''
 def subPlotFFTs(x, y, ax, title): #TODO: Add points on top of peaks
 
     ax.set_title(title)
+    ax.set_limy(0, max(fft_y) + max(fft)*0.1)
     ax.set_xlabel("Frequency")
     ax.set_ylabel("Amplitude (dB)")
     ax.plot(x, y, color='crimson')
@@ -679,7 +680,7 @@ def main(iterations):
         #Plotting the individual FFT Plots
         fig = plt.GridSpec(1, 44, wspace=5, hspace=0.3)
         plt.suptitle("Individual Channels' FFTs for Run {}".format(counter))\
-        plt.limy(0, max(fft_y) + max(fft)*0.1)
+
 
         ax1 = plt.subplot(fig[0:1, 0:10])
         ax2 = plt.subplot(fig[0:1, 11:21])
