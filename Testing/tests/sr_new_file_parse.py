@@ -250,7 +250,7 @@ def subPlotFFTs(x, y, ax, title, max_five): #TODO: Add points on top of peaks
 
     ax.set_title(title)
     ax.set_ylim(0, max(y) + max(y)*0.1)
-    ax.set_xlim(min(x)/2, max(x)/2)
+    # ax.set_xlim(min(x)/2, max(x)/2)
     ax.set_xlabel("Frequency")
     ax.set_ylabel("Amplitude (dB)")
     ax.plot(x, y, color='crimson')
@@ -380,7 +380,7 @@ def fivePeaks(x, y, ampl):
     for i in range(5):
         print(peaks)
         max_peak = peaks[np.argmax(properties['peak_heights'])]
-        x_peak, y_peak = max_peak, y[max_peak]
+        x_peak, y_peak = x[max_peak], y[max_peak]
         max_five.append((x_peak, y_peak))
         max_five_rounded.append((round(x_peak, decimal_round), round(y_peak, decimal_round)))
 
@@ -669,11 +669,10 @@ def main(iterations):
         fft_x = []
         fft_y = []
         for i in range(0, num_channels):
-
             x, y = fftValues(x_time, reals[i], imags[i])
             fft_x.append(x)
             fft_y.append(y)
-            rounded, normal = fivePeaks(x, y, ampl_vec[i])
+            rounded, normal = fivePeaks(fft_x, fft_y, ampl_vec[i])
             max_fives_rounded.append(rounded) #Allows for charts to be printed nicer
             max_fives.append(normal)#Doesn't cut off important values for math
 
