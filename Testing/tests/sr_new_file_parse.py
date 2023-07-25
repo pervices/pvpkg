@@ -564,7 +564,7 @@ def main(iterations):
 
                 best_fit, param = bestFit(x, real[begin_cutoff:])
 
-                ampl_reals.appendparm[0]
+                ampl_reals.append(parm[0])
                 freq_reals.append(param[1])
                 phase_reals.append(param[2])
                 best_fit_reals.append(best_fit[0])
