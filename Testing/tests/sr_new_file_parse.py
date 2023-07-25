@@ -250,7 +250,7 @@ def subPlotFFTs(x, y, ax, title, max_five): #TODO: Add points on top of peaks
 
     ax.set_title(title)
     ax.set_ylim(0, max(y) + max(y)*0.1)
-    ax.set_xlim(min(x)/2, max(x/2)
+    ax.set_xlim(min(x)/2, max(x/2))
     ax.set_xlabel("Frequency")
     ax.set_ylabel("Amplitude (dB)")
     ax.plot(x, y, color='crimson')
