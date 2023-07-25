@@ -246,13 +246,15 @@ def waveEquation(time, ampl, freq, phase, dc_offset):
 '''Plots the FFT subplots all in the same format
 PARAMS: x, rea;, ax, imag, title
 RETURNS: NONE'''
-def subPlotFFTs(x, y, ax, title): #TODO: Add points on top of peaks
+def subPlotFFTs(x, y, ax, title, max_five): #TODO: Add points on top of peaks
 
     ax.set_title(title)
     ax.set_ylim(0, max(y) + max(y)*0.1)
     ax.set_xlabel("Frequency")
     ax.set_ylabel("Amplitude (dB)")
     ax.plot(x, y, color='crimson')
+    for i in range(len(max_five)):
+        ax.plot(max_five[i][0], max_five[i][1], "x")
 
 
 '''Plots the IQ subplots all in the same format
@@ -345,7 +347,6 @@ def fftValues(x, reals, imags): #TODO: THIS IS A MESS, MUST FIX
     np.place(norm_y, bools_norms, 20*np.log(norm_y)) #does not log values that are 0
 
     #Setting up the X values
-    #freq = np.fft.fftshift(x/center_freq)*10000000 #ensures plot window is looking @ right area (also in MHz)
     freq = np.fft.fftshift(np.fft.fftfreq(len(x), d=(1/sample_rate)))
 
     return freq, norm_y
@@ -685,10 +686,10 @@ def main(iterations):
         ax4 = plt.subplot(fig[0:1, 33:43])
         fft_x = np.asarray(fft_x)
         fft_y = np.asarray(fft_y)
-        subPlotFFTs(fft_x[0], fft_y[0], ax1, "Channel A")
-        subPlotFFTs(fft_x[1], fft_y[1], ax2, "Channel B")
-        subPlotFFTs(fft_x[2], fft_y[2], ax3, "Channel C")
-        subPlotFFTs(fft_x[3], fft_y[3], ax4, "Channel D")
+        subPlotFFTs(fft_x[0], fft_y[0], ax1, "Channel A", max_fives[0])
+        subPlotFFTs(fft_x[1], fft_y[1], ax2, "Channel B", max_fives[1])
+        subPlotFFTs(fft_x[2], fft_y[2], ax3, "Channel C", max_fives[2])
+        subPlotFFTs(fft_x[3], fft_y[3], ax4, "Channel D", max_fives[3])
 
         #Rasterizes the plot/figures and converts to png)
         plotToPdf(plt, ("FFTPlots_" + formattedDate), counter, pdf, fft_width, fft_height, fft_pos_x, fft_pos_y)
