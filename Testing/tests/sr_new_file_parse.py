@@ -598,7 +598,7 @@ def main(iterations):
         offset_reals = np.asarray(offset_reals)
 
         ampl_vecs = np.asarray(ampl_vec)
-        ampl_imags = mp.asarray(ampl_imags)
+        ampl_imags = np.asarray(ampl_imags)
         freq_imags = np.asarray(freq_imags)
         phase_imags = np.asarray(phase_imags)
         best_fit_imags = np.asarray(best_fit_imags)
