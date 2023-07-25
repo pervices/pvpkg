@@ -250,6 +250,7 @@ def subPlotFFTs(x, y, ax, title, max_five): #TODO: Add points on top of peaks
 
     ax.set_title(title)
     ax.set_ylim(0, max(y) + max(y)*0.1)
+    ax.set_xlim(min(x)/2, max(x/2)
     ax.set_xlabel("Frequency")
     ax.set_ylabel("Amplitude (dB)")
     ax.plot(x, y, color='crimson')
@@ -347,7 +348,7 @@ def fftValues(x, reals, imags): #TODO: THIS IS A MESS, MUST FIX
     np.place(norm_y, bools_norms, 20*np.log(norm_y)) #does not log values that are 0
 
     #Setting up the X values
-    freq = np.fft.fftshift(np.fft.fftfreq(len(x)/2, d=(1/sample_rate)))
+    freq = np.fft.fftshift(np.fft.fftfreq(len(x), d=(1/sample_rate)))
 
     return freq, norm_y
 
