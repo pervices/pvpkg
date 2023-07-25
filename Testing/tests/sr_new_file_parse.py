@@ -666,7 +666,7 @@ def main(iterations):
             x, y = fftValues(x_time, reals[i], imags[i])
             fft_x.append(x)
             fft_y.append(y)
-            rounded, normal = fivePeaks(x, y, ampl_vec[i])
+            rounded, normal = fivePeaks(x, y, ampl_vecs[i])
             max_fives_rounded.append(rounded) #Allows for charts to be printed nicer
             max_fives.append(normal)#Doesn't cut off important values for math
 
