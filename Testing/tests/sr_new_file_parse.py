@@ -373,13 +373,14 @@ def fivePeaks(x, y):
 
     max_five = []
     max_five_rounded = []
-    all_peaks = find_peaks(y)[0]
-
+    peaks, properties = find_peaks(y)[0]
+    print(properies["height"][0:20])
     for i in range(5):
-        max_peak = np.argmax(np.take(y, all_peaks))
+        max_peak =
         x_peak, y_peak = x[max_peak], y[max_peak]
         max_five.append((x_peak, y_peak))
         max_five_rounded.append((round(x_peak, decimal_round), round(y_peak, decimal_round)))
+
         all_peaks = np.delete(all_peaks, max_peak)
 
     return max_five_rounded, max_five
@@ -663,14 +664,7 @@ def main(iterations):
         fft_y = []
         for i in range(0, num_channels):
 
-            # print("reaals and img b4 peaked" +str(i))
-            # print(reals[i][0:20])
-            # print(imags[i][0:20])
-            # print((0 in imags))
             x, y = fftValues(x_time, reals[i], imags[i])
-            # print("X and Y of Peaks")
-            # print(x[0:20])
-            # print(y[0:20])
             fft_x.append(x)
             fft_y.append(y)
             rounded, normal = fivePeaks(x, y)
