@@ -374,7 +374,7 @@ def fivePeaks(x, y):
     max_five = []
     max_five_rounded = []
     peaks, properties = find_peaks(y)
-    print(properties["height"][0:20])
+    print(properties["peak_heights"][0:20])
     for i in range(5):
         x_peak, y_peak = x[max_peak], y[max_peak]
         max_five.append((x_peak, y_peak))
