@@ -373,7 +373,7 @@ def fivePeaks(x, y):
 
     max_five = []
     max_five_rounded = []
-    peaks, properties = find_peaks(y)
+    peaks, properties = find_peaks(y, height=wave_freq)
     print(properties['peak_heights'])
     for i in range(5):
         x_peak, y_peak = x[max_peak], y[max_peak]
