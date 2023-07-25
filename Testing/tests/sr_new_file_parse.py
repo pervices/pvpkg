@@ -588,13 +588,13 @@ def main(iterations):
         #this for efficency, it is easier to initalize as non-numpy bc allows for flexibility in code
         reals = np.asarray(reals)
         imags = np.asarray(imags)
-        ampl_reals = np.asarray(ampl_reals)
+        ampl_vecs = np.asarray(ampl_vec)
+
         freq_reals = np.asarray(freq_reals)
         phase_reals = np.asarray(phase_reals)
         best_fit_reals = np.asarray(best_fit_reals)
         offset_reals = np.asarray(offset_reals)
 
-        ampl_vec = np.asarray()
         freq_imags = np.asarray(freq_imags)
         phase_imags = np.asarray(phase_imags)
         best_fit_imags = np.asarray(best_fit_imags)
