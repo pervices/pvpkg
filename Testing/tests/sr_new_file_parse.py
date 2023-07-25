@@ -347,7 +347,7 @@ def fftValues(x, reals, imags): #TODO: THIS IS A MESS, MUST FIX
     np.place(norm_y, bools_norms, 20*np.log(norm_y)) #does not log values that are 0
 
     #Setting up the X values
-    freq = np.fft.fftshift(np.fft.fftfreq(len(x), d=(1/sample_rate)))
+    freq = np.fft.fftshift(np.fft.fftfreq(len(x)/2, d=(1/sample_rate)))
 
     return freq, norm_y
 
