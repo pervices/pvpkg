@@ -374,12 +374,12 @@ def fivePeaks(x, y, ampl):
     max_five = []
     max_five_rounded = []
     peaks, properties = find_peaks(y, height=ampl) #NOTE: What should I use as the height...
-    print(peaks)
-    print(properties['peak_heights'])
+
     for i in range(5):
-        x_peak, y_peak = x[peaks], y[peaks]
+        max_peak = peaks[np.maxarg(properties['peak_heights'])]
+        x_peak, y_peak = x[max_peak], y[max_peaks]
         max_five.append((x_peak, y_peak))
-        #max_five_rounded.append((round(x_peak, decimal_round), round(y_peak, decimal_round)))
+        max_five_rounded.append((round(x_peak, decimal_round), round(y_peak, decimal_round)))
 
         peaks = np.delete(peaks, max_peak)
 
