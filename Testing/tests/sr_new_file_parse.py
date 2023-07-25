@@ -369,16 +369,17 @@ def plotToPdf(plt, title, counter, pdf, plot_img_width, plot_img_height, plot_im
 '''Finding the top five peaks
 PARAMS: y
 RETURNS: max_five'''
-def fivePeaks(x, y):
+def fivePeaks(x, y, ampl):
 
     max_five = []
     max_five_rounded = []
-    peaks, properties = find_peaks(y, height=wave_freq) #NOTE: What should I use as the height...
+    peaks, properties = find_peaks(y, height=ampl) #NOTE: What should I use as the height...
+    print(peaks)
     print(properties['peak_heights'])
     for i in range(5):
         x_peak, y_peak = x[peaks], y[peaks]
         max_five.append((x_peak, y_peak))
-        max_five_rounded.append((round(x_peak, decimal_round), round(y_peak, decimal_round)))
+        #max_five_rounded.append((round(x_peak, decimal_round), round(y_peak, decimal_round)))
 
         all_peaks = np.delete(all_peaks, max_peak)
 
@@ -498,14 +499,13 @@ def main(iterations):
         reals = []
         imags = []
         x_time = []
+        ampl_vect = []
 
-        ampl_reals = []
         freq_reals = []
         phase_reals = []
         best_fit_reals = []
         offset_reals = []
 
-        ampl_imags = []
         freq_imags = []
         phase_imags = []
         best_fit_imags = []
@@ -562,7 +562,7 @@ def main(iterations):
 
                 best_fit, param = bestFit(x, real[begin_cutoff:])
 
-                ampl_reals.append(param[0])
+                ampl_hold = param[0]
                 freq_reals.append(param[1])
                 phase_reals.append(param[2])
                 best_fit_reals.append(best_fit[0])
@@ -570,7 +570,7 @@ def main(iterations):
 
                 best_fit, param = bestFit(x, imag[begin_cutoff:])
 
-                ampl_imags.append(param[0])
+                ampl_vec.append(20*np.log(np.sqrt(param[0]**2 + ampl_hold**2)))
                 freq_imags.append(param[1])
                 phase_imags.append(param[2])
                 best_fit_imags.append(best_fit[0])
@@ -594,7 +594,7 @@ def main(iterations):
         best_fit_reals = np.asarray(best_fit_reals)
         offset_reals = np.asarray(offset_reals)
 
-        ampl_imags = np.asarray(ampl_imags)
+        ampl_vec = np.asarray()
         freq_imags = np.asarray(freq_imags)
         phase_imags = np.asarray(phase_imags)
         best_fit_imags = np.asarray(best_fit_imags)
@@ -666,7 +666,7 @@ def main(iterations):
             x, y = fftValues(x_time, reals[i], imags[i])
             fft_x.append(x)
             fft_y.append(y)
-            rounded, normal = fivePeaks(x, y)
+            rounded, normal = fivePeaks(x, y, ampl_vec[i])
             max_fives_rounded.append(rounded) #Allows for charts to be printed nicer
             max_fives.append(normal)#Doesn't cut off important values for math
 
