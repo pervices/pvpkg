@@ -499,17 +499,19 @@ def main(iterations):
         reals = []
         imags = []
         x_time = []
-        ampl_vec = []
+        ampl_vect = []
 
         freq_reals = []
         phase_reals = []
         best_fit_reals = []
         offset_reals = []
+        ampl_reals = []
 
         freq_imags = []
         phase_imags = []
         best_fit_imags = []
         offset_imags = []
+        ampl_imags = []
 
         #DEALING WITH PDF SET UP - INPUTS AND TITLE
         pdf.showPage() #Page break on pdf
@@ -562,7 +564,7 @@ def main(iterations):
 
                 best_fit, param = bestFit(x, real[begin_cutoff:])
 
-                ampl_hold = param[0]
+                ampl_reals.appendparm[0]
                 freq_reals.append(param[1])
                 phase_reals.append(param[2])
                 best_fit_reals.append(best_fit[0])
@@ -570,7 +572,8 @@ def main(iterations):
 
                 best_fit, param = bestFit(x, imag[begin_cutoff:])
 
-                ampl_vec.append(20*np.log(np.sqrt(param[0]**2 + ampl_hold**2)))
+                ampl_imags.append(param[0])
+                ampl_vec.append(20*np.log(np.sqrt(param[0]**2 + ampl_reals[len(ampl_reals)-1]**2))
                 freq_imags.append(param[1])
                 phase_imags.append(param[2])
                 best_fit_imags.append(best_fit[0])
@@ -588,13 +591,14 @@ def main(iterations):
         #this for efficency, it is easier to initalize as non-numpy bc allows for flexibility in code
         reals = np.asarray(reals)
         imags = np.asarray(imags)
-        ampl_vecs = np.asarray(ampl_vec)
-
+        ampl_reals = np.asarray(ampl_reals)
         freq_reals = np.asarray(freq_reals)
         phase_reals = np.asarray(phase_reals)
         best_fit_reals = np.asarray(best_fit_reals)
         offset_reals = np.asarray(offset_reals)
 
+        ampl_vecs = np.asarray()
+        ampl_imags = mp.asarray(ampl_imags)
         freq_imags = np.asarray(freq_imags)
         phase_imags = np.asarray(phase_imags)
         best_fit_imags = np.asarray(best_fit_imags)
@@ -666,7 +670,7 @@ def main(iterations):
             x, y = fftValues(x_time, reals[i], imags[i])
             fft_x.append(x)
             fft_y.append(y)
-            rounded, normal = fivePeaks(x, y, ampl_vecs[i])
+            rounded, normal = fivePeaks(x, y, ampl_vec[i])
             max_fives_rounded.append(rounded) #Allows for charts to be printed nicer
             max_fives.append(normal)#Doesn't cut off important values for math
 
