@@ -573,7 +573,7 @@ def main(iterations):
                 best_fit, param = bestFit(x, imag[begin_cutoff:])
 
                 ampl_imags.append(param[0])
-                ampl_vec.append(20*np.log(np.sqrt(param[0]**2 + ampl_reals[len(ampl_reals)-1]**2))
+                ampl_vec.append(20*np.log(np.sqrt(param[0]**2 + ampl_reals[len(ampl_reals)-1]**2)))
                 freq_imags.append(param[1])
                 phase_imags.append(param[2])
                 best_fit_imags.append(best_fit[0])
