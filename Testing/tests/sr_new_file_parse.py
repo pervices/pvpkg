@@ -499,7 +499,7 @@ def main(iterations):
         reals = []
         imags = []
         x_time = []
-        ampl_vect = []
+        ampl_vec = []
 
         freq_reals = []
         phase_reals = []
