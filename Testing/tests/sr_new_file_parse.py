@@ -84,7 +84,7 @@ font = "Times-Roman"
 gen_font_size = 12
 bold_font = "Times-Bold"
 
-
+rcParams['agg.path.chunksize'] = 115
 
 
 ''' DEBUGGER: Prints out the x and y placements of the pixels, to allow for nice layout
