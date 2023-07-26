@@ -740,7 +740,7 @@ def main(iterations):
 
         #IQ Merged
         for i, colour in zip(range(4), colours):
-            ax1.plot(IQ_plots[i].get_xdata(), IQ_plots[i].get_ydata, color=colour)
+            ax1.plot(IQ_plots[i].get_xdata(), IQ_plots[i].get_ydata(), color=colour)
 
         plt.show()
 
