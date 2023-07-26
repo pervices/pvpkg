@@ -254,7 +254,7 @@ def subPlotFFTs(x, y, ax, title, max_five, nf): #TODO: Add points on top of peak
     ax.set_xlabel("Frequency")
     ax.set_ylabel("Amplitude (dB)")
     fft, = ax.plot(x, y, color='crimson')
-    ax.axhline(y = nf, '-', markersize=0.5, alpha=0.3, label="Noise Floor")
+    ax.axhline(y = nf, markersize=0.5, alpha=0.3, label="Noise Floor")
 
     for i in range(len(max_five)):
         ax.plot(max_five[i][0], max_five[i][1], "x")
@@ -701,7 +701,7 @@ def main(iterations):
         FFT_plots.append(subPlotFFTs(fft_x[0], fft_y[0], ax1, "Channel A", max_fives[0], noise_floor[0]))
         FFT_plots.append(subPlotFFTs(fft_x[1], fft_y[1], ax2, "Channel B", max_fives[1], noise_floor[1]))
         FFT_plots.append(subPlotFFTs(fft_x[2], fft_y[2], ax3, "Channel C", max_fives[2], noise_floor[2]))
-        FFT_plots.append(subPlotFFTs(fft_x[3], fft_y[3], ax4, "Channel D", max_fives[3], noise_floor[3])
+        FFT_plots.append(subPlotFFTs(fft_x[3], fft_y[3], ax4, "Channel D", max_fives[3], noise_floor[3]))
 
         #Rasterizes the plot/figures and converts to png)
         plotToPdf(plt, ("FFTPlots_" + formattedDate), counter, pdf, fft_width, fft_height, fft_pos_x, fft_pos_y)
