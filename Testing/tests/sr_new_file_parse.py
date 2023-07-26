@@ -746,7 +746,7 @@ def main(iterations):
             ax1.set_title("All Channels - Real Data")
             ax1.plot(IQ_plots[i].get_xdata(), IQ_plots[i].get_ydata(), '-', color=colour, markersize=0.2, label="Channel {}".format(i))
             ax2.set_title("All Channels - FFT Graphs")
-            ax2.plot(FFT_plots[i].get_xdata(), IQ_plots[i].get_ydata(), '-', color=colour, markersize=0.2, label="Channel {}".format(i))
+            ax2.plot(FFT_plots[i].get_xdata(), FFT_plots[i].get_ydata(), '-', color=colour, markersize=0.2, label="Channel {}".format(i))
 
         ax1.legend(loc='center', bbox_to_anchor=(1.05,0.5))
 
@@ -754,7 +754,6 @@ def main(iterations):
         #Rasterizes the plot/figures and converts to png)
         plotToPdf(plt, ("TogetherPlots_" + formattedDate), counter, pdf, tgth_width, tgth_height, tgth_x, tgth_y)
         plt.clf()
-
 
         ##SUMMARY PAGE
         header(pdf)
