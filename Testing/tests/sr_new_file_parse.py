@@ -733,14 +733,14 @@ def main(iterations):
 
         #Setting the plot
         fig = plt.GridSpec(17, 41, wspace=5, hspace=0.3)
-        ax1 = plt.subplot(fig[0:8, 0:20])
-        ax2 = plt.subplot(fig[9:17, 21:41])
+        ax1 = plt.subplot(fig[0:17, 0:20])
+        ax2 = plt.subplot(fig[0:17, 21:41])
 
         colours = ['royalblue', 'maroon', 'darkolivegreen', 'mediumvioletred']
 
         #IQ Merged
         for i, colour in zip(range(4), colours):
-            ax1.plot(IQ_plots[i].get_xdata(), IQ_plots[i].get_ydata(), color=colour)
+            ax1.plot(IQ_plots[i].get_xdata(), IQ_plots[i].get_ydata(), '-', color=colour, markersize=0.2)
 
         plt.show()
 
