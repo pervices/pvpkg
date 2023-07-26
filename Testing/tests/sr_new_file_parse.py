@@ -732,9 +732,9 @@ def main(iterations):
         pdf.showPage()
 
         #Setting the plot
-        fig = plt.GridSpec(2, 5, wspace=5, hspace=0.3)
-        ax1 = plt.subplot(fig[0:2, 0:2])
-        ax2 = plt.subplot(fig[0:2, 3:5])
+        fig = plt.GridSpec(17, 41, wspace=5, hspace=0.3)
+        ax1 = plt.subplot(fig[0:8, 0:20])
+        ax2 = plt.subplot(fig[9:17, 21:41])
 
         colours = ['royalblue', 'maroon', 'darkolivegreen', 'mediumvioletred']
 
