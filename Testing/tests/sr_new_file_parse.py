@@ -731,18 +731,30 @@ def main(iterations):
         header(pdf)
         pdf.showPage()
 
+        tgth_width, tgth_height = 800, 600
+        tgth_x, tgth_y = 10, 10
+
         #Setting the plot
-        fig = plt.GridSpec(17, 41, wspace=5, hspace=0.3)
+        fig = plt.GridSpec(17, 45, wspace=5, hspace=0.3)
         ax1 = plt.subplot(fig[0:17, 0:20])
-        ax2 = plt.subplot(fig[0:17, 21:41])
+        ax2 = plt.subplot(fig[0:17, 25:45])
 
         colours = ['royalblue', 'maroon', 'darkolivegreen', 'mediumvioletred']
 
-        #IQ Merged
+        #plotting them all by pulling previous data
         for i, colour in zip(range(4), colours):
-            ax1.plot(IQ_plots[i].get_xdata(), IQ_plots[i].get_ydata(), '-', color=colour, markersize=0.2)
+            ax1.set_title("All Channels - Real Data")
+            ax1.plot(IQ_plots[i].get_xdata(), IQ_plots[i].get_ydata(), '-', color=colour, markersize=0.2, label="Channel {}".format(i))
+            ax2.set_title("All Channels - FFT Graphs")
+            ax2.plot(FFT_plots[i].get_xdata(), IQ_plots[i].get_ydata(), '-', color=colour, markersize=0.2, label="Channel {}".format(i))
 
-        plt.show()
+        ax1.legend(loc='center', bbox_to_anchor=(1.05,0.5))
+
+        # plt.show()
+        #Rasterizes the plot/figures and converts to png)
+        plotToPdf(plt, ("TogetherPlots_" + formattedDate), counter, pdf, tgth_width, tgth_height, tgth_x, tgth_y)
+        plt.clf()
+
 
         ##SUMMARY PAGE
         header(pdf)
