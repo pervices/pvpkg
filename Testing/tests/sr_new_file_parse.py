@@ -639,7 +639,7 @@ def main(iterations):
         IQ_plots.append(subPlotIQs(x_time[0:plotted_samples], reals[1][0:plotted_samples], imags[1][0:plotted_samples], best_fit_reals[1][0:plotted_samples], best_fit_imags[1][0:plotted_samples], offset_reals[1], offset_imags[1], ax2, "Channel B"))
         IQ_plots.append(subPlotIQs(x_time[0:plotted_samples], reals[2][0:plotted_samples], imags[2][0:plotted_samples], best_fit_reals[2][0:plotted_samples], best_fit_imags[2][0:plotted_samples], offset_reals[2], offset_imags[2], ax3, "Channel C"))
         IQ_plots.append(subPlotIQs(x_time[0:plotted_samples], reals[3][0:plotted_samples], imags[3][0:plotted_samples], best_fit_reals[3][0:plotted_samples], best_fit_imags[3][0:plotted_samples], offset_reals[3], offset_imags[3], ax4, "Channel D"))
-        ax4.legend(loc='top left', bbox_to_anchor=(1.05,0.5))
+        ax4.legend(loc='upper left', bbox_to_anchor=(1.05,0.5))
 
         # plt.show()
         #Rasterizes the plot/figures and converts to png)
