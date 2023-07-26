@@ -190,7 +190,7 @@ def header(pdf):
     header_font_size = 10
     header_x, header_y = 633, 584
     logo_width, logo_height = 75, 25
-    logo_x, logo_y = header_x - logo_width - 2, header_y - 12
+    logo_x, logo_y = header_x - logo_width - 2, header_y - 17
 
     #Header Writing
     header = pdf.beginText()
@@ -246,17 +246,20 @@ def waveEquation(time, ampl, freq, phase, dc_offset):
 '''Plots the FFT subplots all in the same format
 PARAMS: x, rea;, ax, imag, title
 RETURNS: NONE'''
-def subPlotFFTs(x, y, ax, title, max_five): #TODO: Add points on top of peaks
+def subPlotFFTs(x, y, ax, title, max_five, nf): #TODO: Add points on top of peaks
 
     ax.set_title(title)
     ax.set_ylim(0, max(y) + max(y)*0.1)
     # ax.set_xlim(min(x)/2, max(x)/2)
     ax.set_xlabel("Frequency")
     ax.set_ylabel("Amplitude (dB)")
-    ax.plot(x, y, color='crimson')
+    fft, = ax.plot(x, y, color='crimson')
+    axhline(y = , nf, '-', markersize=0.5, alpha=0.3, label="Noise Floor")
+
     for i in range(len(max_five)):
         ax.plot(max_five[i][0], max_five[i][1], "x")
 
+    return fft
 
 '''Plots the IQ subplots all in the same format
 PARAMS: x, real, ax, imag, best_fit_real, best_fit_imag, title
@@ -267,21 +270,23 @@ def subPlotIQs (x, real,imag, best_fit_real, best_fit_imag, offset_real, offset_
     best_fit_imag *= 1000
     ax.set_xlabel("Time")
     ax.set_ylabel("Amplitude (kV)") #NOTE: I HOPE THIS IS RIGHT
-    ax.plot(x, best_fit_real, '-', markersize=0.2, color='indianred', label="Real Best Fit")
-    ax.plot(x, real, '.', markersize=1, color='crimson', label="Real")
-    ax.axhline(y = offset_real, markersize=0.2, color='red', label='Real Offset')
-    ax.plot(x, best_fit_imag, '-', markersize=0.2, color='darkmagenta', label="Imaginary Best Fit")
-    ax.plot(x, imag, '.', markersize=1, color='purple', label="Imaginary")
-    ax.axhline(y = offset_imag, markersize=0.2, color='indigo', label='Imaginary Offset')
+    bf_r, = ax.plot(x, best_fit_real, '-', markersize=0.1, color='indianred', label="Real Best Fit")
+    ax.plot(x, real, '.', markersize=2, color='crimson', label="Real")
+    ax.axhline(y = offset_real, markersize=0.025, color='red', alpha=0.4, label='Real Offset')
+    ax.plot(x, best_fit_imag, '-', markersize=0.1, color='darkmagenta', label="Imaginary Best Fit")
+    ax.plot(x, imag, '.', markersize=2, color='purple', label="Imaginary")
+    ax.axhline(y = offset_imag, markersize=0.025, color='indigo', alpha=0.4, label='Imaginary Offset')
 
     real_peaks = find_peaks(real, distance=period)
     imag_peaks = find_peaks(imag, distance=period)
 
     for r, i in zip(real_peaks[0], imag_peaks[0]):
         ax.axvline(x = x[r], linestyle='--', alpha=0.5, color='rosybrown', markersize=0.05)
-        ax.text(x[r], max(best_fit_real) + 0.15, "\u2190" + str(round(x[r], 3)), fontsize=7, verticalalignment='top', )
+        ax.text(x[r], max(best_fit_real) + 1, "\u2190" + str(round(x[r], 3)), fontsize=7, verticalalignment='top', )
         ax.axvline(x = x[i],  linestyle='--', alpha=0.5, color='darkslateblue',markersize=0.05)
-        ax.text(x[i], min(best_fit_imag) - 0.15, "\u2190" + str(round(x[i], 3)), fontsize=7, verticalalignment='top')
+        ax.text(x[i], min(best_fit_imag) - 1, "\u2190" + str(round(x[i], 3)), fontsize=7, verticalalignment='top')
+
+    return bf_r
 
 '''Creates the line of best fit for the given x and y
 PARAMS: x,y
@@ -620,6 +625,7 @@ def main(iterations):
         #calculating plot_sample_ratio
         plotted_samples = int(period*num_output_waves)
 
+        IQ_plots = []
         #Plotting the imaginary and real values
         fig = plt.GridSpec(1, 28, wspace=1, hspace=0.3)
 
@@ -628,11 +634,12 @@ def main(iterations):
         ax2 = plt.subplot(fig[0:1, 6:11])
         ax3 = plt.subplot(fig[0:1, 12:17])
         ax4 = plt.subplot(fig[0:1, 18:23])
-        subPlotIQs(x_time[0:plotted_samples], reals[0][0:plotted_samples], imags[0][0:plotted_samples], best_fit_reals[0][0:plotted_samples], best_fit_imags[0][0:plotted_samples], offset_reals[0], offset_imags[0], ax1, "Channel A")
-        subPlotIQs(x_time[0:plotted_samples], reals[1][0:plotted_samples], imags[1][0:plotted_samples], best_fit_reals[1][0:plotted_samples], best_fit_imags[1][0:plotted_samples], offset_reals[1], offset_imags[1], ax2, "Channel B")
-        subPlotIQs(x_time[0:plotted_samples], reals[2][0:plotted_samples], imags[2][0:plotted_samples], best_fit_reals[2][0:plotted_samples], best_fit_imags[2][0:plotted_samples], offset_reals[2], offset_imags[2], ax3, "Channel C")
-        subPlotIQs(x_time[0:plotted_samples], reals[3][0:plotted_samples], imags[3][0:plotted_samples], best_fit_reals[3][0:plotted_samples], best_fit_imags[3][0:plotted_samples], offset_reals[3], offset_imags[3], ax4, "Channel D")
-        ax4.legend(loc='center left', bbox_to_anchor=(1.05,0.5))
+
+        IQ_plots.append(subPlotIQs(x_time[0:plotted_samples], reals[0][0:plotted_samples], imags[0][0:plotted_samples], best_fit_reals[0][0:plotted_samples], best_fit_imags[0][0:plotted_samples], offset_reals[0], offset_imags[0], ax1, "Channel A"))
+        IQ_plots.append(subPlotIQs(x_time[0:plotted_samples], reals[1][0:plotted_samples], imags[1][0:plotted_samples], best_fit_reals[1][0:plotted_samples], best_fit_imags[1][0:plotted_samples], offset_reals[1], offset_imags[1], ax2, "Channel B"))
+        IQ_plots.append(subPlotIQs(x_time[0:plotted_samples], reals[2][0:plotted_samples], imags[2][0:plotted_samples], best_fit_reals[2][0:plotted_samples], best_fit_imags[2][0:plotted_samples], offset_reals[2], offset_imags[2], ax3, "Channel C"))
+        IQ_plots.append(subPlotIQs(x_time[0:plotted_samples], reals[3][0:plotted_samples], imags[3][0:plotted_samples], best_fit_reals[3][0:plotted_samples], best_fit_imags[3][0:plotted_samples], offset_reals[3], offset_imags[3], ax4, "Channel D"))
+        ax4.legend(loc='top left', bbox_to_anchor=(1.05,0.5))
 
         # plt.show()
         #Rasterizes the plot/figures and converts to png)
@@ -654,7 +661,7 @@ def main(iterations):
         IQ_table.drawOn(pdf, IQ_table_x, IQ_table_y)
 
 
-        #FFT PLOT AND TABLE
+        ##FFT PLOT AND TABLE
         pdf.showPage()
         header(pdf)
         #Positional
@@ -676,10 +683,14 @@ def main(iterations):
             max_fives_rounded.append(rounded) #Allows for charts to be printed nicer
             max_fives.append(normal)#Doesn't cut off important values for math
 
+        FFT_plots = []
         #Plotting the individual FFT Plots
         fig = plt.GridSpec(1, 44, wspace=5, hspace=0.3)
         plt.suptitle("Individual Channels' FFTs for Run {}".format(counter))\
 
+        #Noise Floor
+        noise_floor = noiseFloor(fft_y)
+        noise_floor = np.asarray(np.asarray(noise_floor))
 
         ax1 = plt.subplot(fig[0:1, 0:10])
         ax2 = plt.subplot(fig[0:1, 11:21])
@@ -687,10 +698,10 @@ def main(iterations):
         ax4 = plt.subplot(fig[0:1, 33:43])
         fft_x = np.asarray(fft_x)
         fft_y = np.asarray(fft_y)
-        subPlotFFTs(fft_x[0], fft_y[0], ax1, "Channel A", max_fives[0])
-        subPlotFFTs(fft_x[1], fft_y[1], ax2, "Channel B", max_fives[1])
-        subPlotFFTs(fft_x[2], fft_y[2], ax3, "Channel C", max_fives[2])
-        subPlotFFTs(fft_x[3], fft_y[3], ax4, "Channel D", max_fives[3])
+        FFT_plots.append(subPlotFFTs(fft_x[0], fft_y[0], ax1, "Channel A", max_fives[0], noise_floor[0]))
+        FFT_plots.append(subPlotFFTs(fft_x[1], fft_y[1], ax2, "Channel B", max_fives[1], noise_floor[1]))
+        FFT_plots.append(subPlotFFTs(fft_x[2], fft_y[2], ax3, "Channel C", max_fives[2], noise_floor[2]))
+        FFT_plots.append(subPlotFFTs(fft_x[3], fft_y[3], ax4, "Channel D", max_fives[3], noise_floor[3])
 
         #Rasterizes the plot/figures and converts to png)
         plotToPdf(plt, ("FFTPlots_" + formattedDate), counter, pdf, fft_width, fft_height, fft_pos_x, fft_pos_y)
@@ -716,18 +727,30 @@ def main(iterations):
         # table_title.textLine(text=("Top Five Peaks: "))
         # pdf.drawText(table_title)
 
-        #SUMMARY PAGE
+        ##All merged plots
         header(pdf)
         pdf.showPage()
 
+        #Setting the plot
+        fig = plt.GridSpec(2, 5, wspace=5, hspace=0.3)
+        ax1 = plt.subplot(fig[0:2, 0:2])
+        ax2 = plt.subplot(fig[0:2, 3:5])
+
+        colours = ['royalblue', 'maroon', 'darkolivegreen', 'mediumvioletred']
+
+        #IQ Merged
+        for i, colour in range(4), colours:
+            ax1.plot(IQ_plots[i].get_xdata(), IQ_plots[i].get_ydata, color=colour)
+
+        plt.show()
+
+        ##SUMMARY PAGE
+        header(pdf)
+        pdf.showPage()
 
         stats_summary_x, stats_summary_y = 15, 500
         nf_table_width, nf_table_height = 600, 20
         nf_x, nf_y = stats_summary_x, stats_summary_y -150
-
-        #Noise Floor
-        noise_floor = noiseFloor(fft_y)
-        noise_floor = np.asarray(np.asarray(noise_floor))
 
         stats_summary = pdf.beginText()
         stats_summary.setTextOrigin(stats_summary_x, stats_summary_y)
@@ -788,8 +811,8 @@ def main(iterations):
                                                ('GRID', (0,14), (5,16), 1, colors.black),
                                             ('BACKGROUND', (0,1), (6,1), '#D5D6D5'),
                                             ('BACKGROUND', (0,5), (6,5), '#D5D6D5'),
-                                            ('BACKGROUND', (0,9), (6,9), '#D5D6D5'),
                                             ('BACKGROUND', (0,13), (6,13), '#D5D6D5')])
+
         #print(type(peak_table))
         snr_table.wrapOn(pdf, snr_width, snr_height)
         snr_table.drawOn(pdf, snr_x, snr_y)
