@@ -4,14 +4,20 @@ SHELL ["/bin/bash", "-c", "-x"]
 WORKDIR /home/artifacts
 WORKDIR /home/notroot/testing
 WORKDIR /home/notroot
-# installing basic essential packages to container to allow for rest of build to occur
+###
+# Initial Setup and essential package installation
+###
 RUN apt-get update && \ 
 apt-get -y install dpkg-dev sudo apt-utils dh-make bzr-builddeb equivs xz-utils iputils-ping net-tools software-properties-common cmake git coreutils build-essential && \
 add-apt-repository ppa:ubuntu-toolchain-r/test && \
 apt-get -y install python3-pip && \
+apt-get -y install vim gosu && \
 #using pip to install recent versions of packages not yet in repos
 pip3 install pygccxml && \
-# clone pvpkg repo to get uhd and gnuradio Debian directories, as well as modified cmake and uhd_types files to patch
+###
+# Initial cloning of PVPKG
+###
+# Clones the pvpkg repo to get relevant debian build directories, along with any patches
 git clone https://github.com/pervices/pvpkg.git && \
 cd pvpkg/ubuntu/22.04 && \
 mv gnuradio uhd volk InstallInstructionsUbuntu /home/notroot && \
@@ -20,6 +26,9 @@ mv variables.sh /home/notroot/testing && \
 mv tests /home/notroot/testing && \
 mv test-only.sh /home/notroot/testing
 RUN apt-get update
+###
+# UHD Configuration and Installation
+###
 WORKDIR /home/notroot/uhd
 # clone latest pervices uhd version, tar repo as orig.tar.gz, and build debian package
 RUN git clone -b master https://github.com/pervices/uhd.git && \
@@ -32,6 +41,9 @@ cd uhd && \
 dpkg-buildpackage -us -uc -b && \
 cd .. && \
 dpkg -i uhd*.deb
+###
+# Volk Configuration and Installation
+###
 WORKDIR /home/notroot/volk
 RUN git clone --branch v2.5.1 --recursive https://github.com/gnuradio/volk.git && \
 #cd debian && \
@@ -46,15 +58,24 @@ cd volk && \
 mkdir build && cd build && \
 cmake -DCMAKE_BUILD_TYPE=Release -DPYTHON_EXECUTABLE=/usr/bin/python3 ../ && \
 make && make install
+###
+# Volk Configuration and Installation
+###
 WORKDIR /home/notroot/gnuradio
-# clone gnuradio 3.9 from github, replace Cmake and uhd types files from Github with those from pvpkg to allow for successful build
-RUN git clone -b maint-3.10 https://github.com/gnuradio/gnuradio.git && \
-cd gnuradio && git reset --hard v3.10.5.1 && cd .. && \
+###TEST
+RUN wget http://archive.ubuntu.com/ubuntu/pool/universe/g/gnuradio/gnuradio_3.10.1.1.orig.tar.gz && \
+tar xf gnuradio_3.10.1.1.orig.tar.gz && \
+mv debian gnuradio-3.10.1.1/ && \
+cd gnuradio-3.10.1.1/debian
+## BYPASSED
+## We are using the ubuntu source files because the latest ones don't seem to compile.
+# RUN git clone -b maint-3.10 https://github.com/gnuradio/gnuradio.git && \
+# cd gnuradio && git reset --hard v3.10.5.1 && cd .. && \
 # create orig.tar.gz of gnuradio repo nad build debian package
-tar -czvf gnuradiopv_3.10.orig.tar.gz gnuradio && \
-mv debian gnuradio && \
-cd gnuradio/debian && \
-mk-build-deps -i --tool 'apt-get -f --yes' control && \
+# tar -czvf gnuradiopv_3.10.orig.tar.gz gnuradio && \
+# mv debian gnuradio && \
+# cd gnuradio/debian &&
+RUN mk-build-deps -i --tool 'apt-get -f --yes' control && \
 cd .. && \
 dpkg-buildpackage -us -uc -b && \
 cd .. && \
