@@ -254,7 +254,7 @@ def subPlotFFTs(x, y, ax, title, max_five, nf): #TODO: Add points on top of peak
     ax.set_xlabel("Frequency")
     ax.set_ylabel("Amplitude (dB)")
     fft, = ax.plot(x, y, color='crimson')
-    axhline(y = nf, '-', markersize=0.5, alpha=0.3, label="Noise Floor")
+    ax.axhline(y = nf, '-', markersize=0.5, alpha=0.3, label="Noise Floor")
 
     for i in range(len(max_five)):
         ax.plot(max_five[i][0], max_five[i][1], "x")
