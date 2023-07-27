@@ -77,7 +77,7 @@ max_peak_info = [] #[iteration][[freq][amplitude][snr]]
 
 #page stuff
 page_count = 0
-page_total = num_channels*5 + 1
+page_total = num_channels*4 + 2
 
 
 #Adding logo - more efficent to just initialize at beginning
@@ -844,20 +844,21 @@ def main(iterations):
         snr_table.wrapOn(pdf, snr_width, snr_height)
         snr_table.drawOn(pdf, snr_x, snr_y)
 
-        #Pass/Fail
-        pdf.showPage()
-        header(pdf)
+    #Pass/Fail final page
+    pdf.showPage()
+    page_count += 1
+    header(pdf)
 
-        #Positionalgalues
-        title_font_size = 26
-        title_x, title_y = 100, 575
+    #Positionalgalues
+    title_font_size = 26
+    title_x, title_y = 100, 575
 
-        #Setting up title on Title Page
-        title = pdf.beginText()
-        title.setTextOrigin(title_x, title_y)
-        title.setFont(font, title_font_size)
-        title.textLine(text=("Summary Page for: " + unit_name + " - " + formattedDate))
-        pdf.drawText(title)
+    #Setting up title on Title Page
+    title = pdf.beginText()
+    title.setTextOrigin(title_x, title_y)
+    title.setFont(font, title_font_size)
+    title.textLine(text=("Summary Page for: " + unit_name + " - " + formattedDate))
+    pdf.drawText(title)
 
 
 
