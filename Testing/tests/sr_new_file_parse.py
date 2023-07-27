@@ -506,14 +506,23 @@ def main(iterations):
     pdf = canvas.Canvas(file_title, pagesize=landscape(letter)) #Setting the page layout and file name
     pdf.setTitle(doc_title)
 
-    #TItle page
-    # pdf.showPage()
+    #Title page
+    pdf.showPage()
     drawMyRuler(pdf) #TODO: REMOVE AT THE END
     titlePage(pdf)
 
     counter = 0 #Keeps track of run
     for it in iterations: #Will iterate per Run
         counter += 1
+
+        #Page One Set up
+        pdf.showPage() #Page break on pdf
+        global page_count
+        page_count += 1
+        drawMyRuler(pdf)
+        header(pdf)
+        runTitle(pdf, str(counter))
+
 
         #Initilize Important Arrays
         reals = []
@@ -591,14 +600,6 @@ def main(iterations):
                 best_fit_imags.append(best_fit[0])
                 offset_imags.append((best_fit[1]))
 
-                # print("It: " + str(it) + " Ch: " + str(ch))
-                # print("Reals: " + str(real[begin_cutoff:begin_cutoff+20]))
-                # print("Img: " + str(imag[begin_cutoff:begin_cutoff+20]))
-        #
-        # print("Reals: " + str(len(reals)) + " Reals[0]: " +str(len(reals[0])))
-        # print("BF Reals: " + str(len(best_fit_reals)) + " Reals[0]: " +str(len(best_fit_reals[0])))
-        # print("Offset Reals: " + str(len(offset_reals)))
-
         #Making them all np.arrays
         #this for efficency, it is easier to initalize as non-numpy bc allows for flexibility in code
         reals = np.asarray(reals)
@@ -616,13 +617,6 @@ def main(iterations):
         best_fit_imags = np.asarray(best_fit_imags)
         offset_imags = np.asarray(offset_imags)
 
-        #Page One Set up
-        pdf.showPage() #Page break on pdf
-        global page_count
-        page_count += 1
-        drawMyRuler(pdf)
-        header(pdf)
-        runTitle(pdf, str(counter))
 
         #VISUALS on PDF
         #IMAG AND REAL
@@ -653,6 +647,7 @@ def main(iterations):
         IQ_plots.append(subPlotIQs(x_time[0:plotted_samples], reals[3][0:plotted_samples], imags[3][0:plotted_samples], best_fit_reals[3][0:plotted_samples], best_fit_imags[3][0:plotted_samples], offset_reals[3], offset_imags[3], ax4, "Channel D"))
         ax4.legend(loc='upper left', bbox_to_anchor=(1.05,0.5))
 
+        IQ_plots = np.asarray(IQ_plots)
         # plt.show()
         #Rasterizes the plot/figures and converts to png)
         plotToPdf(plt, ("IQPlots_" + formattedDate), counter, pdf, plot_img_width, plot_img_height, plot_img_pos_x, plot_img_pos_y)
@@ -696,6 +691,11 @@ def main(iterations):
             max_fives_rounded.append(rounded) #Allows for charts to be printed nicer
             max_fives.append(normal)#Doesn't cut off important values for math
 
+        max_fives = np.asarray(max_fives)
+        max_fives_rounded = np.asarray(max_five_rounded)
+        fft_x = np.asarray(fft_x)
+        fft_y = np.asarray(fft_y)
+
         FFT_plots = []
         #Plotting the individual FFT Plots
         fig = plt.GridSpec(1, 44, wspace=5, hspace=0.3)
@@ -716,6 +716,7 @@ def main(iterations):
         FFT_plots.append(subPlotFFTs(fft_x[2], fft_y[2], ax3, "Channel C", max_fives[2], noise_floor[2]))
         FFT_plots.append(subPlotFFTs(fft_x[3], fft_y[3], ax4, "Channel D", max_fives[3], noise_floor[3]))
 
+        FFT_plots = np.asarray(FFT_plots)
         #Rasterizes the plot/figures and converts to png)
         plotToPdf(plt, ("FFTPlots_" + formattedDate), counter, pdf, fft_width, fft_height, fft_pos_x, fft_pos_y)
         plt.clf()
@@ -741,9 +742,9 @@ def main(iterations):
         # pdf.drawText(table_title)
 
         ##All merged plots
-        header(pdf)
-        page_count += 1
         pdf.showPage()
+        page_count += 1
+        header(pdf)
 
         tgth_width, tgth_height = 800, 600
         tgth_x, tgth_y = 10, 10
@@ -751,7 +752,7 @@ def main(iterations):
         #Setting the plot
         fig = plt.GridSpec(17, 45, wspace=5, hspace=0.3)
         ax1 = plt.subplot(fig[0:17, 0:20])
-        ax2 = plt.subplot(fig[0:17, 25:45])
+        ax2 = plt.subplot(fig[0:17, 20:40])
 
         colours = ['royalblue', 'maroon', 'darkolivegreen', 'mediumvioletred']
 
@@ -762,7 +763,7 @@ def main(iterations):
             ax2.set_title("All Channels - FFT Graphs")
             ax2.plot(FFT_plots[i].get_xdata(), FFT_plots[i].get_ydata(), '-', color=colour, markersize=0.2, label="Channel {}".format(i))
 
-        ax1.legend(loc='center', bbox_to_anchor=(1.05,0.5))
+        ax2.legend(loc='upper left', bbox_to_anchor=(1.05,0.5))
 
         # plt.show()
         #Rasterizes the plot/figures and converts to png)
@@ -807,6 +808,8 @@ def main(iterations):
         fft_snr = []
         for i in range(num_channels):
             fft_snr.append(toSNR(fft_y[i]))
+
+        fft_snr = np.asarray(fft_snr)
 
         #At this point, the snr shoud be in order of max peak
         summary_info.append((max_fives[0][0][0], max_fives[0][0][1], fft_snr[0]))
