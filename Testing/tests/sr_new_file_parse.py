@@ -507,7 +507,7 @@ def main(iterations):
     pdf.setTitle(doc_title)
 
     #TItle page
-    pdf.showPage()
+    # pdf.showPage()
     drawMyRuler(pdf) #TODO: REMOVE AT THE END
     titlePage(pdf)
 
