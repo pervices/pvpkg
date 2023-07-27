@@ -37,7 +37,7 @@ def ship_test_tx(channels):    #TODO: ENSURE FIRST RUN DOESN'T HAVE TO HAVE EACH
     channels = list(range(channels))
     wave_freq = 100000
     sample_rate = 9848485
-    sample_count = sample_rate/2
+    sample_count = int(sample_rate/2)
     tx_gain = 25
     rx_gain = 25
     #name = "Tx Operation"
