@@ -66,16 +66,8 @@ WORKDIR /home/notroot/gnuradio
 RUN wget http://archive.ubuntu.com/ubuntu/pool/universe/g/gnuradio/gnuradio_3.10.1.1.orig.tar.gz && \
 tar xf gnuradio_3.10.1.1.orig.tar.gz && \
 mv debian gnuradio-3.10.1.1/ && \
-cd gnuradio-3.10.1.1/debian
-## BYPASSED
-## We are using the ubuntu source files because the latest ones don't seem to compile.
-# RUN git clone -b maint-3.10 https://github.com/gnuradio/gnuradio.git && \
-# cd gnuradio && git reset --hard v3.10.5.1 && cd .. && \
-# create orig.tar.gz of gnuradio repo nad build debian package
-# tar -czvf gnuradiopv_3.10.orig.tar.gz gnuradio && \
-# mv debian gnuradio && \
-# cd gnuradio/debian &&
-RUN mk-build-deps -i --tool 'apt-get -f --yes' control && \
+cd gnuradio-3.10.1.1/debian && \
+mk-build-deps -i --tool 'apt-get -f --yes' control && \
 cd .. && \
 dpkg-buildpackage -us -uc -b && \
 cd .. && \
