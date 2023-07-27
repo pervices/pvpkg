@@ -72,6 +72,8 @@ sample_rate = -1
 sample_count = -1
 period = -1 #how many samples per one period or one wave
 being_cutoff = -1
+page_count = 0
+page_total = num_channels*5 + 1
 
 
 #Adding logo - more efficent to just initialize at beginning
@@ -191,6 +193,7 @@ def header(pdf):
     header_x, header_y = 633, 584
     logo_width, logo_height = 75, 25
     logo_x, logo_y = header_x - logo_width - 2, header_y - 17
+    pg_x, pg_y = 700,10
 
     #Header Writing
     header = pdf.beginText()
@@ -200,8 +203,14 @@ def header(pdf):
     header.textLine(text=(formattedDate))
     pdf.drawText(header)
 
+    #Drawing logo
     pdf.drawImage(header_img, logo_x, logo_y, logo_width, logo_height)
 
+    #Page Number
+    pg_num = pdf.beginText()
+    pg_num.setTextOrigin(pg_x, pg_y)
+    pg_num.setFont(font, header_font_size)
+    pg_num.textLine(text=("Page " + str(page_count) + " of " + str(page_total))
 
 '''Creates a table that shows the input values of each Run
 PARAMS: pdf, center_freq, wave_freq, sample_rate, sample_count, tx_gain, rx_gain
@@ -350,7 +359,7 @@ def fftValues(x, reals, imags): #TODO: THIS IS A MESS, MUST FIX
 
     #Transform to dB
     bools_norms = list(map(isNotZero, norm_y))
-    np.place(norm_y, bools_norms, 20*np.log(norm_y)) #does not log values that are 0
+    np.place(norm_y, bools_norms, 20*np.log10(norm_y)) #does not log values that are 0
 
     #Setting up the X values
     freq = np.fft.fftshift(np.fft.fftfreq(len(x), d=(1/sample_rate)))
@@ -521,11 +530,6 @@ def main(iterations):
         offset_imags = []
         ampl_imags = []
 
-        #DEALING WITH PDF SET UP - INPUTS AND TITLE
-        pdf.showPage() #Page break on pdf
-        drawMyRuler(pdf)
-        header(pdf)
-
         gen.dump(it) #pulls info form generator
 
         #Adds title to pdf, dependent on run
@@ -581,7 +585,7 @@ def main(iterations):
                 best_fit, param = bestFit(x, imag[begin_cutoff:])
 
                 ampl_imags.append(param[0])
-                ampl_vec.append(20*np.log(np.sqrt(param[0]**2 + ampl_reals[len(ampl_reals)-1]**2)))
+                ampl_vec.append(20*np.log10(np.sqrt(param[0]**2 + ampl_reals[len(ampl_reals)-1]**2)))
                 freq_imags.append(param[1])
                 phase_imags.append(param[2])
                 best_fit_imags.append(best_fit[0])
@@ -611,6 +615,13 @@ def main(iterations):
         phase_imags = np.asarray(phase_imags)
         best_fit_imags = np.asarray(best_fit_imags)
         offset_imags = np.asarray(offset_imags)
+
+        #Page One Set up
+        pdf.showPage() #Page break on pdf
+        global page_count
+        page_count += 1
+        drawMyRuler(pdf)
+        header(pdf)
 
         #VISUALS on PDF
         #IMAG AND REAL
@@ -663,6 +674,7 @@ def main(iterations):
 
         ##FFT PLOT AND TABLE
         pdf.showPage()
+        page_count += 1
         header(pdf)
         #Positional
         fft_pos_x, fft_pos_y = 10, 135
@@ -729,6 +741,7 @@ def main(iterations):
 
         ##All merged plots
         header(pdf)
+        page_count += 1
         pdf.showPage()
 
         tgth_width, tgth_height = 800, 600
@@ -757,6 +770,7 @@ def main(iterations):
 
         ##SUMMARY PAGE
         header(pdf)
+        page_count += 1
         pdf.showPage()
 
         stats_summary_x, stats_summary_y = 15, 500
@@ -828,6 +842,8 @@ def main(iterations):
         snr_table.wrapOn(pdf, snr_width, snr_height)
         snr_table.drawOn(pdf, snr_x, snr_y)
 
+        #Pass/Fail
+        pdf.showPage()
         header(pdf)
 
 
