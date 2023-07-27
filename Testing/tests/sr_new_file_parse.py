@@ -5,6 +5,9 @@ from common import sigproc
 from common import engine
 from common import generator as gen
 
+#GNU radio
+from gnuradio import uhd
+
 #Basic imports
 import time, datetime
 import os
@@ -53,11 +56,13 @@ os.makedirs(plots_dir, exist_ok=True)
 #USER SET VARIABLES
 begin_cutoff_waves = 17.20 #how many waves to cut off before tracking data
 num_output_waves = 2 #number of waves shown on the final plots (IQ)
-decimal_round = 7
+decimal_round = 5
 specified_SNR = 41 #dB
 
 #Unit Info
 #TODO: MAKE THIS PULL REVISION NUMBERS - DID DOUG WANT TO DO THAT?
+# test = uhd.find_devices
+# print(test)
 unit_name = "Crimson"
 serial_num = "12345" #NOTE: Is this the same as unit number??
 UHD_ver = "UHD later"
@@ -507,7 +512,6 @@ def main(iterations):
     pdf.setTitle(doc_title)
 
     #Title page
-    pdf.showPage()
     drawMyRuler(pdf) #TODO: REMOVE AT THE END
     titlePage(pdf)
 
@@ -674,7 +678,7 @@ def main(iterations):
         header(pdf)
         #Positional
         fft_pos_x, fft_pos_y = 10, 135
-        fft_width, fft_height = 700, 450
+        fft_width, fft_height = 650, 450
         max_peak_width, max_peak_height = 80, 100
         max_peak_x, max_peak_y = fft_pos_x, fft_pos_y - max_peak_height
 
@@ -747,7 +751,7 @@ def main(iterations):
         header(pdf)
 
         tgth_width, tgth_height = 800, 600
-        tgth_x, tgth_y = 10, 10
+        tgth_x, tgth_y = 2, 3
 
         #Setting the plot
         fig = plt.GridSpec(17, 45, wspace=5, hspace=0.3)
@@ -843,6 +847,7 @@ def main(iterations):
                                                ('GRID', (0,14), (5,16), 1, colors.black),
                                             ('BACKGROUND', (0,1), (6,1), '#D5D6D5'),
                                             ('BACKGROUND', (0,5), (6,5), '#D5D6D5'),
+                                            ('BACKGROUND', (0,9), (6,9), '#D5D6D5'),
                                             ('BACKGROUND', (0,13), (6,13), '#D5D6D5')])
 
         #print(type(peak_table))
