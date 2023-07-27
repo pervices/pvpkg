@@ -54,6 +54,7 @@ os.makedirs(plots_dir, exist_ok=True)
 begin_cutoff_waves = 17.20 #how many waves to cut off before tracking data
 num_output_waves = 2 #number of waves shown on the final plots (IQ)
 decimal_round = 7
+specified_SNR = 41 #dB
 
 #Unit Info
 #TODO: MAKE THIS PULL REVISION NUMBERS - DID DOUG WANT TO DO THAT?
@@ -179,7 +180,7 @@ def runTitle(pdf, it):
     title = pdf.beginText()
     title.setTextOrigin(title_x, title_y)
     title.setFont(font, title_font_size)
-    title.textLine(text=("Run Number " + it + " - Loopback On " + unit_name))
+    title.textLine(text=("Run Number " + str(it) + " - Loopback On " + unit_name))
     pdf.drawText(title)
 
 '''Creates a header for each page of document
