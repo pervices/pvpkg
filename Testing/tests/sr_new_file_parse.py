@@ -119,7 +119,8 @@ def titlePage(pdf):
     list_font_size = 14
     list_x = title_x - 5
     list_y = title_y - 75
-
+    logo_x, logo_y = 200, 100
+    logo_width, logo_height = 400, 300
     #Setting up title on Title Page
     title = pdf.beginText()
     title.setTextOrigin(title_x, title_y)
@@ -162,6 +163,9 @@ def titlePage(pdf):
 
     pdf.drawText(unitList)
 
+    #Adding Logo
+    pdf.drawImage(header_img, logo_x, logo_y, logo_width, logo_height)
+
 '''Creates a title for each Run Page
 PARAMS: pdf, it name
 RETURNS: None
@@ -170,8 +174,6 @@ def runTitle(pdf, it):
     #Positionalgalues
     title_font_size = 26
     title_x, title_y = 100, 575
-    logo_width, logo_height = 200, 100
-    logo_x, logo_y = 200, 100
 
     #Setting up title on Title Page
     title = pdf.beginText()
@@ -179,14 +181,10 @@ def runTitle(pdf, it):
     title.setFont(font, title_font_size)
     title.textLine(text=("Run Number " + it + " - Loopback On " + unit_name))
     pdf.drawText(title)
-        #Adding logo
-    img_data = open(current_dir + "/pervices-logo.png", "rb")
-    img = ImageReader(img_data)
 
-    pdf.drawImage(img, logo_x, logo_y, logo_width, logo_height)
-
-
-
+'''Creates a header for each page of document
+PARAMS: pdf
+RETURNS: None'''
 def header(pdf):
     #Positional Values
     header_font_size = 10
@@ -505,6 +503,8 @@ def main(iterations):
     pdf = canvas.Canvas(file_title, pagesize=landscape(letter)) #Setting the page layout and file name
     pdf.setTitle(doc_title)
 
+    #TItle page
+    pdf.showPage()
     drawMyRuler(pdf) #TODO: REMOVE AT THE END
     titlePage(pdf)
 
@@ -531,9 +531,6 @@ def main(iterations):
         ampl_imags = []
 
         gen.dump(it) #pulls info form generator
-
-        #Adds title to pdf, dependent on run
-        runTitle(pdf, str(counter))
 
         #Prints table showing inputs used on unit
         inputTable(pdf, it["center_freq"], it["wave_freq"], it["sample_rate"], it["sample_count"], it["tx_gain"], it["rx_gain"])
@@ -622,6 +619,7 @@ def main(iterations):
         page_count += 1
         drawMyRuler(pdf)
         header(pdf)
+        runTitle(pdf, str(counter))
 
         #VISUALS on PDF
         #IMAG AND REAL
@@ -845,6 +843,18 @@ def main(iterations):
         #Pass/Fail
         pdf.showPage()
         header(pdf)
+
+        #Positionalgalues
+        title_font_size = 26
+        title_x, title_y = 100, 575
+
+        #Setting up title on Title Page
+        title = pdf.beginText()
+        title.setTextOrigin(title_x, title_y)
+        title.setFont(font, title_font_size)
+        title.textLine(text=("Run Number " + it + " - Loopback On " + unit_name))
+        pdf.drawText(title)
+
 
 
     os.chdir(output_dir) #Ensuring we are saving in the output directory
