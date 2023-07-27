@@ -856,7 +856,7 @@ def main(iterations):
         title = pdf.beginText()
         title.setTextOrigin(title_x, title_y)
         title.setFont(font, title_font_size)
-        title.textLine(text="Summary Page for: " + unit_name + " - " + formattedDate))
+        title.textLine(text=("Summary Page for: " + unit_name + " - " + formattedDate))
         pdf.drawText(title)
 
 
