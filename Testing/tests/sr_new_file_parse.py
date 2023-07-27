@@ -210,7 +210,7 @@ def header(pdf):
     pg_num = pdf.beginText()
     pg_num.setTextOrigin(pg_x, pg_y)
     pg_num.setFont(font, header_font_size)
-    pg_num.textLine(text=("Page " + str(page_count) + " of " + str(page_total))
+    pg_num.textLine(text=("Page " + str(page_count) + " of " + str(page_total)))
 
 '''Creates a table that shows the input values of each Run
 PARAMS: pdf, center_freq, wave_freq, sample_rate, sample_count, tx_gain, rx_gain
