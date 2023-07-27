@@ -61,7 +61,7 @@ specified_SNR = 41 #dB
 
 #Unit Info
 #TODO: MAKE THIS PULL REVISION NUMBERS - DID DOUG WANT TO DO THAT?
-test = uhd.ursp_sink()
+test = uhd.usrp_sink()
 print(test)
 unit_name = "Crimson"
 serial_num = "12345" #NOTE: Is this the same as unit number??
