@@ -61,7 +61,7 @@ specified_SNR = 41 #dB
 
 #Unit Info
 #TODO: MAKE THIS PULL REVISION NUMBERS - DID DOUG WANT TO DO THAT?
-test = subprocess.getstatusoutput('uhd_ursp_info -v')
+test = subprocess.getstatusoutput('uhd_usrp_info -v')
 print(test)
 unit_name = "Crimson"
 serial_num = "12345" #NOTE: Is this the same as unit number??
@@ -600,7 +600,7 @@ def main(iterations):
                 ampl_imags.append(param[0])
                 ampl_vec.append(np.sqrt(param[0]**2 + ampl_reals[len(ampl_reals)-1]**2))
                 bools_norms = list(map(isNotZero, ampl_vec))
-                np.place(norm_y, bools_norms, 20*np.log10(ampl_vec))
+                np.place(ampl_vec, bools_norms, 20*np.log10(ampl_vec))
                 freq_imags.append(param[1])
                 phase_imags.append(param[2])
                 best_fit_imags.append(best_fit[0])
