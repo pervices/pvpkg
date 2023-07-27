@@ -73,7 +73,7 @@ sample_rate = -1
 sample_count = -1
 period = -1 #how many samples per one period or one wave
 being_cutoff = -1
-max_peak_info = [] #[iteration][[freq][amplitude][snr]]
+summary_info = [] #[iteration][[freq][amplitude][snr]]
 
 #page stuff
 page_count = 0
@@ -394,7 +394,6 @@ def fivePeaks(x, y, ampl):
     peaks, properties = find_peaks(y, height=ampl) #NOTE: What should I use as the height...
 
     for i in range(5):
-        print(peaks)
         max_peak = peaks[np.argmax(properties['peak_heights'])]
         x_peak, y_peak = x[max_peak], y[max_peak]
         max_five.append((x_peak, y_peak))
@@ -809,6 +808,9 @@ def main(iterations):
         for i in range(num_channels):
             fft_snr.append(toSNR(fft_y[i]))
 
+        #At this point, the snr shoud be in order of max peak
+        summary_info.append((max_five[0][0][0], max_five[0][0][1], fft_snr[0]))
+
         #Sorting according to SNR
         quickSort(fft_snr, 0, len(fft_snr)-1, max_fives_rounded)
 
@@ -859,6 +861,9 @@ def main(iterations):
     title.setFont(font, title_font_size)
     title.textLine(text=("Summary Page for: " + unit_name + " - " + formattedDate))
     pdf.drawText(title)
+
+    print(summary_info)
+
 
 
 
