@@ -27,5 +27,3 @@ def get_src_c(channels, sample_rate, center_freq, gain):
     calibrate(src, channels, sample_rate, center_freq, gain)
     return src
 
-def get_info():
-
