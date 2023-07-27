@@ -809,7 +809,7 @@ def main(iterations):
             fft_snr.append(toSNR(fft_y[i]))
 
         #At this point, the snr shoud be in order of max peak
-        summary_info.append((max_fives[0][0][0], max_five[0][0][1], fft_snr[0]))
+        summary_info.append((max_fives[0][0][0], max_fives[0][0][1], fft_snr[0]))
 
         #Sorting according to SNR
         quickSort(fft_snr, 0, len(fft_snr)-1, max_fives_rounded)
