@@ -73,6 +73,9 @@ sample_rate = -1
 sample_count = -1
 period = -1 #how many samples per one period or one wave
 being_cutoff = -1
+max_peak_info = [] #[iteration][[freq][amplitude][snr]]
+
+#page stuff
 page_count = 0
 page_total = num_channels*5 + 1
 
@@ -853,7 +856,7 @@ def main(iterations):
         title = pdf.beginText()
         title.setTextOrigin(title_x, title_y)
         title.setFont(font, title_font_size)
-        title.textLine(text=("Run Number " + it + " - Loopback On " + unit_name))
+        title.textLine(text="Summary Page for: " + unit_name + " - " + formattedDate))
         pdf.drawText(title)
 
 
