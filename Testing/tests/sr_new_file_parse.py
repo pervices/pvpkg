@@ -61,8 +61,8 @@ specified_SNR = 41 #dB
 
 #Unit Info
 #TODO: MAKE THIS PULL REVISION NUMBERS - DID DOUG WANT TO DO THAT?
-# test = uhd.find_devices
-# print(test)
+test = uhd.ursp_sink_sptr.get_devices()
+print(test)
 unit_name = "Crimson"
 serial_num = "12345" #NOTE: Is this the same as unit number??
 UHD_ver = "UHD later"
