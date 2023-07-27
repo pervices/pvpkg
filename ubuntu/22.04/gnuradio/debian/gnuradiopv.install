@@ -1,6 +1,6 @@
 etc
 usr/bin
-usr/lib/python*
+usr/local/lib/python*
 usr/share/applications
 usr/share/gnuradio
 usr/share/icons
