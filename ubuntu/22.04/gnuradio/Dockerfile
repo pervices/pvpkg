@@ -11,7 +11,7 @@ RUN apt-get update && \
 apt-get -y install dpkg-dev sudo apt-utils dh-make bzr-builddeb equivs xz-utils iputils-ping net-tools software-properties-common cmake git coreutils build-essential && \
 add-apt-repository ppa:ubuntu-toolchain-r/test && \
 apt-get -y install python3-pip && \
-apt-get -y install vim gosu && \
+apt-get -y install vim gosu wget && \
 #using pip to install recent versions of packages not yet in repos
 pip3 install pygccxml && \
 ###
