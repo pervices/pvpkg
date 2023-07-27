@@ -562,7 +562,7 @@ def main(iterations):
 
         vsnk = engine.run(it["channels"], it["wave_freq"], it["sample_rate"], it["center_freq"], it["tx_gain"], it["rx_gain"], tx_stack, rx_stack)
 
-        #Other Variables
+        #Other Variablesc
         global center_freq
         center_freq = int(it["center_freq"])
         global wave_freq
@@ -598,7 +598,9 @@ def main(iterations):
                 best_fit, param = bestFit(x, imag[begin_cutoff:])
 
                 ampl_imags.append(param[0])
-                ampl_vec.append(20*np.log10(np.sqrt(param[0]**2 + ampl_reals[len(ampl_reals)-1]**2)))
+                ampl_vec.append(np.sqrt(param[0]**2 + ampl_reals[len(ampl_reals)-1]**2))
+                bools_norms = list(map(isNotZero, ampl_vec))
+                np.place(norm_y, bools_norms, 20*np.log10(ampl_vec))
                 freq_imags.append(param[1])
                 phase_imags.append(param[2])
                 best_fit_imags.append(best_fit[0])
