@@ -27,7 +27,8 @@ from reportlab.platypus import Image, Paragraph, Table, Frame
 import matplotlib.pyplot as plt
 from PIL import Image
 from io import BytesIO
-from scipy.optimize import curve_fit
+# from scipy.optimize import curve_fit
+from lmfit import Model, minimize, Parameters #apparently better for discrete things
 from scipy.signal import blackman
 from scipy.fft import fft, fftfreq, fftshift
 from reportlab.lib.utils import ImageReader
@@ -62,7 +63,6 @@ specified_SNR = 41 #dB
 #Unit Info
 #TODO: MAKE THIS PULL REVISION NUMBERS - DID DOUG WANT TO DO THAT?
 test = subprocess.getstatusoutput('uhd_usrp_info -v')
-print(test)
 unit_name = "Crimson"
 serial_num = "12345" #NOTE: Is this the same as unit number??
 UHD_ver = "UHD later"
@@ -248,17 +248,6 @@ def inputTable(pdf, center_freq, wave_freq, sample_rate, sample_count, tx_gain, 
     inputs.wrapOn(pdf, table_width, table_height)
     inputs.drawOn(pdf, table_x, table_y)
 
-'''
-Represents the wave equation
-PARAMS: time, ampl, freq, phase
-RETUNRS: y'''
-def waveEquation(time, ampl, freq, phase, dc_offset):
-
-
-    y = ampl*np.cos((2*np.pi*freq*time + phase)) + dc_offset #model for wave equation
-
-    return y
-
 '''Plots the FFT subplots all in the same format
 PARAMS: x, rea;, ax, imag, title
 RETURNS: NONE'''
@@ -304,18 +293,44 @@ def subPlotIQs (x, real,imag, best_fit_real, best_fit_imag, offset_real, offset_
 
     return bf_r
 
+'''
+Represents the wave equation
+PARAMS: time, ampl, freq, phase
+RETUNRS: y'''
+def waveEquation(guess, time, data):
+    ampl = guess['ampl'].value
+    freq = guess['freq'].value
+    phase = guess['phase'].value
+    dc_offset = guess['dc_offset'].value
+    model = ampl*np.cos((2*np.pi*freq*time + phase)) + dc_offset #model for wave equation
+
+    return model
+
 '''Creates the line of best fit for the given x and y
 PARAMS: x,y
 RETURNS: best_fit (y values of the line of best fit '''
 def bestFit(x, y):
-    guess = [max(y), wave_freq, 0, 0] #Based off generator code
-    param, covariance  = curve_fit(waveEquation, x, y, p0=guess) #using curve fit to give parameters
-    fit_amp = param[0]  #for wave equation that make a line of best fit
-    fit_freq = param[1]
-    fit_phase = param[2]
-    fit_offset = param[3]
-    best_fit = waveEquation(x, fit_amp, fit_freq, fit_phase, fit_offset) #making the line of best fit
-    return (best_fit, fit_offset), (fit_amp, fit_freq, fit_phase) #returns other values as tuple, so they can be easily referenced
+    # guess = [max(y), wave_freq, 0, 0] #Based off generator code
+    # param, covariance  = curve_fit(waveEquation, x, y, p0=guess) #using curve fit to give parameters
+    # fit_amp = param[0]  #for wave equation that make a line of best fit
+    # fit_freq = param[1]
+    # fit_phase = param[2]
+    # fit_offset = param[3]
+    # best_fit = waveEquation(x, fit_amp, fit_freq, fit_phase, fit_offset) #making the line of best fit
+    # return (best_fit, fit_offset), (fit_amp, fit_freq, fit_phase) #returns other values as tuple, so they can be easily referenced
+
+    guess = Parameters()
+    guess.add('ampl', value=max(y))
+    guess.add('freq', value=wave_freq)
+    guess.add('phase', value=0)
+    guess.add('dc_offset', value=0)
+
+    result = minimize(waveEquation, guess, args=(x,y))
+    #print(y - result.residual)
+
+    return ((y - result.residual), result.params['dc_offset']), (result.params['ampl'], result.params['freq'], result.params['phase'])
+
+
 
 '''Divides given by peak
 Params: a, peak
@@ -464,8 +479,7 @@ def partition(array, low, high, other_arrays):
             i = i + 1
             # print(i)
             # print(j)
-            # Swapping element at i with element at j
-            (array[i], array[j]) = (array[j], array[i])
+            # Swapping element at i with element at git ])
             for ar in range(len(other_arrays)):
                 # print("ar: " + str(other_arrays[ar]))
                 # print("ar: " + str(other_arrays[ar][i]))
@@ -599,12 +613,14 @@ def main(iterations):
 
                 ampl_imags.append(param[0])
                 ampl_vec.append(np.sqrt(param[0]**2 + ampl_reals[len(ampl_reals)-1]**2))
-                bools_norms = list(map(isNotZero, ampl_vec))
-                np.place(ampl_vec, bools_norms, 20*np.log10(ampl_vec))
                 freq_imags.append(param[1])
                 phase_imags.append(param[2])
                 best_fit_imags.append(best_fit[0])
                 offset_imags.append((best_fit[1]))
+                #
+                # print(ch)
+                # print("Reals: " + str(len(real)))
+                # print("Imags: " + str(len(imag)))
 
         #Making them all np.arrays
         #this for efficency, it is easier to initalize as non-numpy bc allows for flexibility in code
@@ -616,13 +632,15 @@ def main(iterations):
         best_fit_reals = np.asarray(best_fit_reals)
         offset_reals = np.asarray(offset_reals)
 
-        ampl_vecs = np.asarray(ampl_vec)
         ampl_imags = np.asarray(ampl_imags)
         freq_imags = np.asarray(freq_imags)
         phase_imags = np.asarray(phase_imags)
         best_fit_imags = np.asarray(best_fit_imags)
         offset_imags = np.asarray(offset_imags)
 
+        ampl_vecs = np.asarray(ampl_vec)
+        # bools_norms = list(map(isNotZero, ampl_vecs))
+        # np.place(ampl_vecs, bools_norms, 20*np.log10(ampl_vecs))
 
         #VISUALS on PDF
         #IMAG AND REAL
