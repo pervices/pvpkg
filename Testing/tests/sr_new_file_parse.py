@@ -61,9 +61,7 @@ specified_SNR = 41 #dB
 
 #Unit Info
 #TODO: MAKE THIS PULL REVISION NUMBERS - DID DOUG WANT TO DO THAT?
-test = uhd.usrp_sink(device_addr=args, stream_args=uhd.stream_args('sc16'))
 test = subprocess.getstatusoutput('uhd_ursp_info -v')
-
 print(test)
 unit_name = "Crimson"
 serial_num = "12345" #NOTE: Is this the same as unit number??
