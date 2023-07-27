@@ -692,7 +692,7 @@ def main(iterations):
             max_fives.append(normal)#Doesn't cut off important values for math
 
         max_fives = np.asarray(max_fives)
-        max_fives_rounded = np.asarray(max_five_rounded)
+        max_fives_rounded = np.asarray(max_fives_rounded)
         fft_x = np.asarray(fft_x)
         fft_y = np.asarray(fft_y)
 
