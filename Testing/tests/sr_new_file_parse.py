@@ -310,14 +310,6 @@ def waveEquation(guess, time, data):
 PARAMS: x,y
 RETURNS: best_fit (y values of the line of best fit '''
 def bestFit(x, y):
-    # guess = [max(y), wave_freq, 0, 0] #Based off generator code
-    # param, covariance  = curve_fit(waveEquation, x, y, p0=guess) #using curve fit to give parameters
-    # fit_amp = param[0]  #for wave equation that make a line of best fit
-    # fit_freq = param[1]
-    # fit_phase = param[2]
-    # fit_offset = param[3]
-    # best_fit = waveEquation(x, fit_amp, fit_freq, fit_phase, fit_offset) #making the line of best fit
-    # return (best_fit, fit_offset), (fit_amp, fit_freq, fit_phase) #returns other values as tuple, so they can be easily referenced
 
     guess = Parameters()
     guess.add('ampl', value=max(y))
@@ -617,10 +609,10 @@ def main(iterations):
                 phase_imags.append(param[2])
                 best_fit_imags.append(best_fit[0])
                 offset_imags.append((best_fit[1]))
-                #
-                # print(ch)
-                # print("Reals: " + str(len(real)))
-                # print("Imags: " + str(len(imag)))
+
+                print(ch)
+                print("Reals: " + str(len(real)))
+                print("Imags: " + str(len(imag)))
 
         #Making them all np.arrays
         #this for efficency, it is easier to initalize as non-numpy bc allows for flexibility in code
