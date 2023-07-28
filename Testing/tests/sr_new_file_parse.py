@@ -610,6 +610,7 @@ def main(iterations):
                 best_fit_imags.append(best_fit[0])
                 offset_imags.append((best_fit[1]))
 
+
                 print(ch)
                 print("Reals: " + str(len(real)))
                 print("Imags: " + str(len(imag)))
