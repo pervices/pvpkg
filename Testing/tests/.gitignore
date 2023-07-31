@@ -1,0 +1,5 @@
+dump_*/
+phase_coherency_fails/
+ship_reports/
+shiptest_dump/
+common/__pycache__/
