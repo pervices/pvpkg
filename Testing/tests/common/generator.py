@@ -42,7 +42,9 @@ def ship_test_tx(channels):    #TODO: ENSURE FIRST RUN DOESN'T HAVE TO HAVE EACH
     rx_gain = 25
     #name = "Tx Operation"
     for center_freq in [50000000]: #Just so my tests can go faster
+        print("yielding locals")
         yield locals()
+    print("end of gen")
     # for center_freq in [50000000, 300000000, 600000000, 1200000000, 2400000000, 4000000000, 5000000000, 5500000000]:
     #     yield locals()
 

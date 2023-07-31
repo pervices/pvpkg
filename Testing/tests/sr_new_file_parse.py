@@ -62,7 +62,7 @@ specified_SNR = 41 #dB
 
 #Unit Info
 #TODO: MAKE THIS PULL REVISION NUMBERS - DID DOUG WANT TO DO THAT?
-#test = subprocess.getstatusoutput('uhd_usrp_info -v')
+test = subprocess.getstatusoutput('uhd_usrp_info -v')
 unit_name = "Crimson"
 serial_num = "12345" #NOTE: Is this the same as unit number??
 UHD_ver = "UHD later"
@@ -520,7 +520,7 @@ def quickSort(array, low, high, other_array):
 PARAMS: iterations
 RETURNS: NONE, it is the main function'''
 def main(iterations):
-    print("in main")
+
     ##MAKING PDF and Title page
     pdf = canvas.Canvas(file_title, pagesize=landscape(letter)) #Setting the page layout and file name
     pdf.setTitle(doc_title)
@@ -531,7 +531,6 @@ def main(iterations):
 
     counter = 0 #Keeps track of run
     for it in iterations: #Will iterate per Run
-        print("in iterations")
         counter += 1
 
         #Page One Set up
@@ -593,10 +592,9 @@ def main(iterations):
 
         vsnks.append(vsnk) #This will loop us through the channels an appropriate amount of time
         for vsnk in vsnks:
-            print("in VSnks")
 
             for ch, channel in enumerate(vsnk): #Goes through each channel to sve data
-                print("in channels")
+
                 real = [datum.real for datum in channel.data()]
                 imag = [datum.imag for datum in channel.data()]
 
@@ -626,7 +624,6 @@ def main(iterations):
 
         #Making them all np.arrays
         #this for efficency, it is easier to initalize as non-numpy bc allows for flexibility in code
-        print("at pdf making")
         reals = np.asarray(reals)
         imags = np.asarray(imags)
         ampl_reals = np.asarray(ampl_reals)
@@ -711,7 +708,6 @@ def main(iterations):
         fft_x = []
         fft_y = []
         for i in range(0, num_channels):
-            print("making fft")
             print("In FFT Loop: " + str(i))
             print("Reals: " + str(reals[i]))
             print("Imagss: " + str(imags[i]))
