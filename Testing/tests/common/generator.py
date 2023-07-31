@@ -1,35 +1,6 @@
 import inspect
 import sys
-''''
-center_freq_list=[50000000, 300000000, 600000000, 1200000000, 2400000000, 4000000000, 5000000000, 5500000000]
-# def ship_test():
-#     print(sys._getframe().f_code.co_name)
-#     channels = list(range(4))
-#     wave_freq = 50000
-#     sample_rate=int(325000000/325)
-#     sample_count = 4096
-#     tx_gain = 25
-#     rx_gain = 25
-#     for center_freq in center_freq_list:
-#         yield locals()
-        
-class Shiptest_Crimson():
-    def __init__(self, center_freq_list, channels, wave_freq, sample_rate, sample_count, tx_gain, rx_gain):
-        #print(sys._getframe().f_code.co_name)
-        self.center_freq_list=center_freq_list
-        self.channels=channels
-        self.sample_count=sample_count
-        self.wave_freq=wave_freq
-        self.sample_rate=sample_rate
-        self.tx_gain=tx_gain
-        self.rx_gain=rx_gain
-        print(sample_rate, wave_freq, tx_gain)
-        #self.center_freq=center_freq
-        # for center_freq in self.center_freq_list:
-        #     yield locals()
-            
-Shiptest_Crimson1=Shiptest_Crimson([50000000, 300000000, 600000000, 1200000000, 2400000000, 4000000000, 5000000000, 5500000000], list(range(4)), 50000, int(325000000/325), 4096, 25, 25)
-'''
+
 def ship_test_tx(channels):    #TODO: ENSURE FIRST RUN DOESN'T HAVE TO HAVE EACH CHANNEL RUNNING A DIFFERENT VAL
 
     print(sys._getframe().f_code.co_name)
@@ -37,18 +8,12 @@ def ship_test_tx(channels):    #TODO: ENSURE FIRST RUN DOESN'T HAVE TO HAVE EACH
     channels = list(range(channels))
     wave_freq = 100000
     sample_rate = 9848485
-    sample_count = int(sample_rate/2)
+    sample_count = int(sample_rate/ 5)
     tx_gain = 25
     rx_gain = 25
-    #name = "Tx Operation"
-    for center_freq in [50000000]: #Just so my tests can go faster
-        yield locals()
-    # for center_freq in [50000000, 300000000, 600000000, 1200000000, 2400000000, 4000000000, 5000000000, 5500000000]:
-    #     yield locals()
-
-
-    '''for wave_freq, tx_gain, center_freq in zip(wave_freq, tx_gain, center_freq): #
-          yield locals()'''
+    # #name = "Tx Operation"
+    for center_freq in [25000000, 300000000, 600000000]: #Just so my tests can go faster
+          yield locals()
 
 
 #UHD_version
