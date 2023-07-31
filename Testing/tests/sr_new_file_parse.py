@@ -34,9 +34,9 @@ from scipy.fft import fft, fftfreq, fftshift
 from reportlab.lib.utils import ImageReader
 from scipy.signal import find_peaks
 
-import glob
-#import test_ship_collection as tsc
-import re
+# import glob
+# #import test_ship_collection as tsc
+# import re
 
 
 #Have chosn toe put some variables as global, so they're easy to access
