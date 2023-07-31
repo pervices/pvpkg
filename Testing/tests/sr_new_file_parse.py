@@ -21,7 +21,7 @@ from reportlab.lib import colors
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.pagesizes import letter, landscape
 from reportlab.lib.enums import TA_LEFT
-from reportlab.platypus import Image, Paragraph, Table, Frame
+from reportlab.platypus import Image, Paragraph, Table, Frame, TableStyle
 
 #Plot and Data imports
 import matplotlib.pyplot as plt
@@ -29,7 +29,7 @@ from PIL import Image
 from io import BytesIO
 # from scipy.optimize import curve_fit
 from lmfit import Model, minimize, Parameters #apparently better for discrete things
-from scipy.signal import blackman
+from scipy.signal.windows import blackman
 from scipy.fft import fft, fftfreq, fftshift
 from reportlab.lib.utils import ImageReader
 from scipy.signal import find_peaks
@@ -60,6 +60,7 @@ num_output_waves = 2 #number of waves shown on the final plots (IQ)
 decimal_round = 5
 specified_SNR = 41 #dB
 
+
 #Unit Info
 #TODO: MAKE THIS PULL REVISION NUMBERS - DID DOUG WANT TO DO THAT?
 test = subprocess.getstatusoutput('uhd_usrp_info -v')
@@ -69,7 +70,8 @@ UHD_ver = "UHD later"
 server_ver = "Server Later"
 fpga_ver = "FPGA Later"
 MCU_ver = "MCU Later"
-num_channels = 4
+num_channels = 3
+channel_names = ["Channel A", "Channel B", "Channel C"]
 
 #Globals that will be changed later
 center_freq = -1
@@ -218,6 +220,7 @@ def header(pdf):
     pg_num.setTextOrigin(pg_x, pg_y)
     pg_num.setFont(font, header_font_size)
     pg_num.textLine(text=("Page " + str(page_count) + " of " + str(page_total)))
+    pdf.drawText(pg_num)
 
 '''Creates a table that shows the input values of each Run
 PARAMS: pdf, center_freq, wave_freq, sample_rate, sample_count, tx_gain, rx_gain
@@ -650,7 +653,7 @@ def main(iterations):
         plot_img_width, plot_img_height = 700, 450
         plot_img_pos_x,  plot_img_pos_y = 2, 20
         IQ_width, IQ_height = 250, 105
-        IQ_table_x, IQ_table_y = 565,15
+        IQ_table_x, IQ_table_y = 565,200
 
         #calculating plot_sample_ratio
         plotted_samples = int(period*num_output_waves)
@@ -660,16 +663,14 @@ def main(iterations):
         fig = plt.GridSpec(1, 28, wspace=1, hspace=0.3)
 
         plt.suptitle("Individual Channels' Amplitude versus Time for Run {}".format(counter))
-        ax1 = plt.subplot(fig[0:1, 0:5])
-        ax2 = plt.subplot(fig[0:1, 6:11])
-        ax3 = plt.subplot(fig[0:1, 12:17])
-        ax4 = plt.subplot(fig[0:1, 18:23])
+        axis = []
+        axis.append(plt.subplot(fig[0:1, 0:5]))
+        axis.append(plt.subplot(fig[0:1, 6:11]))
+        axis.append(plt.subplot(fig[0:1, 12:17]))
+        #axis.append(plt.subplot(fig[0:1, 18:23]))
 
-        IQ_plots.append(subPlotIQs(x_time[0:plotted_samples], reals[0][0:plotted_samples], imags[0][0:plotted_samples], best_fit_reals[0][0:plotted_samples], best_fit_imags[0][0:plotted_samples], offset_reals[0], offset_imags[0], ax1, "Channel A"))
-        IQ_plots.append(subPlotIQs(x_time[0:plotted_samples], reals[1][0:plotted_samples], imags[1][0:plotted_samples], best_fit_reals[1][0:plotted_samples], best_fit_imags[1][0:plotted_samples], offset_reals[1], offset_imags[1], ax2, "Channel B"))
-        IQ_plots.append(subPlotIQs(x_time[0:plotted_samples], reals[2][0:plotted_samples], imags[2][0:plotted_samples], best_fit_reals[2][0:plotted_samples], best_fit_imags[2][0:plotted_samples], offset_reals[2], offset_imags[2], ax3, "Channel C"))
-        IQ_plots.append(subPlotIQs(x_time[0:plotted_samples], reals[3][0:plotted_samples], imags[3][0:plotted_samples], best_fit_reals[3][0:plotted_samples], best_fit_imags[3][0:plotted_samples], offset_reals[3], offset_imags[3], ax4, "Channel D"))
-        ax4.legend(loc='upper left', bbox_to_anchor=(1.05,0.5))
+        for i, title, ax in zip(range(num_channels), channel_names, axis):
+            IQ_plots.append(subPlotIQs(x_time[0:plotted_samples], reals[i][0:plotted_samples], imags[i][0:plotted_samples], best_fit_reals[i][0:plotted_samples], best_fit_imags[i][0:plotted_samples], offset_reals[i], offset_imags[i], ax, title))
 
         IQ_plots = np.asarray(IQ_plots)
         # plt.show()
@@ -678,15 +679,13 @@ def main(iterations):
         plt.clf()
 
         #Table of IQ info
-        IQ_table_info = [["IQ Data: "],
-                            ["Channel", "Real Frequency", "Real Amplitude"],
-                           ["A", np.round(freq_reals[0], decimal_round), np.round(ampl_reals[0], decimal_round)],
-                           ["B", np.round(freq_reals[1], decimal_round), np.round(ampl_reals[1], decimal_round)],
-                           ["C", np.round(freq_reals[2], decimal_round), np.round(ampl_reals[2], decimal_round)],
-                           ["D", np.round(freq_reals[3], decimal_round), np.round(ampl_reals[3], decimal_round)]]
+        IQ_table_info = [["IQ Data: "], ["Channel", "Real Frequency", "Real Amplitude"]]
+        for i in range(num_channels):
+            IQ_table_info.append((chr(65+i), np.round(freq_reals[i], decimal_round), np.round(ampl_reals[i], decimal_round)))
 
         IQ_table = Table(IQ_table_info, style=[('GRID', (0,1), (2,5), 1, colors.black),
-                                ('BACKGROUND', (0, 1), (2,1), '#D5D6D5')])
+                                                ('BACKGROUND', (0, 1), (2,1), '#D5D6D5')])
+
 
         IQ_table.wrapOn(pdf, IQ_width, IQ_height)
         IQ_table.drawOn(pdf, IQ_table_x, IQ_table_y)
@@ -695,10 +694,9 @@ def main(iterations):
         ##FFT PLOT AND TABLE
         pdf.showPage()
         page_count += 1
-        header(pdf)
         #Positional
         fft_pos_x, fft_pos_y = 10, 135
-        fft_width, fft_height = 650, 450
+        fft_width, fft_height = 750, 600
         max_peak_width, max_peak_height = 80, 100
         max_peak_x, max_peak_y = fft_pos_x, fft_pos_y - max_peak_height
 
@@ -731,17 +729,17 @@ def main(iterations):
         #Noise Floor
         noise_floor = noiseFloor(fft_y)
         noise_floor = np.asarray(np.asarray(noise_floor))
+        axis = []
+        axis.append(plt.subplot(fig[0:1, 0:10]))
+        axis.append(plt.subplot(fig[0:1, 11:21]))
+        axis.append(plt.subplot(fig[0:1, 22:32]))
+        axis.append(plt.subplot(fig[0:1, 33:43]))
 
-        ax1 = plt.subplot(fig[0:1, 0:10])
-        ax2 = plt.subplot(fig[0:1, 11:21])
-        ax3 = plt.subplot(fig[0:1, 22:32])
-        ax4 = plt.subplot(fig[0:1, 33:43])
         fft_x = np.asarray(fft_x)
         fft_y = np.asarray(fft_y)
-        FFT_plots.append(subPlotFFTs(fft_x[0], fft_y[0], ax1, "Channel A", max_fives[0], noise_floor[0]))
-        FFT_plots.append(subPlotFFTs(fft_x[1], fft_y[1], ax2, "Channel B", max_fives[1], noise_floor[1]))
-        FFT_plots.append(subPlotFFTs(fft_x[2], fft_y[2], ax3, "Channel C", max_fives[2], noise_floor[2]))
-        FFT_plots.append(subPlotFFTs(fft_x[3], fft_y[3], ax4, "Channel D", max_fives[3], noise_floor[3]))
+
+        for i, title, ax in zip(range(num_channels), channel_names, axis):
+            FFT_plots.append((subPlotFFTs(fft_x[i], fft_y[i], ax, title, max_fives[0], noise_floor[0])))
 
         FFT_plots = np.asarray(FFT_plots)
         #Rasterizes the plot/figures and converts to png)
@@ -750,11 +748,9 @@ def main(iterations):
 
         #Tables stuff
         max_peak_table_info = [["Top Five Peaks:"],
-                                ["Channel A", "Channel B", "Channel C", "Channel D"],
-                                [str(max_fives_rounded[0][0]), str(max_fives_rounded[0][1]), str(max_fives_rounded[0][2]), str(max_fives_rounded[0][3])],
-                                [str(max_fives_rounded[1][0]), str(max_fives_rounded[1][1]), str(max_fives_rounded[1][2]), str(max_fives_rounded[1][3])],
-                                [str(max_fives_rounded[2][0]), str(max_fives_rounded[2][1]), str(max_fives_rounded[2][2]), str(max_fives_rounded[2][3])],
-                                [str(max_fives_rounded[3][0]), str(max_fives_rounded[3][1]), str(max_fives_rounded[3][2]), str(max_fives_rounded[3][3])]]
+                                ["Channel A", "Channel B", "Channel C", "Channel D"]]
+        for i in range(num_channels):
+            max_peak_table_info.append((str(max_fives_rounded[i][0]), str(max_fives_rounded[i][1]), str(max_fives_rounded[i][2]), str(max_fives_rounded[i][3])))
 
         peak_table = Table(max_peak_table_info, style=[('GRID', (0,1), (4,8), 1, colors.black),
                                 ('BACKGROUND', (0,1), (6,1), '#D5D6D5')])
@@ -762,12 +758,7 @@ def main(iterations):
         peak_table.wrapOn(pdf, max_peak_width, max_peak_height)
         peak_table.drawOn(pdf, max_peak_x  + 40, max_peak_y)
 
-        # table_title = pdf.beginText()
-        # table_title.setTextOrigin(max_peak_x, max_peak_y - max_peak_height - 3)
-        # table_title.setFont(font, gen_font_size)
-        # table_title.textLine(text=("Top Five Peaks: "))
-        # pdf.drawText(table_title)
-
+        header(pdf) #Putting here so on top of the image
         ##All merged plots
         pdf.showPage()
         page_count += 1
@@ -784,13 +775,13 @@ def main(iterations):
         colours = ['royalblue', 'maroon', 'darkolivegreen', 'mediumvioletred']
 
         #plotting them all by pulling previous data
-        for i, colour in zip(range(4), colours):
+        for i, colour in zip(range(num_channels), colours):
             ax1.set_title("All Channels - Real Data")
             ax1.plot(IQ_plots[i].get_xdata(), IQ_plots[i].get_ydata(), '-', color=colour, markersize=0.2, label="Channel {}".format(i))
             ax2.set_title("All Channels - FFT Graphs")
             ax2.plot(FFT_plots[i].get_xdata(), FFT_plots[i].get_ydata(), '-', color=colour, markersize=0.2, label="Channel {}".format(i))
 
-        ax2.legend(loc='upper left', bbox_to_anchor=(1.05,0.5))
+        ax2.legend(loc='upper left', bbox_to_anchor=(0.5,0.5))
 
         # plt.show()
         #Rasterizes the plot/figures and converts to png)
@@ -798,13 +789,12 @@ def main(iterations):
         plt.clf()
 
         ##SUMMARY PAGE
+        pdf.showPage()
         header(pdf)
         page_count += 1
-        pdf.showPage()
-
-        stats_summary_x, stats_summary_y = 15, 500
-        nf_table_width, nf_table_height = 600, 20
-        nf_x, nf_y = stats_summary_x, stats_summary_y -150
+        stats_summary_x, stats_summary_y = 15, 600
+        nf_table_width, nf_table_height = 40, 20
+        nf_x, nf_y = stats_summary_x, stats_summary_y - 200
 
         stats_summary = pdf.beginText()
         stats_summary.setTextOrigin(stats_summary_x, stats_summary_y)
@@ -818,9 +808,10 @@ def main(iterations):
         pdf.drawText(stats_summary)
 
         #Tables stuff
-        nf_table_info = [["All Noise Floor Data:"],
-                                ["Channel A", "Channel B", "Channel C", "Channel D"],
-                                [str(round(noise_floor[0], decimal_round)), str(round(noise_floor[1], decimal_round)), str(round(noise_floor[2], decimal_round)), str(round(noise_floor[3], decimal_round))]]
+        nf_table_info = [["All Noise Floor Data:"], ["Channel A", "Channel B", "Channel C", "Channel D"]]
+
+        for i in range(num_channels):
+            nf_table_info.append((str(round(noise_floor[i], decimal_round)), str(round(noise_floor[i], decimal_round)), str(round(noise_floor[i], decimal_round)), str(round(noise_floor[i], decimal_round))))
 
         nf_table = Table(nf_table_info, style=[('GRID', (0,1), (4,8), 1, colors.black),
                                 ('BACKGROUND', (0,1), (6,1), '#D5D6D5')])
@@ -846,34 +837,22 @@ def main(iterations):
 
 
         #Tables stuff
-        snr_table_info = [["More Top Peak Information:"],
-                          ["Channel A: "],
-                          ["Location (Hz)", str(max_fives_rounded[0][0][0]), str(max_fives_rounded[0][1][0]), str(max_fives_rounded[0][2][0]), str(max_fives_rounded[0][3][0])],
-                          ["Amplitude (dB)", str(max_fives_rounded[0][0][1]), str(max_fives_rounded[0][1][1]), str(max_fives_rounded[0][2][1]), str(max_fives_rounded[0][3][1])],
-                          ["SNR (dBc)", str(fft_snr[0])],
-                          ["Channel B: "],
-                          ["Location (Hz)", str(max_fives_rounded[1][0][0]), str(max_fives_rounded[1][1][0]), str(max_fives_rounded[1][2][0]), str(max_fives_rounded[1][3][0])],
-                          ["Amplitude (dB)", str(max_fives_rounded[1][0][1]), str(max_fives_rounded[1][1][1]), str(max_fives_rounded[1][2][1]), str(max_fives_rounded[1][3][1])],
-                          ["SNR (dBc)", str(fft_snr[1])],
-                          ["Channel C: "],
-                          ["Location (Hz)", str(max_fives_rounded[2][0][0]), str(max_fives_rounded[2][1][0]), str(max_fives_rounded[2][2][0]), str(max_fives_rounded[2][3][0])],
-                          ["Amplitude (dB)", str(max_fives_rounded[2][0][1]), str(max_fives_rounded[2][1][1]), str(max_fives_rounded[2][2][1]), str(max_fives_rounded[2][3][1])],
-                          ["SNR (dBc)", str(fft_snr[2])],
-                          ["Channel D: "],
-                          ["Location (Hz)", str(max_fives_rounded[3][0][0]), str(max_fives_rounded[3][1][0]), str(max_fives_rounded[3][2][0]), str(max_fives_rounded[3][3][0])],
-                          ["Amplitude (dB)", str(max_fives_rounded[3][0][1]), str(max_fives_rounded[3][1][1]), str(max_fives_rounded[3][2][1]), str(max_fives_rounded[3][3][1])],
-                          ["SNR (dBc)", str(fft_snr[3])]]
+        snr_table_info = [["More Top Peak Information:"]]
+        snr_style = []
 
-        snr_table = Table(snr_table_info, style=[('GRID', (0,2), (5,4), 1, colors.black),
-                                               ('GRID', (0,6), (5,8), 1, colors.black),
-                                               ('GRID', (0,10), (5,12), 1, colors.black),
-                                               ('GRID', (0,14), (5,16), 1, colors.black),
-                                            ('BACKGROUND', (0,1), (6,1), '#D5D6D5'),
-                                            ('BACKGROUND', (0,5), (6,5), '#D5D6D5'),
-                                            ('BACKGROUND', (0,9), (6,9), '#D5D6D5'),
-                                            ('BACKGROUND', (0,13), (6,13), '#D5D6D5')])
+        for i, name in zip(range(num_channels), channel_names):
+            print(name)
+            snr_table_info.append((name))
+            snr_table_info.append(("Location (Hz)", str(max_fives_rounded[i][0][0]), str(max_fives_rounded[i][1][0]), str(max_fives_rounded[i][2][0]), str(max_fives_rounded[i][3][0])))
+            snr_table_info.append(("Amplitude (dB)", str(max_fives_rounded[i][0][1]), str(max_fives_rounded[i][1][1]), str(max_fives_rounded[i][2][1]), str(max_fives_rounded[i][3][1])))
+            snr_table_info.append(("SNR (dBc)", str(fft_snr[i])))
+            snr_style.append(['GRID', (0, (2 + (4*i))), (5, (4 + (4*i))), 1, colors.black])
+            snr_style.append(['BACKGROUND', (0, (1 + (4*i))), (6, (1 + (4*i))), '#D5D6D5'])
 
-        #print(type(peak_table))
+
+
+        # print(snr_style)
+        snr_table = Table(snr_table_info, style=snr_style)
         snr_table.wrapOn(pdf, snr_width, snr_height)
         snr_table.drawOn(pdf, snr_x, snr_y)
 
@@ -884,7 +863,7 @@ def main(iterations):
 
     #Positionalgalues
     title_font_size = 26
-    title_x, title_y = 100, 575
+    title_x, title_y = 100, 560
 
     #Setting up title on Title Page
     title = pdf.beginText()
