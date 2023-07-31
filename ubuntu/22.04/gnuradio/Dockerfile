@@ -65,7 +65,7 @@ WORKDIR /home/notroot/gnuradio
 ###TEST
 RUN wget http://archive.ubuntu.com/ubuntu/pool/universe/g/gnuradio/gnuradio_3.10.1.1.orig.tar.gz && \
 tar xf gnuradio_3.10.1.1.orig.tar.gz && \
-ln -s gnuradio-3.10.1.1 gnuradio \
+ln -s gnuradio-3.10.1.1 gnuradio && \
 mv debian gnuradio/ && \
 cd gnuradio/debian && \
 mk-build-deps -i --tool 'apt-get -f --yes' control && \
