@@ -6,7 +6,7 @@ RUN echo "notroot ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/notroot
 RUN pacman -Sy --noconfirm archlinux-keyring && \
     pacman -Sy --noconfirm git cmake clang icu && \
  pacman -Sy --noconfirm inetutils iproute2 && \
- pacman -Sy --noconfirm wget net-tools
+ pacman -Sy --noconfirm wget net-tools ccache distcc
 # Allow notroot to run stuff as root (to install dependencies): 
 # Continue execution (and CMD) as notroot:
 USER notroot
@@ -25,11 +25,20 @@ WORKDIR /home/notroot/libuhd
 WORKDIR /home/notroot/gnuradio
 RUN sudo chown -R notroot /home/{notroot,artifacts}/
 
-# Install other dependencies:
+### Install other dependencies
 WORKDIR /home/notroot
+
+# Yay:
 RUN git clone https://aur.archlinux.org/yay-bin.git && \
 cd yay-bin && \
 makepkg --noconfirm --syncdeps --rmdeps --install --clean
+
+# Configure makepkg to use ccache:
+RUN sudo sed -i 's/\!ccache/ccache/g' /etc/makepkg.conf
+
+# Configure makepkg to use distcc:
+## TODO: Needs to be tested
+#RUN sudo sed -i 's/\!distcc/distcc/g' /etc/makepkg.conf
 
 ###
 # PVPKG: Clone PVPKG
