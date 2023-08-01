@@ -274,15 +274,15 @@ PARAMS: x, real, ax, imag, best_fit_real, best_fit_imag, title
 RETURNS: NONE'''
 def subPlotIQs (x, real,imag, best_fit_real, best_fit_imag, offset_real, offset_imag, ax, title):
     ax.set_title(title)
-    best_fit_real *= 1000
-    best_fit_imag *= 1000
+    # best_fit_real *= 1000
+    # best_fit_imag *= 1000
     ax.set_xlabel("Time")
     ax.set_ylabel("Amplitude (kV)") #NOTE: I HOPE THIS IS RIGHT
     bf_r, = ax.plot(x, best_fit_real, '-', markersize=0.1, color='indianred', label="Real Best Fit")
-    ax.plot(x, real, '.', markersize=2, color='crimson', label="Real")
+    ax.plot(x, real, '.', markersize=3, color='crimson', label="Real")
     ax.axhline(y = offset_real, markersize=0.025, color='red', alpha=0.4, label='Real Offset')
     ax.plot(x, best_fit_imag, '-', markersize=0.1, color='darkmagenta', label="Imaginary Best Fit")
-    ax.plot(x, imag, '.', markersize=2, color='purple', label="Imaginary")
+    ax.plot(x, imag, '.', markersize=3, color='purple', label="Imaginary")
     ax.axhline(y = offset_imag, markersize=0.025, color='indigo', alpha=0.4, label='Imaginary Offset')
 
     real_peaks = find_peaks(real, distance=period)
@@ -292,7 +292,7 @@ def subPlotIQs (x, real,imag, best_fit_real, best_fit_imag, offset_real, offset_
         ax.axvline(x = x[r], linestyle='--', alpha=0.5, color='rosybrown', markersize=0.05)
         ax.text(x[r], max(best_fit_real) + 1, "\u2190" + str(round(x[r], 3)), fontsize=7, verticalalignment='top', )
         ax.axvline(x = x[i],  linestyle='--', alpha=0.5, color='darkslateblue',markersize=0.05)
-        ax.text(x[i], min(best_fit_imag) - 1, "\u2190" + str(round(x[i], 3)), fontsize=7, verticalalignment='top')
+        ax.text(x[i], min(best_fit_imag) - 0.5, "\u2190" + str(round(x[i], 3)), fontsize=7, verticalalignment='top')
 
     return bf_r
 
@@ -300,11 +300,11 @@ def subPlotIQs (x, real,imag, best_fit_real, best_fit_imag, offset_real, offset_
 Represents the wave equation
 PARAMS: time, ampl, freq, phase
 RETUNRS: y'''
-def waveEquation(guess, time, data):
-    ampl = guess['ampl'].value
-    freq = guess['freq'].value
-    phase = guess['phase'].value
-    dc_offset = guess['dc_offset'].value
+def waveEquation(time, ampl, freq, phase, dc_offset):
+    # ampl = guess['ampl'].value
+    # freq = guess['freq'].value
+    # phase = guess['phase'].value
+    # dc_offset = guess['dc_offset'].value
     model = ampl*np.cos((2*np.pi*freq*time + phase)) + dc_offset #model for wave equation
 
     return model
@@ -322,16 +322,21 @@ def bestFit(x, y):
     # best_fit = waveEquation(x, fit_amp, fit_freq, fit_phase, fit_offset) #making the line of best fit
     # return (best_fit, fit_offset), (fit_amp, fit_freq, fit_phase) #returns other values as tuple, so they can be easily referenced
 
-    guess = Parameters()
-    guess.add('ampl', value=max(y))
-    guess.add('freq', value=wave_freq)
-    guess.add('phase', value=0)
-    guess.add('dc_offset', value=0)
+    # guess = Parameters()
+    # guess.add('ampl', value=max(y))
+    # guess.add('freq', value=wave_freq)
+    # guess.add('phase', value=0)
+    # guess.add('dc_offset', value=0)
 
-    result = minimize(waveEquation, guess, args=(x,y))
+    model = Model(waveEquation)
+    # result = minimize(waveEquation, guess, args=(x,y))
+    # print(result.params)
     #print(y - result.residual)
+    # pars = model.make_params(guess=guess)
+    params = model.make_params(ampl=max(y), freq=wave_freq, phase=0, dc_offset=0)
+    result = model.fit(y, params, time=x)
 
-    return ((y - result.residual), result.params['dc_offset']), (result.params['ampl'], result.params['freq'], result.params['phase'])
+    return result.best_fit, (result.params['dc_offset'], result.params['ampl'], result.params['freq'], result.params['phase'])
 
 
 
@@ -549,19 +554,20 @@ def main(iterations):
         reals = []
         imags = []
         x_time = []
-        ampl_vec = []
+        ampl_vec = np.zeros(shape=(4))
 
-        freq_reals = []
-        phase_reals = []
+        #The reals
         best_fit_reals = []
-        offset_reals = []
-        ampl_reals = []
+        freq_reals = np.zeros(shape=(4))
+        phase_reals = np.zeros(shape=(4))
+        offset_reals = np.zeros(shape=(4))
+        ampl_reals = np.zeros(shape=(4))
 
-        freq_imags = []
-        phase_imags = []
         best_fit_imags = []
-        offset_imags = []
-        ampl_imags = []
+        freq_imags = np.zeros(shape=(4))
+        phase_imags = np.zeros(shape=(4))
+        offset_imags = np.zeros(shape=(4))
+        ampl_imags = np.zeros(shape=(4))
 
         gen.dump(it) #pulls info form generator
 
@@ -604,22 +610,28 @@ def main(iterations):
                 reals.append(real[begin_cutoff:]) #Formats real data into a 2D array
                 imags.append(imag[begin_cutoff:])
 
+                print(ch)
+                print("reals")
                 best_fit, param = bestFit(x, real[begin_cutoff:])
 
-                ampl_reals.append(param[0])
-                freq_reals.append(param[1])
-                phase_reals.append(param[2])
-                best_fit_reals.append(best_fit[0])
-                offset_reals.append((best_fit[1]))
+                best_fit_reals.append((best_fit))
+                offset_reals[ch] = param[0]
+                ampl_reals[ch] = param[1]
+                freq_reals[ch] = param[2]
+                phase_reals[ch] = param[3]
 
+                print("imags")
                 best_fit, param = bestFit(x, imag[begin_cutoff:])
 
-                ampl_imags.append(param[0])
-                ampl_vec.append(np.sqrt(param[0]**2 + ampl_reals[len(ampl_reals)-1]**2))
-                freq_imags.append(param[1])
-                phase_imags.append(param[2])
-                best_fit_imags.append(best_fit[0])
-                offset_imags.append((best_fit[1]))
+                best_fit_imags.append((best_fit))
+                offset_imags[ch] = param[0]
+                ampl_imags[ch] = param[1]
+                freq_imags[ch] = param[2]
+                phase_imags[ch] = param[3]
+
+                ampl_vec[ch] = np.sqrt(param[1]**2 + ampl_reals[len(ampl_reals)-1]**2)
+
+
 
                 # print(ch)
                 # print("Reals: " + str(real))
@@ -629,19 +641,19 @@ def main(iterations):
         #this for efficency, it is easier to initalize as non-numpy bc allows for flexibility in code
         reals = np.asarray(reals)
         imags = np.asarray(imags)
-        ampl_reals = np.asarray(ampl_reals)
-        freq_reals = np.asarray(freq_reals)
-        phase_reals = np.asarray(phase_reals)
-        best_fit_reals = np.asarray(best_fit_reals)
-        offset_reals = np.asarray(offset_reals)
-
-        ampl_imags = np.asarray(ampl_imags)
-        freq_imags = np.asarray(freq_imags)
-        phase_imags = np.asarray(phase_imags)
-        best_fit_imags = np.asarray(best_fit_imags)
-        offset_imags = np.asarray(offset_imags)
-
-        ampl_vecs = np.asarray(ampl_vec)
+        # ampl_reals = np.asarray(ampl_reals)
+        # freq_reals = np.asarray(freq_reals)
+        # phase_reals = np.asarray(phase_reals)
+        # best_fit_reals = np.asarray(best_fit_reals)
+        # offset_reals = np.asarray(offset_reals)
+        #
+        # ampl_imags = np.asarray(ampl_imags)
+        # freq_imags = np.asarray(freq_imags)
+        # phase_imags = np.asarray(phase_imags)
+        # best_fit_imags = np.asarray(best_fit_imags)
+        # # offset_imags = np.asarray(offset_imags)
+        #
+        # ampl_vecs = np.asarray(ampl_vec)
         # bools_norms = list(map(isNotZero, ampl_vecs))
         # np.place(ampl_vecs, bools_norms, 20*np.log10(ampl_vecs))
 
@@ -670,6 +682,8 @@ def main(iterations):
         #axis.append(plt.subplot(fig[0:1, 18:23]))
 
         for i, title, ax in zip(range(num_channels), channel_names, axis):
+            print(reals[i][0:20])
+            print(best_fit_reals[i][0:20])
             IQ_plots.append(subPlotIQs(x_time[0:plotted_samples], reals[i][0:plotted_samples], imags[i][0:plotted_samples], best_fit_reals[i][0:plotted_samples], best_fit_imags[i][0:plotted_samples], offset_reals[i], offset_imags[i], ax, title))
 
         IQ_plots = np.asarray(IQ_plots)
@@ -695,8 +709,8 @@ def main(iterations):
         pdf.showPage()
         page_count += 1
         #Positional
-        fft_pos_x, fft_pos_y = 10, 135
-        fft_width, fft_height = 750, 600
+        fft_pos_x, fft_pos_y = 10, 125
+        fft_width, fft_height = 650, 550
         max_peak_width, max_peak_height = 80, 100
         max_peak_x, max_peak_y = fft_pos_x, fft_pos_y - max_peak_height
 
@@ -705,10 +719,7 @@ def main(iterations):
         max_fives_rounded = []
         fft_x = []
         fft_y = []
-        for i in range(0, num_channels):
-            print("In FFT Loop: " + str(i))
-            print("Reals: " + str(reals[i]))
-            print("Imagss: " + str(imags[i]))
+        for i in range(num_channels):
             x, y = fftValues(x_time, reals[i], imags[i])
             fft_x.append(x)
             fft_y.append(y)
@@ -759,6 +770,8 @@ def main(iterations):
         peak_table.drawOn(pdf, max_peak_x  + 40, max_peak_y)
 
         header(pdf) #Putting here so on top of the image
+
+
         ##All merged plots
         pdf.showPage()
         page_count += 1
@@ -781,7 +794,7 @@ def main(iterations):
             ax2.set_title("All Channels - FFT Graphs")
             ax2.plot(FFT_plots[i].get_xdata(), FFT_plots[i].get_ydata(), '-', color=colour, markersize=0.2, label="Channel {}".format(i))
 
-        ax2.legend(loc='upper left', bbox_to_anchor=(0.5,0.5))
+        ax2.legend(loc='upper left', bbox_to_anchor=(1,0.5))
 
         # plt.show()
         #Rasterizes the plot/figures and converts to png)
@@ -792,7 +805,7 @@ def main(iterations):
         pdf.showPage()
         header(pdf)
         page_count += 1
-        stats_summary_x, stats_summary_y = 15, 600
+        stats_summary_x, stats_summary_y = 15, 585
         nf_table_width, nf_table_height = 40, 20
         nf_x, nf_y = stats_summary_x, stats_summary_y - 200
 
