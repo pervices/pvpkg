@@ -57,8 +57,10 @@ os.makedirs(plots_dir, exist_ok=True)
 #USER SET VARIABLES
 begin_cutoff_waves = 17.20 #how many waves to cut off before tracking data
 num_output_waves = 2 #number of waves shown on the final plots (IQ)
-decimal_round = 5
-specified_SNR = 41 #dB
+decimal_round = 3
+SNR_min_check = 40 #dB
+SNR_max_check = 50 #dB
+freq_check_offset = 0.01 #Hz
 
 
 #Unit Info
@@ -81,6 +83,7 @@ sample_count = -1
 period = -1 #how many samples per one period or one wave
 being_cutoff = -1
 summary_info = [] #[iteration][[freq][amplitude][snr]]
+counter = 0 #Keeps track of run
 
 #page stuff
 page_count = 0
@@ -202,7 +205,7 @@ def header(pdf):
     header_x, header_y = 633, 584
     logo_width, logo_height = 75, 25
     logo_x, logo_y = header_x - logo_width - 2, header_y - 17
-    pg_x, pg_y = 700,10
+    pg_x, pg_y = 650,10
 
     #Header Writing
     header = pdf.beginText()
@@ -290,9 +293,9 @@ def subPlotIQs (x, real,imag, best_fit_real, best_fit_imag, offset_real, offset_
 
     for r, i in zip(real_peaks[0], imag_peaks[0]):
         ax.axvline(x = x[r], linestyle='--', alpha=0.5, color='rosybrown', markersize=0.05)
-        ax.text(x[r], max(best_fit_real) + 1, "\u2190" + str(round(x[r], 3)), fontsize=7, verticalalignment='top', )
+        ax.text(x[r], max(best_fit_real) + (0.05*max(best_fit_real)), "\u2190" + str(round(x[r], 3)), fontsize=7, verticalalignment='top', )
         ax.axvline(x = x[i],  linestyle='--', alpha=0.5, color='darkslateblue',markersize=0.05)
-        ax.text(x[i], min(best_fit_imag) - 0.5, "\u2190" + str(round(x[i], 3)), fontsize=7, verticalalignment='top')
+        ax.text(x[i], min(best_fit_imag) - (min(best_fit_imag)*0.05), "\u2190" + str(round(x[i], 3)), fontsize=7, verticalalignment='top')
 
     return bf_r
 
@@ -305,7 +308,7 @@ def waveEquation(time, ampl, freq, phase, dc_offset):
     # freq = guess['freq'].value
     # phase = guess['phase'].value
     # dc_offset = guess['dc_offset'].value
-    model = ampl*np.cos((2*np.pi*freq*time + phase)) + dc_offset #model for wave equation
+    model = ampl*np.cos(2*np.pi*freq*time + phase) + dc_offset #model for wave equation
 
     return model
 
@@ -313,26 +316,8 @@ def waveEquation(time, ampl, freq, phase, dc_offset):
 PARAMS: x,y
 RETURNS: best_fit (y values of the line of best fit '''
 def bestFit(x, y):
-    # guess = [max(y), wave_freq, 0, 0] #Based off generator code
-    # param, covariance  = curve_fit(waveEquation, x, y, p0=guess) #using curve fit to give parameters
-    # fit_amp = param[0]  #for wave equation that make a line of best fit
-    # fit_freq = param[1]
-    # fit_phase = param[2]
-    # fit_offset = param[3]
-    # best_fit = waveEquation(x, fit_amp, fit_freq, fit_phase, fit_offset) #making the line of best fit
-    # return (best_fit, fit_offset), (fit_amp, fit_freq, fit_phase) #returns other values as tuple, so they can be easily referenced
-
-    # guess = Parameters()
-    # guess.add('ampl', value=max(y))
-    # guess.add('freq', value=wave_freq)
-    # guess.add('phase', value=0)
-    # guess.add('dc_offset', value=0)
 
     model = Model(waveEquation)
-    # result = minimize(waveEquation, guess, args=(x,y))
-    # print(result.params)
-    #print(y - result.residual)
-    # pars = model.make_params(guess=guess)
     params = model.make_params(ampl=max(y), freq=wave_freq, phase=0, dc_offset=0)
     result = model.fit(y, params, time=x)
 
@@ -429,7 +414,7 @@ def fivePeaks(x, y, ampl):
 
         peaks = np.delete(peaks, (np.where(peaks == max_peak)))
 
-    return max_five_rounded, max_five
+    return max_five
 
 '''Intakes data to find the noise floor
 PARAM: Data
@@ -524,6 +509,27 @@ def quickSort(array, low, high, other_array):
         # Recursive call on the right of pivot
         quickSort(array, pi + 1, high, other_array)
 
+'''Checks if the given is within the SNR bounds
+PARAM: a
+RETURN: Boolean'''
+def checkSNR(a):
+    return (a > SNR_min_check and a < SNR_max_check)
+
+'''Checks if the freq is within desired location
+PARAM: a
+RETURN: Bool'''
+def checkFreq(a):
+    return (a > (wave_freq - freq_check_offset) and a < wave_freq + (freq_check_offset))
+
+'''Turns true into "Pass" and false into "fail"
+PARAM: a
+RETURN: Proper word'''
+def isPass(a):
+    if a:
+        return "Pass"
+    else:
+        return "False"
+
 '''Runs the tests and data collection, then calls other functions to tests and format the code outputs
 PARAMS: iterations
 RETURNS: NONE, it is the main function'''
@@ -537,8 +543,8 @@ def main(iterations):
     drawMyRuler(pdf) #TODO: REMOVE AT THE END
     titlePage(pdf)
 
-    counter = 0 #Keeps track of run
     for it in iterations: #Will iterate per Run
+        global counter
         counter += 1
 
         #Page One Set up
@@ -610,8 +616,6 @@ def main(iterations):
                 reals.append(real[begin_cutoff:]) #Formats real data into a 2D array
                 imags.append(imag[begin_cutoff:])
 
-                print(ch)
-                print("reals")
                 best_fit, param = bestFit(x, real[begin_cutoff:])
 
                 best_fit_reals.append((best_fit))
@@ -620,7 +624,6 @@ def main(iterations):
                 freq_reals[ch] = param[2]
                 phase_reals[ch] = param[3]
 
-                print("imags")
                 best_fit, param = bestFit(x, imag[begin_cutoff:])
 
                 best_fit_imags.append((best_fit))
@@ -641,21 +644,6 @@ def main(iterations):
         #this for efficency, it is easier to initalize as non-numpy bc allows for flexibility in code
         reals = np.asarray(reals)
         imags = np.asarray(imags)
-        # ampl_reals = np.asarray(ampl_reals)
-        # freq_reals = np.asarray(freq_reals)
-        # phase_reals = np.asarray(phase_reals)
-        # best_fit_reals = np.asarray(best_fit_reals)
-        # offset_reals = np.asarray(offset_reals)
-        #
-        # ampl_imags = np.asarray(ampl_imags)
-        # freq_imags = np.asarray(freq_imags)
-        # phase_imags = np.asarray(phase_imags)
-        # best_fit_imags = np.asarray(best_fit_imags)
-        # # offset_imags = np.asarray(offset_imags)
-        #
-        # ampl_vecs = np.asarray(ampl_vec)
-        # bools_norms = list(map(isNotZero, ampl_vecs))
-        # np.place(ampl_vecs, bools_norms, 20*np.log10(ampl_vecs))
 
         #VISUALS on PDF
         #IMAG AND REAL
@@ -672,7 +660,7 @@ def main(iterations):
 
         IQ_plots = []
         #Plotting the imaginary and real values
-        fig = plt.GridSpec(1, 28, wspace=1, hspace=0.3)
+        fig = plt.GridSpec(1, 28, wspace=6, hspace=0.3)
 
         plt.suptitle("Individual Channels' Amplitude versus Time for Run {}".format(counter))
         axis = []
@@ -682,8 +670,6 @@ def main(iterations):
         #axis.append(plt.subplot(fig[0:1, 18:23]))
 
         for i, title, ax in zip(range(num_channels), channel_names, axis):
-            print(reals[i][0:20])
-            print(best_fit_reals[i][0:20])
             IQ_plots.append(subPlotIQs(x_time[0:plotted_samples], reals[i][0:plotted_samples], imags[i][0:plotted_samples], best_fit_reals[i][0:plotted_samples], best_fit_imags[i][0:plotted_samples], offset_reals[i], offset_imags[i], ax, title))
 
         IQ_plots = np.asarray(IQ_plots)
@@ -710,32 +696,30 @@ def main(iterations):
         page_count += 1
         #Positional
         fft_pos_x, fft_pos_y = 10, 125
-        fft_width, fft_height = 650, 550
+        fft_width, fft_height = 650, 450
         max_peak_width, max_peak_height = 80, 100
         max_peak_x, max_peak_y = fft_pos_x, fft_pos_y - max_peak_height
 
         #Calculating the x and y fft and finding the 5 maxs
         max_fives = []
-        max_fives_rounded = []
+        max_fives = []
         fft_x = []
         fft_y = []
         for i in range(num_channels):
             x, y = fftValues(x_time, reals[i], imags[i])
             fft_x.append(x)
             fft_y.append(y)
-            rounded, normal = fivePeaks(fft_x[i], fft_y[i], ampl_vec[i])
-            max_fives_rounded.append(rounded) #Allows for charts to be printed nicer
-            max_fives.append(normal)#Doesn't cut off important values for math
+            normal = fivePeaks(fft_x[i], fft_y[i], ampl_vec[i])
+            max_fives.append(normal) #NOTE: WHY DOESNT THIS GIVE ME THE INFO DB
 
         max_fives = np.asarray(max_fives)
-        max_fives_rounded = np.asarray(max_fives_rounded)
         fft_x = np.asarray(fft_x)
         fft_y = np.asarray(fft_y)
 
         FFT_plots = []
         #Plotting the individual FFT Plots
-        fig = plt.GridSpec(1, 44, wspace=5, hspace=0.3)
-        plt.suptitle("Individual Channels' FFTs for Run {}".format(counter))\
+        fig = plt.GridSpec(1, 44, wspace=10)
+        plt.suptitle("Individual Channels' FFTs for Run {}".format(counter))
 
         #Noise Floor
         noise_floor = noiseFloor(fft_y)
@@ -761,7 +745,7 @@ def main(iterations):
         max_peak_table_info = [["Top Five Peaks:"],
                                 ["Channel A", "Channel B", "Channel C", "Channel D"]]
         for i in range(num_channels):
-            max_peak_table_info.append((str(max_fives_rounded[i][0]), str(max_fives_rounded[i][1]), str(max_fives_rounded[i][2]), str(max_fives_rounded[i][3])))
+            max_peak_table_info.append((str(np.round(max_fives[i][0], decimal_round)), str(np.round(max_fives[i][1], decimal_round)), str(np.round(max_fives[i][2], decimal_round)), str(np.round(max_fives[i][3], decimal_round))))
 
         peak_table = Table(max_peak_table_info, style=[('GRID', (0,1), (4,8), 1, colors.black),
                                 ('BACKGROUND', (0,1), (6,1), '#D5D6D5')])
@@ -781,7 +765,7 @@ def main(iterations):
         tgth_x, tgth_y = 2, 3
 
         #Setting the plot
-        fig = plt.GridSpec(17, 45, wspace=5, hspace=0.3)
+        fig = plt.GridSpec(17, 45, wspace=10)
         ax1 = plt.subplot(fig[0:17, 0:20])
         ax2 = plt.subplot(fig[0:17, 20:40])
 
@@ -794,6 +778,7 @@ def main(iterations):
             ax2.set_title("All Channels - FFT Graphs")
             ax2.plot(FFT_plots[i].get_xdata(), FFT_plots[i].get_ydata(), '-', color=colour, markersize=0.2, label="Channel {}".format(i))
 
+        ax2.set_xlim(0, max(FFT_plots[2].get_ydata())* 1.25)
         ax2.legend(loc='upper left', bbox_to_anchor=(1,0.5))
 
         # plt.show()
@@ -805,15 +790,15 @@ def main(iterations):
         pdf.showPage()
         header(pdf)
         page_count += 1
-        stats_summary_x, stats_summary_y = 15, 585
-        nf_table_width, nf_table_height = 40, 20
-        nf_x, nf_y = stats_summary_x, stats_summary_y - 200
+        stats_summary_x, stats_summary_y = 15, 565
+        nf_table_width, nf_table_height = 80, 20
+        nf_x, nf_y = stats_summary_x, stats_summary_y - 215
 
         stats_summary = pdf.beginText()
         stats_summary.setTextOrigin(stats_summary_x, stats_summary_y)
-        stats_summary.setFont(font, 2*gen_font_size)
+        stats_summary.setFont(font, 1.25*gen_font_size)
         stats_summary.textLine(text=("Noise Floor Data: "))
-        stats_summary.setFont(font, 1.75*gen_font_size)
+        stats_summary.setFont(font, 1.15*gen_font_size)
         stats_summary.textLine("Maximum is Channel " + str(np.argmax(noise_floor)) + " with value " + str(max(noise_floor)))
         stats_summary.textLine("Minimum is Channel " + str(np.argmin(noise_floor)) + " with value " + str(min(noise_floor)))
         stats_summary.textLine("The Mean of the Noise Floor Data is " + str(np.mean(noise_floor)))
@@ -824,7 +809,7 @@ def main(iterations):
         nf_table_info = [["All Noise Floor Data:"], ["Channel A", "Channel B", "Channel C", "Channel D"]]
 
         for i in range(num_channels):
-            nf_table_info.append((str(round(noise_floor[i], decimal_round)), str(round(noise_floor[i], decimal_round)), str(round(noise_floor[i], decimal_round)), str(round(noise_floor[i], decimal_round))))
+            nf_table_info.append((str(np.round(noise_floor[i], decimal_round)), str(np.round(noise_floor[i], decimal_round)), str(np.round(noise_floor[i], decimal_round)), str(np.round(noise_floor[i], decimal_round))))
 
         nf_table = Table(nf_table_info, style=[('GRID', (0,1), (4,8), 1, colors.black),
                                 ('BACKGROUND', (0,1), (6,1), '#D5D6D5')])
@@ -834,7 +819,7 @@ def main(iterations):
 
         #Top 5 Peaks info
         #SNR DATA
-        snr_width, snr_height = 100, 315
+        snr_width, snr_height = 100, 250
         snr_x, snr_y = nf_x, nf_y - snr_height
         fft_snr = []
         for i in range(num_channels):
@@ -846,7 +831,7 @@ def main(iterations):
         summary_info.append((max_fives[0][0][0], max_fives[0][0][1], fft_snr[0]))
 
         #Sorting according to SNR
-        quickSort(fft_snr, 0, len(fft_snr)-1, max_fives_rounded)
+        quickSort(fft_snr, 0, len(fft_snr)-1, max_fives) #X also gets sorted, so that the p/f is easier to check
 
 
         #Tables stuff
@@ -854,10 +839,9 @@ def main(iterations):
         snr_style = []
 
         for i, name in zip(range(num_channels), channel_names):
-            print(name)
-            snr_table_info.append((name))
-            snr_table_info.append(("Location (Hz)", str(max_fives_rounded[i][0][0]), str(max_fives_rounded[i][1][0]), str(max_fives_rounded[i][2][0]), str(max_fives_rounded[i][3][0])))
-            snr_table_info.append(("Amplitude (dB)", str(max_fives_rounded[i][0][1]), str(max_fives_rounded[i][1][1]), str(max_fives_rounded[i][2][1]), str(max_fives_rounded[i][3][1])))
+            snr_table_info.append((str(name), "", ""))
+            snr_table_info.append(("Location (Hz)", str(max_fives[i][0][0]), str(max_fives[i][1][0]), str(max_fives[i][2][0]), str(max_fives[i][3][0])))
+            snr_table_info.append(("Amplitude (dB)", str(max_fives[i][0][1]), str(max_fives[i][1][1]), str(max_fives[i][2][1]), str(max_fives[i][3][1])))
             snr_table_info.append(("SNR (dBc)", str(fft_snr[i])))
             snr_style.append(['GRID', (0, (2 + (4*i))), (5, (4 + (4*i))), 1, colors.black])
             snr_style.append(['BACKGROUND', (0, (1 + (4*i))), (6, (1 + (4*i))), '#D5D6D5'])
@@ -869,26 +853,75 @@ def main(iterations):
         snr_table.wrapOn(pdf, snr_width, snr_height)
         snr_table.drawOn(pdf, snr_x, snr_y)
 
+
     #Pass/Fail final page
     pdf.showPage()
     page_count += 1
     header(pdf)
 
-    #Positionalgalues
+    #Positional values
     title_font_size = 26
-    title_x, title_y = 100, 560
+    title_x, title_y = 10, 525
+    summary_width, summary_height = 250, 100
+    summary_x, summary_y = 10, title_y - summary_height
+    snr_x=  summary_x
 
-    #Setting up title on Title Page
+    #Setting up title
     title = pdf.beginText()
     title.setTextOrigin(title_x, title_y)
     title.setFont(font, title_font_size)
     title.textLine(text=("Summary Page for: " + unit_name + " - " + formattedDate))
     pdf.drawText(title)
 
-    print(summary_info)
+    summary_nump = np.asarray(summary_info)
 
+    #Checking the snr
+    snr_bools = list(map(checkSNR, summary_nump[:, 2]))
 
+    #Checking the Freq
+    freq_bools = list(map(checkFreq, summary_nump[:, 0]))
 
+    print(snr_bools)
+    print(freq_bools)
+
+    summary_table_info = [["Summary Table: "], ["Run", "SNR Check", "Frequency Check"]]
+
+    for i, snr, freq in zip(range(counter), snr_bools, freq_bools):
+        summary_table_info.append([str(i), isPass(snr), isPass(freq)])
+
+    summary = Table(summary_table_info, style=[('GRID', (0,1), (4, counter+1), 1, colors.black),
+                                ('BACKGROUND', (0,1), (2,1), '#D5D6D5')])
+    #print(type(peak_table))
+    summary.wrapOn(pdf, summary_width, summary_height)
+    summary.drawOn(pdf, summary_x, summary_y)
+
+    #What the fails are
+    if False in snr_bools:
+        snr_x += summary_width + 5
+        fail_info = [["Fails in SNR: ", ("Must be within range " + str(SNR_min_check) + "dBc to " + str(SNR_max_check) +"dBc")], ["Run", "SNR Value"]]
+
+        for i, snr in zip(range(counter), summary_nump[:,2]):
+            fail_info.append([str(i), str(snr)])
+
+        fail_table = Table(fail_info, style=[('GRID', (0,1), (4, counter+1), 1, colors.black),
+                                    ('BACKGROUND', (0,1), (4,1), '#D5D6D5')])
+        #print(type(peak_table))
+        fail_table.wrapOn(pdf, summary_width, summary_height)
+        fail_table.drawOn(pdf, snr_x, summary_y)
+            #What the fails are
+    if False in freq_bools:
+        freq_x = snr_x + summary_width - 5
+
+        fail_info = [["Fails in Frequency: ", ("Must be within " + str(freq_check_offset) + "Hz of " + str(wave_freq))], ["Run", "Frequency"]]
+
+        for i, freq in zip(range(counter), summary_nump[:,0]):
+            fail_info.append([str(i), str(freq)])
+
+        fail_table = Table(fail_info, style=[('GRID', (0,1), (4, counter+1), 1, colors.black),
+                                    ('BACKGROUND', (0,1), (2,1), '#D5D6D5')])
+        #print(type(peak_table))
+        fail_table.wrapOn(pdf, summary_width, summary_height)
+        fail_table.drawOn(pdf, freq_x, summary_y)
 
     os.chdir(output_dir) #Ensuring we are saving in the output directory
     pdf.save() #saving the pdf
