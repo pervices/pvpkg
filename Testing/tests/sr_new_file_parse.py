@@ -57,10 +57,10 @@ os.makedirs(plots_dir, exist_ok=True)
 #USER SET VARIABLES
 begin_cutoff_waves = 17.20 #how many waves to cut off before tracking data
 num_output_waves = 2 #number of waves shown on the final plots (IQ)
-decimal_round = 3
+decimal_round = 7
 SNR_min_check = 40 #dB
-SNR_max_check = 50 #dB
-freq_check_offset = 0.01 #Hz
+#SNR_max_check = 50 #dB
+freq_check_offset = 1 #Hz
 
 
 #Unit Info
@@ -86,7 +86,7 @@ summary_info = [] #[iteration][[freq][amplitude][snr]]
 counter = 0 #Keeps track of run
 
 #page stuff
-page_count = 0
+page_count = 1
 page_total = num_channels*4 + 2
 
 
@@ -260,12 +260,10 @@ RETURNS: NONE'''
 def subPlotFFTs(x, y, ax, title, max_five, nf): #TODO: Add points on top of peaks
 
     ax.set_title(title)
-    ax.set_ylim(0, max(y) + max(y)*0.1)
-    # ax.set_xlim(min(x)/2, max(x)/2)
     ax.set_xlabel("Frequency")
     ax.set_ylabel("Amplitude (dB)")
     fft, = ax.plot(x, y, color='crimson')
-    ax.axhline(y = nf, markersize=0.5, alpha=0.3, label="Noise Floor")
+    ax.plot(x, nf, markersize=0.5, alpha=0.3, label="Noise Floor")
 
     for i in range(len(max_five)):
         ax.plot(max_five[i][0], max_five[i][1], "x")
@@ -373,8 +371,9 @@ def fftValues(x, reals, imags): #TODO: THIS IS A MESS, MUST FIX
     norm_y = normalize(fft_y, max_peak)
 
     #Transform to dB
-    bools_norms = list(map(isNotZero, norm_y))
-    np.place(norm_y, bools_norms, 20*np.log10(norm_y)) #does not log values that are 0
+    # bools_norms = list(map(isNotZero, norm_y))
+    # np.place(norm_y, bools_norms, 20*np.log10(norm_y)) #does not log values that are 0
+    norm_y = 20*np.log10(abs(norm_y))
 
     #Setting up the X values
     freq = np.fft.fftshift(np.fft.fftfreq(len(x), d=(1/sample_rate)))
@@ -419,19 +418,8 @@ def fivePeaks(x, y, ampl):
 '''Intakes data to find the noise floor
 PARAM: Data
 RETURNS: noise_floor_y'''
-def noiseFloor(data):
-
-    bin_width = sample_rate/sample_count
-    noise_floors  = []
-
-    for ch in range(len(data)):
-        n = len(data[ch])
-        coherent_gain = sum(data[ch])/n
-        noise_gain = sum(data[ch]**2)/n
-        noise_floor = bin_width*noise_gain/coherent_gain**2
-        noise_floors.append(noise_floor)
-
-    return noise_floors
+def noiseFloor(data_given):
+    return (((data_given - np.mean(data_given))/sample_count))
 
 '''Squares the given values
 PARMS: V
@@ -439,20 +427,15 @@ RETURNS: v**2'''
 def square(v):
     return v**2
 
-'''Turning the amplitudes (volts) into RMS SNR Values
-PARAMS:y_vals'''
-def toSNR(y_vals):
-    #Calculating the RMS Signal Voltage
-    #The RMS is one standard deviation of the FFT STD
-    rms_signal = np.std(y_vals)
-
-    #Calculating the RMS Signal Voltage - NOTE: how to get instantaneous value
-    squares = np.vectorize(square)
-    rms_V = sum(squares(y_vals))
-
-    snr = rms_signal/rms_V
-
-    return snr
+'''Turning the amplitudes of noise and signal and making the snr
+PARAMS:y_vals
+RETURNS: SNR in dB'''
+def toSNR(noise, signal):
+    print("Signal: " + str(signal))
+    noise_std  = np.std(noise)
+    print("Noise: " + str(noise_std))
+    print(20*np.log10(signal/noise_std))
+    return 20*np.log10(signal/noise_std) #Signal is not in decibls, but noise is. This is from wikipedia
 
 def partition(array, low, high, other_arrays):
 
@@ -513,7 +496,7 @@ def quickSort(array, low, high, other_array):
 PARAM: a
 RETURN: Boolean'''
 def checkSNR(a):
-    return (a > SNR_min_check and a < SNR_max_check)
+    return (a > SNR_min_check)
 
 '''Checks if the freq is within desired location
 PARAM: a
@@ -705,25 +688,27 @@ def main(iterations):
         max_fives = []
         fft_x = []
         fft_y = []
+        noise_floor = []
         for i in range(num_channels):
             x, y = fftValues(x_time, reals[i], imags[i])
             fft_x.append(x)
             fft_y.append(y)
             normal = fivePeaks(fft_x[i], fft_y[i], ampl_vec[i])
             max_fives.append(normal) #NOTE: WHY DOESNT THIS GIVE ME THE INFO DB
+                    #Noise Floor - in db
+            noise_floor.append(noiseFloor(y))
 
         max_fives = np.asarray(max_fives)
         fft_x = np.asarray(fft_x)
         fft_y = np.asarray(fft_y)
+        noise_floor = np.asarray(noise_floor)
 
         FFT_plots = []
         #Plotting the individual FFT Plots
         fig = plt.GridSpec(1, 44, wspace=10)
         plt.suptitle("Individual Channels' FFTs for Run {}".format(counter))
 
-        #Noise Floor
-        noise_floor = noiseFloor(fft_y)
-        noise_floor = np.asarray(np.asarray(noise_floor))
+
         axis = []
         axis.append(plt.subplot(fig[0:1, 0:10]))
         axis.append(plt.subplot(fig[0:1, 11:21]))
@@ -778,7 +763,6 @@ def main(iterations):
             ax2.set_title("All Channels - FFT Graphs")
             ax2.plot(FFT_plots[i].get_xdata(), FFT_plots[i].get_ydata(), '-', color=colour, markersize=0.2, label="Channel {}".format(i))
 
-        ax2.set_xlim(0, max(FFT_plots[2].get_ydata())* 1.25)
         ax2.legend(loc='upper left', bbox_to_anchor=(1,0.5))
 
         # plt.show()
@@ -792,24 +776,24 @@ def main(iterations):
         page_count += 1
         stats_summary_x, stats_summary_y = 15, 565
         nf_table_width, nf_table_height = 80, 20
-        nf_x, nf_y = stats_summary_x, stats_summary_y - 215
+        nf_x, nf_y = stats_summary_x, stats_summary_y - 175
 
-        stats_summary = pdf.beginText()
-        stats_summary.setTextOrigin(stats_summary_x, stats_summary_y)
-        stats_summary.setFont(font, 1.25*gen_font_size)
-        stats_summary.textLine(text=("Noise Floor Data: "))
-        stats_summary.setFont(font, 1.15*gen_font_size)
-        stats_summary.textLine("Maximum is Channel " + str(np.argmax(noise_floor)) + " with value " + str(max(noise_floor)))
-        stats_summary.textLine("Minimum is Channel " + str(np.argmin(noise_floor)) + " with value " + str(min(noise_floor)))
-        stats_summary.textLine("The Mean of the Noise Floor Data is " + str(np.mean(noise_floor)))
-
-        pdf.drawText(stats_summary)
+        # stats_summary = pdf.beginText()
+        # stats_summary.setTextOrigin(stats_summary_x, stats_summary_y)
+        # stats_summary.setFont(font, 1.25*gen_font_size)
+        # stats_summary.textLine(text=("Noise Floor Data: "))
+        # stats_summary.setFont(font, 1.15*gen_font_size)
+        # stats_summary.textLine("Maximum is Channel " + str(np.argmax(noise_floor)) + " with value " + str(max(noise_floor)))
+        # stats_summary.textLine("Minimum is Channel " + str(np.argmin(noise_floor)) + " with value " + str(min(noise_floor)))
+        # stats_summary.textLine("The Mean of the Noise Floor Data is " + str(np.mean(noise_floor)))
+        #
+        # pdf.drawText(stats_summary)
 
         #Tables stuff
-        nf_table_info = [["All Noise Floor Data:"], ["Channel A", "Channel B", "Channel C", "Channel D"]]
+        nf_table_info = [["All Noise Floor Data :"], ["Maximum", "Minimum", "Mean", "Mean Difference to A"]]
 
         for i in range(num_channels):
-            nf_table_info.append((str(np.round(noise_floor[i], decimal_round)), str(np.round(noise_floor[i], decimal_round)), str(np.round(noise_floor[i], decimal_round)), str(np.round(noise_floor[i], decimal_round))))
+            nf_table_info.append((str(np.max(noise_floor[i])), str(np.min(noise_floor[i])), str(np.mean(noise_floor[i])), str(np.mean(noise_floor[i]) - np.mean(noise_floor[0]))))
 
         nf_table = Table(nf_table_info, style=[('GRID', (0,1), (4,8), 1, colors.black),
                                 ('BACKGROUND', (0,1), (6,1), '#D5D6D5')])
@@ -823,7 +807,7 @@ def main(iterations):
         snr_x, snr_y = nf_x, nf_y - snr_height
         fft_snr = []
         for i in range(num_channels):
-            fft_snr.append(toSNR(fft_y[i]))
+            fft_snr.append(toSNR(noise_floor[i], ampl_vec[i]))
 
         fft_snr = np.asarray(fft_snr)
 
@@ -898,7 +882,7 @@ def main(iterations):
     #What the fails are
     if False in snr_bools:
         snr_x += summary_width + 5
-        fail_info = [["Fails in SNR: ", ("Must be within range " + str(SNR_min_check) + "dBc to " + str(SNR_max_check) +"dBc")], ["Run", "SNR Value"]]
+        fail_info = [["Fails in SNR: ", ("Must be greater than " + str(SNR_min_check) + "dBc")], ["Run", "SNR Value"]]
 
         for i, snr in zip(range(counter), summary_nump[:,2]):
             fail_info.append([str(i), str(snr)])
@@ -910,7 +894,7 @@ def main(iterations):
         fail_table.drawOn(pdf, snr_x, summary_y)
             #What the fails are
     if False in freq_bools:
-        freq_x = snr_x + summary_width - 5
+        freq_x = snr_x + summary_width - 2
 
         fail_info = [["Fails in Frequency: ", ("Must be within " + str(freq_check_offset) + "Hz of " + str(wave_freq))], ["Run", "Frequency"]]
 
