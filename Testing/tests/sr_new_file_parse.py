@@ -52,7 +52,7 @@ os.makedirs(plots_dir, exist_ok=True)
 
 #USER SET VARIABLES
 begin_cutoff_waves = 20 #how many waves to cut off before tracking data
-num_output_waves = 2 #number of waves shown on the final plots (IQ)
+num_output_waves = 7 #number of waves shown on the final plots (IQ)
 decimal_round = 7
 SNR_min_check = 40 #dB
 #SNR_max_check = 50 #dB
@@ -348,12 +348,13 @@ def subPlotIQs (x, real,imag, best_fit_real, best_fit_imag, offset_real, offset_
     ax.set_title(title)
     ax.set_xlabel("Time")
     ax.set_ylabel("Amplitude (kV)") #NOTE: I HOPE THIS IS RIGHT
-    bf_r, = ax.plot(x, best_fit_real, '-', markersize=0.1, color='indianred', label="Real Best Fit")
-    ax.plot(x, real, '.', markersize=3, color='crimson', label="Real")
+    ax.axhline(y = offset_imag, markersize=0.025, color='indigo', alpha=0.4, label='Imaginary Offset')
     ax.axhline(y = offset_real, markersize=0.025, color='red', alpha=0.4, label='Real Offset')
     ax.plot(x, best_fit_imag, '-', markersize=0.1, color='darkmagenta', label="Imaginary Best Fit")
+    ax.plot(x, best_fit_real, '-', markersize=0.1, color='indianred', label="Real Best Fit")
+    ax.plot(x, real, '.', markersize=3, color='crimson', label="Real")
     ax.plot(x, imag, '.', markersize=3, color='purple', label="Imaginary")
-    ax.axhline(y = offset_imag, markersize=0.025, color='indigo', alpha=0.4, label='Imaginary Offset')
+
 
     real_peaks = find_peaks(real, distance=period)
     imag_peaks = find_peaks(imag, distance=period)
@@ -362,9 +363,9 @@ def subPlotIQs (x, real,imag, best_fit_real, best_fit_imag, offset_real, offset_
         ax.axvline(x = x[r], linestyle='--', alpha=0.5, color='rosybrown', markersize=0.05)
         ax.text(x[r], max(best_fit_real) + (0.05*max(best_fit_real)), "\u2190" + str(round(x[r], 3)), fontsize=7, verticalalignment='top', )
         ax.axvline(x = x[i],  linestyle='--', alpha=0.5, color='darkslateblue',markersize=0.05)
-        ax.text(x[i], min(best_fit_imag) - (min(best_fit_imag)*0.05), "\u2190" + str(round(x[i], 3)), fontsize=7, verticalalignment='top')
+        ax.text(x[i], min(best_fit_imag) + (min(best_fit_imag)*0.05), "\u2190" + str(round(x[i], 3)), fontsize=7, verticalalignment='top')
 
-    plt.show()
+    # plt.show()
     return bf_r
 
 '''
@@ -380,6 +381,7 @@ def waveEquation(time, ampl, freq, phase, dc_offset):
 
     # model = ampl*np.cos(2*np.pi*freq*time + phase) + dc_offset #model for wave equation
     model = ampl*np.cos(2*np.pi*freq*time + phase) + dc_offset #model for wave equation
+
     return model
 
 '''Creates the line of best fit for the given x and y
@@ -396,12 +398,10 @@ def bestFit(x, y):
 
     model = Model(waveEquation)
     params = model.make_params(ampl=max(y), freq=wave_freq, phase=0, dc_offset=0)
-    result = model.fit(y, params, time=x)
+    result = model.fit(y, params, time=x, nan_policy='raise')
+
 
     return result.best_fit, (result.params['dc_offset'], result.params['ampl'], result.params['freq'], result.params['phase'])
-
-
-
 
 
 '''Divides given by peak
@@ -712,16 +712,17 @@ def main(iterations):
 
         IQ_plots = []
         #Plotting the imaginary and real values
-        fig = plt.GridSpec(1, 28, wspace=6, hspace=0.3)
+        fig = plt.GridSpec(1, 28, wspace=0.3, hspace=0.3)
 
         plt.suptitle("Individual Channels' Amplitude versus Time for Run {}".format(counter))
         axis = []
-        axis.append(plt.subplot(fig[0:1, 0:5]))
-        axis.append(plt.subplot(fig[0:1, 6:11]))
+        #TODO: Turn this into a for loop
+        axis.append(plt.subplot(fig[0:1, 0:11]))
+        #axis.append(plt.subplot(fig[0:1, 6:11]))
         axis.append(plt.subplot(fig[0:1, 12:17]))
         #axis.append(plt.subplot(fig[0:1, 18:23]))
 
-        for i, title, ax in zip(range(num_channels), channel_names, axis):
+        for i, title, ax in zip(range(num_channels-1), channel_names, axis):
             IQ_plots.append(subPlotIQs(x_time[0:plotted_samples], reals[i][0:plotted_samples], imags[i][0:plotted_samples], best_fit_reals[i][0:plotted_samples], best_fit_imags[i][0:plotted_samples], offset_reals[i], offset_imags[i], ax, title))
 
         IQ_plots = np.asarray(IQ_plots)
