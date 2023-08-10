@@ -13,6 +13,7 @@ import os
 import subprocess
 import numpy as np
 from matplotlib import rcParams
+from sigfig import round as sig
 
 #PDF IMPORTS
 from reportlab.pdfgen import canvas
@@ -52,18 +53,74 @@ os.makedirs(plots_dir, exist_ok=True)
 
 #USER SET VARIABLES
 begin_cutoff_waves = 20 #how many waves to cut off before tracking data
-num_output_waves = 7 #number of waves shown on the final plots (IQ)
-decimal_round = 7
+num_output_waves = 2 #number of waves shown on the final plots (IQ)
+sigfigs = 3
 SNR_min_check = 40 #dB
-#SNR_max_check = 50 #dB
 freq_check_offset = 1 #Hz
+serial_num = ""
+num_channels = 3
+channel_names = ["Channel A", "Channel B", "Channel C"]#TODO: SWAP THIS BASED ON UNIT USED
 
+# #Getting num_output_waves
+# while(true):
+#     try:
+#         num_output_waves = int(input("How many waves do you want shown on IQ graphs? "))
+#         assert 1 <= num_output_waves <= 4
+#         break
+#     except AssertionError:
+#         print("ERROR: Please input a value within 1 to 4. Try again: ")
+#     except ValueError:
+#         print("ERROR: Please only input integers. Try again: ")
+
+#Getting number of sigfigss
+# while(true):
+#     try:
+#         sigfigs = int(input("How many waves do you want shown on IQ graphs? "))
+#         assert 1 <= sigfigs <= 5
+#         break
+#     except ValueError:
+#         print("ERROR: Please only input integers. Try again: ")
+#     except AssertionError:
+#         print("ERROR: For formatting, please input a value within 1 to 5. Try again:")
+
+# #SNR threshold
+# while(true):
+#     try:
+#         snr_min_check = float(input("What is the minimum value SNR can be? "))
+#         break
+#     except ValueError:
+#         print("ERROR: Please only input numbers. Try again: ")
+
+# #Frequency offset threshold
+# while(true):
+#     try:
+#         freq_check_offset = float(input("What is the offset for the freq threshold? "))
+#         break
+#     except ValueError:
+#         print("ERROR: Please only input numbers. Try again: ")
 
 #Unit Info
 #Asking the user to type serial number into the terminal
-serial_num = "" #NOTE: Doug will add to script later
-num_channels = 3
-channel_names = ["Channel A", "Channel B", "Channel C"] #TODO: SWAP THIS BASED ON UNIT USED
+# #Serial Number
+# while(true):
+#     try:
+#         serial_num = input("What is the serial number of the unit? ")
+#
+#     except ValueError:
+#         print("ERROR: Please only input integers. Try again: ")
+
+# #Channel numbers
+# while(true):
+#     hold = ["Channel A", "Channel B", "Channel C", "Channel D", "Channel E", "Channel F", "Channel G", "Channel H"]
+#     try:
+#         num_channels = int(input("How many Channels are you testing? "))
+#         assert 1 <= num_channels <= 8
+#         break
+#         channel_names = hold[0:num_channels]
+#     except ValueError:
+#         print("ERROR: Please only input integers. Try again: ")
+#     except AssertionError:
+#         print("ERROR: Please input a value within 1 to 8. Try again: ")
 
 #Using the terminal to pull unit info
 # os.system('rm ' + current_dir + '/shiptest_out.txt')
@@ -77,7 +134,6 @@ UHD_ver = subprocess.getstatusoutput("cat shiptest_out.txt | grep 'UHD' | cut --
 unit_name = subprocess.getstatusoutput("cat shiptest_out.txt | grep 'Device Type' | cut --complement -d ':' -f1")[1]
 unit_time = subprocess.getstatusoutput("cat shiptest_out.txt | grep 'Date' | cut --complement -d ':' -f1")[1]
 unit_rtm = subprocess.getstatusoutput("cat shiptest_out.txt | grep 'RTM' | cut --complement -d ':' -f1")[1]
-print("ser ver: " + server_ver)
 
 #organizing info in order of time, tx, and rx using gterminal grep
 os.system('uhd_usrp_info --all > shiptest_out.txt')
@@ -109,7 +165,6 @@ for i, name in zip(range(num_channels), channel_names): #NOTE: This might be mor
     rx_info["RX: " + name].append(subprocess.getstatusoutput("cat hold.txt | grep 'Fuse00' | cut --complement -d ':' -f1")[1])
     rx_info["RX: " + name].append(subprocess.getstatusoutput("cat hold.txt | grep 'Fuse02' | cut --complement -d ':' -f1")[1])
     rx_info["RX: " + name].append(subprocess.getstatusoutput("cat hold.txt | grep 'Fuse03' | cut --complement -d ':' -f1")[1])
-    print(rx_info["RX: " + name])
 
 
 
@@ -256,7 +311,7 @@ def titlePage(pdf):
     board_y -= rowHeight*10
 
     #Rx Board
-    board_info = [["TX Board Information: "], ["Board"], ["Branch"], ["Revision"], ["Date"], ["MCU Serial"], ["Fuse 00"], ["Fuse 02"], ["Fuse 03"]]
+    board_info = [["RX Board Information: "], ["Board"], ["Branch"], ["Revision"], ["Date"], ["MCU Serial"], ["Fuse 00"], ["Fuse 02"], ["Fuse 03"]]
     for i, name in zip(range(num_channels), channel_names):
         board_info[0].append(chr(65+i))
         for z in range(len(rx_info["RX: " + name])):
@@ -310,7 +365,7 @@ def topOfPage(pdf, it):
 
     #positional values
     table_width = 400
-    table_height = 75
+    table_height = 50
     table_x = title_x - 5
     table_y = title_y - table_height
 
@@ -328,16 +383,16 @@ def topOfPage(pdf, it):
 '''Plots the FFT subplots all in the same format
 PARAMS: x, rea;, ax, imag, title
 RETURNS: NONE'''
-def subPlotFFTs(x, y, ax, title, max_five, nf): #TODO: Add points on top of peaks
+def subPlotFFTs(x, y, ax, title, max_four, nf): #TODO: Add points on top of peaks
 
     ax.set_title(title)
     ax.set_xlabel("Frequency")
     ax.set_ylabel("Amplitude (dB)")
-    fft, = ax.plot(x, y, color='crimson')
+    fft, = ax.plot(x, y, "-.", color='crimson')
     ax.plot(x, nf, markersize=0.5, alpha=0.3, label="Noise Floor")
 
-    for i in range(len(max_five)):
-        ax.plot(max_five[i][0], max_five[i][1], "x")
+    for i in range(len(max_four)):
+        ax.plot(max_four[i][0], max_four[i][1], "x", label="Peak {}".format(i+1))
 
     return fft
 
@@ -346,12 +401,11 @@ PARAMS: x, real, ax, imag, best_fit_real, best_fit_imag, title
 RETURNS: NONE'''
 def subPlotIQs (x, real,imag, best_fit_real, best_fit_imag, offset_real, offset_imag, ax, title):
     ax.set_title(title)
-    ax.set_xlabel("Time")
-    ax.set_ylabel("Amplitude (kV)") #NOTE: I HOPE THIS IS RIGHT
+
     ax.axhline(y = offset_imag, markersize=0.025, color='indigo', alpha=0.4, label='Imaginary Offset')
     ax.axhline(y = offset_real, markersize=0.025, color='red', alpha=0.4, label='Real Offset')
     ax.plot(x, best_fit_imag, '-', markersize=0.1, color='darkmagenta', label="Imaginary Best Fit")
-    ax.plot(x, best_fit_real, '-', markersize=0.1, color='indianred', label="Real Best Fit")
+    bf_r, = ax.plot(x, best_fit_real, '-', markersize=0.1, color='indianred', label="Real Best Fit")
     ax.plot(x, real, '.', markersize=3, color='crimson', label="Real")
     ax.plot(x, imag, '.', markersize=3, color='purple', label="Imaginary")
 
@@ -361,9 +415,9 @@ def subPlotIQs (x, real,imag, best_fit_real, best_fit_imag, offset_real, offset_
 
     for r, i in zip(real_peaks[0], imag_peaks[0]):
         ax.axvline(x = x[r], linestyle='--', alpha=0.5, color='rosybrown', markersize=0.05)
-        ax.text(x[r], max(best_fit_real) + (0.05*max(best_fit_real)), "\u2190" + str(round(x[r], 3)), fontsize=7, verticalalignment='top', )
+        ax.text(x[r], max(best_fit_real) + (0.05*max(best_fit_real)), "\u2190" + str(sig(x[r], sigfigs=sigfigs)), fontsize=7, verticalalignment='top', )
         ax.axvline(x = x[i],  linestyle='--', alpha=0.5, color='darkslateblue',markersize=0.05)
-        ax.text(x[i], min(best_fit_imag) + (min(best_fit_imag)*0.05), "\u2190" + str(round(x[i], 3)), fontsize=7, verticalalignment='top')
+        ax.text(x[i], min(best_fit_imag) + (min(best_fit_imag)*0.05), "\u2190" + str(sig(x[i], sigfigs=sigfigs)), fontsize=7, verticalalignment='top')
 
     # plt.show()
     return bf_r
@@ -372,15 +426,16 @@ def subPlotIQs (x, real,imag, best_fit_real, best_fit_imag, offset_real, offset_
 Represents the wave equation
 PARAMS: time, ampl, freq, phase
 RETUNRS: y'''
-# def waveEquation(params, time):
-def waveEquation(time, ampl, freq, phase, dc_offset):
-    # ampl = params['ampl'].value
-    # freq = params['freq'].value
-    # phase = params['phase'].value
-    # dc_offset = params['dc_offset'].value
+def waveEquation(params, time):
+    ampl = params['ampl'].value
+    freq = params['freq'].value
+    phase = params['phase'].value
+    dc_offset = params['dc_offset'].value
 
-    # model = ampl*np.cos(2*np.pi*freq*time + phase) + dc_offset #model for wave equation
     model = ampl*np.cos(2*np.pi*freq*time + phase) + dc_offset #model for wave equation
+# def waveEquation(time, ampl, freq, phase, dc_offset):
+#
+#     model = ampl*np.cos(2*np.pi*freq*time + phase) + dc_offset #model for wave equation
 
     return model
 
@@ -389,19 +444,18 @@ PARAMS: x,y
 RETURNS: best_fit (y values of the line of best fit '''
 def bestFit(x, y):
 
-    # params = create_params(ampl=max(y), freq=wave_freq, phase=0, dc_offset=0)
-    # result = minimize(waveEquation, params, args=(x,))
-    # model = y + result.residual
+    params = create_params(ampl=max(y), freq=wave_freq, phase=0, dc_offset=0)
+    result = minimize(waveEquation, params, args=(x,))
+    model = y + result.residual
+
+    return model, (result.params['dc_offset'], result.params['ampl'], result.params['freq'], result.params['phase'])
+
+    # model = Model(waveEquation)
+    # params = model.make_params(ampl=max(y), freq=wave_freq, phase=0, dc_offset=0)
+    # result = model.fit(y, params, time=x, nan_policy='raise')
     #
-    # print(model)
-    # return model, (result.params['dc_offset'], result.params['ampl'], result.params['freq'], result.params['phase'])
-
-    model = Model(waveEquation)
-    params = model.make_params(ampl=max(y), freq=wave_freq, phase=0, dc_offset=0)
-    result = model.fit(y, params, time=x, nan_policy='raise')
-
-
-    return result.best_fit, (result.params['dc_offset'], result.params['ampl'], result.params['freq'], result.params['phase'])
+    #
+    # return result.best_fit, (result.params['dc_offset'], result.params['ampl'], result.params['freq'], result.params['phase'])
 
 
 '''Divides given by peak
@@ -451,9 +505,9 @@ def fftValues(x, reals, imags): #TODO: THIS IS A MESS, MUST FIX
     normalize = np.vectorize(byOne)
     norm_y = normalize(fft_y, max_peak)
 
-    #Transform to dB
-    # bools_norms = list(map(isNotZero, norm_y))
-    # np.place(norm_y, bools_norms, 20*np.log10(norm_y)) #does not log values that are 0
+    # #Transform to dB
+    # # bools_norms = list(map(isNotZero, norm_y))
+    # # np.place(norm_y, bools_norms, 20*np.log10(norm_y)) #does not log values that are 0
     norm_y = 20*np.log10(abs(norm_y))
 
     #Setting up the X values
@@ -461,10 +515,10 @@ def fftValues(x, reals, imags): #TODO: THIS IS A MESS, MUST FIX
 
     return freq, norm_y
 
-'''Turning the plot figure into a rasterized image, saving it to the directory, and putting the plot onto the pdf
+'''Turning the plot figure into a rasterized image and saving it to the directory
 PARAMS: plot, title, counter, pdf
 RETURNS: NONE'''
-def plotToPdf(plt, title, counter, pdf, plot_img_width, plot_img_height, plot_img_pos_x, plot_img_pos_y):
+def plotToPdf(plt, title, counter):
 
     #Saving plot to proper directory and converting to png
     os.chdir(plots_dir) #ensuring in right directory
@@ -475,32 +529,42 @@ def plotToPdf(plt, title, counter, pdf, plot_img_width, plot_img_height, plot_im
     img_data = open(plots_dir + "/" + title + "_" + str(counter), "rb")
     img = ImageReader(img_data)
 
-    pdf.drawImage(img, plot_img_pos_x, plot_img_pos_y, plot_img_width, plot_img_height)
+    # pdf.drawImage(img, plot_img_pos_x, plot_img_pos_y, plot_img_width, plot_img_height)
+    return(img)
 
-'''Finding the top five peaks
+'''Finding the top four peaks
 PARAMS: y
-RETURNS: max_five'''
-def fivePeaks(x, y, ampl):
+RETURNS: max_four'''
+def numPeaks(x, y, ampl, num):
 
-    max_five = []
-    max_five_rounded = []
     peaks, properties = find_peaks(y, height=ampl) #NOTE: What should I use as the height...
+    x = np.asarray(x)
+    y = np.asarray(y)
 
-    for i in range(5):
-        max_peak = peaks[np.argmax(properties['peak_heights'])]
-        x_peak, y_peak = x[max_peak], y[max_peak]
-        max_five.append((x_peak, y_peak))
-        max_five_rounded.append((round(x_peak, decimal_round), round(y_peak, decimal_round)))
+    maxs = []
+    peaks_arrays = [x[peaks], y[peaks]]
 
-        peaks = np.delete(peaks, (np.where(peaks == max_peak)))
+    print(peaks_arrays)
+    for i in range(num):
+        print("Len of Peak Array 0:" + str(len(peaks_arrays[0])))
+        print("Len of Peak Array 1:" + str(len(peaks_arrays[1])))
+        maxs_indiv = np.argmax(peaks_arrays[1])
+        print((peaks_arrays[0][maxs_indiv], peaks_arrays[1][maxs_indiv]))
+        maxs.append((peaks_arrays[0][maxs_indiv], peaks_arrays[1][maxs_indiv]))
+        peaks_arrays = np.delete(peaks_arrays, maxs_indiv, axis=1)
 
-    return max_five
+    return maxs
 
-'''Intakes data to find the noise floor
+'''Intakes data to find the noise floor avge by removing top 20 peaks and averaging the rest
 PARAM: Data
 RETURNS: noise_floor_y'''
-def noiseFloor(data_given):
-    return (((data_given - np.mean(data_given))/sample_count))
+def noiseFloor(x, y, ampl):
+    twenty_max = numPeaks(x, y, ampl, 20)
+    noise_floor = [x, y] #NOTE: I might be able ot only have this be y later, but for now I know this syntax works
+    for i in range(len(twenty_max)):
+        noise_floor = np.delete(noise_floor, twenty_max[i], axis=1)
+
+    return noise_floor
 
 '''Squares the given values
 PARMS: V
@@ -515,11 +579,11 @@ def toSNR(noise, signal):
     noise_std  = np.std(noise)
     return 20*np.log10(signal/noise_std) #Signal is not in decibls, but noise is. This is from wikipedia
 
-def partition(array, low, high, other_arrays):
+def partition(array, low, high, other_array):
 
     # choose the rightmost element as pivot
     pivot = array[high]
-
+    print()
     # pointer for greater element
     i = low - 1
 
@@ -531,21 +595,25 @@ def partition(array, low, high, other_arrays):
             # If element smaller than pivot is found
             # swap it with the greater element pointed by i
             i = i + 1
+            (array[i], array[j]) = (array[j], array[i])
 
-
-            # Swapping element at i with element at git ])
-            for ar in range(len(other_arrays)):
-                hold = other_arrays[ar][i]
-                other_arrays[ar][i] = other_arrays[ar][j]
-                other_arrays[ar][j] = hold
-
+            print("Run: " + str(counter))
+            print("Swapping " + str(i) + " with " + str(j))
+            #NOTE: There is probably a better way to do this, but I am not sure how
+            # Swapping element at i with element at j)
+            #print("for loops")
+            for ar in range(len(other_array)):
+                hold = other_array[ar][i]
+                other_array[ar][i] = other_array[ar][j]
+                other_array[ar][j] = hold
 
     # Swap the pivot element with the greater element specified by i
     (array[i + 1], array[high]) = (array[high], array[i + 1])
-    for ar in range(len(other_arrays)):
-            hold = other_arrays[ar][i + 1]
-            other_arrays[ar][i + 1] =  other_arrays[ar][high]
-            other_arrays[ar][high] = hold
+
+    for ar in range(len(other_array)):
+        hold = other_array[ar][i + 1]
+        other_array[ar][i + 1] =  other_array[ar][high]
+        other_array[ar][high] = hold
 
     # Return the position from where partition is done
     return i + 1
@@ -559,7 +627,8 @@ def quickSort(array, low, high, other_array):
         # Find pivot element such that
         # element smaller than pivot are on the left
         # element greater than pivot are on the right
-
+        print("In low High")
+        print(counter)
         pi = partition(array, low, high, other_array)
 
         # Recursive call on the left of pivot
@@ -605,13 +674,6 @@ def main(iterations):
         global counter
         counter += 1
 
-        #Page One Set up
-        pdf.showPage() #Page break on pdf
-        global page_count
-        page_count += 1
-        topOfPage(pdf, str(counter))
-
-
         #Initilize Important Arrays
         reals = []
         imags = []
@@ -639,28 +701,20 @@ def main(iterations):
         sample_rate = int(it["sample_rate"])
         global sample_count
         sample_count = int(it["sample_count"])
-        tx_stack = [ (10.0 , sample_rate)] #Equivalent to 1 second
-        rx_stack = [ (10.25, sample_count)] #TODO: Maybe add the burst start times to table - or title page
+        tx_stack = [(10.0 , sample_rate)] #Equivalent to 1 second
+        rx_stack = [(10.25, sample_count)] #TODO: Maybe add the burst start times to table - or title page
 
         vsnk = engine.run(it["channels"], it["wave_freq"], it["sample_rate"], it["center_freq"], it["tx_gain"], it["rx_gain"], tx_stack, rx_stack)
 
-        #Other Variablesc
-        global center_freq
-        center_freq = int(it["center_freq"])
-        global wave_freq
-        wave_freq = int(it["wave_freq"])
-        global tx_gain
-        tx_gain = int(it["tx_gain"])
-        global rx_gain
-        rx_gain = int(it["rx_gain"])
         global period
-        period = int(round(1/(wave_freq/sample_rate)))
+        period = int(round(1/(it["wave_freq"]/it["sample_rate"])))
         global begin_cutoff
         begin_cutoff = int(period*begin_cutoff_waves)
 
+
         #X values
         x = np.arange(begin_cutoff/sample_rate, (sample_count/sample_rate), 1/sample_rate) #0 to max time, taking the 1/sr step
-        x_time = np.asarray(x*1000000) # This is for the actual output of IQ plots
+
 
         vsnks.append(vsnk) #This will loop us through the channels an appropriate amount of time
         for vsnk in vsnks:
@@ -690,97 +744,77 @@ def main(iterations):
                 phase_imags[ch] = param[3]
 
                 ampl_vec[ch] = np.sqrt(param[1]**2 + ampl_reals[len(ampl_reals)-1]**2)
-
+                #Page One Set up
 
         #Making them all np.arrays
         #this for efficency, it is easier to initalize as non-numpy bc allows for flexibility in code
         reals = np.asarray(reals)
         imags = np.asarray(imags)
 
-        #VISUALS on PDF
-        #IMAG AND REAL
-        '''Following the steps of: Setting up variables, making the individiual plots on the figure,
-        rasterizing onto the PDF, adding note to ensure readers know there are less than tested samples visible'''
-        #variables for placement of plot
-        plot_img_width, plot_img_height = 700, 450
-        plot_img_pos_x,  plot_img_pos_y = 2, 20
-        IQ_width, IQ_height = 250, 105
-        IQ_table_x, IQ_table_y = 565,200
+        #Other Variables
+        global center_freq
+        center_freq = int(it["center_freq"])
+        global wave_freq
+        wave_freq = int(it["wave_freq"])
+        global tx_gain
+        tx_gain = int(it["tx_gain"])
+        global rx_gain
+        rx_gain = int(it["rx_gain"])
 
-        #calculating plot_sample_ratio
-        plotted_samples = int(period*num_output_waves)
+        x_time = np.asarray(x*1000000000) # This is for the actual output of IQ plots
+        plotted_samples = int(period*num_output_waves) #calculating plot_sample_ratio
 
+        #Plotting IQ Data (not putting on page)
         IQ_plots = []
         #Plotting the imaginary and real values
-        fig = plt.GridSpec(1, 28, wspace=0.3, hspace=0.3)
+        fig = plt.GridSpec(1, 56, wspace=0.3, hspace=0.3)
 
         plt.suptitle("Individual Channels' Amplitude versus Time for Run {}".format(counter))
+        plt.xlabel("Time (gS)")
+        plt.ylabel("Amplitude(kV)")
+
         axis = []
+
         #TODO: Turn this into a for loop
-        axis.append(plt.subplot(fig[0:1, 0:11]))
-        #axis.append(plt.subplot(fig[0:1, 6:11]))
-        axis.append(plt.subplot(fig[0:1, 12:17]))
-        #axis.append(plt.subplot(fig[0:1, 18:23]))
-
-        for i, title, ax in zip(range(num_channels-1), channel_names, axis):
+        axis.append(plt.subplot(fig[0:1, 0:10]))
+        axis.append(plt.subplot(fig[0:1, 15:25]))
+        axis.append(plt.subplot(fig[0:1, 30:40]))
+        axis.append(plt.subplot(fig[0:1, 45:55]))
+        for i, title, ax in zip(range(num_channels), channel_names, axis):
             IQ_plots.append(subPlotIQs(x_time[0:plotted_samples], reals[i][0:plotted_samples], imags[i][0:plotted_samples], best_fit_reals[i][0:plotted_samples], best_fit_imags[i][0:plotted_samples], offset_reals[i], offset_imags[i], ax, title))
-
         IQ_plots = np.asarray(IQ_plots)
-        # plt.show()
-        #Rasterizes the plot/figures and converts to png)
-        plotToPdf(plt, ("IQPlots_" + formattedDate), counter, pdf, plot_img_width, plot_img_height, plot_img_pos_x, plot_img_pos_y)
+
+        #Rasterizes the plot/figures and converts to png
+        IQ_plt_img = plotToPdf(plt, ("IQPlots_" + formattedDate), counter)
         plt.clf()
 
-        #Table of IQ info
-        IQ_table_info = [["IQ Data: "],["Channel"], ["Mag Freq (Hz)"], ["Mag Ampl (Hz)"]]
-        for i in range(num_channels):
-            IQ_table_info[1].append((chr(65+i)))
-            IQ_table_info[2].append(magnitude(freq_reals[i], freq_imags[i]))
-            IQ_table_info[3].append(magnitude(ampl_reals[i], ampl_imags[i]))
-
-        IQ_table = Table(IQ_table_info, style=[('GRID', (0,1), (2,5), 1, colors.black),
-                                                ('BACKGROUND', (0, 1), (2,1), '#D5D6D5')])
-
-
-        IQ_table.wrapOn(pdf, IQ_width, IQ_height)
-        IQ_table.drawOn(pdf, IQ_table_x, IQ_table_y)
-
-
-        ##FFT PLOT AND TABLE
-        pdf.showPage()
-        page_count += 1
-        topOfPage(pdf, str(counter))
-        #Positional
-        fft_pos_x, fft_pos_y = 10, 125
-        fft_width, fft_height = 650, 450
-        max_peak_width, max_peak_height = 80, 100
-        max_peak_x, max_peak_y = fft_pos_x, fft_pos_y - max_peak_height
-
+        #Plotting FFT Data (not putting on page)
         #Calculating the x and y fft and finding the 5 maxs
-        max_fives = []
-        max_fives = []
+        max_fours = []
         fft_x = []
         fft_y = []
         noise_floor = []
+        std = []
         for i in range(num_channels):
             x, y = fftValues(x_time, reals[i], imags[i]) #NOTE: should I use best fit instead?
-            fft_x.append(x)
-            fft_y.append(y)
-            normal = fivePeaks(fft_x[i], fft_y[i], ampl_vec[i])
-            max_fives.append(normal) #NOTE: WHY DOESNT THIS GIVE ME THE INFO DB
-                    #Noise Floor - in db
-            noise_floor.append(noiseFloor(y))
+            fft_x.append((x))
+            fft_y.append((y))
 
-        max_fives = np.asarray(max_fives)
+            max_fours.append((numPeaks(x, y, ampl_vec[i], 4))) #NOTE: WHY DOESNT THIS GIVE ME THE INFO DB
+            #Noise Floor and std- in db
+            noise_floor.append(noiseFloor(x, y, ampl_vec[i]))
+
+
+        max_fours = np.asarray(max_fours)
         fft_x = np.asarray(fft_x)
         fft_y = np.asarray(fft_y)
         noise_floor = np.asarray(noise_floor)
+        std = np.asarray(std)
 
         FFT_plots = []
         #Plotting the individual FFT Plots
         fig = plt.GridSpec(1, 44, wspace=10)
         plt.suptitle("Individual Channels' FFTs for Run {}".format(counter))
-
 
         axis = []
         axis.append(plt.subplot(fig[0:1, 0:10]))
@@ -788,37 +822,23 @@ def main(iterations):
         axis.append(plt.subplot(fig[0:1, 22:32]))
         axis.append(plt.subplot(fig[0:1, 33:43]))
 
-        fft_x = np.asarray(fft_x)
-        fft_y = np.asarray(fft_y)
-
         for i, title, ax in zip(range(num_channels), channel_names, axis):
-            FFT_plots.append((subPlotFFTs(fft_x[i], fft_y[i], ax, title, max_fives[0], noise_floor[0])))
+            FFT_plots.append((subPlotFFTs(fft_x[i], fft_y[i], ax, title, max_fours[i], np.mean(noise_floor[1]))))
 
         FFT_plots = np.asarray(FFT_plots)
         #Rasterizes the plot/figures and converts to png)
-        plotToPdf(plt, ("FFTPlots_" + formattedDate), counter, pdf, fft_width, fft_height, fft_pos_x, fft_pos_y)
+        FFT_plt_img = plotToPdf(plt, ("FFTPlots_" + formattedDate), counter)
         plt.clf()
 
-        #Tables stuff
-        max_peak_table_info = [["Top Five Peaks:"],
-                                ["Channel A", "Channel B", "Channel C", "Channel D"]]
-        for i in range(num_channels):
-            max_peak_table_info.append((str(np.round(max_fives[i][0], decimal_round)), str(np.round(max_fives[i][1], decimal_round)), str(np.round(max_fives[i][2], decimal_round)), str(np.round(max_fives[i][3], decimal_round))))
+        #MAKING THE ACTUAL PDF THINGS
 
-        peak_table = Table(max_peak_table_info, style=[('GRID', (0,1), (4,8), 1, colors.black),
-                                ('BACKGROUND', (0,1), (6,1), '#D5D6D5')])
-        peak_table.wrapOn(pdf, max_peak_width, max_peak_height)
-        peak_table.drawOn(pdf, max_peak_x  + 40, max_peak_y)
-
-        header(pdf) #Putting here so on top of the image
-
-
-        ##All merged plots
+        #SECTION ONE OF RUNS: Merged Plots
         pdf.showPage()
+        global page_count
         page_count += 1
         topOfPage(pdf, str(counter))
 
-        tgth_width, tgth_height = 800, 600
+        tgth_width, tgth_height = 700, 500
         tgth_x, tgth_y = 2, 3
 
         #Setting the plot
@@ -837,28 +857,86 @@ def main(iterations):
 
         ax2.legend(loc='upper left', bbox_to_anchor=(1,0.5))
 
-        # plt.show()
         #Rasterizes the plot/figures and converts to png)
-        plotToPdf(plt, ("TogetherPlots_" + formattedDate), counter, pdf, tgth_width, tgth_height, tgth_x, tgth_y)
-        plt.clf()
+        tgth_plt_img = plotToPdf(plt, ("TogetherPlots_" + formattedDate), counter)
+        pdf.drawImage(tgth_plt_img, tgth_x, tgth_y, tgth_width, tgth_height)
 
-        ##SUMMARY PAGE
+
+        #SECTION TWO OF RUN: Plotting the Amplitude vs Time
+        pdf.showPage() #Page break on pdf
+        page_count += 1
+        topOfPage(pdf, str(counter))
+
+        #TODO: MIGHT BE ABLE TO MAKE THESE MORE EFFICENT FOR FFT, IQ, AND COMBINED
+        plot_img_width, plot_img_height = 700, 450
+        plot_img_pos_x,  plot_img_pos_y = 2, 60
+        IQ_width, IQ_height = 250, 105
+        IQ_table_x, IQ_table_y = 5,4
+        pdf.drawImage(IQ_plt_img, plot_img_pos_x, plot_img_pos_y, plot_img_width, plot_img_height)
+
+        #Table of IQ info
+        IQ_table_info = [["IQ Data: "],["Channel"], ["Mag Freq (Hz)"], ["Mag Ampl (Hz)"]]
+        for i in range(num_channels):
+            IQ_table_info[1].append((chr(65+i)))
+            IQ_table_info[2].append(sig(magnitude(freq_reals[i], freq_imags[i]), sigfigs=sigfigs))
+            IQ_table_info[3].append(sig(magnitude(ampl_reals[i], ampl_imags[i]), sigfigs=sigfigs))
+        IQ_table = Table(IQ_table_info, style=[('GRID', (0,1), (num_channels+1,3), 1, colors.black),
+                                                ('BACKGROUND', (0, 1), (num_channels+1,1), '#D5D6D5')])
+        IQ_table.wrapOn(pdf, IQ_width, IQ_height)
+        IQ_table.drawOn(pdf, IQ_table_x, IQ_table_y)
+
+        #SECTION THREE OF RUN: Plotting Amplitude vs Frequency
         pdf.showPage()
         page_count += 1
         topOfPage(pdf, str(counter))
-        stats_summary_x, stats_summary_y = 15, 565
-        nf_table_width, nf_table_height = 80, 20
-        nf_x, nf_y = stats_summary_x, stats_summary_y - 175
+
+        #Positional
+        fft_pos_x, fft_pos_y = 2, 100
+        fft_width, fft_height = 550, 300
+        max_peak_width, max_peak_height = 80, 50
+        max_peak_x, max_peak_y = 2, 5
+        pdf.drawImage(FFT_plt_img, plot_img_pos_x, plot_img_pos_y, plot_img_width, plot_img_height)
 
         #Tables stuff
-        nf_table_info = [["All Noise Floor Data :"], ["Maximum", "Minimum", "Mean", "Mean Difference to A"]]
-
+        max_peak_table_info = [["Top Five Peaks:"], ["Channel"], ["1"], ["2"], ["3"], ["4"]]
         for i in range(num_channels):
-            nf_table_info.append((str(np.max(noise_floor[i])), str(np.min(noise_floor[i])), str(np.mean(noise_floor[i])), str(np.mean(noise_floor[i]) - np.mean(noise_floor[0]))))
+            max_peak_table_info[1].append((chr(65+i)))
+            print(max_fours[i])
+            max_peak_table_info[2].append(str((sig(max_fours[i][0][0], sigfigs=sigfigs), sig(max_fours[i][0][1], sigfigs=sigfigs))))
+            max_peak_table_info[3].append(str((sig(max_fours[i][1][0], sigfigs=sigfigs), sig(max_fours[i][1][1], sigfigs=sigfigs))))
+            max_peak_table_info[4].append(str((sig(max_fours[i][2][0], sigfigs=sigfigs), sig(max_fours[i][2][1], sigfigs=sigfigs))))
+            max_peak_table_info[5].append(str((sig(max_fours[i][3][0], sigfigs=sigfigs), sig(max_fours[i][3][1], sigfigs=sigfigs))))
 
-        nf_table = Table(nf_table_info, style=[('GRID', (0,1), (4,8), 1, colors.black),
+        peak_table = Table(max_peak_table_info, style=[('GRID', (0,1), (4,8), 1, colors.black),
                                 ('BACKGROUND', (0,1), (6,1), '#D5D6D5')])
+        peak_table.wrapOn(pdf, max_peak_width, max_peak_height)
+        peak_table.drawOn(pdf, max_peak_x, max_peak_y)
 
+        ##SECTION FOUR OF RUNS: SUMMARY PAGE
+        pdf.showPage()
+        page_count += 1
+        topOfPage(pdf, str(counter))
+        stats_summary_x, stats_summary_y = 15, 400
+        nf_table_width, nf_table_height = 80, 20
+        nf_x, nf_y = stats_summary_x, stats_summary_y - nf_table_height
+
+        #Tables stuff
+        nf_table_info = [["All Noise Floor Data :"], ["Channel"],["Maximum"], ["Minimum"], ["Mean"], ["Mean Difference to A"], ["STD"]]
+        mean_a = np.mean(noise_floor[0][1])
+        for i in range(num_channels):
+            max_loc = np.argmax(noise_floor[i][1])
+            min_loc = np.argmin(noise_floor[i][1])
+            mean = np.mean(noise_floor[i][1])
+
+            nf_table_info[1].append((chr(65+i)))
+            nf_table_info[2].append(str(sig(noise_floor[i][0][max_loc], sigfigs=sigfigs), sig(noise_floor[i][1][max_loc], sigfigs=sigfigs)))
+            nf_table_info[3].append(str(sig(noise_floor[i][0][min_loc], sigfigs=sigfigs), sig(noise_floor[i][1][min_loc], sigfigs=sigfigs)))
+            nf_table_info[4].append(str(mean))
+            nf_table_info[5].append(str(mean - mean_a))
+            nf_table_infp[6].append(str(np.std(noise_floor[i][1])))
+
+        nf_table = Table(nf_table_info, style=[('GRID', (0,1), (num_channels+1,6), 1, colors.black),
+                                ('BACKGROUND', (0,1), (num_channels+1,1), '#D5D6D5')])
         nf_table.wrapOn(pdf, nf_table_width, nf_table_height)
         nf_table.drawOn(pdf, nf_x, nf_y)
 
@@ -873,10 +951,10 @@ def main(iterations):
         fft_snr = np.asarray(fft_snr)
 
         #At this point, the snr shoud be in order of max peak
-        summary_info.append((max_fives[0][0][0], max_fives[0][0][1], fft_snr[0]))
+        summary_info.append((max_fours[0][0][0], max_fours[0][0][1], fft_snr[0]))
 
         #Sorting according to SNR
-        quickSort(fft_snr, 0, len(fft_snr)-1, max_fives) #X also gets sorted, so that the p/f is easier to check
+        quickSort(fft_snr, 0, len(fft_snr)-1, max_fours) #X also gets sorted, so that the p/f is easier to check
 
 
         #Tables stuff
@@ -885,14 +963,11 @@ def main(iterations):
 
         for i, name in zip(range(num_channels), channel_names):
             snr_table_info.append((str(name), "", ""))
-            snr_table_info.append(("Location (Hz)", str(max_fives[i][0][0]), str(max_fives[i][1][0]), str(max_fives[i][2][0]), str(max_fives[i][3][0])))
-            snr_table_info.append(("Amplitude (dB)", str(max_fives[i][0][1]), str(max_fives[i][1][1]), str(max_fives[i][2][1]), str(max_fives[i][3][1])))
+            snr_table_info.append(("Location (Hz)", str(max_fours[i][0][0]), str(max_fours[i][1][0]), str(max_fours[i][2][0]), str(max_fours[i][3][0])))
+            snr_table_info.append(("Amplitude (dB)", str(max_fours[i][0][1]), str(max_fours[i][1][1]), str(max_fours[i][2][1]), str(max_fours[i][3][1])))
             snr_table_info.append(("SNR (dBc)", str(fft_snr[i])))
             snr_style.append(['GRID', (0, (2 + (4*i))), (5, (4 + (4*i))), 1, colors.black])
             snr_style.append(['BACKGROUND', (0, (1 + (4*i))), (6, (1 + (4*i))), '#D5D6D5'])
-
-
-
 
         snr_table = Table(snr_table_info, style=snr_style)
         snr_table.wrapOn(pdf, snr_width, snr_height)
@@ -932,7 +1007,7 @@ def main(iterations):
 
     #Positional values
     title_font_size = 26
-    title_x, title_y = 10, 600
+    title_x, title_y = 2, 500
     summary_width, summary_height = 250, 100
     summary_x, summary_y = 10, title_y - summary_height
     snr_x=  summary_x
