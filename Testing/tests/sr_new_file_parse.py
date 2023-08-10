@@ -29,7 +29,7 @@ from PIL import Image
 from io import BytesIO
 
 # from scipy.optimize import curve_fit
-from lmfit import Model, minimize, Parameters #apparently better for discrete things
+from lmfit import Model, minimize, Parameters, create_params #apparently better for discrete things
 from scipy.signal.windows import blackman
 from scipy.fft import fft, fftfreq, fftshift
 from reportlab.lib.utils import ImageReader
@@ -229,9 +229,9 @@ def titlePage(pdf):
     board_x, board_y = 3, list_y - rowHeight*17
 
     board_styles = ([('GRID', (0,0), (num_channels+1, 8), 1, colors.black),
-                                                                                    ('FONTSIZE', (1,4), (num_channels+1, 5),7.8),
-                                                                                    ('BACKGROUND', (0, 0), (num_channels+1,0), '#D5D6D5'),
-                                                                                    ('BACKGROUND', (0, 0), (0,8), '#D5D6D5')])
+                    ('FONTSIZE', (1,4), (num_channels+1, 5),7.8),
+                    ('BACKGROUND', (0, 0), (num_channels+1,0), '#D5D6D5'),
+                    ('BACKGROUND', (0, 0), (0,8), '#D5D6D5')])
 
     #Time Board
     board_info = [["Time Board Information: "], ["Board"], ["Branch"], ["Revision"], ["Date"], ["MCU Serial"], ["Fuse 00"], ["Fuse 02"], ["Fuse 03"]]
@@ -371,13 +371,15 @@ def subPlotIQs (x, real,imag, best_fit_real, best_fit_imag, offset_real, offset_
 Represents the wave equation
 PARAMS: time, ampl, freq, phase
 RETUNRS: y'''
+# def waveEquation(params, time):
 def waveEquation(time, ampl, freq, phase, dc_offset):
-    # ampl = guess['ampl'].value
-    # freq = guess['freq'].value
-    # phase = guess['phase'].value
-    # dc_offset = guess['dc_offset'].value
-    model = ampl*np.cos(2*np.pi*freq*time + phase) + dc_offset #model for wave equation
+    # ampl = params['ampl'].value
+    # freq = params['freq'].value
+    # phase = params['phase'].value
+    # dc_offset = params['dc_offset'].value
 
+    # model = ampl*np.cos(2*np.pi*freq*time + phase) + dc_offset #model for wave equation
+    model = ampl*np.cos(2*np.pi*freq*time + phase) + dc_offset #model for wave equation
     return model
 
 '''Creates the line of best fit for the given x and y
@@ -385,11 +387,20 @@ PARAMS: x,y
 RETURNS: best_fit (y values of the line of best fit '''
 def bestFit(x, y):
 
+    # params = create_params(ampl=max(y), freq=wave_freq, phase=0, dc_offset=0)
+    # result = minimize(waveEquation, params, args=(x,))
+    # model = y + result.residual
+    #
+    # print(model)
+    # return model, (result.params['dc_offset'], result.params['ampl'], result.params['freq'], result.params['phase'])
+
     model = Model(waveEquation)
     params = model.make_params(ampl=max(y), freq=wave_freq, phase=0, dc_offset=0)
     result = model.fit(y, params, time=x)
 
     return result.best_fit, (result.params['dc_offset'], result.params['ampl'], result.params['freq'], result.params['phase'])
+
+
 
 
 
