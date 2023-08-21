@@ -389,7 +389,7 @@ def subPlotFFTs(x, y, ax, title, max_four, nf): #TODO: Add points on top of peak
     ax.set_xlabel("Frequency")
     ax.set_ylabel("Amplitude (dB)")
     fft, = ax.plot(x, y, "-.", color='crimson')
-    ax.plot(x, nf, markersize=0.5, alpha=0.3, label="Noise Floor")
+    ax.axhline(nf, markersize=0.5, alpha=0.3, label="Noise Floor")
 
     for i in range(len(max_four)):
         ax.plot(max_four[i][0], max_four[i][1], "x", label="Peak {}".format(i+1))
@@ -559,11 +559,7 @@ def numPeaks(x, y, ampl, num):
 PARAM: Data
 RETURNS: noise_floor_y'''
 def noiseFloor(x, y, ampl):
-    twenty_max = numPeaks(x, y, ampl, 20)
-    noise_floor = [x, y] #NOTE: I might be able ot only have this be y later, but for now I know this syntax works
-    for i in range(len(twenty_max)):
-        noise_floor = np.delete(noise_floor, twenty_max[i], axis=1)
-
+    noise_floor = numPeaks(x, y, ampl, 20)
     return noise_floor
 
 '''Squares the given values
@@ -929,11 +925,11 @@ def main(iterations):
             mean = np.mean(noise_floor[i][1])
 
             nf_table_info[1].append((chr(65+i)))
-            nf_table_info[2].append(str(sig(noise_floor[i][0][max_loc], sigfigs=sigfigs), sig(noise_floor[i][1][max_loc], sigfigs=sigfigs)))
-            nf_table_info[3].append(str(sig(noise_floor[i][0][min_loc], sigfigs=sigfigs), sig(noise_floor[i][1][min_loc], sigfigs=sigfigs)))
+            nf_table_info[2].append(str((sig(noise_floor[i][0][max_loc], sigfigs=sigfigs), sig(noise_floor[i][1][max_loc], sigfigs=sigfigs))))
+            nf_table_info[3].append(str((sig(noise_floor[i][0][min_loc], sigfigs=sigfigs), sig(noise_floor[i][1][min_loc], sigfigs=sigfigs))))
             nf_table_info[4].append(str(mean))
             nf_table_info[5].append(str(mean - mean_a))
-            nf_table_infp[6].append(str(np.std(noise_floor[i][1])))
+            nf_table_info[6].append(str(np.std(noise_floor[i][1])))
 
         nf_table = Table(nf_table_info, style=[('GRID', (0,1), (num_channels+1,6), 1, colors.black),
                                 ('BACKGROUND', (0,1), (num_channels+1,1), '#D5D6D5')])
