@@ -58,8 +58,8 @@ sigfigs = 3
 SNR_min_check = 40 #dB
 freq_check_offset = 1 #Hz
 serial_num = ""
-num_channels = 3
-channel_names = ["Channel A", "Channel B", "Channel C"]#TODO: SWAP THIS BASED ON UNIT USED
+num_channels = 4
+channel_names = ["Channel A", "Channel B", "Channel C", "Channel D"]#TODO: SWAP THIS BASED ON UNIT USED
 
 # #Getting num_output_waves
 # while(true):
@@ -284,7 +284,7 @@ def titlePage(pdf):
     #Adding the toime, tx, rx board infocd cddc
     board_width, board_height = 100, 100
     colWidth, rowHeight = (1.5*inch), (0.2*inch)
-    board_x, board_y = 3, list_y - rowHeight*15
+    board_x, board_y = 3, list_y - rowHeight*17
 
     board_styles = ([('GRID', (0,0), (num_channels+1, 9), 1, colors.black),
                     ('FONTSIZE', (1,4), (num_channels+1, 5),7.8),
@@ -944,7 +944,7 @@ def main(iterations):
 
         #Top 5 Peaks info
         #SNR DATA
-        snr_width, snr_height = 100, 70
+        snr_width, snr_height = 100, 80
         snr_x, snr_y = nf_x, nf_y - snr_height
         fft_snr = []
         for i in range(num_channels):
