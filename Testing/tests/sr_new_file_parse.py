@@ -130,9 +130,9 @@ os.system('uhd_usrp_info  -s > shiptest_out.txt')
 #Using terminal grep to set unit data
 server_ver = subprocess.getstatusoutput("cat shiptest_out.txt | grep 'Server Version' | cut --complement -d ':' -f1 ")[1]
 fpga_ver = subprocess.getstatusoutput("cat shiptest_out.txt | grep 'FPGA' | cut --complement -d ':' -f1")[1]
-UHD_ver = subprocess.getstatusoutput("cat shiptest_out.txt | grep 'UHD' | cut --complement -d 'g' -f2")[1]
+UHD_ver = subprocess.getstatusoutput("cat shiptest_out.txt | grep 'UHD' | cut --complement -d 'g' -f1")[1]
 unit_name = subprocess.getstatusoutput("cat shiptest_out.txt | grep 'Device Type' | cut --complement -d ':' -f1")[1]
-unit_time = subprocess.getstatusoutput("cat shiptest_out.txt | grep 'Date' | cut --complement -d ':' -f1")[1]
+unit_time = subprocess.getstatusoutput("cat shiptest_out.txt | grep -m1 'Date' | cut --complement -d ':' -f1")[1]
 unit_rtm = subprocess.getstatusoutput("cat shiptest_out.txt | grep 'RTM' | cut --complement -d ':' -f1")[1]
 
 #organizing info in order of time, tx, and rx using gterminal grep
@@ -150,6 +150,7 @@ time.append(subprocess.getstatusoutput("cat hold.txt | grep 'MCU Serial' | cut -
 time.append(subprocess.getstatusoutput("cat hold.txt | grep 'Fuse00' | cut --complement -d ':' -f1")[1])
 time.append(subprocess.getstatusoutput("cat hold.txt | grep 'Fuse02' | cut --complement -d ':' -f1")[1])
 time.append(subprocess.getstatusoutput("cat hold.txt | grep 'Fuse03' | cut --complement -d ':' -f1")[1])
+time.append(subprocess.getstatusoutput("cat hold.txt | grep 'GCC' | cut --complement -d ':' -f1")[1])
 
 
 rx_info = {}
@@ -165,6 +166,7 @@ for i, name in zip(range(num_channels), channel_names): #NOTE: This might be mor
     rx_info["RX: " + name].append(subprocess.getstatusoutput("cat hold.txt | grep 'Fuse00' | cut --complement -d ':' -f1")[1])
     rx_info["RX: " + name].append(subprocess.getstatusoutput("cat hold.txt | grep 'Fuse02' | cut --complement -d ':' -f1")[1])
     rx_info["RX: " + name].append(subprocess.getstatusoutput("cat hold.txt | grep 'Fuse03' | cut --complement -d ':' -f1")[1])
+    rx_info["RX: " + name].append(subprocess.getstatusoutput("cat hold.txt | grep 'GCC' | cut --complement -d ':' -f1")[1])
 
 
 
@@ -180,6 +182,7 @@ for i, name in zip(range(num_channels), channel_names):
     tx_info["TX: " + name].append(subprocess.getstatusoutput("cat hold.txt | grep 'Fuse00' | cut --complement -d ':' -f1")[1])
     tx_info["TX: " + name].append(subprocess.getstatusoutput("cat hold.txt | grep 'Fuse02' | cut --complement -d ':' -f1")[1])
     tx_info["TX: " + name].append(subprocess.getstatusoutput("cat hold.txt | grep 'Fuse03' | cut --complement -d ':' -f1")[1])
+    tx_info["TX: " + name].append(subprocess.getstatusoutput("cat hold.txt | grep 'GCC' | cut --complement -d ':' -f1")[1])
 
 
 os.system("rm hold.txt")
@@ -281,25 +284,25 @@ def titlePage(pdf):
     #Adding the toime, tx, rx board infocd cddc
     board_width, board_height = 100, 100
     colWidth, rowHeight = (1.5*inch), (0.2*inch)
-    board_x, board_y = 3, list_y - rowHeight*17
+    board_x, board_y = 3, list_y - rowHeight*15
 
-    board_styles = ([('GRID', (0,0), (num_channels+1, 8), 1, colors.black),
+    board_styles = ([('GRID', (0,0), (num_channels+1, 9), 1, colors.black),
                     ('FONTSIZE', (1,4), (num_channels+1, 5),7.8),
                     ('BACKGROUND', (0, 0), (num_channels+1,0), '#D5D6D5'),
-                    ('BACKGROUND', (0, 0), (0,8), '#D5D6D5')])
+                    ('BACKGROUND', (0, 0), (0,9), '#D5D6D5')])
 
     #Time Board
-    board_info = [["Time Board Information: "], ["Board"], ["Branch"], ["Revision"], ["Date"], ["MCU Serial"], ["Fuse 00"], ["Fuse 02"], ["Fuse 03"]]
+    board_info = [["Time Board Information: "], ["Board"], ["Branch"], ["Revision"], ["Date"], ["MCU Serial"], ["Fuse 00"], ["Fuse 02"], ["Fuse 03"], ["GCC"]]
     for z in range(len(time)):
         board_info[z+1].append((time[z]))
 
     board_table = Table(board_info, colWidths=colWidth, rowHeights=rowHeight, style=board_styles)
     board_table.wrapOn(pdf, board_width, board_height)
     board_table.drawOn(pdf, board_x, board_y)
-    board_y -= rowHeight*10
+    board_y -= rowHeight*11
 
     #Tx Board
-    board_info = [["TX Board Information: "], ["Board"], ["Branch"], ["Revision"], ["Date"], ["MCU Serial"], ["Fuse 00"], ["Fuse 02"], ["Fuse 03"]]
+    board_info = [["TX Board Information: "], ["Board"], ["Branch"], ["Revision"], ["Date"], ["MCU Serial"], ["Fuse 00"], ["Fuse 02"], ["Fuse 03"], ["GCC"]]
     for i, name in zip(range(num_channels), channel_names):
         board_info[0].append(chr(65+i))
         for z in range(len(tx_info["TX: " + name])):
@@ -308,10 +311,10 @@ def titlePage(pdf):
     board_table = Table(board_info, rowHeights=rowHeight, style=board_styles)
     board_table.wrapOn(pdf, board_width, board_height)
     board_table.drawOn(pdf, board_x, board_y)
-    board_y -= rowHeight*10
+    board_y -= rowHeight*11
 
     #Rx Board
-    board_info = [["RX Board Information: "], ["Board"], ["Branch"], ["Revision"], ["Date"], ["MCU Serial"], ["Fuse 00"], ["Fuse 02"], ["Fuse 03"]]
+    board_info = [["RX Board Information: "], ["Board"], ["Branch"], ["Revision"], ["Date"], ["MCU Serial"], ["Fuse 00"], ["Fuse 02"], ["Fuse 03"], ["GCC"]]
     for i, name in zip(range(num_channels), channel_names):
         board_info[0].append(chr(65+i))
         for z in range(len(rx_info["RX: " + name])):
@@ -920,7 +923,7 @@ def main(iterations):
         nf_x, nf_y = stats_summary_x, stats_summary_y - nf_table_height
 
         #Tables stuff
-        nf_table_info = [["All Noise Floor Data :"], ["Channel"],["Maximum"], ["Minimum"], ["Mean"], ["Mean Difference to A"], ["STD"]]
+        nf_table_info = [["All Noise Floor Data :"], ["Channel"],["Maximum"], ["Minimum"], ["Mean"], ["Diff to A"], ["STD"]]
         mean_a = np.mean(noise_floor[0][1])
         for i in range(num_channels):
             max_loc = np.argmax(noise_floor[i][1])
@@ -941,7 +944,7 @@ def main(iterations):
 
         #Top 5 Peaks info
         #SNR DATA
-        snr_width, snr_height = 100, 50
+        snr_width, snr_height = 100, 70
         snr_x, snr_y = nf_x, nf_y - snr_height
         fft_snr = []
         for i in range(num_channels):
@@ -956,7 +959,7 @@ def main(iterations):
         quickSort(fft_snr, 0, len(fft_snr)-1, max_fours) #X also gets sorted, so that the p/f is easier to check
 
         #Tables stuff
-        snr_table_info = [["Top Peak Information (Based on Highest SNR):"], ["Channel"], ["Location (Hz)"], ["Amplitude (dB)"], ["SNR (dBc)"]]
+        snr_table_info = [["Top Peak Information", "(Based on Highest SNR):"], ["Channel"], ["Location (Hz)"], ["Amplitude (dB)"], ["SNR (dBc)"]]
         snr_style = []
 
         for i in range(num_channels):
