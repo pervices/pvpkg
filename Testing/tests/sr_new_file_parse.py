@@ -53,74 +53,75 @@ os.makedirs(plots_dir, exist_ok=True)
 
 #USER SET VARIABLES
 begin_cutoff_waves = 20 #how many waves to cut off before tracking data
-num_output_waves = 2 #number of waves shown on the final plots (IQ)
-sigfigs = 3
-SNR_min_check = 40 #dB
-freq_check_offset = 1 #Hz
-serial_num = ""
-num_channels = 4
-channel_names = ["Channel A", "Channel B", "Channel C", "Channel D"]#TODO: SWAP THIS BASED ON UNIT USED
+# num_output_waves = 2 #number of waves shown on the final plots (IQ)
+# sigfigs = 3
+# SNR_min_check = 40 #dB
+# freq_check_offset = 1 #Hz
+# serial_num = ""
+# num_channels = 4
+# channel_names = ["Channel A", "Channel B", "Channel C", "Channel D"]#TODO: SWAP THIS BASED ON UNIT USED
 
-# #Getting num_output_waves
-# while(true):
-#     try:
-#         num_output_waves = int(input("How many waves do you want shown on IQ graphs? "))
-#         assert 1 <= num_output_waves <= 4
-#         break
-#     except AssertionError:
-#         print("ERROR: Please input a value within 1 to 4. Try again: ")
-#     except ValueError:
-#         print("ERROR: Please only input integers. Try again: ")
+channel_names = []
+#Getting num_output_waves
+while(True):
+    try:
+        num_output_waves = int(input("How many waves do you want shown on IQ graphs? "))
+        assert 1 <= num_output_waves <= 4
+        break
+    except AssertionError:
+        print("ERROR: Please input a value within 1 to 4. Try again: ")
+    except ValueError:
+        print("ERROR: Please only input integers. Try again: ")
 
-#Getting number of sigfigss
-# while(true):
-#     try:
-#         sigfigs = int(input("How many waves do you want shown on IQ graphs? "))
-#         assert 1 <= sigfigs <= 5
-#         break
-#     except ValueError:
-#         print("ERROR: Please only input integers. Try again: ")
-#     except AssertionError:
-#         print("ERROR: For formatting, please input a value within 1 to 5. Try again:")
+# Getting number of sigfigss
+while(True):
+    try:
+        sigfigs = int(input("How many significant digits do you want? "))
+        assert 1 <= sigfigs <= 5
+        break
+    except ValueError:
+        print("ERROR: Please only input integers. Try again: ")
+    except AssertionError:
+        print("ERROR: For formatting, please input a value within 1 to 5. Try again:")
 
-# #SNR threshold
-# while(true):
-#     try:
-#         snr_min_check = float(input("What is the minimum value SNR can be (in dBc)? "))
-#         break
-#     except ValueError:
-#         print("ERROR: Please only input numbers. Try again: ")
+#SNR threshold
+while(True):
+    try:
+        snr_min_check = float(input("What is the minimum value SNR can be (in dBc)? "))
+        break
+    except ValueError:
+        print("ERROR: Please only input numbers. Try again: ")
 
-# #Frequency offset threshold
-# while(true):
-#     try:
-#         freq_check_offset = float(input("What is the offset for the freq threshold? (in Hz)"))
-#         break
-#     except ValueError:
-#         print("ERROR: Please only input numbers. Try again: ")
+#Frequency offset threshold
+while(True):
+    try:
+        freq_check_offset = float(input("What is the offset for the freq threshold (in Hz)? "))
+        break
+    except ValueError:
+        print("ERROR: Please only input numbers. Try again: ")
 
-#Unit Info
-#Asking the user to type serial number into the terminal
-# #Serial Number
-# while(true):
-#     try:
-#         serial_num = input("What is the serial number of the unit? ")
-#
-#     except ValueError:
-#         print("ERROR: Please only input integers. Try again: ")
+# Unit Info
+# Asking the user to type serial number into the terminal
+#Serial Number
+while(True):
+    try:
+        serial_num = input("What is the serial number of the unit? ")
+        break
+    except ValueError:
+        print("ERROR: Please only input integers. Try again: ")
 
-# #Channel numbers
-# while(true):
-#     hold = ["Channel A", "Channel B", "Channel C", "Channel D", "Channel E", "Channel F", "Channel G", "Channel H"]
-#     try:
-#         num_channels = int(input("How many Channels are you testing? "))
-#         assert 1 <= num_channels <= 8
-#         break
-#         channel_names = hold[0:num_channels]
-#     except ValueError:
-#         print("ERROR: Please only input integers. Try again: ")
-#     except AssertionError:
-#         print("ERROR: Please input a value within 1 to 8. Try again: ")
+#Channel numbers
+while(True):
+    hold = ["Channel A", "Channel B", "Channel C", "Channel D", "Channel E", "Channel F", "Channel G", "Channel H"]
+    try:
+        num_channels = int(input("How many Channels are you testing? "))
+        assert 1 <= num_channels <= 8
+        break
+        channel_names = hold[0:num_channels]
+    except ValueError:
+        print("ERROR: Please only input integers. Try again: ")
+    except AssertionError:
+        print("ERROR: Please input a value within 1 to 8. Try again: ")
 
 #Using the terminal to pull unit info
 # os.system('rm ' + current_dir + '/shiptest_out.txt')
@@ -284,7 +285,7 @@ def titlePage(pdf):
     #Adding the toime, tx, rx board infocd cddc
     board_width, board_height = 100, 100
     colWidth, rowHeight = (1.5*inch), (0.2*inch)
-    board_x, board_y = 3, list_y - rowHeight*17
+    board_x, board_y = 3, list_y - rowHeight*16.25
 
     board_styles = ([('GRID', (0,0), (num_channels+1, 9), 1, colors.black),
                     ('FONTSIZE', (1,4), (num_channels+1, 5),7.8),
@@ -919,7 +920,7 @@ def main(iterations):
         page_count += 1
         topOfPage(pdf, str(counter))
         stats_summary_x, stats_summary_y = 15, 400
-        nf_table_width, nf_table_height = 80, 20
+        nf_table_width, nf_table_height = 80, 30
         nf_x, nf_y = stats_summary_x, stats_summary_y - nf_table_height
 
         #Tables stuff
