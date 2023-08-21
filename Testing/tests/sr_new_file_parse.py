@@ -86,7 +86,7 @@ channel_names = ["Channel A", "Channel B", "Channel C"]#TODO: SWAP THIS BASED ON
 # #SNR threshold
 # while(true):
 #     try:
-#         snr_min_check = float(input("What is the minimum value SNR can be? "))
+#         snr_min_check = float(input("What is the minimum value SNR can be (in dBc)? "))
 #         break
 #     except ValueError:
 #         print("ERROR: Please only input numbers. Try again: ")
@@ -94,7 +94,7 @@ channel_names = ["Channel A", "Channel B", "Channel C"]#TODO: SWAP THIS BASED ON
 # #Frequency offset threshold
 # while(true):
 #     try:
-#         freq_check_offset = float(input("What is the offset for the freq threshold? "))
+#         freq_check_offset = float(input("What is the offset for the freq threshold? (in Hz)"))
 #         break
 #     except ValueError:
 #         print("ERROR: Please only input numbers. Try again: ")
@@ -224,7 +224,7 @@ def titlePage(pdf):
     list_font_size = 14
     list_x = title_x - 5
     list_y = title_y - 20
-    logo_x, logo_y = 450, 450
+    logo_x, logo_y = 485, 450
     logo_width, logo_height = 200, 100
     #Setting up title on Title Page
     title = pdf.beginText()
@@ -572,8 +572,11 @@ def square(v):
 PARAMS:y_vals
 RETURNS: SNR in dB'''
 def toSNR(noise, signal):
-    noise_std  = np.std(noise)
-    return 20*np.log10(signal/noise_std) #Signal is not in decibls, but noise is. This is from wikipedia
+    print("Signal: " + str(signal))
+    print("Noise: " + str(noise))
+    print("SNR DIFF")
+    print(signal - np.max(noise))
+    return (signal - np.max(noise))
 
 def partition(array, low, high, other_array):
 
@@ -796,7 +799,7 @@ def main(iterations):
             fft_x.append((x))
             fft_y.append((y))
 
-            max_fours.append((numPeaks(x, y, ampl_vec[i], 4))) #NOTE: WHY DOESNT THIS GIVE ME THE INFO DB
+            max_fours.append(numPeaks(x, y, ampl_vec[i], 4)) #NOTE: WHY DOESNT THIS GIVE ME THE INFO DB
             #Noise Floor and std- in db
             noise_floor.append(noiseFloor(x, y, ampl_vec[i]))
 
@@ -888,13 +891,13 @@ def main(iterations):
 
         #Positional
         fft_pos_x, fft_pos_y = 2, 100
-        fft_width, fft_height = 550, 300
+        fft_width, fft_height = 600, 400
         max_peak_width, max_peak_height = 80, 50
         max_peak_x, max_peak_y = 2, 5
-        pdf.drawImage(FFT_plt_img, plot_img_pos_x, plot_img_pos_y, plot_img_width, plot_img_height)
+        pdf.drawImage(FFT_plt_img, fft_pos_x, fft_pos_y, fft_width, fft_height)
 
         #Tables stuff
-        max_peak_table_info = [["Top Five Peaks:"], ["Channel"], ["1"], ["2"], ["3"], ["4"]]
+        max_peak_table_info = [["Top Peaks (Frequencty, Amplitude):"], ["Channel"], ["Highest Peak"], ["Second Highest"], ["Third Highest"], ["Fourth Heighest"]]
         for i in range(num_channels):
             max_peak_table_info[1].append((chr(65+i)))
             print(max_fours[i])
@@ -903,8 +906,8 @@ def main(iterations):
             max_peak_table_info[4].append(str((sig(max_fours[i][2][0], sigfigs=sigfigs), sig(max_fours[i][2][1], sigfigs=sigfigs))))
             max_peak_table_info[5].append(str((sig(max_fours[i][3][0], sigfigs=sigfigs), sig(max_fours[i][3][1], sigfigs=sigfigs))))
 
-        peak_table = Table(max_peak_table_info, style=[('GRID', (0,1), (4,8), 1, colors.black),
-                                ('BACKGROUND', (0,1), (6,1), '#D5D6D5')])
+        peak_table = Table(max_peak_table_info, style=[('GRID', (0,1), (num_channels+1,5), 1, colors.black),
+                                ('BACKGROUND', (0,1), (num_channels+1,1), '#D5D6D5')])
         peak_table.wrapOn(pdf, max_peak_width, max_peak_height)
         peak_table.drawOn(pdf, max_peak_x, max_peak_y)
 
@@ -938,11 +941,11 @@ def main(iterations):
 
         #Top 5 Peaks info
         #SNR DATA
-        snr_width, snr_height = 100, 250
+        snr_width, snr_height = 100, 50
         snr_x, snr_y = nf_x, nf_y - snr_height
         fft_snr = []
         for i in range(num_channels):
-            fft_snr.append(toSNR(noise_floor[i], ampl_vec[i]))
+            fft_snr.append(toSNR(noise_floor[i][1], max_fours[i][0][1]))
 
         fft_snr = np.asarray(fft_snr)
 
@@ -952,20 +955,18 @@ def main(iterations):
         #Sorting according to SNR
         quickSort(fft_snr, 0, len(fft_snr)-1, max_fours) #X also gets sorted, so that the p/f is easier to check
 
-
         #Tables stuff
-        snr_table_info = [["More Top Peak Information:"]]
+        snr_table_info = [["Top Peak Information (Based on Highest SNR):"], ["Channel"], ["Location (Hz)"], ["Amplitude (dB)"], ["SNR (dBc)"]]
         snr_style = []
 
-        for i, name in zip(range(num_channels), channel_names):
-            snr_table_info.append((str(name), "", ""))
-            snr_table_info.append(("Location (Hz)", str(max_fours[i][0][0]), str(max_fours[i][1][0]), str(max_fours[i][2][0]), str(max_fours[i][3][0])))
-            snr_table_info.append(("Amplitude (dB)", str(max_fours[i][0][1]), str(max_fours[i][1][1]), str(max_fours[i][2][1]), str(max_fours[i][3][1])))
-            snr_table_info.append(("SNR (dBc)", str(fft_snr[i])))
-            snr_style.append(['GRID', (0, (2 + (4*i))), (5, (4 + (4*i))), 1, colors.black])
-            snr_style.append(['BACKGROUND', (0, (1 + (4*i))), (6, (1 + (4*i))), '#D5D6D5'])
+        for i in range(num_channels):
+            snr_table_info[1].append((chr(65+i)))
+            snr_table_info[2].append(str(sig(max_fours[i][0][0], sigfigs=sigfigs)))
+            snr_table_info[3].append(str(sig(max_fours[i][0][1], sigfigs=sigfigs)))
+            snr_table_info[4].append(str(sig(fft_snr[i], sigifigs=sigfigs)))
 
-        snr_table = Table(snr_table_info, style=snr_style)
+        snr_table = Table(snr_table_info, style=[('GRID', (0,1), (num_channels+1,4), 1, colors.black),
+                                ('BACKGROUND', (0,1), (num_channels+1,1), '#D5D6D5')])
         snr_table.wrapOn(pdf, snr_width, snr_height)
         snr_table.drawOn(pdf, snr_x, snr_y)
 
@@ -1050,7 +1051,7 @@ def main(iterations):
     if False in freq_bools:
         freq_x = snr_x + summary_width - 2
 
-        fail_info = [["Fails in Frequency: ", ("Must be within " + str(freq_check_offset) + "Hz of " + str(wave_freq))], ["Run", "Frequency"]]
+        fail_info = [["Fails in Frequency: ", ("Must be within " + str(freq_check_offset) + "Hz of " + str(wave_freq) +"Hz")], ["Run", "Frequency"]]
 
         for i, freq in zip(range(counter), summary_nump[:,0]):
             fail_info.append([str(i), str(freq)])
