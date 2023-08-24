@@ -25,16 +25,13 @@ def ship_test_cyan(channels):
     wave_freq = 100000
     sample_rate = 9803922
     sample_count = int(sample_rate/ 5)
-
-    rx_gain = 16
-    tx_gain = 15
-    for center_freq in [0, 200000000]:
-            yield locals()
-
-
-    # for rx_gain, tx_gain, center_hold in zip([16, 43.5, 44], [15, 15, 26.5], [[0, 200000000], [1000000000, 5000000000], [7000000000, 15000000000]]):
-    #     for center_freq in center_hold:
+    # rx_gain = 16
+    # tx_gain = 15
+    # for center_freq in [0, 200000000]:
     #         yield locals()
+    for rx_gain, tx_gain, center_hold in zip([16, 43.5, 44], [15, 15, 26.5], [[0, 200000000], [1000000000, 5000000000], [7000000000, 15000000000]]):
+        for center_freq in center_hold:
+            yield locals()
 
 
 #UHD_version

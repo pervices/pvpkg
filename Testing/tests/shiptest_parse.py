@@ -69,7 +69,7 @@ while(True):
     except ValueError:
         print("ERROR: Please only input integers. Try again: ")
 
-# Getting number of sigfigss
+# Getting number of sigfigs
 while(True):
     try:
         sigfigs = int(input("How many significant digits do you want? "))
@@ -161,9 +161,9 @@ unit_rtm = subprocess.getstatusoutput("cat shiptest_out.txt | grep 'RTM' | cut -
 #organizing info in order of time, tx, and rx using gterminal grep
 os.system('uhd_usrp_info --all > shiptest_out.txt')
 os.system("touch hold.txt")
-
 os.system("grep '0/time/fw_version' shiptest_out.txt -A 15 > hold.txt")
 
+#Setting up time array to hold board data
 time = []
 time.append(subprocess.getstatusoutput("cat hold.txt | grep 'Board Version' | cut --complement -d ':' -f1")[1])
 time.append(subprocess.getstatusoutput("cat hold.txt | grep 'Branch' | cut --complement -d ':' -f1")[1])
@@ -175,7 +175,7 @@ time.append(subprocess.getstatusoutput("cat hold.txt | grep 'Fuse02' | cut --com
 time.append(subprocess.getstatusoutput("cat hold.txt | grep 'Fuse03' | cut --complement -d ':' -f1")[1])
 time.append(subprocess.getstatusoutput("cat hold.txt | grep 'GCC' | cut --complement -d ':' -f1")[1])
 
-
+#Setting up rx dictionary to hold board data
 rx_info = {}
 for i, name in zip(range(num_channels), channel_names): #NOTE: This might be more efficent with numpy arrays
     os.system("grep 'rx/{}/fw_version' shiptest_out.txt -A 15 > hold.txt".format(i))
@@ -192,7 +192,7 @@ for i, name in zip(range(num_channels), channel_names): #NOTE: This might be mor
     rx_info["RX: " + name].append(subprocess.getstatusoutput("cat hold.txt | grep 'GCC' | cut --complement -d ':' -f1")[1])
 
 
-
+#Setting up tx dictionary to hold board data
 tx_info = {}
 for i, name in zip(range(num_channels), channel_names):
     os.system("grep 'tx/{}/fw_version' shiptest_out.txt -A 15 > hold.txt".format(i))
@@ -207,11 +207,11 @@ for i, name in zip(range(num_channels), channel_names):
     tx_info["TX: " + name].append(subprocess.getstatusoutput("cat hold.txt | grep 'Fuse03' | cut --complement -d ':' -f1")[1])
     tx_info["TX: " + name].append(subprocess.getstatusoutput("cat hold.txt | grep 'GCC' | cut --complement -d ':' -f1")[1])
 
-
+#Removing the temp files from the systems
 os.system("rm hold.txt")
 os.system("rm shiptest_out.txt")
 
-#Globals that will be changed later in the code
+#Globals that will be changed later in the code - all -1 currently because they are dependent on the generator code
 center_freq = -1
 wave_freq = -1
 sample_rate = -1
@@ -223,28 +223,30 @@ being_cutoff = -1
 summary_info = [] #[iteration][[freq][amplitude][snr]]
 counter = 0 #Keeps track of run
 
-#page stuff
+#page variables
 page_count = 1
 graph_max = int(np.ceil(num_channels/4))
 multi = (graph_max > 1)
-page_total = (2+(4*multi))*(8-(2*multi))+(2+(1*multi))
+#Page total based on the unit your testing
+page_total = ((2*graph_max)+2)*(8*(ans == 'V' or ans == 'v') + 6*(ans == 'T' or ans == 't')) + graph_max
 
 
 #Adding logo - more efficent to just initialize at beginning
 h_img_data = open(current_dir + "/pervices-logo.png", "rb")
 header_img = ImageReader(h_img_data)
 
-#Formatting Variables
+#Formatting Variables - just so they're easily accessible
 python_to_inch = 72
 font = "Times-Roman"
 gen_font_size = 12
 bold_font = "Times-Bold"
 rcParams['agg.path.chunksize'] = 115
 
-'''Creates Title Page
+'''Creates Title Page with board info, title, and unit info
 PARAMS: pdf
 RETURNS: NONE'''
 def titlePage(pdf):
+
     #Positional Values
     title_font_size = 26
     title_x = 100
@@ -252,71 +254,70 @@ def titlePage(pdf):
     list_font_size = 14
     list_x = title_x - 5
     list_y = title_y - 20
-    logo_x, logo_y = 485, 450
+    logo_x, logo_y = 550, 450
     logo_width, logo_height = 200, 100
+    board_width, board_height = 100, 100
+    colWidth, rowHeight = (1.5*inch), (0.2*inch)
+    board_x, board_y = 3, list_y - rowHeight*16.25
+
     #Setting up title on Title Page
     title = pdf.beginText()
     title.setTextOrigin(title_x, title_y)
     title.setFont(font, title_font_size)
     title.textLine(text=("Ship Test Report: " + unit_name + " - Serial Number: " + serial_num))
-
     pdf.drawText(title)
 
     #Printing out Important Details regarding the Machine
     #everything will be attached to unitList text object
     unitList = pdf.beginText(list_x, list_y)
 
-    #Date and TIme Version
+    #Writing Date and TIme Version
     unitList.setFont(bold_font, list_font_size)
     unitList.textOut("Computer Date: ")
     unitList.setFont(font, list_font_size)
     unitList.textLine(formattedDate)
 
-    #UHD Version
+    #Writing UHD Version
     unitList.setFont(bold_font, list_font_size)
     unitList.textOut("UHD Version: ")
     unitList.setFont(font, list_font_size)
     unitList.textLine(UHD_ver)
 
-    #rtm Version
+    #writing rtm Version
     unitList.setFont(bold_font, list_font_size)
     unitList.textOut("RTM: ")
     unitList.setFont(font, list_font_size)
     unitList.textLine(unit_rtm)
 
-    #Server Version
+    #writing Server Version
     unitList.setFont(bold_font, list_font_size)
     unitList.textOut("Server Version: ")
     unitList.setFont(font, list_font_size)
     unitList.textLine(server_ver)
 
-    #FPGa Version
+    #writing FPGa Version
     unitList.setFont(bold_font, list_font_size)
     unitList.textOut("FPGA Version: ")
     unitList.setFont(font, list_font_size)
     unitList.textLine(fpga_ver)
 
-    #Unit time
+    #writing Unit time
     unitList.setFont(bold_font, list_font_size)
     unitList.textOut("Unit Time: ")
     unitList.setFont(font, list_font_size)
     unitList.textLine(unit_time)
     pdf.drawText(unitList)
 
-    #Adding Logo
+    #Drawing Logo
     pdf.drawImage(header_img, logo_x, logo_y, logo_width, logo_height)
 
-    #Adding the toime, tx, rx board infocd cddc
-    board_width, board_height = 100, 100
-    colWidth, rowHeight = (1.5*inch), (0.2*inch)
-    board_x, board_y = 3, list_y - rowHeight*16.25
-
+    #Adding the time, tx, rx board info in a table
     board_styles = ([('GRID', (0,0), (num_channels+1, 9), 1, colors.black),
                     ('FONTSIZE', (1,4), (num_channels+1, 5),7.8),
                     ('BACKGROUND', (0, 0), (num_channels+1,0), '#D5D6D5'),
                     ('BACKGROUND', (0, 0), (0,9), '#D5D6D5')])
 
-    #Time Board
+    #Time Board table
     board_info = [["Time Board Information: "], ["Board"], ["Branch"], ["Revision"], ["Date"], ["MCU Serial"], ["Fuse 00"], ["Fuse 02"], ["Fuse 03"], ["GCC"]]
     for z in range(len(time)):
         board_info[z+1].append((time[z]))
@@ -326,9 +327,27 @@ def titlePage(pdf):
     board_table.drawOn(pdf, board_x, board_y)
     board_y -= rowHeight*11
 
-    for z in range(graph_max):
-        start, end = z*4, (z*4)+4
-        #Tx Board
+    for z in range(graph_max): #This ensures theres columns per page
+
+        if (z != 0): #If there are more than 4 channels, make another page for the board info
+            board_x, board_y = 3, list_y - rowHeight*10
+            global page_total
+            page_total +=1
+            global page_count
+            page_count += 1
+            pdf.showPage() #Page break on pdf
+            pdf.drawText(title)
+            pdf.drawImage(header_img, logo_x, logo_y, logo_width, logo_height)
+            pg_x, pg_y = 650,10
+            pg_num = pdf.beginText()
+            pg_num.setTextOrigin(pg_x, pg_y)
+            pg_num.setFont(font, 10)
+            pg_num.textLine(text=("Page " + str(page_count) + " of " + str(page_total)))
+            pdf.drawText(pg_num)
+
+        start, end = z*4, (z*4)+4 #only have to be calculated once
+
+        #Adding Tx Board Table
         board_info = [["TX Board Information: "], ["Board"], ["Branch"], ["Revision"], ["Date"], ["MCU Serial"], ["Fuse 00"], ["Fuse 02"], ["Fuse 03"], ["GCC"]]
         for i, name in zip(range(start, end), channel_names[start:end]):
             board_info[0].append(chr(65+i))
@@ -340,7 +359,7 @@ def titlePage(pdf):
         board_table.drawOn(pdf, board_x, board_y)
         board_y -= rowHeight*11
 
-        #Rx Board
+        #Adding Rx Board Table
         board_info = [["RX Board Information: "], ["Board"], ["Branch"], ["Revision"], ["Date"], ["MCU Serial"], ["Fuse 00"], ["Fuse 02"], ["Fuse 03"], ["GCC"]]
 
         for q, rxname in zip(range(start, end), channel_names[start:end]):
@@ -352,19 +371,8 @@ def titlePage(pdf):
         board_table.wrapOn(pdf, board_width, board_height)
         board_table.drawOn(pdf, board_x, board_y)
 
-        if (multi):
-            break
-        else:
-            board_x, board_y = 3, list_y - rowHeight*16.25
-            global page_count
-            page_count += 1
-            global page_total
-            page_total +=1
-            pdf.showPage() #Page break on pdf
-            pdf.drawText(title)
-            pdf.drawImage(header_img, logo_x, logo_y, logo_width, logo_height)
 
-'''Creates a title for each Run Page
+'''Creates a header for each Run Page and the page number
 PARAMS: pdf, it name
 RETURNS: None
 '''
@@ -373,7 +381,7 @@ def topOfPage(pdf, it):
     title_font_size = 26
     title_x, title_y = 80, 575
 
-    #Setting up title on Title Page
+    #Setting up title
     title = pdf.beginText()
     title.setTextOrigin(title_x, title_y)
     title.setFont(font, title_font_size)
@@ -411,8 +419,7 @@ def topOfPage(pdf, it):
     table_x = title_x - 5
     table_y = title_y - table_height
 
-
-    #Setting up 2D array holding input data
+    #Table of input data
     data = [["Center Frequency (Hz)", "Wave Frequency (Hz)", "Sample Rate (SPS)", "Sample Count", "TX Gain (dB)", "RX Gain (dB)"],
             [center_freq, wave_freq, sample_rate, sample_count, tx_gain, rx_gain]]
 
@@ -423,13 +430,13 @@ def topOfPage(pdf, it):
     inputs.drawOn(pdf, table_x, table_y)
 
 '''Plots the FFT subplots all in the same format
-PARAMS: x, rea;, ax, imag, title
+PARAMS: x, y, ax, imag, title
 RETURNS: NONE'''
-def subPlotFFTs(x, y, ax, title, max_four, nf): #TODO: Add points on top of peaks
+def subPlotFFTs(x, y, ax, title, max_four, nf):
 
     ax.set_title(title)
     ax.set_xlim(min(x), max(x))
-    fft, = ax.plot(x, y, "-.", color='crimson')
+    fft, = ax.plot(x, y, "-", color='crimson')
     ax.axhline(nf, markersize=0.5, alpha=0.3, label="Noise Floor")
 
     for i in range(len(max_four)):
@@ -463,7 +470,7 @@ def subPlotIQs (x, real,imag, best_fit_real, best_fit_imag, offset_real, offset_
     return bf_r
 
 '''
-Represents the wave equation
+# Represents the wave equation
 PARAMS: time, ampl, freq, phase
 RETUNRS: y'''
 def waveEquation(params, time):
@@ -473,9 +480,6 @@ def waveEquation(params, time):
     dc_offset = params['dc_offset'].value
 
     model = ampl*np.cos(2*np.pi*freq*time + phase) + dc_offset #model for wave equation
-# def waveEquation(time, ampl, freq, phase, dc_offset):
-#
-#     model = ampl*np.cos(2*np.pi*freq*time + phase) + dc_offset #model for wave equation
 
     return model
 
@@ -489,14 +493,6 @@ def bestFit(x, y):
     model = y + result.residual
 
     return model, (result.params['dc_offset'], result.params['ampl'], result.params['freq'], result.params['phase'])
-
-    # model = Model(waveEquation)
-    # params = model.make_params(ampl=max(y), freq=wave_freq, phase=0, dc_offset=0)
-    # result = model.fit(y, params, time=x, nan_policy='raise')
-    #
-    #
-    # return result.best_fit, (result.params['dc_offset'], result.params['ampl'], result.params['freq'], result.params['phase'])
-
 
 '''Divides given by peak
 Params: a, peak
@@ -545,9 +541,9 @@ def fftValues(x, reals, imags): #TODO: THIS IS A MESS, MUST FIX
     normalize = np.vectorize(byOne)
     norm_y = normalize(fft_y, max_peak)
 
-    # #Transform to dB
-    # # bools_norms = list(map(isNotZero, norm_y))
-    # # np.place(norm_y, bools_norms, 20*np.log10(norm_y)) #does not log values that are 0
+    #Transform to dB - code incase there are zero values, but haven't needed to use in a while
+    # bools_norms = list(map(isNotZero, norm_y))
+    # np.place(norm_y, bools_norms, 20*np.log10(norm_y)) #does not log values that are 0
     norm_y = 20*np.log10(abs(norm_y))
 
     #Setting up the X values
@@ -570,9 +566,9 @@ def plotToPdf(title, counter):
     img_data = open(plots_dir + "/" + title + "_" + str(counter), "rb")
     img = ImageReader(img_data)
 
-    return(img)
+    return img
 
-'''Finding the top four peaks
+'''Finding the top peaks
 PARAMS: y
 RETURNS: max_four'''
 def numPeaks(x, y, ampl, num):
@@ -610,6 +606,9 @@ RETURNS: SNR in dB'''
 def toSNR(noise, signal):
     return (signal - np.max(noise))
 
+'''Splits and swaps elements for the sort function
+PARAMS: array, low, high, other_array
+RETURN: i +1'''
 def partition(array, low, high, other_array):
 
     # choose the rightmost element as pivot
@@ -680,13 +679,14 @@ PARAMS: iterations
 RETURNS: NONE, it is the main function'''
 def main(iterations):
 
-    ##MAKING PDF and Title page
+    #Create the PDF
     pdf = canvas.Canvas(file_title, pagesize=landscape(letter)) #Setting the page layout and file name
     pdf.setTitle(doc_title)
 
-    #Title page
+    #Make title page
     titlePage(pdf)
 
+    #start of the testing
     for it in iterations: #Will iterate per Run
         global counter
         counter += 1
@@ -698,22 +698,21 @@ def main(iterations):
 
         ampl_vec = np.zeros(shape=(num_channels))
 
-        #The reals
+        #The data important to the real data
         best_fit_reals = []
         freq_reals = np.zeros(shape=(num_channels))
-        phase_reals = np.zeros(shape=(num_channels))
         offset_reals = np.zeros(shape=(num_channels))
         ampl_reals = np.zeros(shape=(num_channels))
 
+        #Data i
         best_fit_imags = []
         freq_imags = np.zeros(shape=(num_channels))
-        phase_imags = np.zeros(shape=(num_channels))
         offset_imags = np.zeros(shape=(num_channels))
         ampl_imags = np.zeros(shape=(num_channels))
 
-        gen.dump(it) #pulls info form generator
+        gen.dump(it) #pulls info from generator
 
-        ##SETING UP TESTS AND GETTING INPUTS
+        #SETING UP TESTS AND GETTING INPUTS
         vsnks = []
         global sample_rate
         sample_rate = int(it["sample_rate"])
@@ -731,13 +730,13 @@ def main(iterations):
 
 
         #X values
-        x = np.arange(begin_cutoff/sample_rate, (sample_count/sample_rate), 1/sample_rate) #0 to max time, taking the 1/sr step
-
+        x = np.arange(begin_cutoff/sample_rate, (sample_count/sample_rate), 1/sample_rate) #The actual x range
+        x_time = np.asarray(x*1000000000) # For plotting
 
         vsnks.append(vsnk) #This will loop us through the channels an appropriate amount of time
         for vsnk in vsnks:
 
-            for ch, channel in enumerate(vsnk): #Goes through each channel to sve data
+            for ch, channel in enumerate(vsnk): #Goes through each channel to save data
 
                 real = [datum.real for datum in channel.data()]
                 imag = [datum.imag for datum in channel.data()]
@@ -745,13 +744,13 @@ def main(iterations):
                 reals.append(real[begin_cutoff:]) #Formats real data into a 2D array
                 imags.append(imag[begin_cutoff:])
 
+                #Gets best fit line and paramaters
                 best_fit, param = bestFit(x, real[begin_cutoff:])
 
                 best_fit_reals.append((best_fit))
                 offset_reals[ch] = param[0]
                 ampl_reals[ch] = param[1]
                 freq_reals[ch] = param[2]
-                phase_reals[ch] = param[3]
 
                 best_fit, param = bestFit(x, imag[begin_cutoff:])
 
@@ -759,17 +758,15 @@ def main(iterations):
                 offset_imags[ch] = param[0]
                 ampl_imags[ch] = param[1]
                 freq_imags[ch] = param[2]
-                phase_imags[ch] = param[3]
 
                 ampl_vec[ch] = np.sqrt(param[1]**2 + ampl_reals[len(ampl_reals)-1]**2)
-                #Page One Set up
 
-        #Making them all np.arrays
-        #this for efficency, it is easier to initalize as non-numpy bc allows for flexibility in code
+
+        #Making them all np.arrays for efficency
         reals = np.asarray(reals)
         imags = np.asarray(imags)
 
-        #Other Variables
+        #Setting up the global variables to be what the test runs
         global center_freq
         center_freq = int(it["center_freq"])
         global wave_freq
@@ -779,40 +776,39 @@ def main(iterations):
         global rx_gain
         rx_gain = int(it["rx_gain"])
 
-        x_time = np.asarray(x*1000000000) # This is for the actual output of IQ plots
-        plotted_samples = int(period*num_output_waves) #calculating plot_sample_ratio
+        #This variable ensures only the number of waves requested will appear on the plots
+        plotted_samples = int(period*num_output_waves)
 
-        #Plotting IQ Data (not putting on page)
+        #PDF PREP: Doing the plotting of FFT and IQ prior to making pdf pages to enable having the "together plot" as the first page
+        #Plotting IQ Data, but not putting on pdf
         IQ_plots = []
         IQ_plt_img = []
         fig = plt.GridSpec(1, 68, wspace=0.3, hspace=0.3)
-        axis = [plt.subplot(fig[0:1, 0:15]),
-                plt.subplot(fig[0:1, 17:32]),
-                plt.subplot(fig[0:1, 36:51]),
-                plt.subplot(fig[0:1, 53:68]),
-                plt.subplot(fig[0:1, 0:15]),
-                plt.subplot(fig[0:1, 17:32]),
-                plt.subplot(fig[0:1, 36:51]),
-                plt.subplot(fig[0:1, 53:68])]
+        axis = []
 
         for z in range(graph_max): #Splits the plots up to maximum 4 per page
-            #Plotting the imaginary and real values
+
             plt.suptitle("Individual Channels' Amplitude versus Time for Run {}".format(counter))
             plt.xlabel("Time (gS)")
             plt.ylabel("Amplitude(kV)")
 
-            print(z*4)
-            print((z*4)+4)
-            print(channel_names[z*4:(z*4)+4])
-            for i, title in zip(range(z*4,(z*4)+4), channel_names[z*4:(z*4)+4]):
-                print(title)
-                try:
+            #Variables to allow for flexibilty in the code
+            start, end = z*4,(z*4)+4
+            ax_st, ax_end = 0, 15
+
+            #The actual plotting of the graphs
+            for i, title in zip(range(start, end), channel_names[start:end]):
+                axis.append(plt.subplot(fig[0:1, ax_st:ax_end])) #Each run will add the next plot area to the axis
+                try: #If the number of channels tested is a nonmultiple of 4, this try and except ensures it does not break the code
                     IQ_plots.append(subPlotIQs(x_time[0:plotted_samples], reals[i][0:plotted_samples], imags[i][0:plotted_samples], best_fit_reals[i][0:plotted_samples], best_fit_imags[i][0:plotted_samples], offset_reals[i], offset_imags[i], axis[i], title))
+                    ax_st = ax_end + 2
+                    ax_end = ax_st + 15
                 except:
                     break
-            #Rasterizes the plot/figures and converts to png
+
+            #Gets the byte data for the pdf images
             IQ_plt_img.append(plotToPdf(("IQPlots_" + formattedDate), counter))
-            plt.cla()
+            plt.clf()
 
         IQ_plots = np.asarray(IQ_plots)
 
@@ -828,7 +824,7 @@ def main(iterations):
             fft_x.append((x))
             fft_y.append((y))
 
-            max_fours.append(numPeaks(x, y, ampl_vec[i], 4)) #NOTE: WHY DOESNT THIS GIVE ME THE INFO DB
+            max_fours.append(numPeaks(x, y, ampl_vec[i], 4))
             #Noise Floor and std- in db
             noise_floor.append(noiseFloor(x, y, ampl_vec[i]))
         max_fours = np.asarray(max_fours)
@@ -839,33 +835,39 @@ def main(iterations):
 
         FFT_plots = []
         FFT_plt_img = []
+        axis.clear()
         for z in range(graph_max):
             #Splits the plots up to maximum 4 per page
             start, end = z*4,(z*4)+4
+            ax_st, ax_end = 0, 15
             #Plotting the individual FFT Plots
             plt.suptitle("Individual Channels' FFTs for Run {}".format(counter))
             plt.xlabel("Frequency")
             plt.ylabel("Amplitude (dB)")
 
             for i, title in zip(range(start, end), channel_names[start:end]):
+                axis.append(plt.subplot(fig[0:1, ax_st:ax_end]))
                 try:
                     FFT_plots.append(subPlotFFTs(fft_x[i], fft_y[i], axis[i], title, max_fours[i], np.mean(noise_floor[1])))
+                    ax_st = ax_end + 2
+                    ax_end = ax_st + 15
                 except:
                     break
                 #Rasterizes the plot/figures and converts to png)
             FFT_plt_img.append(plotToPdf(("FFTPlots_" + formattedDate), counter))
-            plt.cla()
+            plt.clf()
+
         FFT_plots = np.asarray(FFT_plots)
 
-        #MAKING THE ACTUAL PDF THINGS
+        #MAKING THE ACTUAL PDF
         #SECTION ONE OF RUNS: Merged Plots
         pdf.showPage()
         global page_count
         page_count += 1
         topOfPage(pdf, str(counter))
 
-        tgth_width, tgth_height = 700, 500
-        tgth_x, tgth_y = 2, 3
+        tgth_width, tgth_height = 700, 450
+        tgth_x, tgth_y = 2, 30
 
         #Setting the plot
         fig = plt.GridSpec(17, 45, wspace=10)
@@ -897,12 +899,12 @@ def main(iterations):
         IQ_width, IQ_height = 250, 105
         IQ_table_x, IQ_table_y = 5,4
 
-        #making graphs and table dependent on number of channels
+        #graphs and table dependent on number of channels
         for z in range(graph_max):
-            start, end = z*4, (z*4)+4
             pdf.showPage() #Page break on pdf
             page_count += 1
             topOfPage(pdf, str(counter))
+            start, end = z*4, (z*4)+4
 
             pdf.drawImage(IQ_plt_img[z], plot_img_pos_x, plot_img_pos_y, plot_img_width, plot_img_height)
 
@@ -923,20 +925,20 @@ def main(iterations):
             IQ_table.wrapOn(pdf, IQ_width, IQ_height)
             IQ_table.drawOn(pdf, IQ_table_x, IQ_table_y)
 
+
         #SECTION THREE OF RUN: Plotting Amplitude vs Frequency
         #Positional
-        fft_pos_x, fft_pos_y = 10, 120
+        fft_pos_x, fft_pos_y = 10, 100
         fft_width, fft_height = 700, 420
         max_peak_width, max_peak_height = 80, 50
         max_peak_x, max_peak_y = 2, 5
 
         #making graphs and table dependent on number of channels
         for z in range(graph_max):
-            start, end = z*4, (z*4)+4
             pdf.showPage()
             page_count += 1
             topOfPage(pdf, str(counter))
-
+            start, end = z*4, (z*4)+4
             pdf.drawImage(FFT_plt_img[z], fft_pos_x, fft_pos_y, fft_width, fft_height)
 
             #Tables stuff
@@ -957,50 +959,19 @@ def main(iterations):
             peak_table.wrapOn(pdf, max_peak_width, max_peak_height)
             peak_table.drawOn(pdf, max_peak_x, max_peak_y)
 
+
+
         ##SECTION FOUR OF RUNS: SUMMARY PAGE
         pdf.showPage()
         page_count += 1
         topOfPage(pdf, str(counter))
-        stats_summary_x, stats_summary_y = 15, 400
-        nf_table_width, nf_table_height = 80, 100
-        nf_x, nf_y = stats_summary_x, stats_summary_y - nf_table_height
 
-        #Tables stuff
+        #NF stuff
+        nf_table_width, nf_table_height = 80, 500
+        nf_x, nf_y = 10, 400
 
-        for z in range(graph_max):
-            start, end = z*4, (z*4)+4
-            nf_table_info = [["All Noise Floor Data :"], ["Channel"],["Maximum"], ["Minimum"], ["Mean"], ["Diff to A"], ["STD"]]
-            mean_a = np.mean(noise_floor[0][1])
-
-            for i in range(start, end):
-                max_loc = np.argmax(noise_floor[i][1])
-                min_loc = np.argmin(noise_floor[i][1])
-                mean = np.mean(noise_floor[i][1])
-
-                nf_table_info[1].append((chr(65+i)))
-                nf_table_info[2].append(str((sig(noise_floor[i][0][max_loc], sigfigs=sigfigs), sig(noise_floor[i][1][max_loc], sigfigs=sigfigs))))
-                nf_table_info[3].append(str((sig(noise_floor[i][0][min_loc], sigfigs=sigfigs), sig(noise_floor[i][1][min_loc], sigfigs=sigfigs))))
-                nf_table_info[4].append(str(mean))
-                nf_table_info[5].append(str(mean - mean_a))
-                nf_table_info[6].append(str(np.std(noise_floor[i][1])))
-
-            nf_table = Table(nf_table_info, style=[('GRID', (0,1), (num_channels+1,6), 1, colors.black),
-                                    ('BACKGROUND', (0,1), (num_channels+1,1), '#D5D6D5')])
-            nf_table.wrapOn(pdf, nf_table_width, nf_table_height)
-            nf_table.drawOn(pdf, nf_x, nf_y)
-
-            if (multi):
-                pdf.showPage()
-                page_count += 1
-                topOfPage(pdf, str(counter))
-                nf_y -= nf_table_height
-            else:
-                break
-
-        #Top 5 Peaks info
         #SNR DATA
         snr_width, snr_height = 100, 100
-        snr_x, snr_y = nf_x, nf_y - snr_height
         fft_snr = []
         for i in range(num_channels):
             fft_snr.append(toSNR(noise_floor[i][1], max_fours[i][0][1]))
@@ -1011,36 +982,56 @@ def main(iterations):
         summary_info.append((max_fours[0][0][0], max_fours[0][0][1], fft_snr[0]))
 
         #Sorting according to SNR
-
         max_top = []
         for first_max in max_fours:
             max_top.append((first_max[0][0], first_max[0][1]))
 
-        print(max_top)
         quickSort(fft_snr, 0, num_channels-1 , max_top) #X also gets sorted, so that the p/f is easier to check
 
-        for z in range(graph_max):
+        #Tables stuff
+        for z in range(graph_max): #NOTE: It doesn't have to use graph max here, any value with the layout should be fine
+            snr_x, snr_y = nf_x, nf_y - snr_height
             start, end = z*4, (z*4)+4
-            #Tables stuff
+            nf_table_info = [["All Noise Floor Data :"], ["Channel"],["Maximum"], ["Minimum"], ["Mean"], ["Diff to A"], ["STD"]]
+            mean_a = np.mean(noise_floor[0][1])
             snr_table_info = [["Top Peak Information", "(Based on Highest SNR):"], ["Channel"], ["Location (Hz)"], ["Amplitude (dB)"], ["SNR (dBc)"]]
             snr_style = []
 
             for i in range(start, end):
+                #Calculations for Noisefloor
+                max_loc = np.argmax(noise_floor[i][1])
+                min_loc = np.argmin(noise_floor[i][1])
+                mean = np.mean(noise_floor[i][1])
+
+                #Inputting data into noise floor table
+                nf_table_info[1].append((chr(65+i)))
+                nf_table_info[2].append(str((sig(noise_floor[i][0][max_loc], sigfigs=sigfigs), sig(noise_floor[i][1][max_loc], sigfigs=sigfigs))))
+                nf_table_info[3].append(str((sig(noise_floor[i][0][min_loc], sigfigs=sigfigs), sig(noise_floor[i][1][min_loc], sigfigs=sigfigs))))
+                nf_table_info[4].append(str(sig(mean, sigfigs=sigfigs)))
+                nf_table_info[5].append(str(sig(mean - mean_a, sigfigs=sigfigs)))
+                nf_table_info[6].append(str(sig(np.std(noise_floor[i][1]), sigfigs=sigfigs)))
+
+                #Inputting data into the snr table
                 snr_table_info[1].append((chr(65+i)))
                 snr_table_info[2].append(str(sig(max_top[i][0], sigfigs=sigfigs)))
                 snr_table_info[3].append(str(sig(max_top[i][1], sigfigs=sigfigs)))
-                snr_table_info[4].append(str(sig(fft_snr[i], sigifigs=sigfigs)))
+                snr_table_info[4].append(str(sig(fft_snr[i], sigfigs=sigfigs)))
 
+            #making and placing NF table
+            nf_table = Table(nf_table_info, style=[('GRID', (0,1), (num_channels+1,6), 1, colors.black),
+                                    ('BACKGROUND', (0,1), (num_channels+1,1), '#D5D6D5')])
+            nf_table.wrapOn(pdf, nf_table_width, nf_table_height)
+            nf_table.drawOn(pdf, nf_x, nf_y)
+
+            #making and placing SNR table
             snr_table = Table(snr_table_info, style=[('GRID', (0,1), (num_channels+1,4), 1, colors.black),
                                     ('BACKGROUND', (0,1), (num_channels+1,1), '#D5D6D5')])
             snr_table.wrapOn(pdf, snr_width, snr_height)
             snr_table.drawOn(pdf, snr_x, snr_y)
 
             if (multi):
-                pdf.showPage()
-                page_count += 1
-                topOfPage(pdf, str(counter))
-                snr_y -= snr_height
+                nf_y -=230
+                snr_y -=230
             else:
                 break
 
@@ -1059,7 +1050,7 @@ def main(iterations):
     #Header Writing
     header = pdf.beginText()
     header.setTextOrigin(header_x, header_y)
-    header.setFont(font, header_font_size)
+    header.setFont(font, header_font_size*0.6)
     header.textLine(text=("Unit Number: " + serial_num))
     header.textLine(text=(formattedDate))
     pdf.drawText(header)
@@ -1077,7 +1068,7 @@ def main(iterations):
 
     #Positional values
     title_font_size = 26
-    title_x, title_y = 2, 500
+    title_x, title_y = 2, 575
     summary_width, summary_height = 250, 100
     summary_x, summary_y = 10, title_y - summary_height
     snr_x=  summary_x
@@ -1100,7 +1091,7 @@ def main(iterations):
     summary_table_info = [["Summary Table: "], ["Run", "SNR Check", "Frequency Check"]]
 
     for i, snr, freq in zip(range(counter), snr_bools, freq_bools):
-        summary_table_info.append([str(i), isPass(snr), isPass(freq)])
+        summary_table_info.append([str(i+1), isPass(snr), isPass(freq)])
 
     summary = Table(summary_table_info, style=[('GRID', (0,1), (4, counter+1), 1, colors.black),
                                 ('BACKGROUND', (0,1), (2,1), '#D5D6D5')])
@@ -1114,7 +1105,7 @@ def main(iterations):
         fail_info = [["Fails in SNR: ", ("Not greater than " + str(snr_min_check) + "dBc")], ["Run", "SNR Value"]]
 
         for i, snr in zip(range(counter), summary_nump[:,2]):
-            fail_info.append([str(i), str(snr)])
+            fail_info.append([str(i+1), str(snr)])
 
         fail_table = Table(fail_info, style=[('GRID', (0,1), (4, counter+1), 1, colors.black),
                                     ('BACKGROUND', (0,1), (4,1), '#D5D6D5')])
@@ -1127,7 +1118,7 @@ def main(iterations):
         fail_info = [["Fails in Frequency: ", ("Not within " + str(freq_check_offset) + "Hz of given")], ["Run"]]
 
         for i, freq in zip(range(counter), summary_nump[:,0]):
-            fail_info.append([str(i), str(freq)])
+            fail_info.append([str(i+1), str(freq)])
 
         fail_table = Table(fail_info, style=[('GRID', (0,1), (4, counter+1), 1, colors.black),
                                     ('BACKGROUND', (0,1), (2,1), '#D5D6D5')])
