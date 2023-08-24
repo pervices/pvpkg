@@ -1,7 +1,7 @@
 import inspect
 import sys
 
-def ship_test_tx(channels):    #TODO: ENSURE FIRST RUN DOESN'T HAVE TO HAVE EACH CHANNEL RUNNING A DIFFERENT VAL
+def ship_test_crimson(channels):
 
     print(sys._getframe().f_code.co_name)
 
@@ -12,8 +12,29 @@ def ship_test_tx(channels):    #TODO: ENSURE FIRST RUN DOESN'T HAVE TO HAVE EACH
     tx_gain = 25
     rx_gain = 25
     # #name = "Tx Operation"
-    for center_freq in [25000000, 300000000, 600000000]: #Just so my tests can go faster
-          yield locals()
+    # for center_freq in [25000000, 300000000, 600000000]: #Just so my tests can go faster
+    #     yield locals()
+    for center_freq in [5000000, 300000000, 600000000, 1200000000, 2400000000, 4000000000, 5000000000, 5500000000]:
+        yield locals()
+
+def ship_test_cyan(channels):
+
+    print(sys._getframe().f_code.co_name)
+
+    channels = list(range(channels))
+    wave_freq = 100000
+    sample_rate = 9803922
+    sample_count = int(sample_rate/ 5)
+
+    rx_gain = 16
+    tx_gain = 15
+    for center_freq in [0, 200000000]:
+            yield locals()
+
+
+    # for rx_gain, tx_gain, center_hold in zip([16, 43.5, 44], [15, 15, 26.5], [[0, 200000000], [1000000000, 5000000000], [7000000000, 15000000000]]):
+    #     for center_freq in center_hold:
+    #         yield locals()
 
 
 #UHD_version
@@ -180,6 +201,21 @@ def lo_band_phaseCoherency(channels):
     for i in range(10):
         yield locals()
 
+def lo_band_phaseCoherency(channels):
+    
+    print(sys._getframe().f_code.co_name)
+    
+
+    channels = list(range(4))
+    sample_count = int(round(25000000/10000))
+    tx_gain = 25
+    rx_gain = 25
+    center_freq = 10000000
+    sample_rate = 25000000
+    wave_freq = 500000
+
+    for i in range(10):
+        yield locals()
 
 def dump(iteration):
     for key, value in iteration.items():
