@@ -6,6 +6,8 @@ from gnuradio import gr
 from . import crimson
 import threading
 import time
+import subprocess
+import sys
 
 def run_tx(csnk, channels, stack, sample_rate, wave_freq):
 
@@ -70,6 +72,7 @@ def run_rx(csrc, channels, stack, sample_rate, _vsnk):
     # Connect.
     vsnk = [blocks.vector_sink_c() for ch in channels]
 
+
     flowgraph = gr.top_block()
     for ch in channels:
         flowgraph.connect((csrc, ch), vsnk[ch])
@@ -78,7 +81,6 @@ def run_rx(csrc, channels, stack, sample_rate, _vsnk):
     flowgraph.start()
 
     for frame in stack: #rx_stack in fund_freq
-
         cmd = uhd.stream_cmd_t(uhd.stream_mode_t.STREAM_MODE_NUM_SAMPS_AND_DONE)
         cmd.num_samps = frame[1] #frame[1]= rx_stack[( , it["sample_count"])] in fund_freq
         cmd.stream_now = False
@@ -89,16 +91,25 @@ def run_rx(csrc, channels, stack, sample_rate, _vsnk):
 
     # Wait for completion.
     total_sample_count = sum([frame[1] for frame in stack])
+
+    expected_duration = stack[0][0] + (stack[0][1]/sample_rate) #stack[0][0] is start and stack[0][1] is the sample count
+    timeout_time = time.clock_gettime(time.CLOCK_MONOTONIC) + expected_duration
+
     #print("total sample count is:", total_sample_count)
     while len(vsnk[0].data()) < total_sample_count:
         time.sleep(0.1)
+        if (time.clock_gettime(time.CLOCK_MONOTONIC) > timeout_time):
+            print("ERROR: RX timed out :-(.")
+            print("Number of samples recieved: " + str(len(vsnk[0].data())) + "Out of " + str(total_sample_count))
+            print("UHD failed to provide expected number of samples.")
+            raise Exception ("RX TIMED OUT")
+
 
     flowgraph.stop()
     flowgraph.wait()
 
     # Cannot return from thread so extend instead.
     _vsnk.extend(vsnk)
-
 
 def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stack, rx_stack):
 
@@ -112,12 +123,14 @@ def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stac
         threading.Thread(target = run_tx, args = (csnk, channels, tx_stack, sample_rate, wave_freq)),
         threading.Thread(target = run_rx, args = (csrc, channels, rx_stack, sample_rate, vsnk)),
         ]
+
     for thread in threads:
         thread.start()
 
     # Stop.
     for thread in threads:
         thread.join()
+
 
     return vsnk
 

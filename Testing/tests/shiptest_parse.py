@@ -735,9 +735,7 @@ def main(iterations):
 
         vsnks.append(vsnk) #This will loop us through the channels an appropriate amount of time
         for vsnk in vsnks:
-
             for ch, channel in enumerate(vsnk): #Goes through each channel to save data
-
                 real = [datum.real for datum in channel.data()]
                 imag = [datum.imag for datum in channel.data()]
 
@@ -766,7 +764,7 @@ def main(iterations):
         reals = np.asarray(reals)
         imags = np.asarray(imags)
 
-        #Setting up the global variables to be what the test runs
+        #Setting up the global variables to be what the test runs'
         global center_freq
         center_freq = int(it["center_freq"])
         global wave_freq
@@ -785,7 +783,6 @@ def main(iterations):
         IQ_plt_img = []
         fig = plt.GridSpec(1, 68, wspace=0.3, hspace=0.3)
         axis = []
-
         for z in range(graph_max): #Splits the plots up to maximum 4 per page
 
             plt.suptitle("Individual Channels' Amplitude versus Time for Run {}".format(counter))
@@ -1069,7 +1066,7 @@ def main(iterations):
     #Positional values
     title_font_size = 26
     title_x, title_y = 2, 575
-    summary_width, summary_height = 250, 100
+    summary_width, summary_height = 250, 150
     summary_x, summary_y = 10, title_y - summary_height
     snr_x=  summary_x
 
