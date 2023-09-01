@@ -11,6 +11,7 @@ from gnuradio import uhd
 import time, datetime
 import os
 import subprocess
+import argparse
 import numpy as np
 import matplotlib
 matplotlib.use("TkAgg") #Manually setting up matplotlib to uge the TkAGG in the bkgrd
@@ -57,6 +58,15 @@ begin_cutoff_waves = 20 #how many waves to cut off before tracking data
 
 #USER SET VARIABLES
 channel_names = []
+
+parser = argparse.ArgumentParser(description = "A basic loopback test verifying gain/frequency tuning works")
+
+parser.add_argument("-d", "--displayed_waves", default=2, type=int, help="Number of wave to print on the graphs")
+
+args = parser.parse_args()
+
+num_output_waves = args.displayed_waves
+printf("num_output_waves: " + str(num_output_waves))
 
 #Getting num_output_waves
 while(True):
