@@ -11,6 +11,7 @@ from gnuradio import uhd
 import time, datetime
 import os
 import subprocess
+import argparse
 import numpy as np
 import matplotlib
 matplotlib.use("TkAgg") #Manually setting up matplotlib to uge the TkAGG in the bkgrd
@@ -58,92 +59,77 @@ begin_cutoff_waves = 20 #how many waves to cut off before tracking data
 #USER SET VARIABLES
 channel_names = []
 
-#Getting num_output_waves
-while(True):
-    try:
-        num_output_waves = int(input("How many waves do you want shown on IQ graphs? "))
-        assert 1 <= num_output_waves <= 4
-        break
-    except AssertionError:
-        print("ERROR: Please input a value within 1 to 4. Try again: ")
-    except ValueError:
-        print("ERROR: Please only input integers. Try again: ")
+#Setup argument parsing
+parser = argparse.ArgumentParser(description = "A basic loopback test verifying gain/frequency tuning works")
 
-# Getting number of sigfigs
-while(True):
-    try:
-        sigfigs = int(input("How many significant digits do you want? "))
-        assert 1 <= sigfigs <= 5
-        break
-    except ValueError:
-        print("ERROR: Please only input integers. Try again: ")
-    except AssertionError:
-        print("ERROR: For formatting, please input a value within 1 to 5. Try again:")
+parser.add_argument('-d', '--displayed_waves', default=2, type=int, help="Number of wave to print on the graphs")
+parser.add_argument('-s', '--sigfigs', default=3, type=int, help="Number of significant digits to display")
+#TODO: verify this is a reasonable default value
+parser.add_argument('-n', '--snr', default=20, type=int, help="Minimum signal to noise ratio in dBc")
+#TODO: verify this is a reasonable default value
+parser.add_argument('-o', '--freq_threshold', default=100000, type=int, help="Allowable difference in wave frequency from the target")
+parser.add_argument('-a', '--serial', required=True, help="Serial number of the unit")
+parser.add_argument('-p', '--product', required=True, help="The product to be tested. v for Vaunt, t for Tate")
+parser.add_argument('-c', '--num_channels', default = 4, type=int,  help="The number of channels to test. Will test ch a, ch b, ...")
 
-#SNR threshold
-while(True):
-    try:
-        snr_min_check = float(input("What is the minimum value SNR can be (in dBc)? "))
-        break
-    except ValueError:
-        print("ERROR: Please only input numbers. Try again: ")
+args = parser.parse_args()
+
+num_output_waves = args.displayed_waves
+
+#Validates num_output_waves
+try:
+    assert 1 <= num_output_waves <= 4
+except AssertionError:
+    print("ERROR: Can only display 1 to 4 waves per graph. Try again: ")
+    num_output_waves = int(input("How many waves do you want shown on IQ graphs? "))
+except ValueError:
+    print("ERROR: Please only input integers. Try again: ")
+    num_output_waves = int(input("How many waves do you want shown on IQ graphs? "))
+
+sigfigs = args.sigfigs
+
+# Validate number of sigfigs
+try:
+    assert 1 <= sigfigs <= 5
+except ValueError:
+    sys.exit("ERROR: Please only input integers. Try again: ")
+except AssertionError:
+    sys.exit("ERROR: For formatting, please input a value within 1 to 5. Try again:")
+
+snr_min_check = args.snr
 
 #Frequency offset threshold
-while(True):
-    try:
-        freq_check_offset = float(input("What is the offset for the freq threshold (in Hz)? "))
-        break
-    except ValueError:
-        print("ERROR: Please only input numbers. Try again: ")
+freq_check_offset = args.freq_threshold
 
-# Unit Info
-# Asking the user to type serial number into the terminal
-#Serial Number
-while(True):
-    try:
-        serial_num = input("What is the serial number of the unit? ")
-        break
-    except ValueError:
-        print("ERROR: Please only input integers. Try again: ")
+serial_num = args.serial
 
 #Asking what test to run and how many channels to run
 #NOTE: I think this could be expanded to just choosing which channels on the unit to test
+product = args.product
+try:
+    if (product != 't' and product != 'v'):
+        raise(ValueError)
+except:
+    sys.exit("Invalid product. Only v (Vaunt) and t (Crimson) supported")
 
-while(True):
-    try:
-        ans = input("Are you testing Vaunt or Tate (V or T)? ")
-        if (ans != 'T' and ans != 'V' and ans != 't' and ans != 'v'):
-            raise(ValueError)
-        break
-    except:
-        print("Only type V or T Please. Try again: ")
+num_channels = args.num_channels
+channel_names = ["Channel A", "Channel B", "Channel C", "Channel D", "Channel E", "Channel F", "Channel G", "Channel H"]
+if(product == 'v'):
+    max_channels = 4
+if(product == 't'):
+    max_channels = 8
 
-if (ans == 'V' or ans == 'v'):
-    while(True):
-        try:
-            hold = ["Channel A", "Channel B", "Channel C", "Channel D"]
-            num_channels = int(input("How many Channels are you testing? "))
-            assert 1 <= num_channels <= 4
-            channel_names = hold[0:num_channels]
-            generate = gen.ship_test_crimson(num_channels)
-            break
-        except ValueError:
-            print("ERROR: Please only input integers. Try again: ")
-        except AssertionError:
-            print("ERROR: Please input a value within 1 to 4. Try again: ")
-else:
-    while(True):
-        try:
-            hold = ["Channel A", "Channel B", "Channel C", "Channel D", "Channel E", "Channel F", "Channel G", "Channel H"]
-            num_channels = int(input("How many Channels are you testing? "))
-            assert 1 <= num_channels <= 8
-            channel_names = hold[0:num_channels]
-            generate = gen.ship_test_cyan(num_channels)
-            break
-        except ValueError:
-            print("ERROR: Please only input integers. Try again: ")
-        except AssertionError:
-            print("ERROR: Please input a value within 1 to 8. Try again: ")
+try:
+    assert 1 <= num_channels <= max_channels
+except AssertionError:
+    sys.exit("Invalid number of channels selected")
+
+channel_names = channel_names[0:num_channels]
+
+if(product == 'v'):
+    generate = gen.ship_test_crimson(num_channels)
+elif(product == 't'):
+    generate = gen.ship_test_cyan(num_channels)
 
 #Using the terminal to pull unit info
 # os.system('rm ' + current_dir + '/shiptest_out.txt')
@@ -228,7 +214,7 @@ page_count = 1
 graph_max = int(np.ceil(num_channels/4))
 multi = (graph_max > 1)
 #Page total based on the unit your testing
-page_total = ((2*graph_max)+2)*(8*(ans == 'V' or ans == 'v') + 6*(ans == 'T' or ans == 't')) + graph_max
+page_total = ((2*graph_max)+2)*(8*(product == 'V' or product == 'v') + 6*(product == 'T' or product == 't')) + graph_max
 
 
 #Adding logo - more efficent to just initialize at beginning
