@@ -30,7 +30,10 @@ echo export path
     cd "$srcdir/$_gitname/build"
     pwd
 
+
     #Workaround for fmt-compile error
+    git config --global user.email "ci@pervices.com"
+    git config --global user.name "CI pervices"
     git cherry-pick 9357c17721a27cc0aae3fe809af140c84e492f37
     
     cmake \
