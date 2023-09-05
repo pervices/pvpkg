@@ -4,6 +4,7 @@ FROM archlinux:base-devel
 RUN useradd -m notroot
 RUN echo "notroot ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/notroot
 RUN pacman-key --init
+RUN pacman -Suy --noconfirm
 RUN pacman -Sy --noconfirm archlinux-keyring && \
     pacman -Sy --noconfirm git cmake clang icu && \
  pacman -Sy --noconfirm inetutils iproute2 && \
