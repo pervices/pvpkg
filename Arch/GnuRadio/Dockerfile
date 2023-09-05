@@ -3,6 +3,7 @@ FROM archlinux:base-devel
 # makepkg cannot (and should not) be run as root, so a dummy user is created:
 RUN useradd -m notroot
 RUN echo "notroot ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/notroot
+RUN pacman-key --init
 RUN pacman -Sy --noconfirm archlinux-keyring && \
     pacman -Sy --noconfirm git cmake clang icu && \
  pacman -Sy --noconfirm inetutils iproute2 && \
