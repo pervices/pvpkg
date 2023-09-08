@@ -974,7 +974,7 @@ def main(iterations):
         #Tables stuff
         for z in range(graph_max): #NOTE: It doesn't have to use graph max here, any value with the layout should be fine
             snr_x, snr_y = nf_x, nf_y - snr_height
-            start, end = z*4, (z*4)+4
+            start, end = z*4, (z*4)+num_channels
             nf_table_info = [["All Noise Floor Data :"], ["Channel"],["Maximum"], ["Minimum"], ["Mean"], ["Diff to A"], ["STD"]]
             mean_a = np.mean(noise_floor[0][1])
             snr_table_info = [["Top Peak Information", "(Based on Highest SNR):"], ["Channel"], ["Location (Hz)"], ["Amplitude (dB)"], ["SNR (dBc)"]]
