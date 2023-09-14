@@ -480,12 +480,16 @@ def bestFit(x, y):
 
     return model, (result.params['dc_offset'], result.params['ampl'], result.params['freq'], result.params['phase'])
 
-'''Divides given by peak
-Params: a, peak
+'''Function passed to numpy when normalizing data (shifting the range to be up to 1)
+Params:
+a: the value to be normalized
+peak: the maximum value of the dataset
 Returns: ans'''
-def byOne(a, peak):
-    ans = a/peak
-    return  ans
+def safeNormalize(a, peak):
+    if(peak != 0):
+        return a/peak
+    else:
+        return 0
 
 '''Calculates the magnitude of the two given values
 PARAMS: a, b
@@ -522,10 +526,13 @@ def fftValues(x, reals, imags): #TODO: THIS IS A MESS, MUST FIX
 
     #Finding largest value
     peaks_indices = find_peaks(fft_y)
-    max_peak = fft_y[np.argmax(fft_y[[peaks_indices[0]]])]
+    if(len(peaks_indices[0] != 0)):
+        max_peak = fft_y[np.argmax(fft_y[[peaks_indices[0]]])]
+    else:
+        max_peak = 0
 
-    normalize = np.vectorize(byOne)
-    norm_y = normalize(fft_y, max_peak)
+    normalizer = np.vectorize(safeNormalize)
+    norm_y = normalizer(fft_y, max_peak)
 
     #Transform to dB - code incase there are zero values, but haven't needed to use in a while
     # bools_norms = list(map(isNotZero, norm_y))
@@ -567,9 +574,12 @@ def numPeaks(x, y, ampl, num):
     peaks_arrays = [x[peaks], y[peaks]]
 
     for i in range(num):
-        maxs_indiv = np.argmax(peaks_arrays[1])
-        maxs.append([peaks_arrays[0][maxs_indiv], peaks_arrays[1][maxs_indiv]])
-        peaks_arrays = np.delete(peaks_arrays, maxs_indiv, axis=1)
+        if(len(peaks_arrays[1] != 0)):
+            maxs_indiv = np.argmax(peaks_arrays[1])
+            maxs.append([peaks_arrays[0][maxs_indiv], peaks_arrays[1][maxs_indiv]])
+            peaks_arrays = np.delete(peaks_arrays, maxs_indiv, axis=1)
+        else:
+            maxs.append([0,0])
 
     return maxs
 
