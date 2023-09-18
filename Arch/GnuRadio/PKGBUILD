@@ -31,9 +31,6 @@ echo export path
     pwd
 
 
-    #Workaround for fmt-compile error
-    git cherry-pick 9357c17721a27cc0aae3fe809af140c84e492f37
-    
     cmake \
           -DPYTHON_EXECUTABLE=/usr/bin/python3 \
           -DCMAKE_BUILD_TYPE=Release \
