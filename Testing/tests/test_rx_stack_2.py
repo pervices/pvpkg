@@ -17,7 +17,7 @@ def main():
     sample_count = 4096
 
     # Crimson TNG acts as a source by providing complex float samples.
-    csrc = crimson.get_src_c(channels, sample_rate, 15e6, 1.0)
+    csrc = crimson.get_src_c(channels, sample_rate, 15e6, 5.0)
 
     # Vector buffer that accepts complex float samples.
     vsnk = [blocks.vector_sink_c() for channel in channels]
@@ -45,8 +45,8 @@ def main():
 
     # Enqueue one RX command every second starting at <start> and ending at <end> times.
     csrc.set_time_now(uhd.time_spec(0.0))
-    start = 3       #Start Time
-    end = 8         #End Time
+    start = 10       #Start Time
+    end = 15         #End Time
     interval = 1    #Increment time (Wait this long between subsequent Rx commands)
 
     #Create an expected Rx sample count array for the amount of samples expected to be received
