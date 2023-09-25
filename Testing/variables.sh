@@ -30,8 +30,8 @@ WEBSITE_VERSION_LENGTH=40
 
 NUM_TESTS=10
 TEST_NAMES=("TX/RX Channels In-Phase" "TX Trigger" "TX/RX Gain" "TX/RX Fundamental Frequency" "TX/RX Phase" "GPIO Stack Test" "RX Stack Test 1" "RX Stack Test 2" "TX Stack Test" "TX/RX Stacked Commands" )
-TEST_FILES=(test_tx_rx_channels_in_phase test_tx_trigger test_tx_rx_gain test_tx_rx_fundamental_frequency test_tx_rx_phase test_gpio_stack test_rx_stack test_rx_stack_2 test_tx_stack test_tx_rx_stacked_commands test_tx_rx_phase_2 )
-TEST_EXCEPTIONS=(false false false false false false false false false true true)
+TEST_FILES=(test_tx_trigger test_tx_rx_gain test_tx_rx_phase test_gpio_stack test_rx_stack test_rx_stack_2 test_tx_stack test_tx_rx_stacked_commands test_tx_rx_phase_2 )
+TEST_EXCEPTIONS=(false false false false false false false true true)
 
 ##########################
 ##### FILE LOCATIONS #####

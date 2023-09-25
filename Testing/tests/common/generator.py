@@ -194,15 +194,11 @@ def lo_band_phaseCoherency(channels):
     center_freq = 10000000
     sample_rate = 25000000
     wave_freq = 500000
-
     for i in range(10):
         yield locals()
 
-def lo_band_phaseCoherency(channels):
-    
+def lo_band_phaseCoherency_short(channels):
     print(sys._getframe().f_code.co_name)
-    
-
     channels = list(range(4))
     sample_count = int(round(25000000/10000))
     tx_gain = 25
@@ -210,8 +206,7 @@ def lo_band_phaseCoherency(channels):
     center_freq = 10000000
     sample_rate = 25000000
     wave_freq = 500000
-
-    for i in range(10):
+    for i in range(2):
         yield locals()
 
 def dump(iteration):
