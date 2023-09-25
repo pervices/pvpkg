@@ -6,7 +6,7 @@ Before=network-online.target network.target system-netctl.service NetworkManager
 [Service]
 Type=simple
 #EnvironmentFile=/etc/conf.d/setmtu
-ExecStart=/opt/napatech3/bin/osmode -p %i 
+ExecStart=/opt/napatech3/bin/osmode2 -p %i -r 1 -t 1 -q 4
 
 [Install]
 WantedBy=napatech.service
