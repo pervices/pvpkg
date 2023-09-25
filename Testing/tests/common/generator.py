@@ -179,7 +179,7 @@ def hi_band_gain_rx(channels):
     #print(channels)
     wave_freq = 1000000
     sample_count = 1000
-    center_freq = 2031250
+    center_freq = 2000000000
     sample_rate = 4062500
     tx_gain = 40#increasing the fixed gain may cause saturation
     for rx_gain in [ 10, 20, 30 ]:
