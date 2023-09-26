@@ -295,7 +295,7 @@ parameters {
                     steps {
                     catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
                     script{
-                    dir("${env.WORKSPACE}/Arch/GnuRadio") {
+                    dir("${env.WORKSPACE}/Testing") {
                     env.IID = "\$(docker images arch:$BUILD_NUMBER --format \"{{.ID}}\")"
                     sh "docker run --net=host -i $IID /bin/bash -c './test-only-Arch.sh'"
                     }
