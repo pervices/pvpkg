@@ -96,7 +96,7 @@ def rx_tx_benchmark(header='', duration=10, tx_rate=21666667, rx_rate=21666667, 
 
 rx_tx_benchmark(header="Rx/Tx sc16, single, with delay", multi_streamer=False)
 rx_tx_benchmark(header="Rx/Tx sc16, multi, nodelay", tx_delay=0.5, rx_delay=0)
-rx_tx_benchmark(header="Rx/Tx sc16, single, nodelay", tx_delay=0.5, rx_delay=0, rx_cpu='fc32', tx_cpu="fc32")
+rx_tx_benchmark(header="Rx/Tx sc16, single, nodelay", tx_delay=0.5, rx_delay=0, multi_streamer=False, rx_cpu='fc32', tx_cpu="fc32")
 
 
 
