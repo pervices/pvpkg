@@ -10,6 +10,7 @@ from gnuradio import uhd
 #Basic imports
 import time, datetime
 import os
+import sys
 import subprocess
 import argparse
 import numpy as np
@@ -726,8 +727,9 @@ def main(iterations):
 
 
         #X values
-        x = np.arange(begin_cutoff/sample_rate, (sample_count/sample_rate), 1/sample_rate) #The actual x range
-        x_time = np.asarray(x*1000000000) # For plotting
+        x = np.linspace(start = begin_cutoff/sample_rate, stop = sample_count/sample_rate, num = sample_count - begin_cutoff, endpoint = True) # Vector containing time of each sample in s
+        # Samples before begin_cuttoff are ignored to give time for rx to become steady,this may be uneccessary since rx starts after tx so it should be steady anyway
+        x_time = np.asarray(x*1000000000) # Converts s to ns
 
         vsnks.append(vsnk) #This will loop us through the channels an appropriate amount of time
         for vsnk in vsnks:
