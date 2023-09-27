@@ -297,8 +297,7 @@ parameters {
                     script{
                     dir("${env.WORKSPACE}/Arch/GnuRadio") {
                     env.IID = "\$(docker images arch:$BUILD_NUMBER --format \"{{.ID}}\")"
-                    sh "docker run --net=host -i $IID /bin/bash -c 'pwd'"
-                    sh "docker run --net=host -i $IID /bin/bash -c '../testing/test-only-Arch.sh'"
+                    sh "docker run --net=host -i $IID /bin/bash -c 'test-only-Arch.sh'"
                     }
                     }
                     }

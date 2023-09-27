@@ -96,3 +96,4 @@ yay -Sy --noconfirm \
    $(pacman --deptest $(source ./PKGBUILD && echo ${depends[@]})) && \
  makepkg --noconfirm --syncdeps --needed --install && \
 sudo mv gnuradio*.tar.zst /home/artifacts
+WORKDIR /home/notroot/testing
