@@ -26,7 +26,6 @@ def rx_benchmark(header='', duration=10, rx_rate=65e6, rx_channels="0,1,2,3", dr
 
         print(result_entry, result_data)
         if result_entry == 'Num received samples':
-        # if result_entry in ['Num received samples', 'Num transmitted samples']:
             continue
 
         try:
@@ -38,8 +37,8 @@ def rx_benchmark(header='', duration=10, rx_rate=65e6, rx_channels="0,1,2,3", dr
 
 rx_benchmark(header='Rx, multi-streamer, sc16, no delay')
 rx_benchmark(header='Rx, multi-streamer, sc16, 5s delay', rx_delay=5)
-rx_benchmark(header='Rx, multi-streamer, fc32, 5s delay', rx_rate=21325000, rx_cpu='fc32', rx_delay=5)
-rx_benchmark(header='Rx, single, fc32, 0s delay', rx_rate=21325000, rx_cpu='fc32', multi_streamer=False)
+rx_benchmark(header='Rx, multi-streamer, fc32, 5s delay', rx_rate=21666667, rx_cpu='fc32', rx_delay=5)
+rx_benchmark(header='Rx, single, fc32, 0s delay', rx_rate=21666667, rx_cpu='fc32', multi_streamer=False)
 
 
 def tx_benchmark(header='', duration=10, tx_rate=65e6, tx_channels="0,1,2,3", drop_threshold=0, seq_threshold=0, multi_streamer=True, tx_otw=True, sc='sc16', tx_cpu="sc16", tx_delay=5):
@@ -60,7 +59,6 @@ def tx_benchmark(header='', duration=10, tx_rate=65e6, tx_channels="0,1,2,3", dr
 
         print(result_entry, result_data)
         if result_entry == 'Num transmitted samples':
-        # if result_entry in ['Num received samples', 'Num transmitted samples']:
             continue
 
         try:
@@ -74,4 +72,43 @@ tx_benchmark(header='Tx, channel 0, sc16', tx_channels="0")
 tx_benchmark(header='Tx, channel 0&1, sc16', tx_channels="0,1")
 tx_benchmark(header='Tx, all channels, fc32', tx_cpu='fc32')
 
-# def rx_tx_benchmark():
+def rx_tx_benchmark(header='', duration=10, tx_rate=21666667, rx_rate=21666667, channels="0,1,2,3", drop_threshold=0, seq_threshold=0, multi_streamer=True, tx_otw=True, sc='sc16', tx_cpu="sc16", rx_cpu='sc16', tx_delay=5, rx_delay=5):
+    sample = subprocess.check_output([PATH, '--duration', str(duration), '--tx_rate', str(tx_rate), '--rx_rate', str(rx_rate), '--channels', channels, '--drop-threshold', str(drop_threshold), '--seq-threshold', str(seq_threshold),'--multi_streamer' if multi_streamer else '', '--tx_otw', sc, '--tx_cpu', tx_cpu, 'rx-cpu', rx_cpu, '--tx_delay', str(tx_delay), '--rx_delay', str(rx_delay)])
+    sample = sample.decode()
+    benchmark_summary = sample.split('Benchmark rate summary:\n')[1]
+    results = benchmark_summary.split('\n')[0:10]
+
+    data_entry = {}
+    for result in results:
+        result = result.split(':')
+        result_entry = result[0].lstrip()
+        result_data  = int(result[1])
+
+        print(result_entry, result_data)
+        if result_entry in ['Num received samples', 'Num transmitted samples']:
+            continue
+
+        try:
+            assert result_data == 0
+        except:
+            print('ERROR with rx_benchmark', result_entry, result_data);
+            sys.exit(1)
+
+rx_tx_benchmark(header="Rx/Tx sc16, single, with delay", multi_streamer=False)
+rx_tx_benchmark(header="Rx/Tx sc16, multi, nodelay", tx_delay=0.5, rx_delay=0)
+rx_tx_benchmark(header="Rx/Tx sc16, single, nodelay", tx_delay=0.5, rx_delay=0, rx_cpu='fc32', tx_cpu="fc32")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
