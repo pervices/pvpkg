@@ -715,8 +715,8 @@ def main(iterations):
         sample_rate = int(it["sample_rate"])
         global sample_count
         sample_count = int(it["sample_count"])
-        tx_stack = [(10.0 , sample_rate)] #Equivalent to 1 second
-        rx_stack = [(10.25, sample_count)] #TODO: Maybe add the burst start times to table - or title page
+        tx_stack = [(5.0 , sample_rate)] #Equivalent to 1 second
+        rx_stack = [(5.25, sample_count)] #TODO: Maybe add the burst start times to table - or title page
 
         vsnk = engine.run(it["channels"], it["wave_freq"], it["sample_rate"], it["center_freq"], it["tx_gain"], it["rx_gain"], tx_stack, rx_stack)
 
