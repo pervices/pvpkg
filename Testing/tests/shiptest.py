@@ -200,7 +200,6 @@ os.system("rm shiptest_out.txt")
 
 #Globals that will be changed later in the code - all -1 currently because they are dependent on the generator code
 center_freq = -1
-wave_freq = -1
 sample_rate = -1
 sample_count = -1
 tx_gain = -1
@@ -457,26 +456,33 @@ def subPlotIQs (x, real,imag, best_fit_real, best_fit_imag, offset_real, offset_
     return bf_r
 
 '''
-# Represents the wave equation
-PARAMS: time, ampl, freq, phase
+# Returns the residuals of a predicts sinewave
+params['ampl']: predicted amplitude
+params['freq']: predicted frequency
+params['phase']: predicted phase shift
+params['dc_offset']: predicted dc offset
+actual_time: the x values from the wave to be fitted
+actual_amplitude: the y values from the wave to be fitted
 RETUNRS: y'''
-def waveEquation(params, time):
+def sineResiduals(params, actual_time, actual_amplitude):
     ampl = params['ampl'].value
     freq = params['freq'].value
     phase = params['phase'].value
     dc_offset = params['dc_offset'].value
 
-    model = ampl*np.cos(2*np.pi*freq*time + phase) + dc_offset #model for wave equation
+    # Predicted wave
+    model = ampl*np.cos(2*np.pi*freq*actual_time + phase) + dc_offset #model for wave equation
 
-    return model
+    return model - actual_amplitude
 
 '''Creates the line of best fit for the given x and y
 PARAMS: x,y
 RETURNS: best_fit (y values of the line of best fit '''
-def bestFit(x, y):
+def bestFit(x, y, expected_freq, predicted_phase = 0):
 
-    params = create_params(ampl=max(y), freq=wave_freq, phase=0, dc_offset=0)
-    result = minimize(waveEquation, params, args=(x,))
+    params = create_params(ampl={'value': max(y), 'min': 0}, freq=expected_freq, phase=predicted_phase, dc_offset=0)
+
+    result = minimize(sineResiduals, params, args=(x,y))
     model = y + result.residual
 
     return model, (result.params['dc_offset'], result.params['ampl'], result.params['freq'], result.params['phase'])
@@ -740,15 +746,19 @@ def main(iterations):
                 reals.append(real[begin_cutoff:]) #Formats real data into a 2D array
                 imags.append(imag[begin_cutoff:])
 
-                #Gets best fit line and paramaters
-                best_fit, param = bestFit(x, real[begin_cutoff:])
+                #Gets best fit for real part of sinewave
+                best_fit, param = bestFit(x, real[begin_cutoff:], it["wave_freq"])
 
                 best_fit_reals.append((best_fit))
                 offset_reals[ch] = param[0]
                 ampl_reals[ch] = param[1]
                 freq_reals[ch] = param[2]
 
-                best_fit, param = bestFit(x, imag[begin_cutoff:])
+                # Expected phase diff of I and Q, used so that Q has a better initial estimate
+                expected_phase_difference = (0.25/freq_reals[ch])
+
+                #Gets best fit for complex part of sinewave
+                best_fit, param = bestFit(x, imag[begin_cutoff:], freq_reals[ch], offset_reals[ch] - expected_phase_difference )
 
                 best_fit_imags.append((best_fit))
                 offset_imags[ch] = param[0]
@@ -791,7 +801,7 @@ def main(iterations):
             plt.suptitle("Individual Channels' Amplitude versus Time for Run {}".format(counter))
             # Padding is to prevent overlap with subplot (for the individual graphs) ticks
             plt.xlabel("Time (nS)", labelpad = 20)
-            plt.ylabel("Amplitude(fraction of max)", labelpad = 40)
+            plt.ylabel("Amplitude(fractional)", labelpad = 40)
 
             # Hides the axis of the holding plot used to contain the individual plots
             plt.xticks([])
@@ -927,7 +937,7 @@ def main(iterations):
         plot_img_width, plot_img_height = 700, 450
         plot_img_pos_x,  plot_img_pos_y = 2, 60
         IQ_width, IQ_height = 250, 105
-        IQ_table_x, IQ_table_y = 5,4
+        IQ_table_x, IQ_table_y = 5,5
 
         #graphs and table dependent on number of channels
         for z in range(graph_max):
@@ -939,18 +949,19 @@ def main(iterations):
             pdf.drawImage(IQ_plt_img[z], plot_img_pos_x, plot_img_pos_y, plot_img_width, plot_img_height)
 
             #Table of IQ info
-            IQ_table_info = [["IQ Data: "],["Channel"], ["Mag Freq (Hz)"], ["Mag Ampl (Hz)"]]
+            IQ_table_info = [["IQ Data: "],["Channel"], ["Mag Freq (Hz)"], ["Ampl I (fractional)"], ["Ampl Q (fractional)"]]
 
             for i in range(start, end):
-                try:
-                    IQ_table_info[2].append(sig(magnitude(freq_reals[i], freq_imags[i]), sigfigs=sigfigs))
-                    IQ_table_info[3].append(sig(magnitude(ampl_reals[i], ampl_imags[i]), sigfigs=sigfigs))
-                    IQ_table_info[1].append((chr(65+i)))
+                # try:
+                IQ_table_info[1].append((chr(65+i)))
+                IQ_table_info[2].append(sig(magnitude(freq_reals[i], freq_imags[i]), sigfigs=sigfigs))
+                IQ_table_info[3].append(sig(ampl_reals[i], sigfigs=sigfigs))
+                IQ_table_info[4].append(sig(ampl_imags[i], sigfigs=sigfigs))
 
-                    IQ_table = Table(IQ_table_info, style=[('GRID', (0,1), (num_channels+1,3), 1, colors.black),
-                                                        ('BACKGROUND', (0, 1), (num_channels+1,1), '#D5D6D5')])
-                except:
-                    break
+                IQ_table = Table(IQ_table_info, style=[('GRID', (0,1), (num_channels+1,4), 1, colors.black),
+                                                    ('BACKGROUND', (0, 1), (num_channels+1,1), '#D5D6D5')])
+                # except:
+                    # break
 
             IQ_table.wrapOn(pdf, IQ_width, IQ_height)
             IQ_table.drawOn(pdf, IQ_table_x, IQ_table_y)
