@@ -790,8 +790,8 @@ def main(iterations):
 
             plt.suptitle("Individual Channels' Amplitude versus Time for Run {}".format(counter))
             # Padding is to prevent overlap with subplot (for the individual graphs) ticks
-            plt.xlabel("Time (gS)", labelpad = 20)
-            plt.ylabel("Amplitude(kV)", labelpad = 50)
+            plt.xlabel("Time (nS)", labelpad = 20)
+            plt.ylabel("Amplitude(fraction of max)", labelpad = 50)
 
             # Hides the axis of the holding plot used to contain the individual plots
             plt.xticks([])
