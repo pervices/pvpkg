@@ -7,7 +7,7 @@ def ship_test_crimson(channels):
 
     channels = list(range(channels))
     wave_freq = 100000
-    sample_rate = 2500000
+    sample_rate = 9848485
     sample_count = int(sample_rate/ 5)
     tx_gain = 25
     rx_gain = 25
@@ -23,7 +23,7 @@ def ship_test_cyan(channels):
 
     channels = list(range(channels))
     wave_freq = 100000
-    sample_rate = 5000000
+    sample_rate = 9803922
     sample_count = int(sample_rate/ 5)
     # rx_gain = 16
     # tx_gain = 15

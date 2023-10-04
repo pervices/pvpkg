@@ -761,6 +761,11 @@ def main(iterations):
         #Making them all np.arrays for efficency
         reals = np.asarray(reals)
         imags = np.asarray(imags)
+        
+        # Determines the range of the y axis to plot
+        # TODO: get max and min of the displayed range, currently it gets the max and min of everything
+        amplYTop = max(reals.max(), imags.max()) * 1.1
+        amplYBottom = min(reals.min(), imags.min()) * 1.1
 
         #Setting up the global variables to be what the test runs'
         global center_freq
@@ -794,6 +799,10 @@ def main(iterations):
             #The actual plotting of the graphs
             for i, title in zip(range(start, end), channel_names[start:end]):
                 axis.append(plt.subplot(fig[0:1, ax_st:ax_end])) #Each run will add the next plot area to the axis
+                
+                # Sets the y axis of each of the individual plots to be the same
+                axis[-1].set_ylim(bottom = amplYBottom, top = amplYTop, auto = False)
+                
                 try: #If the number of channels tested is a nonmultiple of 4, this try and except ensures it does not break the code
                     IQ_plots.append(subPlotIQs(x_time[0:plotted_samples], reals[i][0:plotted_samples], imags[i][0:plotted_samples], best_fit_reals[i][0:plotted_samples], best_fit_imags[i][0:plotted_samples], offset_reals[i], offset_imags[i], axis[i], title))
                     ax_st = ax_end + 2
@@ -827,6 +836,11 @@ def main(iterations):
         fft_y = np.asarray(fft_y)
         noise_floor = np.asarray(noise_floor)
         std = np.asarray(std)
+        
+        # Determines the range of the y axis to plot
+        # TODO: get max and min of the displayed range, currently it gets the max and min of everything
+        amplYTop = fft_y.max() * 1.1
+        amplYBottom = fft_y.min() * 1.1
 
         FFT_plots = []
         FFT_plt_img = []
@@ -842,6 +856,10 @@ def main(iterations):
 
             for i, title in zip(range(start, end), channel_names[start:end]):
                 axis.append(plt.subplot(fig[0:1, ax_st:ax_end]))
+                
+                # Sets the y axis of each of the individual plots to be the same
+                axis[-1].set_ylim(bottom = amplYBottom, top = amplYTop, auto = False)
+                
                 try:
                     FFT_plots.append(subPlotFFTs(fft_x[i], fft_y[i], axis[i], title, max_fours[i], np.mean(noise_floor[1])))
                     ax_st = ax_end + 2
