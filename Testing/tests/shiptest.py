@@ -789,8 +789,13 @@ def main(iterations):
         for z in range(graph_max): #Splits the plots up to maximum 4 per page
 
             plt.suptitle("Individual Channels' Amplitude versus Time for Run {}".format(counter))
-            plt.xlabel("Time (gS)")
-            plt.ylabel("Amplitude(kV)")
+            # Padding is to prevent overlap with subplot (for the individual graphs) ticks
+            plt.xlabel("Time (gS)", labelpad = 20)
+            plt.ylabel("Amplitude(kV)", labelpad = 50)
+
+            # Hides the axis of the holding plot used to contain the individual plots
+            plt.xticks([])
+            plt.yticks([])
 
             #Variables to allow for flexibilty in the code
             start, end = z*4,(z*4)+4
@@ -851,15 +856,20 @@ def main(iterations):
             ax_st, ax_end = 0, 15
             #Plotting the individual FFT Plots
             plt.suptitle("Individual Channels' FFTs for Run {}".format(counter))
-            plt.xlabel("Frequency")
-            plt.ylabel("Amplitude (dB)")
+            # Padding is to prevent overlap with subplot (for the individual graphs) ticks
+            plt.xlabel("Frequency", labelpad = 16)
+            plt.ylabel("Amplitude (dB)", labelpad = 16)
+
+            # Hides the axis of the holding plot used to contain the individual plots
+            plt.xticks([])
+            plt.yticks([])
 
             for i, title in zip(range(start, end), channel_names[start:end]):
                 axis.append(plt.subplot(fig[0:1, ax_st:ax_end]))
                 
                 # Sets the y axis of each of the individual plots to be the same
                 axis[-1].set_ylim(bottom = amplYBottom, top = amplYTop, auto = False)
-                
+
                 try:
                     FFT_plots.append(subPlotFFTs(fft_x[i], fft_y[i], axis[i], title, max_fours[i], np.mean(noise_floor[1])))
                     ax_st = ax_end + 2
