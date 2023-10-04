@@ -791,7 +791,7 @@ def main(iterations):
             plt.suptitle("Individual Channels' Amplitude versus Time for Run {}".format(counter))
             # Padding is to prevent overlap with subplot (for the individual graphs) ticks
             plt.xlabel("Time (nS)", labelpad = 20)
-            plt.ylabel("Amplitude(fraction of max)", labelpad = 50)
+            plt.ylabel("Amplitude(fraction of max)", labelpad = 40)
 
             # Hides the axis of the holding plot used to contain the individual plots
             plt.xticks([])
@@ -857,8 +857,8 @@ def main(iterations):
             #Plotting the individual FFT Plots
             plt.suptitle("Individual Channels' FFTs for Run {}".format(counter))
             # Padding is to prevent overlap with subplot (for the individual graphs) ticks
-            plt.xlabel("Frequency", labelpad = 16)
-            plt.ylabel("Amplitude (dB)", labelpad = 16)
+            plt.xlabel("Frequency (MHz)", labelpad = 20)
+            plt.ylabel("Magnitude (dB)", labelpad = 40)
 
             # Hides the axis of the holding plot used to contain the individual plots
             plt.xticks([])
@@ -901,9 +901,16 @@ def main(iterations):
 
         #plotting them all by pulling previous data
         for i, colour in zip(range(num_channels), colours):
+            # Combined amplitude plot
             ax1.set_title("All Channels - Real Data")
+            ax1.set_xlabel("Time (nS)")
+            ax1.set_ylabel("Amplitude(fraction of max)")
             ax1.plot(IQ_plots[i].get_xdata(), IQ_plots[i].get_ydata(), '-', color=colour, markersize=0.2, label="Channel {}".format(i))
+
+            # Combined frequency plot
             ax2.set_title("All Channels - FFT Graphs")
+            ax2.set_xlabel("Frequency (MHz)")
+            ax2.set_ylabel("Magnitude (dB)")
             ax2.plot(FFT_plots[i].get_xdata(), FFT_plots[i].get_ydata(), '-', color=colour, markersize=0.2, label="Channel {}".format(i))
 
         ax2.legend(loc='upper left', bbox_to_anchor=(1,0.5))
