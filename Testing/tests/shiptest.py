@@ -513,7 +513,7 @@ def isNotZero(a):
 
 '''Turns the values recieved into values for the FFT plots
 PARAMS: sample_count, reals, imags
-RETURNS: freq, normalized_ys'''
+RETURNS: freq (frequency axis of fft), fft_y_db (magnitude axis of fft)'''
 def fftValues(x, reals, imags): #TODO: THIS IS A MESS, MUST FIX
 
     #organizing data
@@ -528,28 +528,19 @@ def fftValues(x, reals, imags): #TODO: THIS IS A MESS, MUST FIX
     fft_comp_y = comp(reals, imags)*blackman(len(x))
 
     #Turning it into fft
-    fft_transform = np.fft.fftshift(np.fft.fft(fft_comp_y, len(x), norm="forward"))
+    fft_data = np.fft.fft(fft_comp_y, len(x), norm="backward")
+    fft_transform = np.fft.fftshift(fft_data)
     fft_y = abs(mag(fft_transform.imag, fft_transform.real))
-
-    #Finding largest value
-    peaks_indices = find_peaks(fft_y)
-    if(len(peaks_indices[0] != 0)):
-        max_peak = fft_y[np.argmax(fft_y[[peaks_indices[0]]])]
-    else:
-        max_peak = 0
-
-    normalizer = np.vectorize(safeNormalize)
-    norm_y = normalizer(fft_y, max_peak)
 
     #Transform to dB - code incase there are zero values, but haven't needed to use in a while
     # bools_norms = list(map(isNotZero, norm_y))
     # np.place(norm_y, bools_norms, 20*np.log10(norm_y)) #does not log values that are 0
-    norm_y = 20*np.log10(abs(norm_y))
+    fft_y_db = 20*np.log10(abs(fft_y))
 
     #Setting up the X values
     freq = np.fft.fftshift(np.fft.fftfreq(len(x), d=(sample_rate))) #NOTEL makin thing is if this is okay
 
-    return freq, norm_y
+    return freq, fft_y_db
 
 '''Turning the plot figure into a rasterized image and saving it to the directory
 PARAMS: plot, title, counter, pdf
