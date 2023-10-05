@@ -471,16 +471,25 @@ def sineResiduals(params, actual_time, actual_amplitude):
     dc_offset = params['dc_offset'].value
 
     # Predicted wave
-    model = ampl*np.cos(2*np.pi*freq*actual_time + phase) + dc_offset #model for wave equation
+    model = ampl*np.sin(2*np.pi*freq*(actual_time + phase)) + dc_offset #model for wave equation
 
     return model - actual_amplitude
 
 '''Creates the line of best fit for the given x and y
 PARAMS: x,y
 RETURNS: best_fit (y values of the line of best fit '''
-def bestFit(x, y, expected_freq, predicted_phase = 0):
+def bestFit(x, y, expected_freq):
 
-    params = create_params(ampl={'value': max(y), 'min': 0}, freq=expected_freq, phase=predicted_phase, dc_offset=0)
+    max_loc = np.argmax(y)
+    period = 1/expected_freq
+    predicted_phase = x[max_loc] + (period/4)
+    if(predicted_phase < 0):
+        predicted_phase += period
+
+    predicted_phase = predicted_phase % period
+
+    # Predicted amplitude must be above expected to avoid the minimizer going the wrong direction and ending up near 0
+    params = create_params(freq=expected_freq, phase={'value': predicted_phase, 'min': 0, 'max': period}, dc_offset=0, ampl={'value': y[max_loc] * 1.1, 'min': y[max_loc]/10})
 
     result = minimize(sineResiduals, params, args=(x,y))
     model = y + result.residual
@@ -749,7 +758,7 @@ def main(iterations):
                 expected_phase_difference = (0.25/freq_reals[ch])
 
                 #Gets best fit for complex part of sinewave
-                best_fit, param = bestFit(x, imag[begin_cutoff:], freq_reals[ch], offset_reals[ch] - expected_phase_difference )
+                best_fit, param = bestFit(x, imag[begin_cutoff:], freq_reals[ch])
 
                 best_fit_imags.append((best_fit))
                 offset_imags[ch] = param[0]
