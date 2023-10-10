@@ -160,6 +160,7 @@ cd build
 -DGR_PYTHON_DIR=%{python3_sitearch} \
 -DPYTHON_EXECUTABLE=%{__python3} \
 -DENABLE_UHD_RFNOC=OFF \
+-DENABLE_GR_ZEROMQ=OFF \
 -Dspdlog_DIR=/usr/lib64 \
 %{?mfpu_neon} \
 ..
