@@ -12,6 +12,7 @@ import time, datetime
 import os
 import sys
 import subprocess
+import threading
 import argparse
 import numpy as np
 import matplotlib
@@ -796,9 +797,13 @@ def main(iterations):
         reals = np.asarray(reals)
         imags = np.asarray(imags)
 
-        # TODO: carry out each fitting in its own thread
+
+        # Threads for the finding lobf for each channel in the time domain
+        time_fitting_threads = []
         for ch in range(num_channels):
-            bestFitComplex(ch, x, reals[ch], imags[ch], it["wave_freq"], best_fit_reals, offset_reals, ampl_reals, freq_reals, best_fit_imags, offset_imags, ampl_imags, freq_imags, ampl_vec)
+            time_fitting_threads.append(threading.Thread(target = bestFitComplex, args = (ch, x, reals[ch], imags[ch], it["wave_freq"], best_fit_reals, offset_reals, ampl_reals, freq_reals, best_fit_imags, offset_imags, ampl_imags, freq_imags, ampl_vec)))
+            time_fitting_threads[-1].start()
+
 
         
         # Determines the range of the y axis to plot
@@ -818,6 +823,12 @@ def main(iterations):
 
         #This variable ensures only the number of waves requested will appear on the plots
         plotted_samples = int(period_samples*num_output_waves)
+
+        for thread in time_fitting_threads:
+            print("joining fitting thread")
+            thread.join()
+        print("Finished fitting")
+
 
         #PDF PREP: Doing the plotting of FFT and IQ prior to making pdf pages to enable having the "together plot" as the first page
         #Plotting IQ Data, but not putting on pdf
