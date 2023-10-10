@@ -24,7 +24,7 @@
 #%%global alphatag rc1
 
 Name:		gnuradio
-Version:	3.9
+Version:	3.10
 Release:	maint
 Summary:	Software defined radio framework
 

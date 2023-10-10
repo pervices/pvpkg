@@ -42,8 +42,8 @@ WORKDIR /root/rpmbuild/SPECS
 RUN dnf builddep  -y gnuradio.spec && \
 QA_RPATHS=$(( 0x0001|0x0002 )) rpmbuild -ba volk.spec && \
 cd ../RPMS/x86_64 && \
-rpm -i volk-3.9-volk.x86_64.rpm && \
-mv volk-3.9-volk.x86_64.rpm /home/volk
+rpm -i volk-3.10-volk.x86_64.rpm && \
+mv volk-3.10-volk.x86_64.rpm /home/volk
 WORKDIR /root/rpmbuild/SPECS
 RUN QA_RPATHS=$(( 0x0001|0x0002 )) rpmbuild -ba gnuradio.spec && \
 cd ../RPMS/x86_64 && \
@@ -59,15 +59,15 @@ mv uhdpv*.rpm uhd.spec InstallInstructionsOracle uhdpv-$(git describe --abbrev=8
 tar -czvf uhdpv-$(git describe --abbrev=8 --always --long)-$(date "+%F").tar.gz uhdpv-$(git describe --abbrev=8 --always --long)-$(date "+%F") && \
 mv uhdpv-$(git describe --abbrev=8 --always --long)-$(date "+%F").tar.gz /home/artifacts
 WORKDIR /home/volk
-RUN mv volk-3.9-volk.x86_64.rpm volk-$(git describe --abbrev=8 --always --long)-$(date "+%F").rpm && \
+RUN mv volk-3.10-volk.x86_64.rpm volk-$(git describe --abbrev=8 --always --long)-$(date "+%F").rpm && \
 mv volk-$(git describe --abbrev=8 --always --long)-$(date "+%F").rpm /home/gnuradio
 WORKDIR /home/gnuradio
-RUN mv gnuradio-3.9-maint.x86_64.rpm gnuradio-$(git describe --abbrev=8 --always --long)-$(date "+%F").rpm && \
-mv gnuradio-devel-3.9-maint.x86_64.rpm gnuradio-devel-$(git describe --abbrev=8 --always --long)-$(date "+%F").rpm && \
-mv gnuradio-doc-3.9-maint.x86_64.rpm gnuradio-doc-$(git describe --abbrev=8 --always --long)-$(date "+%F").rpm && \
-mv gnuradio-examples-3.9-maint.x86_64.rpm gnuradio-examples-$(git describe --abbrev=8 --always --long)-$(date "+%F").rpm && \
-mv libgnuradio-3.9-maint.x86_64.rpm libgnuradio-$(git describe --abbrev=8 --always --long)-$(date "+%F").rpm && \
-mv python3-gnuradio-3.9-maint.x86_64.rpm python3-gnuradio-$(git describe --abbrev=8 --always --long)-$(date "+%F").rpm && \
+RUN mv gnuradio-3.10-maint.x86_64.rpm gnuradio-$(git describe --abbrev=8 --always --long)-$(date "+%F").rpm && \
+mv gnuradio-devel-3.10-maint.x86_64.rpm gnuradio-devel-$(git describe --abbrev=8 --always --long)-$(date "+%F").rpm && \
+mv gnuradio-doc-3.10-maint.x86_64.rpm gnuradio-doc-$(git describe --abbrev=8 --always --long)-$(date "+%F").rpm && \
+mv gnuradio-examples-3.10-maint.x86_64.rpm gnuradio-examples-$(git describe --abbrev=8 --always --long)-$(date "+%F").rpm && \
+mv libgnuradio-3.10-maint.x86_64.rpm libgnuradio-$(git describe --abbrev=8 --always --long)-$(date "+%F").rpm && \
+mv python3-gnuradio-3.10-maint.x86_64.rpm python3-gnuradio-$(git describe --abbrev=8 --always --long)-$(date "+%F").rpm && \
 mkdir gnuradio-$(git describe --abbrev=8 --always --long)-$(date "+%F") && \
 mv *.rpm gnuradio.spec gnuradio-$(git describe --abbrev=8 --always --long)-$(date "+%F") && \
 tar -czvf gnuradio-$(git describe --abbrev=8 --always --long)-$(date "+%F").tar.gz gnuradio-$(git describe --abbrev=8 --always --long)-$(date "+%F") && \

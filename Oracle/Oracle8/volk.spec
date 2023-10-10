@@ -23,7 +23,7 @@
 #%%global alphatag rc1
 %global debug_package %{nil}
 Name:		volk
-Version:	3.9
+Version:	3.10
 Release:	volk
 Summary:	Software defined radio framework
 
