@@ -566,11 +566,17 @@ def isNotZero(a):
 
 '''Turns the values recieved into values for the FFT plots
 PARAMS:
+channel: the index corresponding to the channle
 x: time of the samples
 real: real part samples for 1 channel
 imag: imagninary part of samples for 1 channel
-RETURNS: freq (frequency axis of fft), fft_y_db (magnitude axis of fft)'''
-def fftValues(x, real, imag): #TODO: THIS IS A MESS, MUST FIX
+
+# The below are used as pseudo return values
+
+fft_xs: array containing the x values for each channel. Writes the result to the channel specified
+fft_ys: array containing the y values for each channel in dB. Writes the result to the channel specified
+'''
+def fftValues(channel, x, real, imag, fft_xs, fft_ys):
 
     #organizing data
     sort = np.argsort(x)
@@ -591,12 +597,12 @@ def fftValues(x, real, imag): #TODO: THIS IS A MESS, MUST FIX
     #Transform to dB - code incase there are zero values, but haven't needed to use in a while
     # bools_norms = list(map(isNotZero, norm_y))
     # np.place(norm_y, bools_norms, 20*np.log10(norm_y)) #does not log values that are 0
-    fft_y_db = 20*np.log10(abs(fft_y))
+    fft_ys[channel] = 20*np.log10(abs(fft_y))
 
     #Setting up the X values
-    freq = np.fft.fftshift(np.fft.fftfreq(len(x), d=(sample_rate))) #NOTEL makin thing is if this is okay
+    fft_xs[channel] = np.fft.fftshift(np.fft.fftfreq(len(x), d=(sample_rate))) #NOTEL makin thing is if this is okay
 
-    return freq, fft_y_db
+    return
 
 '''Turning the plot figure into a rasterized image and saving it to the directory
 PARAMS: plot, title, counter, pdf
@@ -762,6 +768,11 @@ def main(iterations):
         offset_imags = np.zeros(shape=(num_channels))
         ampl_imags = np.zeros(shape=(num_channels))
 
+        # x (frequency) values of the fft for each channel
+        fft_x = [None] * num_channels
+        # y (magnitude) values of the fft for each channel
+        fft_y = [None] * num_channels
+
         gen.dump(it) #pulls info from generator
 
         #SETING UP TESTS AND GETTING INPUTS
@@ -800,9 +811,15 @@ def main(iterations):
 
         # Threads for the finding lobf for each channel in the time domain
         time_fitting_threads = []
+        fft_threads = []
         for ch in range(num_channels):
+            # Starts time domain fitting threads
             time_fitting_threads.append(threading.Thread(target = bestFitComplex, args = (ch, x, reals[ch], imags[ch], it["wave_freq"], best_fit_reals, offset_reals, ampl_reals, freq_reals, best_fit_imags, offset_imags, ampl_imags, freq_imags, ampl_vec)))
             time_fitting_threads[-1].start()
+
+            # Starts fft threads
+            fft_threads.append(threading.Thread(target = fftValues, args = (ch, x_time, reals[ch], imags[ch], fft_x, fft_y)))
+            fft_threads[-1].start()
 
 
         
@@ -825,9 +842,7 @@ def main(iterations):
         plotted_samples = int(period_samples*num_output_waves)
 
         for thread in time_fitting_threads:
-            print("joining fitting thread")
             thread.join()
-        print("Finished fitting")
 
 
         #PDF PREP: Doing the plotting of FFT and IQ prior to making pdf pages to enable having the "together plot" as the first page
@@ -868,24 +883,25 @@ def main(iterations):
 
         IQ_plots = np.asarray(IQ_plots)
 
+        # Four highest points in the fft for each channel
+        max_fours = []
+        # noise of each channel
+        noise_floor = []
+
         #Plotting FFT Data (not putting on page)
         #Calculating the x and y fft and finding the 5 maxs
-        max_fours = []
-        fft_x = []
-        fft_y = []
-        noise_floor = []
         std = []
-        for i in range(num_channels):
-            x, y = fftValues(x_time, reals[i], imags[i]) #NOTE: should I use best fit instead?
-            fft_x.append((x))
-            fft_y.append((y))
 
-            max_fours.append(numPeaks(x, y, ampl_vec[i], 4))
-            #Noise Floor and std- in db
-            noise_floor.append(noiseFloor(x, y, ampl_vec[i]))
-        max_fours = np.asarray(max_fours)
+        for thread in fft_threads:
+            thread.join()
         fft_x = np.asarray(fft_x)
         fft_y = np.asarray(fft_y)
+
+        for i in range(num_channels):
+            max_fours.append(numPeaks(fft_x[i], fft_y[i], ampl_vec[i], 4))
+            #Noise Floor and std- in db
+            noise_floor.append(noiseFloor(fft_x[i], fft_y[i], ampl_vec[i]))
+        max_fours = np.asarray(max_fours)
         noise_floor = np.asarray(noise_floor)
         std = np.asarray(std)
         
