@@ -474,7 +474,7 @@ def sineResiduals(params, actual_time, actual_amplitude):
 
     return model - actual_amplitude
 
-'''Creates the line of best fit for the given x and y
+'''Creates the line of best fit for the given x and y (normal data, not complx)
 PARAMS: x,y
 RETURNS: best_fit (y values of the line of best fit '''
 def bestFit(x, y, expected_freq):
@@ -494,6 +494,50 @@ def bestFit(x, y, expected_freq):
     model = y + result.residual
 
     return model, (result.params['dc_offset'], result.params['ampl'], result.params['freq'], result.params['phase'])
+
+'''Creates the line of best fit for the given x and y (complex), intended to be called in its ownthread
+PARAMS:
+channel: The channel number
+x: time axis
+y_reals: real part of amplitude
+y_imags: imaginary part of amplitude
+expected_freq: expected frequency, used to determine initial guess
+
+All parameters after this are used to store pseudo return values
+
+best_fit_reals: Array for points on the real lobf for each channel
+offset_reals: Array of DC offset for the real lobf for each channel
+ampl_reals: Array of amplitude for the real lobf for each channel
+freq_reals: Array of frequency for the real lobf for each channel
+best_fit_imags: Array for points on the imaginary lobf for each channel
+offset_imags: Array of DC offset for the imaginary lobf for each channel
+ampl_imags: Array of amplitude for the imaginary lobf for each channel
+freq_imags: Array of frequency for the real lobf for each channel
+ampl_vec: ? TODO: figure this out
+
+RETURNS none '''
+def bestFitComplex(ch, x, y_real, y_imag, expected_freq, best_fit_reals, offset_reals, ampl_reals, freq_reals, best_fit_imags, offset_imags, ampl_imags, freq_imags, ampl_vec):
+
+    #Gets best fit for real part of sinewave
+    best_fit, param = bestFit(x, y_real, expected_freq)
+
+    best_fit_reals[ch] = best_fit
+    offset_reals[ch] = param[0]
+    ampl_reals[ch] = param[1]
+    freq_reals[ch] = param[2]
+
+    # Expected phase diff of I and Q, used so that Q has a better initial estimate
+    expected_phase_difference = (0.25/freq_reals[ch])
+
+    #Gets best fit for complex part of sinewave
+    best_fit, param = bestFit(x, y_imag, freq_reals[ch])
+
+    best_fit_imags.append((best_fit))
+    offset_imags[ch] = param[0]
+    ampl_imags[ch] = param[1]
+    freq_imags[ch] = param[2]
+
+    ampl_vec[ch] = np.sqrt(param[1]**2 + ampl_reals[len(ampl_reals)-1]**2)
 
 '''Function passed to numpy when normalizing data (shifting the range to be up to 1)
 Params:
@@ -706,7 +750,7 @@ def main(iterations):
         ampl_vec = np.zeros(shape=(num_channels))
 
         #The data important to the real data
-        best_fit_reals = []
+        best_fit_reals = [None] * num_channels
         freq_reals = np.zeros(shape=(num_channels))
         offset_reals = np.zeros(shape=(num_channels))
         ampl_reals = np.zeros(shape=(num_channels))
@@ -752,28 +796,10 @@ def main(iterations):
         reals = np.asarray(reals)
         imags = np.asarray(imags)
 
-        for real, imag in zip(reals, imags):
+        # TODO: carry out each fitting in its own thread
+        for ch in range(num_channels):
+            bestFitComplex(ch, x, reals[ch], imags[ch], it["wave_freq"], best_fit_reals, offset_reals, ampl_reals, freq_reals, best_fit_imags, offset_imags, ampl_imags, freq_imags, ampl_vec)
 
-            #Gets best fit for real part of sinewave
-            best_fit, param = bestFit(x, real, it["wave_freq"])
-
-            best_fit_reals.append((best_fit))
-            offset_reals[ch] = param[0]
-            ampl_reals[ch] = param[1]
-            freq_reals[ch] = param[2]
-
-            # Expected phase diff of I and Q, used so that Q has a better initial estimate
-            expected_phase_difference = (0.25/freq_reals[ch])
-
-            #Gets best fit for complex part of sinewave
-            best_fit, param = bestFit(x, imag, freq_reals[ch])
-
-            best_fit_imags.append((best_fit))
-            offset_imags[ch] = param[0]
-            ampl_imags[ch] = param[1]
-            freq_imags[ch] = param[2]
-
-            ampl_vec[ch] = np.sqrt(param[1]**2 + ampl_reals[len(ampl_reals)-1]**2)
         
         # Determines the range of the y axis to plot
         # TODO: get max and min of the displayed range, currently it gets the max and min of everything
