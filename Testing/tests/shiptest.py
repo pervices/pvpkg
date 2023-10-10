@@ -204,7 +204,6 @@ sample_rate = -1
 sample_count = -1
 tx_gain = -1
 rx_gain = -1
-period = -1 #how many samples per one period or one wave
 being_cutoff = -1
 summary_info = [] #[iteration][[freq][amplitude][snr]]
 counter = 0 #Keeps track of run
@@ -433,7 +432,7 @@ def subPlotFFTs(x, y, ax, title, max_four, nf):
 '''Plots the IQ subplots all in the same format
 PARAMS: x, real, ax, imag, best_fit_real, best_fit_imag, title
 RETURNS: NONE'''
-def subPlotIQs (x, real,imag, best_fit_real, best_fit_imag, offset_real, offset_imag, ax, title):
+def subPlotIQs (x, real,imag, best_fit_real, best_fit_imag, offset_real, offset_imag, ax, title, period):
     ax.set_title(title)
 
     ax.axhline(y = offset_imag, markersize=0.025, color='indigo', alpha=0.4, label='Imaginary Offset')
@@ -521,20 +520,23 @@ def isNotZero(a):
     return (a != 0)
 
 '''Turns the values recieved into values for the FFT plots
-PARAMS: sample_count, reals, imags
+PARAMS:
+x: time of the samples
+real: real part samples for 1 channel
+imag: imagninary part of samples for 1 channel
 RETURNS: freq (frequency axis of fft), fft_y_db (magnitude axis of fft)'''
-def fftValues(x, reals, imags): #TODO: THIS IS A MESS, MUST FIX
+def fftValues(x, real, imag): #TODO: THIS IS A MESS, MUST FIX
 
     #organizing data
     sort = np.argsort(x)
-    reals = reals[sort]
-    imags = imags[sort]
+    sorted_real = real[sort]
+    sorted_imag = imag[sort]
     x = x[sort]
 
     #Getting the magnitude
     mag = np.vectorize(magnitude)
     comp = np.vectorize(complex)
-    fft_comp_y = comp(reals, imags)*blackman(len(x))
+    fft_comp_y = comp(sorted_real, sorted_imag)*blackman(len(x))
 
     #Turning it into fft
     fft_data = np.fft.fft(fft_comp_y, len(x), norm="backward")
@@ -695,8 +697,10 @@ def main(iterations):
         counter += 1
 
         #Initilize Important Arrays
+        # Raw real and imaginary samples
         reals = []
         imags = []
+        # Time of samples
         x_time = []
 
         ampl_vec = np.zeros(shape=(num_channels))
@@ -716,7 +720,6 @@ def main(iterations):
         gen.dump(it) #pulls info from generator
 
         #SETING UP TESTS AND GETTING INPUTS
-        vsnks = []
         global sample_rate
         sample_rate = int(it["sample_rate"])
         global sample_count
@@ -726,10 +729,8 @@ def main(iterations):
 
         vsnk = engine.run(it["channels"], it["wave_freq"], it["sample_rate"], it["center_freq"], it["tx_gain"], it["rx_gain"], tx_stack, rx_stack)
 
-        global period
-        period = int(round(1/(it["wave_freq"]/it["sample_rate"])))
-        global begin_cutoff
-        begin_cutoff = int(period*begin_cutoff_waves)
+        period_samples = int(round(1/(it["wave_freq"]/it["sample_rate"])))
+        begin_cutoff = int(period_samples*begin_cutoff_waves)
 
 
         #X values
@@ -737,40 +738,42 @@ def main(iterations):
         # Samples before begin_cuttoff are ignored to give time for rx to become steady,this may be uneccessary since rx starts after tx so it should be steady anyway
         x_time = np.asarray(x*1000000000) # Converts s to ns
 
-        vsnks.append(vsnk) #This will loop us through the channels an appropriate amount of time
-        for vsnk in vsnks:
-            for ch, channel in enumerate(vsnk): #Goes through each channel to save data
-                real = [datum.real for datum in channel.data()]
-                imag = [datum.imag for datum in channel.data()]
+        # Extracts the data from each channel
+        for ch, channel in enumerate(vsnk):
+            real = np.asarray([datum.real for datum in channel.data()])
+            imag = np.asarray([datum.imag for datum in channel.data()])
 
-                reals.append(real[begin_cutoff:]) #Formats real data into a 2D array
-                imags.append(imag[begin_cutoff:])
-
-                #Gets best fit for real part of sinewave
-                best_fit, param = bestFit(x, real[begin_cutoff:], it["wave_freq"])
-
-                best_fit_reals.append((best_fit))
-                offset_reals[ch] = param[0]
-                ampl_reals[ch] = param[1]
-                freq_reals[ch] = param[2]
-
-                # Expected phase diff of I and Q, used so that Q has a better initial estimate
-                expected_phase_difference = (0.25/freq_reals[ch])
-
-                #Gets best fit for complex part of sinewave
-                best_fit, param = bestFit(x, imag[begin_cutoff:], freq_reals[ch])
-
-                best_fit_imags.append((best_fit))
-                offset_imags[ch] = param[0]
-                ampl_imags[ch] = param[1]
-                freq_imags[ch] = param[2]
-
-                ampl_vec[ch] = np.sqrt(param[1]**2 + ampl_reals[len(ampl_reals)-1]**2)
-
+            # Adds samples to an array of channel samples, ommiting the first few samples
+            reals.append(real[begin_cutoff:])
+            imags.append(imag[begin_cutoff:])
 
         #Making them all np.arrays for efficency
+        # TODO: make the arrays start as numpy arrays so this conversion isn't needed
         reals = np.asarray(reals)
         imags = np.asarray(imags)
+
+        for real, imag in zip(reals, imags):
+
+            #Gets best fit for real part of sinewave
+            best_fit, param = bestFit(x, real, it["wave_freq"])
+
+            best_fit_reals.append((best_fit))
+            offset_reals[ch] = param[0]
+            ampl_reals[ch] = param[1]
+            freq_reals[ch] = param[2]
+
+            # Expected phase diff of I and Q, used so that Q has a better initial estimate
+            expected_phase_difference = (0.25/freq_reals[ch])
+
+            #Gets best fit for complex part of sinewave
+            best_fit, param = bestFit(x, imag, freq_reals[ch])
+
+            best_fit_imags.append((best_fit))
+            offset_imags[ch] = param[0]
+            ampl_imags[ch] = param[1]
+            freq_imags[ch] = param[2]
+
+            ampl_vec[ch] = np.sqrt(param[1]**2 + ampl_reals[len(ampl_reals)-1]**2)
         
         # Determines the range of the y axis to plot
         # TODO: get max and min of the displayed range, currently it gets the max and min of everything
@@ -788,7 +791,7 @@ def main(iterations):
         rx_gain = int(it["rx_gain"])
 
         #This variable ensures only the number of waves requested will appear on the plots
-        plotted_samples = int(period*num_output_waves)
+        plotted_samples = int(period_samples*num_output_waves)
 
         #PDF PREP: Doing the plotting of FFT and IQ prior to making pdf pages to enable having the "together plot" as the first page
         #Plotting IQ Data, but not putting on pdf
@@ -818,12 +821,9 @@ def main(iterations):
                 # Sets the y axis of each of the individual plots to be the same
                 axis[-1].set_ylim(bottom = amplYBottom, top = amplYTop, auto = False)
                 
-                try: #If the number of channels tested is a nonmultiple of 4, this try and except ensures it does not break the code
-                    IQ_plots.append(subPlotIQs(x_time[0:plotted_samples], reals[i][0:plotted_samples], imags[i][0:plotted_samples], best_fit_reals[i][0:plotted_samples], best_fit_imags[i][0:plotted_samples], offset_reals[i], offset_imags[i], axis[i], title))
-                    ax_st = ax_end + 2
-                    ax_end = ax_st + 15
-                except:
-                    break
+                IQ_plots.append(subPlotIQs(x_time[0:plotted_samples], reals[i][0:plotted_samples], imags[i][0:plotted_samples], best_fit_reals[i][0:plotted_samples], best_fit_imags[i][0:plotted_samples], offset_reals[i], offset_imags[i], axis[i], title, period_samples))
+                ax_st = ax_end + 2
+                ax_end = ax_st + 15
 
             #Gets the byte data for the pdf images
             IQ_plt_img.append(plotToPdf(("IQPlots_" + formattedDate), counter))
