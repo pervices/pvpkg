@@ -464,11 +464,9 @@ params['dc_offset']: predicted dc offset
 actual_time: the x values from the wave to be fitted
 actual_amplitude: the y values from the wave to be fitted
 RETUNRS: y'''
-def sineResiduals(params, actual_time, actual_amplitude):
+def sineResiduals(params, actual_time, actual_amplitude, freq, dc_offset):
     ampl = params['ampl'].value
-    freq = params['freq'].value
     phase = params['phase'].value
-    dc_offset = params['dc_offset'].value
 
     # Predicted wave
     model = ampl*np.sin(2*np.pi*freq*(actual_time + phase)) + dc_offset #model for wave equation
@@ -488,13 +486,15 @@ def bestFit(x, y, expected_freq):
 
     predicted_phase = predicted_phase % period
 
+    dc_offset = y.mean()
+
     # Predicted amplitude must be above expected to avoid the minimizer going the wrong direction and ending up near 0
-    params = create_params(freq=expected_freq, phase={'value': predicted_phase, 'min': 0, 'max': period}, dc_offset=0, ampl={'value': y[max_loc] * 1.1, 'min': y[max_loc]/10})
+    params = create_params(phase={'value': predicted_phase, 'min': 0, 'max': period}, ampl={'value': y[max_loc], 'min': y[max_loc]/10, 'max' : y[max_loc] * 1.1})
 
-    result = minimize(sineResiduals, params, args=(x,y))
-    model = y + result.residual
+    result = minimize(sineResiduals, params, args=(x,y,expected_freq, dc_offset))
+    model = result.params['ampl'].value*np.sin(2*np.pi*expected_freq*(x + result.params['phase'].value)) + dc_offset
 
-    return model, (result.params['dc_offset'], result.params['ampl'], result.params['freq'], result.params['phase'])
+    return model, (dc_offset, result.params['ampl'])
 
 '''Creates the line of best fit for the given x and y (complex), intended to be called in its ownthread
 PARAMS:
@@ -517,7 +517,7 @@ freq_imags: Array of frequency for the real lobf for each channel
 ampl_vec: ? TODO: figure this out
 
 RETURNS none '''
-def bestFitComplex(ch, x, y_real, y_imag, expected_freq, best_fit_reals, offset_reals, ampl_reals, freq_reals, best_fit_imags, offset_imags, ampl_imags, freq_imags, ampl_vec):
+def bestFitComplex(ch, x, y_real, y_imag, expected_freq, best_fit_reals, offset_reals, ampl_reals, best_fit_imags, offset_imags, ampl_imags, ampl_vec):
 
     #Gets best fit for real part of sinewave
     best_fit, param = bestFit(x, y_real, expected_freq)
@@ -525,18 +525,13 @@ def bestFitComplex(ch, x, y_real, y_imag, expected_freq, best_fit_reals, offset_
     best_fit_reals[ch] = best_fit
     offset_reals[ch] = param[0]
     ampl_reals[ch] = param[1]
-    freq_reals[ch] = param[2]
-
-    # Expected phase diff of I and Q, used so that Q has a better initial estimate
-    expected_phase_difference = (0.25/freq_reals[ch])
 
     #Gets best fit for complex part of sinewave
-    best_fit, param = bestFit(x, y_imag, freq_reals[ch])
+    best_fit, param = bestFit(x, y_imag, expected_freq)
 
     best_fit_imags.append((best_fit))
     offset_imags[ch] = param[0]
     ampl_imags[ch] = param[1]
-    freq_imags[ch] = param[2]
 
     ampl_vec[ch] = np.sqrt(param[1]**2 + ampl_reals[len(ampl_reals)-1]**2)
 
@@ -735,6 +730,9 @@ PARAMS: iterations
 RETURNS: NONE, it is the main function'''
 def main(iterations):
 
+    # Changes matplotlib backend. The default ktinker does not work headless
+    matplotlib.use('PDF')
+
     #Create the PDF
     pdf = canvas.Canvas(file_title, pagesize=landscape(letter)) #Setting the page layout and file name
     pdf.setTitle(doc_title)
@@ -758,13 +756,11 @@ def main(iterations):
 
         #The data important to the real data
         best_fit_reals = [None] * num_channels
-        freq_reals = np.zeros(shape=(num_channels))
         offset_reals = np.zeros(shape=(num_channels))
         ampl_reals = np.zeros(shape=(num_channels))
 
         #Data i
         best_fit_imags = []
-        freq_imags = np.zeros(shape=(num_channels))
         offset_imags = np.zeros(shape=(num_channels))
         ampl_imags = np.zeros(shape=(num_channels))
 
@@ -808,13 +804,12 @@ def main(iterations):
         reals = np.asarray(reals)
         imags = np.asarray(imags)
 
-
         # Threads for the finding lobf for each channel in the time domain
         time_fitting_threads = []
         fft_threads = []
         for ch in range(num_channels):
             # Starts time domain fitting threads
-            time_fitting_threads.append(threading.Thread(target = bestFitComplex, args = (ch, x, reals[ch], imags[ch], it["wave_freq"], best_fit_reals, offset_reals, ampl_reals, freq_reals, best_fit_imags, offset_imags, ampl_imags, freq_imags, ampl_vec)))
+            time_fitting_threads.append(threading.Thread(target = bestFitComplex, args = (ch, x, reals[ch], imags[ch], it["wave_freq"], best_fit_reals, offset_reals, ampl_reals, best_fit_imags, offset_imags, ampl_imags, ampl_vec)))
             time_fitting_threads[-1].start()
 
             # Starts fft threads
@@ -844,6 +839,9 @@ def main(iterations):
         for thread in time_fitting_threads:
             thread.join()
 
+        # Moved here instead of later because of possible problematic interaction it matplotlib
+        for thread in fft_threads:
+            thread.join()
 
         #PDF PREP: Doing the plotting of FFT and IQ prior to making pdf pages to enable having the "together plot" as the first page
         #Plotting IQ Data, but not putting on pdf
@@ -892,8 +890,6 @@ def main(iterations):
         #Calculating the x and y fft and finding the 5 maxs
         std = []
 
-        for thread in fft_threads:
-            thread.join()
         fft_x = np.asarray(fft_x)
         fft_y = np.asarray(fft_y)
 
@@ -904,7 +900,7 @@ def main(iterations):
         max_fours = np.asarray(max_fours)
         noise_floor = np.asarray(noise_floor)
         std = np.asarray(std)
-        
+
         # Determines the range of the y axis to plot
         # TODO: get max and min of the displayed range, currently it gets the max and min of everything
         amplYTop = fft_y.max() * 1.1
@@ -1002,14 +998,13 @@ def main(iterations):
             pdf.drawImage(IQ_plt_img[z], plot_img_pos_x, plot_img_pos_y, plot_img_width, plot_img_height)
 
             #Table of IQ info
-            IQ_table_info = [["IQ Data: "],["Channel"], ["Mag Freq (Hz)"], ["Ampl I (fractional)"], ["Ampl Q (fractional)"]]
+            IQ_table_info = [["IQ Data: "],["Channel"], ["Ampl I (fractional)"], ["Ampl Q (fractional)"]]
 
             for i in range(start, end):
                 # try:
                 IQ_table_info[1].append((chr(65+i)))
-                IQ_table_info[2].append(sig(magnitude(freq_reals[i], freq_imags[i]), sigfigs=sigfigs))
-                IQ_table_info[3].append(sig(ampl_reals[i], sigfigs=sigfigs))
-                IQ_table_info[4].append(sig(ampl_imags[i], sigfigs=sigfigs))
+                IQ_table_info[2].append(sig(ampl_reals[i], sigfigs=sigfigs))
+                IQ_table_info[3].append(sig(ampl_imags[i], sigfigs=sigfigs))
 
                 IQ_table = Table(IQ_table_info, style=[('GRID', (0,1), (num_channels+1,4), 1, colors.black),
                                                     ('BACKGROUND', (0, 1), (num_channels+1,1), '#D5D6D5')])
@@ -1052,8 +1047,6 @@ def main(iterations):
                                     ('BACKGROUND', (0,1), (num_channels+1,1), '#D5D6D5')])
             peak_table.wrapOn(pdf, max_peak_width, max_peak_height)
             peak_table.drawOn(pdf, max_peak_x, max_peak_y)
-
-
 
         ##SECTION FOUR OF RUNS: SUMMARY PAGE
         pdf.showPage()
