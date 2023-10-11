@@ -1157,7 +1157,7 @@ def main(iterations):
     title_font_size = 26
     title_x, title_y = 2, 575
     summary_width, summary_height = 250, 150
-    summary_x, summary_y = 10, title_y - summary_height
+    summary_x, summary_y = 10, title_y - summary_height - 30
     snr_x=  summary_x
 
     #Setting up title
