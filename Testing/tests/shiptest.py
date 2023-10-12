@@ -69,7 +69,7 @@ parser.add_argument('-s', '--sigfigs', default=3, type=int, help="Number of sign
 #TODO: verify this is a reasonable default value
 parser.add_argument('-n', '--snr', default=20, type=int, help="Minimum signal to noise ratio in dBc")
 #TODO: verify this is a reasonable default value
-parser.add_argument('-o', '--freq_threshold', default=100000, type=int, help="Allowable difference in wave frequency from the target")
+parser.add_argument('-o', '--freq_threshold', default=1, type=int, help="Allowable difference in wave frequency from the target")
 parser.add_argument('-a', '--serial', required=True, help="Serial number of the unit")
 parser.add_argument('-p', '--product', required=True, help="The product to be tested. v for Vaunt, t for Tate")
 parser.add_argument('-c', '--num_channels', default = 4, type=int,  help="The number of channels to test. Will test ch a, ch b, ...")
@@ -101,7 +101,7 @@ except AssertionError:
 snr_min_check = args.snr
 
 #Frequency offset threshold
-freq_check_offset = args.freq_threshold
+freq_check_threshold = args.freq_threshold
 
 serial_num = args.serial
 
@@ -705,16 +705,18 @@ def quickSort(array, low, high, other_array):
         quickSort(array, pi + 1, high, other_array)
 
 '''Checks if the given is within the SNR bounds
-PARAM: a
+PARAM:
+a: the signal to noise ratio
 RETURN: Boolean'''
 def checkSNR(a):
     return (a > snr_min_check)
 
 '''Checks if the freq is within desired location
-PARAM: a
+PARAM:
+a: The difference between that actual wave frequency and the target
 RETURN: Bool'''
 def checkFreq(a):
-    return (a > (wave_freq - freq_check_offset) and a < wave_freq + (freq_check_offset))
+    return (a > -freq_check_threshold) and (a < freq_check_threshold)
 
 '''Turns true into "Pass" and false into "fail"
 PARAM: a
@@ -1202,7 +1204,7 @@ def main(iterations):
     if False in freq_bools:
         freq_x = snr_x + summary_width - 2
 
-        fail_info = [["Fails in Frequency: ", ("Not within " + str(freq_check_offset) + "Hz of given")], ["Run"]]
+        fail_info = [["Fails in Frequency: ", ("Not within " + str(freq_check_threshold) + "Hz of given")], ["Run"]]
 
         for i, freq in zip(range(counter), summary_nump[:,0]):
             fail_info.append([str(i+1), str(freq)])
