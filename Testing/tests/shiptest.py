@@ -42,6 +42,8 @@ from scipy import signal
 from reportlab.lib.utils import ImageReader
 from scipy.signal import find_peaks
 
+import traceback
+
 #Have chosn toe put some variables as global, so they're easy to access
 #TODO: Check where the final file should go
 #Making file and doc title
@@ -71,6 +73,7 @@ parser.add_argument('-s', '--sigfigs', default=3, type=int, help="Number of sign
 parser.add_argument('-n', '--snr', default=20, type=int, help="Minimum signal to noise ratio in dBc")
 #TODO: verify this is a reasonable default value
 parser.add_argument('-o', '--freq_threshold', default=1, type=int, help="Allowable difference in wave frequency from the target")
+parser.add_argument('-q', '--spur_threshold', default=20, type=int, help="Minimum acceptable difference between the desired signal and the strongest spur")
 parser.add_argument('-a', '--serial', required=True, help="Serial number of the unit")
 parser.add_argument('-p', '--product', required=True, help="The product to be tested. v for Vaunt, t for Tate")
 parser.add_argument('-c', '--num_channels', default = 4, type=int,  help="The number of channels to test. Will test ch a, ch b, ...")
@@ -103,6 +106,8 @@ snr_min_check = args.snr
 
 #Frequency offset threshold
 freq_check_threshold = args.freq_threshold
+
+spur_check_threshold = args.spur_threshold
 
 serial_num = args.serial
 
@@ -497,9 +502,9 @@ def bestFit(x, raw_y, expected_freq):
     params = create_params(phase={'value': predicted_phase, 'min': 0, 'max': period}, ampl={'value': y[max_loc], 'min': y[max_loc]/10, 'max' : y[max_loc] * 1.1})
 
     try:
-        result = minimize(sineResiduals, params, args=(x,y,expected_freq, dc_offset), maxfev=100)
+        result = minimize(sineResiduals, params, args=(x,y,expected_freq, dc_offset), max_nfev=25)
     except:
-        print("minimize error")
+        traceback.print_exc()
     model = result.params['ampl'].value*np.sin(2*np.pi*expected_freq*(x + result.params['phase'].value)) + dc_offset
 
     return model, (dc_offset, result.params['ampl'])
@@ -726,6 +731,17 @@ RETURN: Bool'''
 def checkFreq(a):
     return (a > -freq_check_threshold) and (a < freq_check_threshold)
 
+'''Checks if the difference between the peak and the strongest spur is acceptable
+PARAM:
+desired_signal: The strength of the signal in dB
+strongest_spur: The strength of the strongest spur in dB
+RETURN: Bool'''
+def checkSpur(peak_values, fail_threshold):
+    for ch_peaks in peak_values:
+        if ch_peaks[0][1] < (ch_peaks[1][1] + fail_threshold):
+            return False
+    return True
+
 '''Turns true into "Pass" and false into "fail"
 PARAM: a
 RETURN: Proper word'''
@@ -749,6 +765,13 @@ def main(iterations):
 
     #Make title page
     titlePage(pdf)
+
+    # Stores a list containing the 4 peaks from each fft
+    # Dimmensions:
+    # 0: test iteration len = len(iterations)
+    # 1: channel len = number of channels
+    # 2: peak pair (peak location, magnitude dB) len = 4
+    peaks_list = []
 
     #start of the testing
     for it in iterations: #Will iterate per Run
@@ -908,6 +931,7 @@ def main(iterations):
             #Noise Floor and std- in db
             noise_floor.append(noiseFloor(fft_x[i], fft_y[i], ampl_vec[i]))
         max_fours = np.asarray(max_fours)
+        peaks_list.append(max_fours)
         noise_floor = np.asarray(noise_floor)
         std = np.asarray(std)
 
@@ -1185,10 +1209,14 @@ def main(iterations):
     #Checking the Freq
     freq_bools = list(map(checkFreq, summary_nump[:, 0]))
 
-    summary_table_info = [["Summary Table: "], ["Run", "SNR check", "Frequency check"]]
+    # Checking if spurs are acceptable
+    spur_check_thresholds = [spur_check_threshold] * len(peaks_list)
+    spur_bools = list(map(checkSpur, peaks_list[:], spur_check_thresholds))
 
-    for i, snr, freq in zip(range(counter), snr_bools, freq_bools):
-        summary_table_info.append([str(i+1), isPass(snr), isPass(freq)])
+    summary_table_info = [["Summary Table: "], ["Run", "SNR check", "Frequency check", "Spur check", "Gain variation check"]]
+
+    for i, snr, freq, spur in zip(range(counter), snr_bools, freq_bools, spur_bools):
+        summary_table_info.append([str(i+1), isPass(snr), isPass(freq), isPass(spur)])
 
     summary = Table(summary_table_info, style=[('GRID', (0,1), (4, counter+1), 1, colors.black),
                                 ('BACKGROUND', (0,1), (2,1), '#D5D6D5')])
