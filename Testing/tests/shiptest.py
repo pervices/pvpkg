@@ -38,6 +38,7 @@ from io import BytesIO
 from lmfit import Model, minimize, Parameters, create_params #apparently better for discrete things
 from scipy.signal.windows import blackman
 from scipy.fft import fft, fftfreq, fftshift
+from scipy import signal
 from reportlab.lib.utils import ImageReader
 from scipy.signal import find_peaks
 
@@ -476,7 +477,11 @@ def sineResiduals(params, actual_time, actual_amplitude, freq, dc_offset):
 '''Creates the line of best fit for the given x and y (normal data, not complx)
 PARAMS: x,y
 RETURNS: best_fit (y values of the line of best fit '''
-def bestFit(x, y, expected_freq):
+def bestFit(x, raw_y, expected_freq):
+
+    # Applies a filter to the signal so we are only looking at the relevant sinewave
+    sos = signal.butter(2, [expected_freq * 0.95, expected_freq * 1.05], 'bandpass', output = 'sos', fs = sample_rate)
+    y = signal.sosfiltfilt(sos, raw_y)
 
     max_loc = np.argmax(y)
     period = 1/expected_freq
@@ -491,7 +496,10 @@ def bestFit(x, y, expected_freq):
     # Predicted amplitude must be above expected to avoid the minimizer going the wrong direction and ending up near 0
     params = create_params(phase={'value': predicted_phase, 'min': 0, 'max': period}, ampl={'value': y[max_loc], 'min': y[max_loc]/10, 'max' : y[max_loc] * 1.1})
 
-    result = minimize(sineResiduals, params, args=(x,y,expected_freq, dc_offset))
+    try:
+        result = minimize(sineResiduals, params, args=(x,y,expected_freq, dc_offset), maxfev=100)
+    except:
+        print("minimize error")
     model = result.params['ampl'].value*np.sin(2*np.pi*expected_freq*(x + result.params['phase'].value)) + dc_offset
 
     return model, (dc_offset, result.params['ampl'])
@@ -1177,7 +1185,7 @@ def main(iterations):
     #Checking the Freq
     freq_bools = list(map(checkFreq, summary_nump[:, 0]))
 
-    summary_table_info = [["Summary Table: "], ["Run", "SNR Check", "Frequency Check"]]
+    summary_table_info = [["Summary Table: "], ["Run", "SNR check", "Frequency check"]]
 
     for i, snr, freq in zip(range(counter), snr_bools, freq_bools):
         summary_table_info.append([str(i+1), isPass(snr), isPass(freq)])
