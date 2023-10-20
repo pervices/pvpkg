@@ -74,9 +74,11 @@ parser.add_argument('-n', '--snr', default=20, type=int, help="Minimum signal to
 #TODO: verify this is a reasonable default value
 parser.add_argument('-o', '--freq_threshold', default=1, type=int, help="Allowable difference in wave frequency from the target")
 parser.add_argument('-q', '--spur_threshold', default=20, type=int, help="Minimum acceptable difference between the desired signal and the strongest spur")
+parser.add_argument('-g', '--gain_threshold', default = 5, type=int,  help="The maximum allowable difference in gain between channels")
 parser.add_argument('-a', '--serial', required=True, help="Serial number of the unit")
 parser.add_argument('-p', '--product', required=True, help="The product to be tested. v for Vaunt, t for Tate")
 parser.add_argument('-c', '--num_channels', default = 4, type=int,  help="The number of channels to test. Will test ch a, ch b, ...")
+
 
 args = parser.parse_args()
 
@@ -108,6 +110,8 @@ snr_min_check = args.snr
 freq_check_threshold = args.freq_threshold
 
 spur_check_threshold = args.spur_threshold
+
+gain_check_threshold = args.gain_threshold
 
 serial_num = args.serial
 
@@ -742,6 +746,20 @@ def checkSpur(peak_values, fail_threshold):
             return False
     return True
 
+'''Checks if the difference between channels is acceptable
+PARAM:
+desired_signal: The strength of the signal in dB
+strongest_spur: The strength of the strongest spur in dB
+RETURN: Bool'''
+def checkGainRelative(peak_values, fail_threshold):
+    min_gain = float('inf')
+    max_gain = float('-inf')
+    for ch_peaks in peak_values:
+        min_gain = min(ch_peaks[0][1], min_gain)
+        max_gain = max(ch_peaks[0][1], max_gain)
+
+    return (max_gain - min_gain) <= fail_threshold
+
 '''Turns true into "Pass" and false into "fail"
 PARAM: a
 RETURN: Proper word'''
@@ -1213,10 +1231,14 @@ def main(iterations):
     spur_check_thresholds = [spur_check_threshold] * len(peaks_list)
     spur_bools = list(map(checkSpur, peaks_list[:], spur_check_thresholds))
 
+    # Checking if gains are close enough together
+    gain_check_thresholds = [gain_check_threshold] * len(peaks_list)
+    gain_bools = list(map(checkGainRelative, peaks_list[:], gain_check_thresholds))
+
     summary_table_info = [["Summary Table: "], ["Run", "SNR check", "Frequency check", "Spur check", "Gain variation check"]]
 
-    for i, snr, freq, spur in zip(range(counter), snr_bools, freq_bools, spur_bools):
-        summary_table_info.append([str(i+1), isPass(snr), isPass(freq), isPass(spur)])
+    for i, snr, freq, spur, gain in zip(range(counter), snr_bools, freq_bools, spur_bools, gain_bools):
+        summary_table_info.append([str(i+1), isPass(snr), isPass(freq), isPass(spur), isPass(gain)])
 
     summary = Table(summary_table_info, style=[('GRID', (0,1), (4, counter+1), 1, colors.black),
                                 ('BACKGROUND', (0,1), (2,1), '#D5D6D5')])
