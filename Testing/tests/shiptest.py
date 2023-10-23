@@ -44,21 +44,6 @@ from scipy.signal import find_peaks
 
 import traceback
 
-#Have chosn toe put some variables as global, so they're easy to access
-#TODO: Check where the final file should go
-#Making file and doc title
-date = datetime.datetime.now()
-formattedDate = date.isoformat("_")
-file_title = "ship_report_" + formattedDate + ".pdf"
-doc_title = "ship_report_" + formattedDate
-
-#SETTING UP PATH DIRECTORIES
-current_dir = os.getcwd()
-output_dir = current_dir + "/ship_reports"
-plots_dir = output_dir + "/plots_" + formattedDate
-os.makedirs(output_dir, exist_ok=True)
-os.makedirs(plots_dir, exist_ok=True)
-
 begin_cutoff_waves = 20 #how many waves to cut off before tracking data
 
 #USER SET VARIABLES
@@ -114,6 +99,19 @@ spur_check_threshold = args.spur_threshold
 gain_check_threshold = args.gain_threshold
 
 serial_num = args.serial
+
+#Making file and doc title
+date = datetime.datetime.now()
+formattedDate = date.isoformat("-", "minutes")
+file_title = "ship_report_" + serial_num + "_" + formattedDate + ".pdf"
+doc_title = "ship_report_" + serial_num + "_" + formattedDate
+
+#SETTING UP PATH DIRECTORIES
+current_dir = os.getcwd()
+output_dir = current_dir + "/ship_reports"
+plots_dir = output_dir + "/plots_" + formattedDate
+os.makedirs(output_dir, exist_ok=True)
+os.makedirs(plots_dir, exist_ok=True)
 
 #Asking what test to run and how many channels to run
 #NOTE: I think this could be expanded to just choosing which channels on the unit to test
