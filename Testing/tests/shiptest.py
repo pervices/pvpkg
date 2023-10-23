@@ -63,7 +63,7 @@ parser.add_argument('-g', '--gain_threshold', default = 5, type=int,  help="The 
 parser.add_argument('-a', '--serial', required=True, help="Serial number of the unit")
 parser.add_argument('-p', '--product', required=True, help="The product to be tested. v for Vaunt, t for Tate")
 parser.add_argument('-c', '--num_channels', default = 4, type=int,  help="The number of channels to test. Will test ch a, ch b, ...")
-
+parser.add_argument('-b', '--strict', default = False, type=bool,  help="Exit the test as soon as any test fails")
 
 args = parser.parse_args()
 
@@ -99,6 +99,8 @@ spur_check_threshold = args.spur_threshold
 gain_check_threshold = args.gain_threshold
 
 serial_num = args.serial
+
+strict_mode = args.strict
 
 #Making file and doc title
 date = datetime.datetime.now()
@@ -791,6 +793,8 @@ def main(iterations):
     # Iteration number (not 0 indexed since it is used for labels in the pdf)
     counter = 0
 
+    snr_bools = []
+
     #start of the testing
     for it in iterations: #Will iterate per Run
         counter += 1
@@ -1171,6 +1175,9 @@ def main(iterations):
                 snr_y -=230
             else:
                 break
+
+        print("fft_snr: " + str(fft_snr))
+        #snr_bools.append(checkSNR(fft_snr
 
     print("Data collection complete")
 
