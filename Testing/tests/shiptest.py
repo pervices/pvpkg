@@ -215,7 +215,6 @@ tx_gain = -1
 rx_gain = -1
 being_cutoff = -1
 summary_info = [] #[iteration][[freq][amplitude][snr]]
-counter = 0 #Keeps track of run
 
 #page variables
 page_count = 1
@@ -789,9 +788,11 @@ def main(iterations):
     # 2: peak pair (peak location, magnitude dB) len = 4
     peaks_list = []
 
+    # Iteration number (not 0 indexed since it is used for labels in the pdf)
+    counter = 0
+
     #start of the testing
     for it in iterations: #Will iterate per Run
-        global counter
         counter += 1
 
         #Initilize Important Arrays
