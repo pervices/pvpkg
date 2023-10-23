@@ -1174,6 +1174,8 @@ def main(iterations):
             else:
                 break
 
+    print("Data collection complete")
+
     #Pass/Fail final page
     pdf.showPage()
     page_count += 1
