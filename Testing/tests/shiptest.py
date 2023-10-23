@@ -743,7 +743,8 @@ PARAM:
 a: The difference between that actual wave frequency and the target
 RETURN: Bool'''
 def checkFreq(a):
-    return (a > -freq_check_threshold) and (a < freq_check_threshold)
+    not_ch_result = np.any((a < -freq_check_threshold)|(a > freq_check_threshold ))
+    return not (not_ch_result.all())
 
 '''Checks if the difference between the peak and the strongest spur is acceptable
 PARAM:
@@ -804,7 +805,12 @@ def main(iterations):
     # Iteration number (not 0 indexed since it is used for labels in the pdf)
     counter = 0
 
+    # Stores if SNR check passed for each iteration
     snr_bools = []
+    # Stores if frequency check passed for each iteration
+    freq_bools = []
+    # Stores if spur check passed for each iteration
+    spur_bools = []
 
     #start of the testing
     for it in iterations: #Will iterate per Run
@@ -1186,7 +1192,14 @@ def main(iterations):
             else:
                 break
 
+        # Checking if this iteration passed SNR
         snr_bools.append(checkSNRs(fft_snr))
+
+        # Checking if this iteration passed the frequency check
+        freq_bools.append(checkFreq(max_fours[:,0,1]))
+
+        # Checking if this iteration passed the spur check
+        spur_bools.append(checkSpur(max_fours, spur_check_threshold))
 
     print("Data collection complete")
 
@@ -1236,13 +1249,6 @@ def main(iterations):
     pdf.drawText(title)
 
     summary_nump = np.asarray(summary_info)
-
-    #Checking the Freq
-    freq_bools = list(map(checkFreq, summary_nump[:, 0]))
-
-    # Checking if spurs are acceptable
-    spur_check_thresholds = [spur_check_threshold] * len(peaks_list)
-    spur_bools = list(map(checkSpur, peaks_list[:], spur_check_thresholds))
 
     # Checking if gains are close enough together
     gain_check_thresholds = [gain_check_threshold] * len(peaks_list)
