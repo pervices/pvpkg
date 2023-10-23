@@ -893,9 +893,13 @@ def main(iterations):
         for thread in time_fitting_threads:
             thread.join()
 
+        print("Completed curve fitting for run " + str(counter))
+
         # Moved here instead of later because of possible problematic interaction it matplotlib
         for thread in fft_threads:
             thread.join()
+
+        print("Completed fft for run " + str(counter))
 
         #PDF PREP: Doing the plotting of FFT and IQ prior to making pdf pages to enable having the "together plot" as the first page
         #Plotting IQ Data, but not putting on pdf
@@ -984,12 +988,10 @@ def main(iterations):
                 # Sets the y axis of each of the individual plots to be the same
                 axis[-1].set_ylim(bottom = amplYBottom, top = amplYTop, auto = False)
 
-                try:
-                    FFT_plots.append(subPlotFFTs(fft_x[i], fft_y[i], axis[i], title, max_fours[i], np.mean(noise_floor[1])))
-                    ax_st = ax_end + 2
-                    ax_end = ax_st + 15
-                except:
-                    break
+                FFT_plots.append(subPlotFFTs(fft_x[i], fft_y[i], axis[i], title, max_fours[i], np.mean(noise_floor[1])))
+                ax_st = ax_end + 2
+                ax_end = ax_st + 15
+
                 #Rasterizes the plot/figures and converts to png)
             FFT_plt_img.append(plotToPdf(("FFTPlots_" + formattedDate), counter))
             plt.clf()
@@ -1056,15 +1058,12 @@ def main(iterations):
             IQ_table_info = [["IQ Data: "],["Channel"], ["Ampl I (fractional)"], ["Ampl Q (fractional)"]]
 
             for i in range(start, end):
-                # try:
                 IQ_table_info[1].append((chr(65+i)))
                 IQ_table_info[2].append(sig(ampl_reals[i], sigfigs=sigfigs))
                 IQ_table_info[3].append(sig(ampl_imags[i], sigfigs=sigfigs))
 
                 IQ_table = Table(IQ_table_info, style=[('GRID', (0,1), (num_channels+1,4), 1, colors.black),
                                                     ('BACKGROUND', (0, 1), (num_channels+1,1), '#D5D6D5')])
-                # except:
-                    # break
 
             IQ_table.wrapOn(pdf, IQ_width, IQ_height)
             IQ_table.drawOn(pdf, IQ_table_x, IQ_table_y)
@@ -1088,15 +1087,11 @@ def main(iterations):
             #Tables stuff
             max_peak_table_info = [["Top Peaks (Frequencty, Amplitude):"], ["Channel"], ["Highest Peak"], ["Second Highest"], ["Third Highest"], ["Fourth Heighest"]]
             for i in range(start, end):
-                try:
-                    max_peak_table_info[2].append(str((sig(max_fours[i][0][0], sigfigs=sigfigs), sig(max_fours[i][0][1], sigfigs=sigfigs))))
-                    max_peak_table_info[3].append(str((sig(max_fours[i][1][0], sigfigs=sigfigs), sig(max_fours[i][1][1], sigfigs=sigfigs))))
-                    max_peak_table_info[4].append(str((sig(max_fours[i][2][0], sigfigs=sigfigs), sig(max_fours[i][2][1], sigfigs=sigfigs))))
-                    max_peak_table_info[5].append(str((sig(max_fours[i][3][0], sigfigs=sigfigs), sig(max_fours[i][3][1], sigfigs=sigfigs))))
-                    max_peak_table_info[1].append((chr(65+i)))
-
-                except:
-                    break
+                max_peak_table_info[2].append(str((sig(max_fours[i][0][0], sigfigs=sigfigs), sig(max_fours[i][0][1], sigfigs=sigfigs))))
+                max_peak_table_info[3].append(str((sig(max_fours[i][1][0], sigfigs=sigfigs), sig(max_fours[i][1][1], sigfigs=sigfigs))))
+                max_peak_table_info[4].append(str((sig(max_fours[i][2][0], sigfigs=sigfigs), sig(max_fours[i][2][1], sigfigs=sigfigs))))
+                max_peak_table_info[5].append(str((sig(max_fours[i][3][0], sigfigs=sigfigs), sig(max_fours[i][3][1], sigfigs=sigfigs))))
+                max_peak_table_info[1].append((chr(65+i)))
 
             peak_table = Table(max_peak_table_info, style=[('GRID', (0,1), (num_channels+1,5), 1, colors.black),
                                     ('BACKGROUND', (0,1), (num_channels+1,1), '#D5D6D5')])
