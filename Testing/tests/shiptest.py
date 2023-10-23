@@ -722,10 +722,13 @@ def quickSort(array, low, high, other_array):
 
 '''Checks if the given is within the SNR bounds
 PARAM:
-a: the signal to noise ratio
-RETURN: Boolean'''
-def checkSNR(a):
-    return (a > snr_min_check)
+snr_ratios: array of signal to noise ratios
+RETURN: Boolean: False if any of the snrs are below the threshold'''
+def checkSNRs(snr_ratios):
+    for snr_ratio in snr_ratios:
+        if snr_ratio <= snr_min_check:
+            return False
+    return True
 
 '''Checks if the freq is within desired location
 PARAM:
@@ -1176,8 +1179,7 @@ def main(iterations):
             else:
                 break
 
-        print("fft_snr: " + str(fft_snr))
-        #snr_bools.append(checkSNR(fft_snr
+        snr_bools.append(checkSNRs(fft_snr))
 
     print("Data collection complete")
 
@@ -1227,9 +1229,6 @@ def main(iterations):
     pdf.drawText(title)
 
     summary_nump = np.asarray(summary_info)
-
-    #Checking the snr
-    snr_bools = list(map(checkSNR, summary_nump[:, 2]))
 
     #Checking the Freq
     freq_bools = list(map(checkFreq, summary_nump[:, 0]))
