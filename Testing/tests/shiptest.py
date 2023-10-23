@@ -829,7 +829,11 @@ def main(iterations):
         tx_stack = [(5.0 , sample_rate)] #Equivalent to 1 second
         rx_stack = [(5.25, sample_count)] #TODO: Maybe add the burst start times to table - or title page
 
+        print("Started data collection for run " + str(counter))
+
         vsnk = engine.run(it["channels"], it["wave_freq"], it["sample_rate"], it["center_freq"], it["tx_gain"], it["rx_gain"], tx_stack, rx_stack)
+
+        print("Completed data collection for run " + str(counter))
 
         period_samples = int(round(1/(it["wave_freq"]/it["sample_rate"])))
         begin_cutoff = int(period_samples*begin_cutoff_waves)
