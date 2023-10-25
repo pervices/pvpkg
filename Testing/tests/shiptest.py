@@ -492,6 +492,14 @@ def bestFit(x, raw_y, expected_freq):
     y = signal.sosfiltfilt(sos, raw_y)
 
     max_loc = np.argmax(y)
+
+    max_y = y[max_loc]
+
+    # Detect if all 0s
+    if max_y == 0:
+        # return redisuals (since raw_y is all 0s in this case we can just return it), (dc_offset = 0, ampl = 0)
+        return raw_y, (0, 0)
+
     period = 1/expected_freq
     predicted_phase = x[max_loc] + (period/4)
     if(predicted_phase < 0):
@@ -502,7 +510,7 @@ def bestFit(x, raw_y, expected_freq):
     dc_offset = y.mean()
 
     # Predicted amplitude must be above expected to avoid the minimizer going the wrong direction and ending up near 0
-    params = create_params(phase={'value': predicted_phase, 'min': 0, 'max': period}, ampl={'value': y[max_loc], 'min': y[max_loc]/10, 'max' : y[max_loc] * 1.1})
+    params = create_params(phase={'value': predicted_phase, 'min': 0, 'max': period}, ampl={'value': y[max_loc], 'min': max_y/10, 'max' : max_y * 1.1})
 
     try:
         result = minimize(sineResiduals, params, args=(x,y,expected_freq, dc_offset), max_nfev=25)
@@ -968,9 +976,8 @@ def main(iterations):
         std = np.asarray(std)
 
         # Determines the range of the y axis to plot
-        # TODO: get max and min of the displayed range, currently it gets the max and min of everything
-        amplYTop = fft_y.max() * 1.1
-        amplYBottom = fft_y.min() * 1.1
+        amplYTop = fft_y[np.isfinite(fft_y)].max() * 1.1
+        amplYBottom = fft_y[np.isfinite(fft_y)].min() * 1.1
 
         FFT_plots = []
         FFT_plt_img = []
