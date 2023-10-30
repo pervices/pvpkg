@@ -811,6 +811,8 @@ def main(iterations):
     freq_bools = []
     # Stores if spur check passed for each iteration
     spur_bools = []
+    # Stores if gain check passed for each iteration
+    gain_bools = []
 
     #start of the testing
     for it in iterations: #Will iterate per Run
@@ -1201,6 +1203,9 @@ def main(iterations):
         # Checking if this iteration passed the spur check
         spur_bools.append(checkSpur(max_fours, spur_check_threshold))
 
+        # Checking if this iteration passed the relative gain check
+        gain_bools.append(checkGainRelative(max_fours, gain_check_threshold))
+
     print("Data collection complete")
 
     #Pass/Fail final page
@@ -1249,10 +1254,6 @@ def main(iterations):
     pdf.drawText(title)
 
     summary_nump = np.asarray(summary_info)
-
-    # Checking if gains are close enough together
-    gain_check_thresholds = [gain_check_threshold] * len(peaks_list)
-    gain_bools = list(map(checkGainRelative, peaks_list[:], gain_check_thresholds))
 
     summary_table_info = [["Summary Table: "], ["Run", "SNR check", "Frequency check", "Spur check", "Gain variation check"]]
 
