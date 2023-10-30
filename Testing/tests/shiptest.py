@@ -1265,33 +1265,6 @@ def main(iterations):
     summary.wrapOn(pdf, summary_width, summary_height)
     summary.drawOn(pdf, summary_x, summary_y)
 
-    #What the fails are
-    if False in snr_bools:
-        snr_x += summary_width + 5
-        fail_info = [["Fails in SNR: ", ("Not greater than " + str(snr_min_check) + "dBc")], ["Run", "SNR Value"]]
-
-        for i, snr in zip(range(counter), summary_nump[:,2]):
-            fail_info.append([str(i+1), str(snr)])
-
-        fail_table = Table(fail_info, style=[('GRID', (0,1), (4, counter+1), 1, colors.black),
-                                    ('BACKGROUND', (0,1), (4,1), '#D5D6D5')])
-        fail_table.wrapOn(pdf, summary_width, summary_height)
-        fail_table.drawOn(pdf, snr_x, summary_y)
-            #What the fails are
-    if False in freq_bools:
-        freq_x = snr_x + summary_width - 2
-
-        fail_info = [["Fails in Frequency: ", ("Not within " + str(freq_check_threshold) + "Hz of given")], ["Run"]]
-
-        for i, freq in zip(range(counter), summary_nump[:,0]):
-            fail_info.append([str(i+1), str(freq)])
-
-        fail_table = Table(fail_info, style=[('GRID', (0,1), (4, counter+1), 1, colors.black),
-                                    ('BACKGROUND', (0,1), (2,1), '#D5D6D5')])
-
-        fail_table.wrapOn(pdf, summary_width, summary_height)
-        fail_table.drawOn(pdf, freq_x, summary_y)
-
     os.chdir(output_dir) #Ensuring we are saving in the output directory
     pdf.save() #saving the pdf
 
