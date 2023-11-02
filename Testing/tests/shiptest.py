@@ -1194,17 +1194,35 @@ def main(iterations):
             else:
                 break
 
+        strict_failed = False
         # Checking if this iteration passed SNR
         snr_bools.append(checkSNRs(fft_snr))
+        if strict_mode and not snr_bools[-1]:
+            print("SNR test failed on iteraion " + str(counter) + ". Ending test early")
+            strict_failed = True
+
 
         # Checking if this iteration passed the frequency check
         freq_bools.append(checkFreq(max_fours[:,0,1]))
+        if strict_mode and not freq_bools[-1]:
+            print("Freq test failed on iteraion " + str(counter) + ". Ending test early")
+            strict_failed = True
 
         # Checking if this iteration passed the spur check
         spur_bools.append(checkSpur(max_fours, spur_check_threshold))
+        if strict_mode and not spur_bools[-1]:
+            print("Spur test failed on iteraion " + str(counter) + ". Ending test early")
+            strict_failed = True
 
         # Checking if this iteration passed the relative gain check
         gain_bools.append(checkGainRelative(max_fours, gain_check_threshold))
+        if strict_mode and not gain_bools[-1]:
+            print("Relative gain test failed on iteraion " + str(counter) + ". Ending test early")
+            strict_failed = True
+
+        if(strict_failed):
+            break
+
 
     print("Data collection complete")
 
