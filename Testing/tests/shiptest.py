@@ -913,10 +913,13 @@ def main(iterations):
         #This variable ensures only the number of waves requested will appear on the plots
         plotted_samples = int(period_samples*num_output_waves)
 
+        print("Waiting for time fitting")
+
         for thread in time_fitting_threads:
             thread.join()
 
         print("Completed curve fitting for run " + str(counter))
+        print("Waiting for fft")
 
         # Moved here instead of later because of possible problematic interaction it matplotlib
         for thread in fft_threads:
