@@ -1206,7 +1206,7 @@ def main(iterations):
 
 
         # Checking if this iteration passed the frequency check
-        freq_bools.append(checkFreq(max_fours[:,0,1]))
+        freq_bools.append(checkFreq(max_fours[:,0,0]))
         if strict_mode and not freq_bools[-1]:
             print("Freq test failed on iteraion " + str(counter) + ". Ending test early")
             strict_failed = True
