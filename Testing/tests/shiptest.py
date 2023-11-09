@@ -913,10 +913,13 @@ def main(iterations):
         #This variable ensures only the number of waves requested will appear on the plots
         plotted_samples = int(period_samples*num_output_waves)
 
+        print("Waiting for time fitting")
+
         for thread in time_fitting_threads:
             thread.join()
 
         print("Completed curve fitting for run " + str(counter))
+        print("Waiting for fft")
 
         # Moved here instead of later because of possible problematic interaction it matplotlib
         for thread in fft_threads:
@@ -1203,7 +1206,7 @@ def main(iterations):
 
 
         # Checking if this iteration passed the frequency check
-        freq_bools.append(checkFreq(max_fours[:,0,1]))
+        freq_bools.append(checkFreq(max_fours[:,0,0]))
         if strict_mode and not freq_bools[-1]:
             print("Freq test failed on iteraion " + str(counter) + ". Ending test early")
             strict_failed = True
