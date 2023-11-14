@@ -645,7 +645,7 @@ PARAMS: y
 RETURNS: max_four'''
 def numPeaks(x, y, ampl, num):
 
-    peaks, properties = find_peaks(y, height=ampl) #NOTE: What should I use as the height...
+    peaks, properties = find_peaks(y, width=0.1e-9) #NOTE: What should I use as the height...
     x = np.asarray(x)
     y = np.asarray(y)
 
