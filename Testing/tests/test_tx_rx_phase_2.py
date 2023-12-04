@@ -17,6 +17,7 @@ import sys
 import os
 import time, datetime
 
+import argparse
 
 #USER CHOSEN VALUES
 num_channel = 4 #dependent on unit
@@ -264,6 +265,14 @@ PARAMS: iterations
 RETURNS: <on console>'''
 def main(iterations):
 
+    # Setup argument parsing
+    parser = argparse.ArgumentParser(description = "Loopback phase coherency test")
+
+    # Adds arguments
+    parser.add_argument('-r', '--rate', default=25000000, type=int, help="Sample rate in samples per second")
+
+    args = parser.parse_args()
+
     '''This iteration loop will run through setting up the channels to the values associated to the generator code. It will also loop through
     each channel and save the information to temp arrays. These temp arrays allow us to format our data into 2D arrays, so it's easier to
     reference later'''
@@ -290,11 +299,11 @@ def main(iterations):
         TX: Below, we will be sending oiut samples equiv. to sample_rate after 10 seconds, so this will end at 11 secondi
         RX: Calculate the oversampling rate to find the number of samples to intake that match your ideal (sample count)'''
         global sample_rate
-        sample_rate = int(it["sample_rate"])
+        sample_rate = args.rate
         tx_stack = [ (tx_burst , sample_rate)]
         rx_stack = [ (rx_burst, int(it["sample_count"]))]
         #this is the code that will actually tell the unit what values to run at
-        vsnk = engine.run(it["channels"], it["wave_freq"], it["sample_rate"], it["center_freq"], it["tx_gain"], it["rx_gain"], tx_stack, rx_stack)
+        vsnk = engine.run(it["channels"], it["wave_freq"], sample_rate, it["center_freq"], it["tx_gain"], it["rx_gain"], tx_stack, rx_stack)
 
 
         #Other important variables that require connection to the unit
