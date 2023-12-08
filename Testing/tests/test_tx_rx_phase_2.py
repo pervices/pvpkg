@@ -13,9 +13,11 @@ import matplotlib.pyplot as plt
 from scipy.optimize import curve_fit
 from scipy.stats import norm
 from scipy.signal import find_peaks
+from scipy import signal
 import sys
 import os
 import time, datetime
+from math import pi
 
 import argparse
 
@@ -270,6 +272,7 @@ def main(iterations):
 
     # Adds arguments
     parser.add_argument('-r', '--rate', default=25000000, type=int, help="Sample rate in samples per second")
+    parser.add_argument('-b', '--band', default=False, type=bool, help="Apply a band pass filter to the data")
 
     args = parser.parse_args()
 
@@ -339,6 +342,12 @@ def main(iterations):
         for ch, channel in enumerate(vsnk): #Goes through each channel to sve data
 
             real = [datum.real for datum in channel.data()] # saves data of real data in an array
+
+
+            # Filter data so we only see the phase of the intended signal if requested by user
+            if args.band:
+                b,a = signal.bessel(1, [wave_freq * 0.9, wave_freq * 1.1], 'bandpass', analog=False, norm='delay', fs = sample_rate)
+                real = signal.filtfilt(b, a, real, padtype=None)
 
             real_hold.append(real[begin_cutoff:])
 
