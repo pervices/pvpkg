@@ -13,7 +13,7 @@ depends=('orc' 'libusb' 'boost' 'boost' 'boost-libs' 'icu' 'python-mako' 'python
 provides=('libuhd')
 conflicts=('libuhd')
 
-source=('uhd::git+https://github.com/pervices/uhd.git#commit=a72fd3ef')
+source=('uhd::git+https://github.com/pervices/uhd.git#branch=master')
 #source=('uhd::git+https://github.com/pervices/uhd.git#branch=master-fulltx')
 #source=('uhd::git+https://github.com/pervices/uhd.git#commit=06ba790c2f')
 #source=('uhd::git+https://github.com/pervices/uhd.git#commit=547549ac')
@@ -79,7 +79,7 @@ build() {
            -DENABLE_CYAN_4R4T=ON \
            ..
         
-        make -j4
+        make -j$(nproc)
 }
 
 check() {

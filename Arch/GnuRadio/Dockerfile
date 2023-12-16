@@ -1,7 +1,10 @@
-FROM archlinux/archlinux:base-devel-20230322.0.136594
+#FROM archlinux/archlinux:base-devel-20230322.0.136594
+FROM archlinux/archlinux:base-devel
 ARG DOCKER_USER=docker
 
 # Installing required binaries
+RUN pacman-key --init
+RUN pacman -Syu --noconfirm
 RUN pacman -Sy --noconfirm archlinux-keyring git cmake clang icu inetutils iproute2 wget net-tools xorg-xclock xorg-xauth xterm python-rich python-reportlab
 
 # Creating users and groups
