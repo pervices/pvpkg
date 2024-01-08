@@ -42,7 +42,7 @@ echo ":: Testing reachablity to DUT ::"
 (ping -c1 -W1 $DUT_DATA_IP_ADDR1 && echo "Data link port $DUT_DATA_IP_ADDR1 is reachable") || (echo "Data link port $DUT_DATA_IP_ADDR1 is not reachable" && exit 1) &&
 (ping -c1 -W1 $DUT_DATA_IP_ADDR2 && echo "Data link port $DUT_DATA_IP_ADDR2 is reachable") || (echo "Data link port $DUT_DATA_IP_ADDR2 is not reachable" && exit 1) &&
 
-echo ":: Debugging BIND: Address Already in use error ::"
+echo ":: Testing reachablity to DUT passed ::"
 
 echo $USER"@"$HOST | sudo -S netstat -pnltu &&
 echo $USER"@"$HOST | sudo -S ss -lntupe &&
