@@ -21,11 +21,11 @@ sudo apt --fix-broken install
 cd ..
 
 #Install volk 2.5.1 (required by gnuradio 3.10); run after uhd and before gnuradio Debian package installs
-sudo git clone --branch v2.5.1 --recursive https://github.com/gnuradio/volk.git && \
+git clone --branch v2.5.1 --recursive https://github.com/gnuradio/volk.git && \
 cd volk && \
-sudo mkdir build && cd build && \
-sudo cmake -DCMAKE_BUILD_TYPE=Release -DPYTHON_EXECUTABLE=/usr/bin/python3 ../ && \
-sudo make && sudo make install && \
+mkdir build && cd build && \
+cmake -DCMAKE_BUILD_TYPE=Release -DPYTHON_EXECUTABLE=/usr/bin/python3 ../ && \
+make && sudo make install && \
 cd ../..
 
 #Install gnuradio by running commands in directory deb files are extracted into (Install libraries and then gnuradio package in same way UHD was installed)
