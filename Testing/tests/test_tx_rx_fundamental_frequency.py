@@ -28,7 +28,7 @@ def test(it):
         like_real = (float(it["wave_freq"]) / fund_real)
         like_imag = (float(it["wave_freq"]) / fund_imag)
 
-        print("channel %2d: real %10.0f Hz (%8.5f) :: imag %10.0f Hz (%8.5f)" % (ch, fund_real, like_real, fund_imag, like_imag))
+        print("channel %2d: real %10.0f Hz (%8.5f) :: imag %10.0f Hz (%8.5f)" % (it["channels"][ch], fund_real, like_real, fund_imag, like_imag))
 
         sigproc.dump_file(vsnk, it["wave_freq"])
 
