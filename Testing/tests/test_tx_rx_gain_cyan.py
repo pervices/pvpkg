@@ -1,9 +1,14 @@
 from common import sigproc
 from common import engine
 from common import generator as gen
+from common import pdf_report
 import matplotlib.pyplot as plt
 import numpy as np
 import sys
+
+from PIL import Image
+from io import BytesIO 
+from reportlab.lib.utils import ImageReader
 
 def main(iterations):
 
@@ -11,6 +16,8 @@ def main(iterations):
     vsnks = []
 
     sample_count = 0
+
+    report = pdf_report.ClassicShipTestReport("TX RX Gain Test")
 
     for it in iterations:
         gen.dump(it)
@@ -46,7 +53,7 @@ def main(iterations):
                 for b in range(len(iteration_areas)-1):
                     try:
                         assert iteration_areas[b+1][a] - iteration_areas[b][a] > 1 #makes sure the difference in area is significant
-                    except:
+                    
                         #plot and save real component
                         plt.figure()
                         plt.title("Gain plot of {} for wave_freq = {} Hz".format(ch,it["wave_freq"]))
@@ -55,8 +62,18 @@ def main(iterations):
                         plt.plot(imag[0:300], label='reals')
                         plt.plot(real[0:300], label='imags')
                         plt.legend()
-                        plt.savefig(fname='Gain plot for channel {} at wave_freq {} at Tx gain {}'.format(ch, it["wave_freq"],it["tx_gain"],format='png'))
+
+                        imgdata = BytesIO()
+                        plt.savefig(imgdata, format='png')
+                        # plt.savefig(fname='Gain plot for channel {} at wave_freq {} at Tx gain {}'.format(ch, it["wave_freq"],it["tx_gain"],format='png'))
+                        imgdata.seek(0)
+                        Image = ImageReader(imgdata)
+                        report.insert_image(Image)
+                    
+                    except:
                         sys.exit(1)
+    
+    report.save()
 
 
 #Change the argument in the following function to select how many channels to test

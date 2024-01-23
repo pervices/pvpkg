@@ -234,12 +234,12 @@ class cyan:
             print(sys._getframe().f_code.co_name)
 
             channels = list(range(channels))
-            wave_freq = 1000000
+            wave_freq = 1000000         # 1MHz
             sample_count = 10000
             tx_gain = 25
             rx_gain = 25
-            center_freq = 15000000
-            sample_rate = 10000000
+            center_freq = 15000000      # 15MHz
+            sample_rate = 10000000      # 10Msps
             yield locals()
 
         @staticmethod
@@ -247,7 +247,7 @@ class cyan:
             print(sys._getframe().f_code.co_name)
 
             channels = list(range(4))
-            wave_freq = 1000000
+            wave_freq = 1000000         # 1MHz
             sample_count = 256
             tx_gain = 25
             rx_gain = 25
@@ -288,7 +288,7 @@ class cyan:
             sample_count = int(round(25000000/10000))
             tx_gain = 25
             rx_gain = 25
-            center_freq = 10000000
+            center_freq = 100000000     # 100MHz
             wave_freq = 500000
             for i in range(10):
                 yield locals()
@@ -300,7 +300,7 @@ class cyan:
             sample_count = int(round(25000000/10000))
             tx_gain = 25
             rx_gain = 25
-            center_freq = 10000000
+            center_freq = 100000000     # 100MHz
             sample_rate = 25000000
             wave_freq = 500000
             for i in range(2):
@@ -326,12 +326,12 @@ class cyan:
             print(sys._getframe().f_code.co_name)
 
             channels = list(range(4))
-            wave_freq = 1000000
+            wave_freq = 1000000         # 1MHz
             sample_count = 256
             tx_gain = 25
             rx_gain = 25
             for center_freq in [ 1000000000, 2000000000, 3000000000, 4000000000 ]:
-                for sample_rate in [ 9848485, 25000000, 36111111 ]:
+                for sample_rate in [ 9803922, 25000000, 36111111 ]:
                     yield locals()
 
 
@@ -342,8 +342,8 @@ class cyan:
             channels = list(range(4))
             sample_rate = 9803922
             sample_count = int((round(9803922/1000)))
-            #sample_count_tx = 9848485
-            #sample_count_rx = int(round(9848485/1000))
+            #sample_count_tx = 9803922
+            #sample_count_rx = int(round(9803922/1000))
             tx_gain = 25
             rx_gain = 25
             center_freq = 1000000000    # 1GHz
