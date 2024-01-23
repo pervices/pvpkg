@@ -1,5 +1,6 @@
 # Generate single page PDF reports
 
+import datetime
 #PDF IMPORTS
 from reportlab.pdfgen import canvas
 from reportlab.lib import colors
@@ -21,10 +22,10 @@ class ClassicShipTestReport:
     
     def __init__(self, doc_title, serial_num = "SERIAL_UNDEF"):
         self.serial_num = serial_num
-        self.file_title = "ship_report_" + doc_title + _ + serial_num + "_" + formattedDate + ".pdf"
-        self.doc_title = "ship_report_" + doc_title + _ + serial_num + "_" + formattedDate
+        self.file_title = "ship_report_" + doc_title + "_" + serial_num + "_" + self.formattedDate + ".pdf"
+        self.doc_title = "ship_report_" + doc_title + "_" + serial_num + "_" + self.formattedDate
 
-        self.c = canvas.Canvas(file_title, pagesize=landscape(letter))
+        self.c = canvas.Canvas(self.file_title, pagesize=landscape(letter))
         self.c.drawString(self.cursor_x, self.cursor_y, "Report")
         self.cursor_y += 30 
 
@@ -35,5 +36,9 @@ class ClassicShipTestReport:
         self.c.drawImage(image, cursor_x, cursor_y, 600, 400)
 
     def save(self):
-        c.showPage()
-        c.save()
+        self.c.showPage()
+        self.c.save()
+
+if __name__ == "__main__":
+    report = ClassicShipTestReport("test_report")
+    report.save()
