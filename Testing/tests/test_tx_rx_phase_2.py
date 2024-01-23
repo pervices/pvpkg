@@ -1,6 +1,8 @@
 from common import sigproc
 from common import engine
 from common import generator as gen
+from common import pdf_report
+from common import test_args
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -75,7 +77,7 @@ x_time = []
 offsets = []
 
 '''
-Represents the wave equation 
+Represents the wave equation
 PARAMS: time, ampl, freq, phase
 RETUNRS: y'''
 def waveEquation(time, ampl, freq, phase, dc_offset):
@@ -229,6 +231,9 @@ def makePlots():
         # plt.show()
         os.chdir(test_plots)
         fig.savefig(("run{}_indiv".format(z) + ".svg"))
+        s1 = report.get_image_io_stream()
+        fig.savefig(s1, format="png", dpi=300)
+        img1 = report.get_image_from_io_stream(s1)
         plt.clf()
 
 
@@ -254,6 +259,12 @@ def makePlots():
 
         #plt.show()
         fig.savefig(("run{}_together".format(z) + ".svg"))
+        s2 = report.get_image_io_stream()
+        fig.savefig(s2, format="png", dpi=300)
+        img2 = report.get_image_from_io_stream(s2)
+
+        report.buffer_put("image_double", [img1, img2], "Run " + str(z))
+        print("Run figure has been put in buffer")
         plt.clf()
 
 '''Turns the boolean into pass/fail NOTE: NOT SURE IF I NEED THIS
@@ -268,17 +279,22 @@ def boolToWord(word):
 '''Sets up output data, sets up test (and connecting to unit), sets up plots
 PARAMS: iterations
 RETURNS: <on console>'''
-def main(iterations):
+def main():
+    # Add test specific arguments
+    p = argparse.ArgumentParser(description = "Loopback phase coherency test")
+    p.add_argument('-r', '--rate', default=25000000, type=int, help="Sample rate in samples per second")
+    p.add_argument('-b', '--band', default=False, type=bool, help="Apply a band pass filter to the data")
+    # Add generic test arguments
+    targs = test_args.TestArgs(parser=p, testDesc="Loopback phase coherency test")
 
-    # Setup argument parsing
-    parser = argparse.ArgumentParser(description = "Loopback phase coherency test")
+    args = p.parse_args()
 
-    # Adds arguments
-    parser.add_argument('-r', '--rate', default=25000000, type=int, help="Sample rate in samples per second")
-    parser.add_argument('-b', '--band', default=False, type=bool, help="Apply a band pass filter to the data")
+    # PDF Report
+    global report
+    report = pdf_report.ClassicShipTestReport("tx_rx_phase", targs.serial, targs.report_dir, targs.docker_sha)
+    report.insert_title_page("Low Band TX RX Phase Coherency Test")
 
-    args = parser.parse_args()
-
+    print("Title page generated")
     '''This iteration loop will run through setting up the channels to the values associated to the generator code. It will also loop through
     each channel and save the information to temp arrays. These temp arrays allow us to format our data into 2D arrays, so it's easier to
     reference later'''
@@ -295,6 +311,13 @@ def main(iterations):
     phase_AC_diff = []
     phase_AD_diff = []
 
+    table_printed_once = 0
+
+    if(targs.product == 'Vaunt'):
+        iterations = gen.lo_band_phaseCoherency_short(4)
+    else:
+        iterations = gen.cyan.lo_band.phaseCoherency_short(4)
+
     for it in iterations:
 
         gen.dump(it) #pulling info from generator
@@ -310,6 +333,12 @@ def main(iterations):
         #this is the code that will actually tell the unit what values to run at
         vsnk = engine.run(it["channels"], it["wave_freq"], sample_rate, it["center_freq"], it["tx_gain"], it["rx_gain"], tx_stack, rx_stack)
 
+        if (table_printed_once == 0):
+            table_data = [["Center Frequency (Hz)", "Wave Frequency (Hz)", "Sample Rate (SPS)", "Sample Count", "TX Gain (dB)", "RX Gain (dB)"],
+                            [it["center_freq"], it["wave_freq"], sample_rate, it["sample_count"], it["tx_gain"], it["rx_gain"]]]
+            report.buffer_put("table_wide", table_data, "Test Configuration")
+            # report.insert_table(table_data, 0 , "Test Configuration")
+            table_printed_once = 1
 
         #Other important variables that require connection to the unit
         global sample_count
@@ -473,11 +502,14 @@ def main(iterations):
 
     #print(subtest_bool)
 
+    fail_flag = 0
+
     #Overall Tests boolean
     overall_bool = [True, True, True]
     for test in range(len(criteria)):
         if np.prod(subtest_bool[test]) == 0: #If list contains and 0
             overall_bool[test] =  False
+            fail_flag = 1
 
     #Checking if plots should print
 
@@ -494,6 +526,19 @@ def main(iterations):
     overall_tests.addRow("Phase", boolToWord(overall_bool[2]))
     overall_tests.printData()
 
+    # PDF Overall Table
+    overall_table = [
+        ["Test", "Status"],
+        ["Frequency", boolToWord(overall_bool[0])],
+        ["Amplitude", boolToWord(overall_bool[1])],
+        ["Phase", boolToWord(overall_bool[2])]
+        ]
+
+    # report.new_page()
+    report.insert_text_large("Overall and Subtests Tables: ")
+    report.insert_text(" ")
+    report.insert_table(overall_table, 20, "Overall Tests")
+
     #Outputting the subtests
     max_crit = "< mean + " + str(std_ratio) + "*std"
     min_crit = "> mean - " + str(std_ratio) + "*std"
@@ -509,6 +554,26 @@ def main(iterations):
         st_phase = out.Table(title="SubTest Results - Phase Tests")
         subtestTable(st_phase, min_crit, max_crit, str(phase_std_thresh), subtest_bool[2])
 
+    # PDF Subtest Table
+    subtest_freq_table = [
+        ["Test", "Criteria", "\u0394BA", "\u0394CA", "\u0394DA"],
+        ["Min Value Outliers", (">" + min_crit), boolToWord(subtest_bool[0][0][0]), boolToWord(subtest_bool[0][1][0]), boolToWord(subtest_bool[0][2][0])],
+        ["Max Value Outliers", ("<" + max_crit), boolToWord(subtest_bool[0][0][1]), boolToWord(subtest_bool[0][1][1]), boolToWord(subtest_bool[0][2][1])],
+        ["STD Deviation", ("<" + str(freq_std_thresh)), boolToWord(subtest_bool[0][0][2]), boolToWord(subtest_bool[0][1][2]), boolToWord(subtest_bool[0][2][2])]
+    ]
+    subtest_ampl_table = [
+        ["Test", "Criteria", "\u0394BA", "\u0394CA", "\u0394DA"],
+        ["Min Value Outliers", (">" + min_crit), boolToWord(subtest_bool[1][0][0]), boolToWord(subtest_bool[1][1][0]), boolToWord(subtest_bool[1][2][0])],
+        ["Max Value Outliers", ("<" + max_crit), boolToWord(subtest_bool[1][0][1]), boolToWord(subtest_bool[1][1][1]), boolToWord(subtest_bool[1][2][1])],
+        ["STD Deviation", ("<" + str(ampl_std_thresh)), boolToWord(subtest_bool[1][0][2]), boolToWord(subtest_bool[1][1][2]), boolToWord(subtest_bool[1][2][2])]
+    ]
+    subtest_phase_table = [
+        ["Test", "Criteria", "\u0394BA", "\u0394CA", "\u0394DA"],
+        ["Min Value Outliers", (">" + min_crit), boolToWord(subtest_bool[2][0][0]), boolToWord(subtest_bool[2][1][0]), boolToWord(subtest_bool[2][2][0])],
+        ["Max Value Outliers", ("<" + max_crit), boolToWord(subtest_bool[2][0][1]), boolToWord(subtest_bool[2][1][1]), boolToWord(subtest_bool[2][2][1])],
+        ["STD Deviation", ("<" + str(phase_std_thresh)), boolToWord(subtest_bool[2][0][2]), boolToWord(subtest_bool[2][1][2]), boolToWord(subtest_bool[2][2][2])]
+    ]
+
     #Summary Statistics
     sum_freq  = out.Table(title="Summary Frequency")
     summaryTable(overall_bool[0], abs_bool[0], sum_freq, means[0], mins[0], maxs[0], stds[0], data[0])
@@ -519,6 +584,42 @@ def main(iterations):
     sum_phase  = out.Table(title="Summary Phase")
     summaryTable(overall_bool[2], abs_bool[2], sum_phase, means[2], mins[2], maxs[2], stds[2], data[2])
 
+    sum_freq_table = [
+        ["Run", "Baseline A", "\u0394BA", "\u0394CA", "\u0394DA"],
+        ["Mean", str(means[0][0]), str(means[0][1]), str(means[0][2]), str(means[0][3])],
+        ["Minimum", str(mins[0][0]), str(mins[0][1]), str(mins[0][2]), str(mins[0][3])],
+        ["Maximum", str(maxs[0][0]), str(maxs[0][1]), str(maxs[0][2]), str(maxs[0][3])],
+        ["STD Deviations", str(stds[0][0]), str(stds[0][1]), str(stds[0][2]), str(stds[0][3])]
+    ]
+    for i in range(runs + 1):
+        sum_freq_table.append(["Run " + str(i), str(data[0][0][i]), str(data[0][1][i]), str(data[0][2][i]), str(data[0][3][i])])
+
+    sum_ampl_table = [
+        ["Run", "Baseline A", "\u0394BA", "\u0394CA", "\u0394DA"],
+        ["Mean", str(means[1][0]), str(means[1][1]), str(means[1][2]), str(means[1][3])],
+        ["Minimum", str(mins[1][0]), str(mins[1][1]), str(mins[1][2]), str(mins[1][3])],
+        ["Maximum", str(maxs[1][0]), str(maxs[1][1]), str(maxs[1][2]), str(maxs[1][3])],
+        ["STD Deviations", str(stds[1][0]), str(stds[1][1]), str(stds[1][2]), str(stds[1][3])]
+    ]
+    for i in range(runs + 1):
+        sum_ampl_table.append(["Run " + str(i), str(data[1][0][i]), str(data[1][1][i]), str(data[1][2][i]), str(data[1][3][i])])
+
+    sum_phase_table = [
+        ["Run", "Baseline A", "\u0394BA", "\u0394CA", "\u0394DA"],
+        ["Mean", str(means[2][0]), str(means[2][1]), str(means[2][2]), str(means[2][3])],
+        ["Minimum", str(mins[2][0]), str(mins[2][1]), str(mins[2][2]), str(mins[2][3])],
+        ["Maximum", str(maxs[2][0]), str(maxs[2][1]), str(maxs[2][2]), str(maxs[2][3])],
+        ["STD Deviations", str(stds[2][0]), str(stds[2][1]), str(stds[2][2]), str(stds[2][3])]
+    ]
+    for i in range(runs + 1):
+        sum_phase_table.append(["Run " + str(i), str(data[2][0][i]), str(data[2][1][i]), str(data[2][2][i]), str(data[2][3][i])])
+
+    dc_offset_table_pdf = [
+        ["Run", "\u0394BA", "\u0394CA", "\u0394DA"],
+    ]
+    for i in range(len(offsets)):
+        dc_offset_table_pdf.append(["Run " + str(i), str(offsets[i][0]), str(offsets[i][1]), str(offsets[i][2]), str(offsets[i][3])])
+
     #DC Offset Table
     dc_offset_table = out.Table(title="DC Offsets")
     dc_offset_table.addColumn("Run")
@@ -528,5 +629,38 @@ def main(iterations):
     for i in range(len(offsets)):
         dc_offset_table.addRow(str(i), str(offsets[i][0]), str(offsets[i][1]), str(offsets[i][2]), str(offsets[i][3]))
     dc_offset_table.printData()
-main(gen.lo_band_phaseCoherency(4))
 
+    # Summary PDF Table
+    report.insert_table(subtest_freq_table, 20, "SubTest Results - Frequency Test")
+    report.insert_text(" ")
+    report.insert_table(subtest_ampl_table, 20, "SubTest Results - Amplitude Test")
+    report.insert_text(" ")
+    report.insert_table(subtest_phase_table, 20, "SubTest Results - Phase Test")
+
+    report.new_page()
+    report.insert_text_large("Summary Statistics: ")
+    report.insert_text(" ")
+    report.insert_text(" ")
+    report.insert_table(sum_freq_table, -10, "Summary Frequency")
+    report.insert_text(" ")
+    report.insert_table(sum_ampl_table, -10, "Summary Amplitude")
+    report.insert_text(" ")
+    report.insert_table(sum_phase_table, -10, "Summary Phase")
+    report.insert_text(" ")
+    report.insert_table(dc_offset_table_pdf, -10, "DC Offsets")
+    report.new_page()
+
+    # get back outside to save
+    os.chdir("../..")
+    # os.system("mkdir report_output")
+    # os.chdir("report_output")
+    report.draw_from_buffer()
+    report.save()
+    print("PDF report saved at " + report.get_filename())
+
+    if (fail_flag == 1):
+        sys.exit(1)
+
+# main(gen.lo_band_phaseCoherency_short(4))
+if __name__ == '__main__':
+    main()

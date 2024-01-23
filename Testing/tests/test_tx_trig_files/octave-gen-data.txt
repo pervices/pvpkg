@@ -1,8 +1,8 @@
 #Create an initial array of time with
 #appropriate resolution. Here, we use
 #around 0.1us resolution, and a total
-#duration of 1s.
-a=[0:0.0000001:1];
+#duration of 0.5s.
+a=[0:0.0000001:0.5];
 # Set the desired sinewave frequency as
 # an integer divider of the target 
 # samplerate. Here, we make a sine wave

@@ -139,3 +139,28 @@ def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stac
 
     return vsnk
 
+def manual_tune_run(channels, wave_freq, tx_sample_rate, rx_sample_rate, tx_tune_request, rx_tune_request, tx_gain, rx_gain, tx_stack, rx_stack):
+    # Setup
+    csnk = crimson.get_snk_s(channels, tx_sample_rate, tx_tune_request, tx_gain)
+    csrc = crimson.get_src_c(channels, rx_sample_rate, rx_tune_request, rx_gain)
+
+    rx_timeout_occured = Event()
+
+    # Run.
+    vsnk = [] # Will be extended when using stacked commands.
+    threads = [
+        threading.Thread(target = run_tx, args = (csnk, channels, tx_stack, tx_sample_rate, wave_freq)),
+        threading.Thread(target = run_rx, args = (csrc, channels, rx_stack, rx_sample_rate, vsnk, rx_timeout_occured)),
+        ]
+
+    for thread in threads:
+        thread.start()
+
+    # Stop.
+    for thread in threads:
+        thread.join()
+
+    if rx_timeout_occured.is_set():
+        raise Exception ("RX TIMED OUT")
+
+    return vsnk

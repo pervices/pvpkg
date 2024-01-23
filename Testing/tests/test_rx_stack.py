@@ -3,21 +3,42 @@ from gnuradio import uhd
 from gnuradio import gr
 
 from common import crimson
-import time
+from common import pdf_report
+from common import test_args
+import time, sys, os
 import numpy as np
-import sys
 
-# This test does not use the engine as it only tests the RX 
+# This test does not use the engine as it only tests the RX
 
 def main():
+    targs = test_args.TestArgs(testDesc="Rx Sample Count Test")
 
-    # Crimson TNG Setup.
-    channels = np.array([0,1,2,3])
-    sample_rate = 20e6
-    sample_count = 4096
+    global report
 
-    # Crimson TNG acts as a source by providing complex float samples.
-    csrc = crimson.get_src_c(channels, sample_rate, 15e6, 1.0)
+    report = pdf_report.ClassicShipTestReport("rx_stack", targs.serial, targs.report_dir, targs.docker_sha)
+    if(targs.product == 'Tate'):
+        report.insert_title_page("Cyan RX Sample Count Test")
+        # Cyan NRNT Setup.
+        channels = np.array([0,1,2,3])
+        sample_rate = 100e6
+        sample_count = 4096
+
+        # Cyan acts as a source by providing complex float samples.
+        csrc = crimson.get_src_c(channels, sample_rate, 100e6, 1.0)
+
+    else:
+        report.insert_title_page("Crimson RX Sample Count Test")
+        # Crimson TNG Setup.
+        channels = np.array([0,1,2,3])
+        sample_rate = 20312500
+        sample_count = 4096
+
+        # Crimson TNG acts as a source by providing complex float samples.
+        csrc = crimson.get_src_c(channels, sample_rate, 15e6, 1.0)
+
+    test_table = [
+        ['Channel', 'Expected Sample Count', 'Actual Sample Count', 'Result']
+    ]
 
     # Vector buffer that accepts complex float samples.
     vsnk = [blocks.vector_sink_c() for channel in channels]
@@ -73,14 +94,37 @@ def main():
     flowgraph.stop()
     flowgraph.wait()
 
+    # flag for marking fails
+    failed = 0
+
     #Test 1: assure length of all Rx samples received are as expected
     for channel in channels:
         expect_sample_count = sample_count * (end - start)
         actual_sample_count = len((vsnk[channel].data()))
 
         print("the expected sample count and the actual sample count are:", expect_sample_count,actual_sample_count)
-        #Assert that both are true (or make a global pass bool)
-        assert expect_sample_count == actual_sample_count
+        test_table.append([str(channel), str(expect_sample_count), str(actual_sample_count), bool_to_passfail(expect_sample_count == actual_sample_count)])
 
-main()
+        #Assert that both are true (or make a global pass bool)
+        try:
+            assert expect_sample_count == actual_sample_count
+        except:
+            failed = 1
+
+    report.insert_text_large("Test Results")
+    report.insert_table(test_table, 20)
+
+    report.save()
+    print("PDF report saved at " + report.get_filename())
+
+    if (failed == 1):
+        sys.exit(1)
+
+def bool_to_passfail(input) -> str:
+    if (input):
+        return 'Pass'
+    return 'Fail'
+
+if __name__ == '__main__':
+    main()
 
