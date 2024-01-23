@@ -223,7 +223,7 @@ class cyan:
         channels = list(range(channels))
         wave_freq = 1000000
         sample_count = 1000
-        center_freq = 150000
+        center_freq = 150000000    # 150MHz
         sample_rate = 9803922
         tx_gain = 10 #increasing the fixed gain may cause saturation
         for rx_gain in [ 5, 10, 20 ]:
@@ -236,12 +236,39 @@ class cyan:
         channels = list(range(channels))
         wave_freq = 1000000
         sample_count = 1000
-        center_freq = 150000
+        center_freq = 150000000    # 150MHz
         sample_rate = 9803922
         rx_gain = 10#increasing the fixed gain may cause saturation
         for tx_gain in [ 5, 10, 20 ]:
             yield locals()
 
+    @staticmethod
+    def mid_band_gain_tx(channels):
+        print(sys._getframe().f_code.co_name)
+
+        channels = list(range(channels))
+        wave_freq = 1000000
+        sample_count = 1000
+        center_freq = 2000000000    # 2GHz
+        sample_rate = 9803922
+        rx_gain = 40#increasing the fixed gain may cause saturation
+        for tx_gain in [ 5, 10, 20 ]:
+            yield locals()
+
+    @staticmethod
+    def mid_band_gain_rx(channels):
+        print(sys._getframe().f_code.co_name)
+
+        channels = list(range(channels))
+        #print(channels)
+        wave_freq = 1000000
+        sample_count = 1000
+        center_freq = 2000000000    # 2GHz
+        sample_rate = 9803922
+        tx_gain = 40#increasing the fixed gain may cause saturation
+        for rx_gain in [ 10, 20, 30 ]:
+            yield locals()
+    
     @staticmethod
     def hi_band_gain_tx(channels):
         print(sys._getframe().f_code.co_name)
@@ -249,7 +276,7 @@ class cyan:
         channels = list(range(channels))
         wave_freq = 1000000
         sample_count = 1000
-        center_freq = 2000000000
+        center_freq = 15000000000   # 15GHz
         sample_rate = 9803922
         rx_gain = 40#increasing the fixed gain may cause saturation
         for tx_gain in [ 5, 10, 20 ]:
@@ -263,7 +290,7 @@ class cyan:
         #print(channels)
         wave_freq = 1000000
         sample_count = 1000
-        center_freq = 2000000000
+        center_freq = 15000000000   # 15GHz
         sample_rate = 9803922
         tx_gain = 40#increasing the fixed gain may cause saturation
         for rx_gain in [ 10, 20, 30 ]:

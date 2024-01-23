@@ -62,5 +62,7 @@ def main(iterations):
 #Change the argument in the following function to select how many channels to test
 main(gen.cyan.lo_band_gain_tx(4))
 main(gen.cyan.lo_band_gain_rx(4))
+main(gen.cyan.mid_band_gain_tx(4))
+main(gen.cyan.mid_band_gain_rx(4))
 main(gen.cyan.hi_band_gain_tx(4))
 main(gen.cyan.hi_band_gain_rx(4))
