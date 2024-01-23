@@ -25,15 +25,29 @@ DUT_MGT_IP_ADDR1=192.168.10.2
 DUT_DATA_IP_ADDR1=10.10.10.2
 DUT_DATA_IP_ADDR2=10.10.11.2
 
+PRODUCT=$1
+if [ -z $PRODUCT ]; then
+	echo "Product must be specified, use 'v' for vaunt or 't' for tate. Usage: test-only-Arch.sh [v | t] [serial]"
+	exit 1
+elif [[ $PRODUCT != 'v' && $PRODUCT != 't' ]]; then
+	echo "Invalid product entered, use 'v' for vaunt or 't' for tate. Usage: test-only-Arch.sh [v | t] [serial]"
+	exit 1
+fi
+SN=$2
+
 echo ":: Starting preparation work"
 
-cd .. &&
-mkdir -p pkg-archive && touch 1.xz && mv *.xz pkg-archive/ && sync &&
-echo $USER"@"$HOST | sudo -S rm -fv /usr/bin/usrp2_card_burner /usr/lib/uhd/utils/usrp2_card_burner.py /usr/lib/uhd/utils/usrp2_recovery.py &&
-makepkg &&
-echo $USER"@"$HOST | sudo -S pacman -U --noconfirm *.pkg.tar.xz &&
-cp src/uhd/host/build/examples/test_tx_trigger tests/ && 
-mv *.pkg.tar.xz pkg-archive/ && sync && cd scripts &&
+# cd .. &&
+# mkdir -p pkg-archive && touch 1.xz && mv *.xz pkg-archive/ && sync &&
+# echo $USER"@"$HOST | sudo -S rm -fv /usr/bin/usrp2_card_burner /usr/lib/uhd/utils/usrp2_card_burner.py /usr/lib/uhd/utils/usrp2_recovery.py &&
+# makepkg &&
+# echo $USER"@"$HOST | sudo -S pacman -U --noconfirm *.pkg.tar.xz &&
+# mv *.pkg.tar.xz pkg-archive/ && sync && cd scripts &&
+#cp src/uhd/host/build/examples/test_tx_trigger tests/ &&
+cd tests/
+if [ ! -d $REPORT_DIR ]; then
+  mkdir -p $REPORT_DIR;
+fi
 
 
 echo ":: Testing reachablity to DUT ::"
@@ -52,12 +66,18 @@ uhd_usrp_info --all --git
 
 echo ":: Starting Functional Tests" > log.txt
 
+NUM_TESTS=${#TEST_FILES[@]}
 for (( i=0; i<$NUM_TESTS; i++))
 do
 	echo ":: Executing ${TEST_NAMES[$i]} test" >> log.txt
 	#echo "$i"
 	pwd
-	python -u /home/notroot/testing/tests/${TEST_FILES[$i]}.py
+	if [ -z $SN ]; then
+		python -u ${TEST_FILES[$i]}.py -p $PRODUCT -o $REPORT_DIR
+	else
+		python -u ${TEST_FILES[$i]}.py -p $PRODUCT -s $SN -o $REPORT_DIR
+	fi
+
 	rv=$?
 	if [ $rv -eq 0 ]; then
 		PASSED_TESTS=$((PASSED_TESTS+1))
