@@ -96,20 +96,6 @@ cd reports
 REPORT_DIR=$(pwd)
 cd $curr
 
-echo ":: Testing reachablity to DUT ::"
-
-(ping -c1 -W1 $DUT_MGT_IP_ADDR1 && echo "Management port $DUT_MGT_IP_ADDR1 is reachable") || (echo "Management port $DUT_MGT_IP_ADDR1 is not reachable" && exit 1) &&
-(ping -c1 -W1 $DUT_DATA_IP_ADDR1 && echo "Data link port $DUT_DATA_IP_ADDR1 is reachable") || (echo "Data link port $DUT_DATA_IP_ADDR1 is not reachable" && exit 1) &&
-(ping -c1 -W1 $DUT_DATA_IP_ADDR2 && echo "Data link port $DUT_DATA_IP_ADDR2 is reachable") || (echo "Data link port $DUT_DATA_IP_ADDR2 is not reachable" && exit 1) &&
-
-echo ":: Testing reachablity to DUT passed ::"
-
-echo $USER"@"$HOST | sudo -S netstat -pnltu &&
-echo $USER"@"$HOST | sudo -S ss -lntupe &&
-
-echo ":: DUT Firmware Info ::"
-uhd_usrp_info --all --git
-
 echo ":: Starting Functional Tests" > log.txt
 
 if [ -z $TEST_LIST ]; then
