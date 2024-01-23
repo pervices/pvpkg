@@ -987,8 +987,14 @@ def main(iterations):
         std = np.asarray(std)
 
         # Determines the range of the y axis to plot
-        amplYTop = fft_y[np.isfinite(fft_y)].max() * 1.1
-        amplYBottom = fft_y[np.isfinite(fft_y)].min() * 1.1
+        amplYTop = 1
+        amplYBottom = -1
+        try:
+            amplYTop = fft_y[np.isfinite(fft_y)].max() * 1.1
+            amplYBottom = fft_y[np.isfinite(fft_y)].min() * 1.1
+        except:
+            amplYTop = 1
+            amplYBottom = -1
 
         FFT_plots = []
         FFT_plt_img = []
