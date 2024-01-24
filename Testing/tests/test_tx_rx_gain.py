@@ -60,8 +60,7 @@ def main(iterations):
                     s = report.get_image_io_stream()
                     plt.savefig(s, format='png')
                     # plt.savefig(fname='Gain plot for channel {} at wave_freq {} at Tx gain {}'.format(ch, it["wave_freq"],it["tx_gain"],format='png'))
-                    report.insert_text("Gain plot of {} for wave_freq = {} Hz at Tx gain {} : ".format(ch,it["wave_freq"], it["tx_gain"]))
-                    report.insert_image_from_io_stream(s)
+                    report.insert_image_from_io_stream(s, "Gain plot of channel {} for wave_freq = {} Hz at Tx gain {} and Rx gain {} : ".format(ch,it["wave_freq"], it["tx_gain"], it["rx_gain"]))
                     print("image inserted for Gain plot of {} for wave_freq = {} Hz at Tx gain {}".format(ch,it["wave_freq"], it["tx_gain"]))
 
                     try:

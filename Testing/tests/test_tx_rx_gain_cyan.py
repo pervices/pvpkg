@@ -59,15 +59,14 @@ def main(iterations):
                     s = report.get_image_io_stream()
                     plt.savefig(s, format='png')
                     # plt.savefig(fname='Gain plot for channel {} at wave_freq {} at Tx gain {}'.format(ch, it["wave_freq"],it["tx_gain"],format='png'))
-                    report.insert_text("Gain plot of {} for wave_freq = {} Hz at Tx gain {} : ".format(ch,it["wave_freq"], it["tx_gain"]))
-                    report.insert_image_from_io_stream(s)
-                    print("image inserted for Gain plot of {} for wave_freq = {} Hz at Tx gain {}".format(ch,it["wave_freq"], it["tx_gain"]))
+                    report.insert_image_from_io_stream(s, "Gain plot of channel {} for wave_freq = {} Hz at Tx gain {} and Rx gain {} : ".format(ch,it["wave_freq"], it["tx_gain"], it["rx_gain"]))
+                    print("image inserted for Gain plot of channel {} for wave_freq = {} Hz at Tx gain {} and Rx gain {}".format(ch,it["wave_freq"], it["tx_gain"], it["rx_gain"]))
 
                     try:
                         assert iteration_areas[b+1][a] - iteration_areas[b][a] > 1 #makes sure the difference in area is significant
                     except:
                         print("insignificant difference in area")
-                        report.insert_text("Test failed, insignificant difference in area")
+                        report.insert_text("The above test failed, insignificant difference in area")
                         # report.save()
                         # sys.exit(1)
     

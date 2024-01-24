@@ -36,21 +36,25 @@ class ClassicShipTestReport:
     def get_canvas(self):
         return self.c
 
-    def insert_image(self, image):
-        if (self.cursor_y < 240):
+    def insert_image(self, image, desc=None):
+        if (self.cursor_y < 260):   # Check enough space for image and text
             self.new_page()
 
+        if (desc != None):
+            self.insert_text(desc)
+
         self.c.drawImage(image, 146, self.cursor_y - 240, 320, 240)
-        self.move_cursor(0, 250)    # Move by extra 10
+        self.move_cursor(0, 260)    # Move by extra 20
+
 
     def get_image_io_stream(self) -> BytesIO:
         stream = BytesIO()
         return stream
 
-    def insert_image_from_io_stream(self, stream: BytesIO):
+    def insert_image_from_io_stream(self, stream: BytesIO, desc=None):
         stream.seek(0)
         image = ImageReader(stream)
-        self.insert_image(image)
+        self.insert_image(image, desc)
 
     def insert_text(self, text):
         self.c.drawString(self.cursor_x, self.cursor_y, text)
