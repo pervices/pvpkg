@@ -14,7 +14,7 @@ def main(iterations):
     sample_count = 0
 
     report = pdf_report.ClassicShipTestReport("tx_rx_gain")
-    report.insert_text("crimson gain test")
+    report.insert_title_page("Crimson TX RX Gain Test")
 
     for it in iterations:
         gen.dump(it)
@@ -60,8 +60,8 @@ def main(iterations):
                     s = report.get_image_io_stream()
                     plt.savefig(s, format='png')
                     # plt.savefig(fname='Gain plot for channel {} at wave_freq {} at Tx gain {}'.format(ch, it["wave_freq"],it["tx_gain"],format='png'))
-                    report.insert_image_from_io_stream(s, "Gain plot of channel {} for wave_freq = {} Hz at Tx gain {} and Rx gain {} : ".format(ch,it["wave_freq"], it["tx_gain"], it["rx_gain"]))
-                    print("image inserted for Gain plot of {} for wave_freq = {} Hz at Tx gain {}".format(ch,it["wave_freq"], it["tx_gain"]))
+                    report.insert_image_from_io_stream(s, "Gain plot of channel {} for wave_freq = {} Hz at Tx gain {} and Rx gain {} : ".format(a,it["wave_freq"], it["tx_gain"], it["rx_gain"]))
+                    print("image inserted for Gain plot of {} for wave_freq = {} Hz at Tx gain {}".format(a,it["wave_freq"], it["tx_gain"]))
 
                     try:
                         assert iteration_areas[b+1][a] - iteration_areas[b][a] > 1 #makes sure the difference in area is significant

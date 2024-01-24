@@ -290,7 +290,7 @@ if __name__ == "__main__":
     report = ClassicShipTestReport("test_report")
     report.insert_title_page()
 
-    for i in range(10):
+    for i in range(5):
         report.insert_text_large("Lorem Ipsum.")
         report.insert_text(" ")
         report.insert_text("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor")

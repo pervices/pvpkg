@@ -14,6 +14,7 @@ def main(iterations):
     sample_count = 0
 
     report = pdf_report.ClassicShipTestReport("tx_rx_gain")
+    report.insert_title_page("Cyan TX RX Gain")
 
     fail_flag = 0
 
