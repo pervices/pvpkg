@@ -32,7 +32,7 @@ class ClassicShipTestReport:
 
         self.c = canvas.Canvas(self.file_title, pagesize=landscape(letter))
         self.c.drawString(self.cursor_x, self.cursor_y, "Report")
-        self.move_cursor(0, 30)
+        self.move_cursor(0, 10)
 
     def get_canvas(self):
         return self.c
@@ -51,12 +51,12 @@ class ClassicShipTestReport:
 
     def insert_text(self, text):
         self.c.drawString(self.cursor_x, self.cursor_y, text)
-        self.move_cursor(0, 30)
+        self.move_cursor(0, 10)
 
     def move_cursor(self, x, y):
         # Move cursor by x y amount and insert new page if needed
-        self.cursor_x += (x + 5)
-        self.cursor_y -= (y + 5)
+        self.cursor_x += x
+        self.cursor_y -= y
         # insert new page
         if (self.cursor_y < 0):
             self.c.showPage()
