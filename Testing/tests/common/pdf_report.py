@@ -16,13 +16,13 @@ from reportlab.lib.utils import ImageReader
 
 class ClassicShipTestReport:
     c = None    # The Canvas
-    w, h = landscape(letter)
+    w, h = letter
     date = datetime.datetime.now()
     formattedDate = date.isoformat("-", "minutes")
     formattedDate = formattedDate.replace(':', '-')     # cant have ':' in file path
     file_title = None
     doc_title = None
-    cursor_x = 30
+    cursor_x = 50
     cursor_y = h-30
     
     def __init__(self, doc_title, serial_num = "SERIAL"):
@@ -30,15 +30,18 @@ class ClassicShipTestReport:
         self.file_title = "ship_report_" + doc_title + "_" + serial_num + "_" + self.formattedDate + ".pdf"
         self.doc_title = "ship_report_" + doc_title + "_" + serial_num + "_" + self.formattedDate
 
-        self.c = canvas.Canvas(self.file_title, pagesize=landscape(letter))
+        self.c = canvas.Canvas(self.file_title, pagesize=letter)
         self.insert_text(self.doc_title)
 
     def get_canvas(self):
         return self.c
 
     def insert_image(self, image):
-        self.c.drawImage(image, self.cursor_x, self.cursor_y, 600, 400)
-        self.move_cursor(0, 400)
+        if (self.cursor_y < 300):
+            self.new_page()
+
+        self.c.drawImage(image, self.cursor_x, self.cursor_y, 500, 300)
+        self.move_cursor(0, 300)
 
     def get_image_io_stream(self) -> BytesIO:
         stream = BytesIO()
@@ -60,8 +63,13 @@ class ClassicShipTestReport:
         # insert new page
         if (self.cursor_y < 20):
             self.c.showPage()
-            self.cursor_x = 30
+            self.cursor_x = 50
             self.cursor_y = self.h - 30
+    
+    def new_page(self):
+        self.c.showPage()
+        self.cursor_x = 50
+        self.cursor_y = self.h - 30
 
     def save(self):
         self.c.showPage()
