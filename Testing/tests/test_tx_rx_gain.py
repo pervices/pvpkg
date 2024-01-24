@@ -57,6 +57,9 @@ def main(iterations):
                     plt.plot(real[0:300], label='imags')
                     plt.legend()
 
+                    data = [["Center Frequency (Hz)", "Wave Frequency (Hz)", "Sample Rate (SPS)", "Sample Count", "TX Gain (dB)", "RX Gain (dB)"],
+                            [it["center_freq"], it["wave_freq"], it["sample_rate"], it["sample_count"], it["tx_gain"], it["rx_gain"]]]
+                    report.insert_table(data)
                     s = report.get_image_io_stream()
                     plt.savefig(s, format='png')
                     # plt.savefig(fname='Gain plot for channel {} at wave_freq {} at Tx gain {}'.format(ch, it["wave_freq"],it["tx_gain"],format='png'))

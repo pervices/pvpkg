@@ -117,8 +117,12 @@ class ClassicShipTestReport:
         logo_img = ImageReader(logo_img_data)
         self.c.drawImage(logo_img, 476, self.h - 26, 43 ,15)
 
-    def insert_table(self, table):
-        pass
+    def insert_table(self, data):
+        input_table = Table(data, style=[('GRID', (0,0), (6,1), 1, colors.black),
+                                ('BACKGROUND', (0,0), (6,0), '#D5D6D5')])
+        input_table.wrapOn(self.c, 400, 50)
+        self.move_cursor(0, 55)
+        input_table.drawOn(self.c, 106, self.cursor.y)
 
     def insert_page_header(self):
         # header
