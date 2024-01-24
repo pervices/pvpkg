@@ -45,12 +45,12 @@ class ClassicShipTestReport:
 
     def insert_image(self, image, desc=None):
         # Get enough space
-        self.move_cursor(122, 274)
+        self.move_cursor(0, 274 + 20)
 
         if (desc != None):
             self.insert_text(desc)
 
-        self.c.drawImage(image, self.cursor_x, self.cursor_y, 367, 274)
+        self.c.drawImage(image, 122, self.cursor_y, 367, 274)
         
     def get_image_io_stream(self) -> BytesIO:
         stream = BytesIO()
