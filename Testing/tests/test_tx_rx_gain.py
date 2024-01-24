@@ -14,6 +14,7 @@ def main(iterations):
     sample_count = 0
 
     report = pdf_report.ClassicShipTestReport("Crimson Gain Test")
+    report.insert_text("crimson gain test")
 
     for it in iterations:
         gen.dump(it)
@@ -62,9 +63,11 @@ def main(iterations):
                         plt.savefig(s, format='png')
                         # plt.savefig(fname='Gain plot for channel {} at wave_freq {} at Tx gain {}'.format(ch, it["wave_freq"],it["tx_gain"],format='png'))
                         report.insert_image_from_io_stream(s)
+                        report.insert_text("Gain plot for channel at wave_freq at Tx gain")
 
                         # plt.savefig(fname='Gain plot for channel {} at wave_freq {} at Tx gain {}'.format(ch, it["wave_freq"],it["tx_gain"],format='png'))
                     except:
+                        report.save()
                         sys.exit(1)
     report.save()
 
