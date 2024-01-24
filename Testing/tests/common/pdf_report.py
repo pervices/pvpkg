@@ -23,7 +23,7 @@ class ClassicShipTestReport:
     file_title = None
     doc_title = None
     cursor_x = 50
-    cursor_y = h-50
+    cursor_y = h-30
     
     def __init__(self, doc_title, serial_num = "SERIAL"):
         self.serial_num = serial_num
@@ -79,15 +79,15 @@ class ClassicShipTestReport:
         self.cursor_x += x
         self.cursor_y -= y
         # insert new page
-        if (self.cursor_y < 50):
+        if (self.cursor_y < 30):
             self.c.showPage()
             self.cursor_x = 50
-            self.cursor_y = self.h - 50
+            self.cursor_y = self.h - 30
     
     def new_page(self):
         self.c.showPage()
         self.cursor_x = 50
-        self.cursor_y = self.h - 50
+        self.cursor_y = self.h - 30
 
     def save(self):
         self.c.showPage()
@@ -105,7 +105,9 @@ class ClassicShipTestReport:
 if __name__ == "__main__":
     report = ClassicShipTestReport("test_report")
 
-    for i in range(10):
-        report.insert_text_large("A quick brown fox jumps over a lazy dog.")
+    report.insert_text_large("Lorem Ipsum.")
+
+    for i in range(2):
+        report.insert_text("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.")
 
     report.save()
