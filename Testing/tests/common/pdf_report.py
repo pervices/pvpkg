@@ -122,7 +122,7 @@ class ClassicShipTestReport:
                                 ('BACKGROUND', (0,0), (6,0), '#D5D6D5')])
         input_table.wrapOn(self.c, 400, 50)
         self.move_cursor(0, 55)
-        input_table.drawOn(self.c, 106, self.cursor.y)
+        input_table.drawOn(self.c, 106, self.cursor_y)
 
     def insert_page_header(self):
         # header
