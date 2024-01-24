@@ -2,6 +2,7 @@
 
 import datetime
 import os
+import subprocess
 #PDF IMPORTS
 from reportlab.pdfgen import canvas
 from reportlab.lib import colors
@@ -26,8 +27,10 @@ class ClassicShipTestReport:
     cursor_x = 50
     cursor_y = h-30
     current_page = 1
-    num_channels = 4    # This should not be here for obvious reasons 
-    
+    # This should not be here for obvious reasons 
+    num_channels = 4    
+    channel_names = ["Channel A", "Channel B", "Channel C", "Channel D"]
+
     def __init__(self, doc_title, serial_num = "SERIAL"):
         self.serial_num = serial_num
         self.file_title = "ship_report_" + doc_title + "_" + serial_num + "_" + self.formattedDate + ".pdf"
@@ -178,6 +181,9 @@ class ClassicShipTestReport:
         time.append(subprocess.getstatusoutput("cat hold.txt | grep 'Fuse02' | cut --complement -d ':' -f1")[1])
         time.append(subprocess.getstatusoutput("cat hold.txt | grep 'Fuse03' | cut --complement -d ':' -f1")[1])
         time.append(subprocess.getstatusoutput("cat hold.txt | grep 'GCC' | cut --complement -d ':' -f1")[1])
+
+        num_channels = self.num_channels
+        channel_names = self.channel_names
 
         # Setting up rx dictionary to hold board data
         rx_info = {}
