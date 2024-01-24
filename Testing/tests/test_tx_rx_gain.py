@@ -13,7 +13,7 @@ def main(iterations):
 
     sample_count = 0
 
-    report = pdf_report.ClassicShipTestReport("Crimson Gain Test")
+    report = pdf_report.ClassicShipTestReport("Crimson_Gain_Test")
     report.insert_text("crimson gain test")
 
     for it in iterations:
@@ -64,7 +64,7 @@ def main(iterations):
                         # plt.savefig(fname='Gain plot for channel {} at wave_freq {} at Tx gain {}'.format(ch, it["wave_freq"],it["tx_gain"],format='png'))
                         report.insert_image_from_io_stream(s)
                         report.insert_text("Gain plot for channel at wave_freq at Tx gain")
-
+                        print("image should be inserted")
                         # plt.savefig(fname='Gain plot for channel {} at wave_freq {} at Tx gain {}'.format(ch, it["wave_freq"],it["tx_gain"],format='png'))
                     except:
                         report.save()
@@ -74,6 +74,6 @@ def main(iterations):
 
 #Change the argument in the following function to select how many channels to test
 main(gen.lo_band_gain_tx(4))
-main(gen.lo_band_gain_rx(4))
-main(gen.hi_band_gain_tx(4))
-main(gen.hi_band_gain_rx(4))
+# main(gen.lo_band_gain_rx(4))
+# main(gen.hi_band_gain_tx(4))
+# main(gen.hi_band_gain_rx(4))
