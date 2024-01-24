@@ -49,7 +49,6 @@ def main(iterations):
                 #print(area)
                 for b in range(len(iteration_areas)-1):
                     try:
-                        assert iteration_areas[b+1][a] - iteration_areas[b][a] > 1 #makes sure the difference in area is significant
                         #plot and save real component
                         plt.figure()
                         plt.title("Gain plot of {} for wave_freq = {} Hz".format(ch,it["wave_freq"]))
@@ -65,6 +64,8 @@ def main(iterations):
                         report.insert_image_from_io_stream(s)
                         report.insert_text("Gain plot for channel at wave_freq at Tx gain")
                         print("image should be inserted")
+
+                        assert iteration_areas[b+1][a] - iteration_areas[b][a] > 1 #makes sure the difference in area is significant
                         # plt.savefig(fname='Gain plot for channel {} at wave_freq {} at Tx gain {}'.format(ch, it["wave_freq"],it["tx_gain"],format='png'))
                     except:
                         report.save()
