@@ -110,7 +110,7 @@ class ClassicShipTestReport:
     def insert_logo(self):
         logo_img_data = open(os.getcwd() + "/pervices-logo.png", "rb")
         logo_img = ImageReader(logo_img_data)
-        self.c.drawImage(logo_img, 476, self.h - 21, 43 ,15)
+        self.c.drawImage(logo_img, 476, self.h - 26, 43 ,15)
 
     def insert_table(self, table):
         pass
@@ -118,13 +118,13 @@ class ClassicShipTestReport:
     def insert_page_header(self):
         # header
         t = self.c.beginText()
-        t.setTextOrigin(50, self.h - 15)
+        t.setTextOrigin(50, self.h - 20)
         t.setFont("Helvetica", 8)
         t.textLine(self.doc_title)
         self.c.drawText(t)
         # page number
         pg = self.c.beginText()
-        pg.setTextOrigin(562, self.h - 15)
+        pg.setTextOrigin(562, self.h - 20)
         pg.setFont("Helvetica", 8)
         pg.textLine(str(self.current_page))
         self.c.drawText(pg)
@@ -141,6 +141,8 @@ class ClassicShipTestReport:
 
     def insert_unit_list(self):
         # Get the infomation needed
+        # This is copied from shiptest.py
+
         #Using the terminal to pull unit info
         # os.system('rm ' + current_dir + '/shiptest_out.txt')
         os.system('touch shiptest_out.txt')
@@ -165,6 +167,8 @@ class ClassicShipTestReport:
         self.insert_text("Unit Name: " + unit_name)
 
     def insert_unit_table(self):
+        # This is copied from shiptest.py
+
         # organizing info in order of time, tx, and rx using gterminal grep
         os.system('uhd_usrp_info --all > shiptest_out.txt')
         os.system("touch hold.txt")
