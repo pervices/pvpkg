@@ -44,12 +44,16 @@ class ClassicShipTestReport:
         return self.c
 
     def insert_image(self, image, desc=None):
+        # Check space for both image and text
+        if (self.cursor_y < 300):
+            self.new_page()
+
         if (desc != None):
             self.insert_text(desc)
 
         # Get enough space
         self.move_cursor(0, 274)
-
+        
         self.c.drawImage(image, 122, self.cursor_y, 367, 274)
         self.insert_line_separator()
         
