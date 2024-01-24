@@ -25,7 +25,7 @@ class ClassicShipTestReport:
     cursor_x = 30
     cursor_y = h-30
     
-    def __init__(self, doc_title, serial_num = "SERIAL_UNDEF"):
+    def __init__(self, doc_title, serial_num = "SERIAL"):
         self.serial_num = serial_num
         self.file_title = "ship_report_" + doc_title + "_" + serial_num + "_" + self.formattedDate + ".pdf"
         self.doc_title = "ship_report_" + doc_title + "_" + serial_num + "_" + self.formattedDate
@@ -57,10 +57,10 @@ class ClassicShipTestReport:
         self.cursor_x += x
         self.cursor_y -= y
         # insert new page
-        if (self.cursor_y < 0):
+        if (self.cursor_y < 20):
             self.c.showPage()
             self.cursor_x = 30
-            self.cursor_y = h-30
+            self.cursor_y = self.h - 30
 
     def save(self):
         self.c.showPage()
