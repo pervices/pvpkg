@@ -77,6 +77,11 @@ class ClassicShipTestReport:
         t.textLine(text)
         self.c.drawText(t)
 
+    def insert_line_separator(self):
+        # Get some space
+        self.move_cursor(0, 13)
+        self.c.line(50, self.cursor_y + 6, self.w - 50, self.cursor_y + 6)
+
     def move_cursor(self, x, y):
         # Move cursor by x y amount and insert new page if needed
         self.cursor_x += x
@@ -101,7 +106,7 @@ class ClassicShipTestReport:
     def insert_logo(self):
         logo_img_data = open(os.getcwd() + "/pervices-logo.png", "rb")
         logo_img = ImageReader(logo_img_data)
-        self.c.drawImage(logo_img, 476, self.h - 20, 43 ,15)
+        self.c.drawImage(logo_img, 476, self.h - 21, 43 ,15)
 
     def insert_table(self, table):
         pass
@@ -124,7 +129,9 @@ class ClassicShipTestReport:
     
     def insert_title_page(self):
         self.insert_text_large("Title Text")
+        self.insert_line_separator()
         self.insert_unit_list()
+        self.insert_line_separator()
         self.insert_unit_table()
         self.new_page()
 
