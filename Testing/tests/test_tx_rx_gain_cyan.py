@@ -6,10 +6,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 import sys
 
-from PIL import Image
-from io import BytesIO 
-from reportlab.lib.utils import ImageReader
-
 def main(iterations):
 
     # Collect.
@@ -63,12 +59,10 @@ def main(iterations):
                         plt.plot(real[0:300], label='imags')
                         plt.legend()
 
-                        imgdata = BytesIO()
-                        plt.savefig(imgdata, format='png')
+                        s = report.get_image_io_stream
+                        plt.savefig(s, format='png')
                         # plt.savefig(fname='Gain plot for channel {} at wave_freq {} at Tx gain {}'.format(ch, it["wave_freq"],it["tx_gain"],format='png'))
-                        imgdata.seek(0)
-                        Image = ImageReader(imgdata)
-                        report.insert_image(Image)
+                        report.insert_image_from_io_stream(s)
                     
                     except:
                         sys.exit(1)

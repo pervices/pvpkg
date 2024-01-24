@@ -10,6 +10,10 @@ from reportlab.lib.pagesizes import letter, landscape
 from reportlab.lib.enums import TA_LEFT
 from reportlab.platypus import Image, Paragraph, Table, Frame, TableStyle
 
+from PIL import Image
+from io import BytesIO 
+from reportlab.lib.utils import ImageReader
+
 class ClassicShipTestReport:
     c = None    # The Canvas
     w, h = landscape(letter)
@@ -34,6 +38,14 @@ class ClassicShipTestReport:
 
     def insert_image(self, image):
         self.c.drawImage(image, cursor_x, cursor_y, 600, 400)
+
+    def get_image_io_stream(self) -> BytesIO:
+        stream = BytesIO()
+
+    def insert_image_from_io_stream(self, BytesIO: stream):
+        stream.seek(0)
+        image = ImageReader(stream)
+        self.c.insert_image(image)
 
     def save(self):
         self.c.showPage()
