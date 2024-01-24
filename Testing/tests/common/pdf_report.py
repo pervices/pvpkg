@@ -37,7 +37,8 @@ class ClassicShipTestReport:
         return self.c
 
     def insert_image(self, image):
-        self.c.drawImage(image, cursor_x, cursor_y, 600, 400)
+        self.c.drawImage(image, self.cursor_x, self.cursor_y, 600, 400)
+        self.cursor_y += 400
 
     def get_image_io_stream(self) -> BytesIO:
         stream = BytesIO()
@@ -47,10 +48,15 @@ class ClassicShipTestReport:
         image = ImageReader(stream)
         self.c.insert_image(image)
 
+    def insert_text(self, text):
+        self.c.drawString(self.cursor_x, self.cursor_y, text)
+        self.cursor_y += 30
+
     def save(self):
         self.c.showPage()
         self.c.save()
 
 if __name__ == "__main__":
     report = ClassicShipTestReport("test_report")
+    report.insert_text("A quick brown fox jumps over a lazy dog.")
     report.save()
