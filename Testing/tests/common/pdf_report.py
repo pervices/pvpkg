@@ -101,8 +101,6 @@ class ClassicShipTestReport:
     def insert_logo(self):
         logo_img_data = open(os.getcwd() + "/pervices-logo.png", "rb")
         logo_img = ImageReader(logo_img_data)
-        
-        # for fixed page corner logo only
         self.c.drawImage(logo_img, 476, self.h - 20, 43 ,15)
 
     def insert_table(self, table):
@@ -126,7 +124,21 @@ class ClassicShipTestReport:
     
     def insert_title_page(self):
         self.insert_text_large("Title Text")
-        self.insert_logo()
+        self.insert_unit_list()
+        self.insert_unit_table()
+        self.new_page()
+
+    def insert_unit_list(self):
+        self.insert_text("Computer Date: ")
+        self.insert_text("UHD Version : ")
+        self.insert_text("RTM : ")
+        self.insert_text("Server Version: ")
+        self.insert_text("FPGA Version: ")
+        self.insert_text("Unit Time: ")
+    
+    def insert_unit_table(self):
+        self.insert_text("Time Board Information: ")
+        pass
 
 if __name__ == "__main__":
     report = ClassicShipTestReport("test_report")
