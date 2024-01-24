@@ -37,11 +37,11 @@ class ClassicShipTestReport:
         return self.c
 
     def insert_image(self, image):
-        if (self.cursor_y < 300):
+        if (self.cursor_y < 320):
             self.new_page()
 
-        self.c.drawImage(image, self.cursor_x, self.cursor_y, 500, 300)
-        self.move_cursor(0, 300)
+        self.c.drawImage(image, self.cursor_x, self.cursor_y - 320, height=320)
+        self.move_cursor(0, 330)    # Move by extra 10
 
     def get_image_io_stream(self) -> BytesIO:
         stream = BytesIO()
