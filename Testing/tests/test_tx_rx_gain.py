@@ -13,7 +13,7 @@ def main(iterations):
 
     sample_count = 0
 
-    report = pdf_report.ClassicShipTestReport("Crimson_Gain_Test")
+    report = pdf_report.ClassicShipTestReport("tx_rx_gain")
     report.insert_text("crimson gain test")
 
     for it in iterations:
@@ -48,26 +48,27 @@ def main(iterations):
             for a in range(len(iteration_areas[0])):
                 #print(area)
                 for b in range(len(iteration_areas)-1):
+                    #plot and save real component
+                    plt.figure()
+                    plt.title("Gain plot of {} for wave_freq = {} Hz".format(ch,it["wave_freq"]))
+                    plt.xlabel("Sample")
+                    plt.ylabel("Amplitude")
+                    plt.plot(imag[0:300], label='reals')
+                    plt.plot(real[0:300], label='imags')
+                    plt.legend()
+
+                    s = report.get_image_io_stream
+                    plt.savefig(s, format='png')
+                    # plt.savefig(fname='Gain plot for channel {} at wave_freq {} at Tx gain {}'.format(ch, it["wave_freq"],it["tx_gain"],format='png'))
+                    report.insert_image_from_io_stream(s)
+                    report.insert_text("Gain plot for channel at wave_freq at Tx gain")
+                    print("image should be inserted")
+
                     try:
-                        #plot and save real component
-                        plt.figure()
-                        plt.title("Gain plot of {} for wave_freq = {} Hz".format(ch,it["wave_freq"]))
-                        plt.xlabel("Sample")
-                        plt.ylabel("Amplitude")
-                        plt.plot(imag[0:300], label='reals')
-                        plt.plot(real[0:300], label='imags')
-                        plt.legend()
-
-                        s = report.get_image_io_stream
-                        plt.savefig(s, format='png')
-                        # plt.savefig(fname='Gain plot for channel {} at wave_freq {} at Tx gain {}'.format(ch, it["wave_freq"],it["tx_gain"],format='png'))
-                        report.insert_image_from_io_stream(s)
-                        report.insert_text("Gain plot for channel at wave_freq at Tx gain")
-                        print("image should be inserted")
-
                         assert iteration_areas[b+1][a] - iteration_areas[b][a] > 1 #makes sure the difference in area is significant
-                        # plt.savefig(fname='Gain plot for channel {} at wave_freq {} at Tx gain {}'.format(ch, it["wave_freq"],it["tx_gain"],format='png'))
                     except:
+                        print("insignificant difference in area")
+                        report.insert_text("Test failed, insignificant difference in area")
                         report.save()
                         sys.exit(1)
     report.save()
