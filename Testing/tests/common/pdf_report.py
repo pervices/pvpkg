@@ -19,10 +19,11 @@ class ClassicShipTestReport:
     w, h = landscape(letter)
     date = datetime.datetime.now()
     formattedDate = date.isoformat("-", "minutes")
+    formattedDate.replace(':', '-')     # cant have ':' in file path
     file_title = None
     doc_title = None
     cursor_x = 30
-    cursor_y = h-50
+    cursor_y = h-30
     
     def __init__(self, doc_title, serial_num = "SERIAL_UNDEF"):
         self.serial_num = serial_num
@@ -31,14 +32,14 @@ class ClassicShipTestReport:
 
         self.c = canvas.Canvas(self.file_title, pagesize=landscape(letter))
         self.c.drawString(self.cursor_x, self.cursor_y, "Report")
-        self.cursor_y += 30 
+        self.move_cursor(0, 30)
 
     def get_canvas(self):
         return self.c
 
     def insert_image(self, image):
         self.c.drawImage(image, self.cursor_x, self.cursor_y, 600, 400)
-        self.cursor_y += 400
+        self.move_cursor(0, 400)
 
     def get_image_io_stream(self) -> BytesIO:
         stream = BytesIO()
@@ -50,7 +51,17 @@ class ClassicShipTestReport:
 
     def insert_text(self, text):
         self.c.drawString(self.cursor_x, self.cursor_y, text)
-        self.cursor_y += 30
+        self.move_cursor(0, 30)
+
+    def move_cursor(self, x, y):
+        # Move cursor by x y amount and insert new page if needed
+        self.cursor_x += (x + 5)
+        self.cursor_y -= (y + 5)
+        # insert new page
+        if (self.cursor_y < 0):
+            self.c.showPage()
+            self.cursor_x = 30
+            self.cursor_y = h-30
 
     def save(self):
         self.c.showPage()
