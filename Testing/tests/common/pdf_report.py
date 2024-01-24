@@ -37,14 +37,14 @@ class ClassicShipTestReport:
         return self.c
 
     def insert_image(self, image, desc=None):
-        if (self.cursor_y < 260):   # Check enough space for image and text
+        if (self.cursor_y < 292):   # Check enough space for image and text
             self.new_page()
 
         if (desc != None):
             self.insert_text(desc)
 
-        self.c.drawImage(image, 146, self.cursor_y - 240, 320, 240)
-        self.move_cursor(0, 260)    # Move by extra 20
+        self.c.drawImage(image, 146, self.cursor_y - 274, 367, 274)
+        self.move_cursor(0, 304)    # Move by extra 30
 
 
     def get_image_io_stream(self) -> BytesIO:
@@ -73,7 +73,7 @@ class ClassicShipTestReport:
     def new_page(self):
         self.c.showPage()
         self.cursor_x = 50
-        self.cursor_y = self.h - 30
+        self.cursor_y = self.h - 50
 
     def save(self):
         self.c.showPage()
