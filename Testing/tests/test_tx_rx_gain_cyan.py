@@ -15,6 +15,8 @@ def main(iterations):
 
     report = pdf_report.ClassicShipTestReport("tx_rx_gain")
 
+    fail_flag = 0
+
     for it in iterations:
         gen.dump(it)
         sample_count = it["sample_count"]
@@ -59,18 +61,23 @@ def main(iterations):
                     s = report.get_image_io_stream()
                     plt.savefig(s, format='png')
                     # plt.savefig(fname='Gain plot for channel {} at wave_freq {} at Tx gain {}'.format(ch, it["wave_freq"],it["tx_gain"],format='png'))
-                    report.insert_image_from_io_stream(s, "Gain plot of channel {} for wave_freq = {} Hz at Tx gain {} and Rx gain {} : ".format(ch,it["wave_freq"], it["tx_gain"], it["rx_gain"]))
-                    print("image inserted for Gain plot of channel {} for wave_freq = {} Hz at Tx gain {} and Rx gain {}".format(ch,it["wave_freq"], it["tx_gain"], it["rx_gain"]))
+                    report.insert_image_from_io_stream(s, "Gain plot of channel {} for wave_freq = {} Hz at Tx gain {} and Rx gain {} : ".format(it["channels"],it["wave_freq"], it["tx_gain"], it["rx_gain"]))
+                    print("image inserted for Gain plot of channel {} for wave_freq = {} Hz at Tx gain {} and Rx gain {}".format(it["channels"],it["wave_freq"], it["tx_gain"], it["rx_gain"]))
 
                     try:
                         assert iteration_areas[b+1][a] - iteration_areas[b][a] > 1 #makes sure the difference in area is significant
                     except:
                         print("insignificant difference in area")
                         report.insert_text("The above test failed, insignificant difference in area")
+                        report.insert_text(" ")
+                        report.insert_text(" ")
+                        fail_flag = 1
                         # report.save()
                         # sys.exit(1)
     
     report.save()
+    if (fail_flag == 1):
+        sys.exit(1)
 
 
 #Change the argument in the following function to select how many channels to test
