@@ -49,13 +49,13 @@ class ClassicShipTestReport:
             self.new_page()
 
         if (desc != None):
+            self.insert_line_separator()
             self.insert_text(desc)
 
         # Get enough space
-        self.move_cursor(0, 274)
-        
+        self.move_cursor(0, 274 + 5)
+
         self.c.drawImage(image, 122, self.cursor_y, 367, 274)
-        self.insert_line_separator()
         
     def get_image_io_stream(self) -> BytesIO:
         stream = BytesIO()
