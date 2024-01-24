@@ -23,7 +23,7 @@ class ClassicShipTestReport:
     file_title = None
     doc_title = None
     cursor_x = 50
-    cursor_y = h-30
+    cursor_y = h-50
     
     def __init__(self, doc_title, serial_num = "SERIAL"):
         self.serial_num = serial_num
@@ -37,16 +37,14 @@ class ClassicShipTestReport:
         return self.c
 
     def insert_image(self, image, desc=None):
-        if (self.cursor_y < 292):   # Check enough space for image and text
-            self.new_page()
+        # Get enough space
+        self.move_cursor(122, 274)
 
         if (desc != None):
             self.insert_text(desc)
 
-        self.c.drawImage(image, 122, self.cursor_y - 274, 367, 274)
-        self.move_cursor(0, 274+18)    # Move by extra 18
-
-
+        self.c.drawImage(image, self.cursor_x, self.cursor_y, 367, 274)
+        
     def get_image_io_stream(self) -> BytesIO:
         stream = BytesIO()
         return stream
@@ -57,18 +55,34 @@ class ClassicShipTestReport:
         self.insert_image(image, desc)
 
     def insert_text(self, text):
-        self.c.drawString(self.cursor_x, self.cursor_y, text)
-        self.move_cursor(0, 18)
+        # Get enough space
+        self.move_cursor(0, 11 + 2)
+        # Create text and draw it
+        t = self.c.beginText()
+        t.setTextOrigin(self.cursor_x, self.cursor_y)
+        t.setFont("Helvetica", 11)
+        t.textLine(text)
+        self.c.drawText(t)
+
+    def insert_text_large(self, text):
+        # Get enough space
+        self.move_cursor(0, 26 + 2)
+        # Create text and draw it
+        t = self.c.beginText()
+        t.setTextOrigin(self.cursor_x, self.cursor_y)
+        t.setFont("Helvetica", 26)
+        t.textLine(text)
+        self.c.drawText(t)
 
     def move_cursor(self, x, y):
         # Move cursor by x y amount and insert new page if needed
         self.cursor_x += x
         self.cursor_y -= y
         # insert new page
-        if (self.cursor_y < 20):
+        if (self.cursor_y < 50):
             self.c.showPage()
             self.cursor_x = 50
-            self.cursor_y = self.h - 30
+            self.cursor_y = self.h - 50
     
     def new_page(self):
         self.c.showPage()
@@ -79,7 +93,19 @@ class ClassicShipTestReport:
         self.c.showPage()
         self.c.save()
 
+    def insert_table(self, table):
+        pass
+
+    def insert_page_header(self):
+        pass
+    
+    def insert_title_page(self):
+        pass
+
 if __name__ == "__main__":
     report = ClassicShipTestReport("test_report")
-    report.insert_text("A quick brown fox jumps over a lazy dog.")
+
+    for i in range(10):
+        report.insert_text_large("A quick brown fox jumps over a lazy dog.")
+
     report.save()
