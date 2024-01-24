@@ -98,8 +98,7 @@ class ClassicShipTestReport:
         # insert new page
         if (self.cursor_y < 30):
             self.c.showPage()
-            compensate_y = 30 - self.cursor_y
-            self.cursor_y = self.h - 30 - compensate_y
+            self.cursor_y = self.h - 30 - y     # move down again so nothing get cut off
             self.current_page += 1
             self.insert_page_header()
     
