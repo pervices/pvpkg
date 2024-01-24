@@ -1,6 +1,7 @@
 # Generate single page PDF reports
 
 import datetime
+import os
 #PDF IMPORTS
 from reportlab.pdfgen import canvas
 from reportlab.lib import colors
@@ -97,16 +98,12 @@ class ClassicShipTestReport:
         self.c.showPage()
         self.c.save()
 
-    def insert_logo(self, size = "small"):
-        logo_img_data = open(current_dir + "/pervices-logo.png", "rb")
+    def insert_logo(self):
+        logo_img_data = open(os.getcwd() + "/pervices-logo.png", "rb")
         logo_img = ImageReader(logo_img_data)
         
-        if (size == "large"):
-            self.move_cursor(346, 77)
-            self.c.drawImage(logo_img, self.cursor_x, self.cursor_y, 216, 77)
-        elif (size == "small"): 
-            # for fixed page corner logo only
-            self.c.drawImage(logo_img, 476, self.h - 10, 86 ,30)
+        # for fixed page corner logo only
+        self.c.drawImage(logo_img, 476, self.h - 20, 43 ,15)
 
     def insert_table(self, table):
         pass
@@ -114,26 +111,22 @@ class ClassicShipTestReport:
     def insert_page_header(self):
         # header
         t = self.c.beginText()
-        t.setTextOrigin(50, self.h - 10)
+        t.setTextOrigin(50, self.h - 15)
         t.setFont("Helvetica", 8)
         t.textLine(self.doc_title)
         self.c.drawText(t)
         # page number
         pg = self.c.beginText()
-        pg.setTextOrigin(562, self.h-10)
+        pg.setTextOrigin(562, self.h - 15)
         pg.setFont("Helvetica", 8)
         pg.textLine(str(self.current_page))
         self.c.drawText(pg)
         # logo
-        insert_logo()
+        self.insert_logo()
     
     def insert_title_page(self):
-        t = self.c.beginText()
-        t.setTextOrigin(50, self.h - 30)
-        t.setFont("Helvetica", 77)
-        t.textLine("Title page Text")
-        self.c.drawText(t)
-        insert_logo(size="large")
+        self.insert_text_large("Title Text")
+        self.insert_logo()
 
 if __name__ == "__main__":
     report = ClassicShipTestReport("test_report")
