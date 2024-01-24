@@ -15,8 +15,8 @@ from io import BytesIO
 from reportlab.lib.utils import ImageReader
 
 class ClassicShipTestReport:
-    c = None    # The Canvas
-    w, h = letter
+    c = None            # The Canvas
+    w, h = letter       # 612, 792
     date = datetime.datetime.now()
     formattedDate = date.isoformat("-", "minutes")
     formattedDate = formattedDate.replace(':', '-')     # cant have ':' in file path
@@ -24,6 +24,7 @@ class ClassicShipTestReport:
     doc_title = None
     cursor_x = 50
     cursor_y = h-30
+    current_page = 1
     
     def __init__(self, doc_title, serial_num = "SERIAL"):
         self.serial_num = serial_num
@@ -31,6 +32,7 @@ class ClassicShipTestReport:
         self.doc_title = "ship_report_" + doc_title + "_" + serial_num + "_" + self.formattedDate
 
         self.c = canvas.Canvas(self.file_title, pagesize=letter)
+        self.insert_page_header()
         self.insert_text(self.doc_title)
 
     def get_canvas(self):
@@ -81,38 +83,73 @@ class ClassicShipTestReport:
         # insert new page
         if (self.cursor_y < 30):
             self.c.showPage()
-            self.cursor_x = 50
             self.cursor_y = self.h - 30
+            self.current_page += 1
+            self.insert_page_header()
     
     def new_page(self):
         self.c.showPage()
-        self.cursor_x = 50
         self.cursor_y = self.h - 30
+        self.current_page += 1
+        self.insert_page_header()
 
     def save(self):
         self.c.showPage()
         self.c.save()
 
+    def insert_logo(self, size = "small"):
+        logo_img_data = open(current_dir + "/pervices-logo.png", "rb")
+        logo_img = ImageReader(logo_img_data)
+        
+        if (size == "large"):
+            self.move_cursor(346, 77)
+            self.c.drawImage(logo_img, self.cursor_x, self.cursor_y, 216, 77)
+        elif (size == "small"): 
+            # for fixed page corner logo only
+            self.c.drawImage(logo_img, 476, h - 10, 86 ,30)
+
     def insert_table(self, table):
         pass
 
     def insert_page_header(self):
-        pass
+        # header
+        t = self.c.beginText()
+        t.setTextOrigin(50, h - 10)
+        t.setFont("Helvetica", 8)
+        t.textLine(self.doc_title)
+        self.c.drawText(t)
+        # page number
+        pg = self.c.beginText()
+        pg.setTextOrigin(562, h-10)
+        pg.setFont("Helvetica", 8)
+        pg.textLine(self.current_page)
+        self.c.drawText(pg)
+        # logo
+        insert_logo()
     
     def insert_title_page(self):
-        pass
+        t = self.c.beginText()
+        t.setTextOrigin(50, h - 30)
+        t.setFont("Helvetica", 77)
+        t.textLine("Title page Text")
+        self.c.drawText(t)
+        insert_logo(size="large")
 
 if __name__ == "__main__":
     report = ClassicShipTestReport("test_report")
+    report.insert_title_page()
 
-    report.insert_text_large("Lorem Ipsum.")
-    report.insert_text(" ")
-    report.insert_text("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor")
-    report.insert_text("incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis")
-    report.insert_text("nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.")
-    report.insert_text("Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore")
-    report.insert_text("eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt")
-    report.insert_text("in culpa qui officia deserunt mollit anim id est laborum.")
-    report.insert_text(" ")
+    for i in range(10):
+        report.insert_text_large("Lorem Ipsum.")
+        report.insert_text(" ")
+        report.insert_text("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor")
+        report.insert_text("incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis")
+        report.insert_text("nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.")
+        report.insert_text("Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore")
+        report.insert_text("eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt")
+        report.insert_text("in culpa qui officia deserunt mollit anim id est laborum.")
+        report.insert_text(" ")
+
+    # report.insert_table()
 
     report.save()
