@@ -230,7 +230,7 @@ class ClassicShipTestReport:
         #Positional Values
         title_font_size = 26
         title_x = 100
-        title_y = 575
+        title_y = 700
         list_font_size = 14
         list_x = title_x - 5
         list_y = title_y - 20
@@ -238,7 +238,7 @@ class ClassicShipTestReport:
         logo_width, logo_height = 200, 100
         board_width, board_height = 100, 100
         colWidth, rowHeight = (1.5*inch), (0.2*inch)
-        board_x, board_y = 3, list_y - rowHeight*16.25
+        board_x, board_y = 20, list_y - rowHeight*16.25
 
         #Time Board table
         board_info = [["Time Board Information: "], ["Board"], ["Branch"], ["Revision"], ["Date"], ["MCU Serial"], ["Fuse 00"], ["Fuse 02"], ["Fuse 03"], ["GCC"]]
@@ -250,7 +250,8 @@ class ClassicShipTestReport:
         board_table.drawOn(self.c, board_x, board_y)
         board_y -= rowHeight*11
 
-        graph_max = int(np.ceil(self.num_channels/4))
+        # graph_max = int(np.ceil(self.num_channels/4))
+        graph_max = 1
 
         for z in range(graph_max): #This ensures theres columns per page
 
@@ -279,8 +280,6 @@ class ClassicShipTestReport:
             board_table = Table(board_info, colWidths=colWidth, rowHeights=rowHeight, style=board_styles)
             board_table.wrapOn(self.c, board_width, board_height)
             board_table.drawOn(self.c, board_x, board_y)
-        
-        self.new_page()
         
 
 if __name__ == "__main__":
