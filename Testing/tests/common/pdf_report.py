@@ -47,7 +47,7 @@ class ClassicShipTestReport:
     def insert_image_from_io_stream(self, stream: BytesIO):
         stream.seek(0)
         image = ImageReader(stream)
-        self.c.insert_image(image)
+        self.insert_image(image)
 
     def insert_text(self, text):
         self.c.drawString(self.cursor_x, self.cursor_y, text)
