@@ -1,6 +1,7 @@
 from common import sigproc
 from common import engine
 from common import generator as gen
+from common import pdf_report
 import matplotlib.pyplot as plt
 import numpy as np
 import sys
@@ -11,6 +12,8 @@ def main(iterations):
     vsnks = []
 
     sample_count = 0
+
+    report = pdf_report.ClassicShipTestReport("Crimson Gain Test")
 
     for it in iterations:
         gen.dump(it)
@@ -46,7 +49,6 @@ def main(iterations):
                 for b in range(len(iteration_areas)-1):
                     try:
                         assert iteration_areas[b+1][a] - iteration_areas[b][a] > 1 #makes sure the difference in area is significant
-                    except:
                         #plot and save real component
                         plt.figure()
                         plt.title("Gain plot of {} for wave_freq = {} Hz".format(ch,it["wave_freq"]))
@@ -55,8 +57,16 @@ def main(iterations):
                         plt.plot(imag[0:300], label='reals')
                         plt.plot(real[0:300], label='imags')
                         plt.legend()
-                        plt.savefig(fname='Gain plot for channel {} at wave_freq {} at Tx gain {}'.format(ch, it["wave_freq"],it["tx_gain"],format='png'))
+
+                        s = report.get_image_io_stream
+                        plt.savefig(s, format='png')
+                        # plt.savefig(fname='Gain plot for channel {} at wave_freq {} at Tx gain {}'.format(ch, it["wave_freq"],it["tx_gain"],format='png'))
+                        report.insert_image_from_io_stream(s)
+
+                        # plt.savefig(fname='Gain plot for channel {} at wave_freq {} at Tx gain {}'.format(ch, it["wave_freq"],it["tx_gain"],format='png'))
+                    except:
                         sys.exit(1)
+    report.save()
 
 
 #Change the argument in the following function to select how many channels to test
