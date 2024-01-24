@@ -19,7 +19,7 @@ class ClassicShipTestReport:
     w, h = landscape(letter)
     date = datetime.datetime.now()
     formattedDate = date.isoformat("-", "minutes")
-    formattedDate.replace(':', '-')     # cant have ':' in file path
+    formattedDate = formattedDate.replace(':', '-')     # cant have ':' in file path
     file_title = None
     doc_title = None
     cursor_x = 30
