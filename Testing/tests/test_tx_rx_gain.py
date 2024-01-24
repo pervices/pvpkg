@@ -57,7 +57,7 @@ def main(iterations):
                     plt.plot(real[0:300], label='imags')
                     plt.legend()
 
-                    s = report.get_image_io_stream
+                    s = report.get_image_io_stream()
                     plt.savefig(s, format='png')
                     # plt.savefig(fname='Gain plot for channel {} at wave_freq {} at Tx gain {}'.format(ch, it["wave_freq"],it["tx_gain"],format='png'))
                     report.insert_image_from_io_stream(s)
