@@ -246,8 +246,8 @@ class ClassicShipTestReport:
             board_info[z+1].append((time[z]))
 
         board_table = Table(board_info, colWidths=colWidth, rowHeights=rowHeight, style=board_styles)
-        board_table.wrapOn(pdf, board_width, board_height)
-        board_table.drawOn(pdf, board_x, board_y)
+        board_table.wrapOn(self.c, board_width, board_height)
+        board_table.drawOn(self.c, board_x, board_y)
         board_y -= rowHeight*11
 
         graph_max = int(np.ceil(self.num_channels/4))
@@ -264,8 +264,8 @@ class ClassicShipTestReport:
                     board_info[z+1].append((tx_info["TX: " + name][z]))
 
             board_table = Table(board_info, rowHeights=rowHeight, style=board_styles)
-            board_table.wrapOn(pdf, board_width, board_height)
-            board_table.drawOn(pdf, board_x, board_y)
+            board_table.wrapOn(self.c, board_width, board_height)
+            board_table.drawOn(self.c, board_x, board_y)
             board_y -= rowHeight*11
 
             #Adding Rx Board Table
@@ -277,8 +277,8 @@ class ClassicShipTestReport:
                     board_info[z+1].append((rx_info["RX: " + rxname][z]))
 
             board_table = Table(board_info, colWidths=colWidth, rowHeights=rowHeight, style=board_styles)
-            board_table.wrapOn(pdf, board_width, board_height)
-            board_table.drawOn(pdf, board_x, board_y)
+            board_table.wrapOn(self.c, board_width, board_height)
+            board_table.drawOn(self.c, board_x, board_y)
         
         self.new_page()
         
