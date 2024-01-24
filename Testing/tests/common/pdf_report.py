@@ -31,8 +31,7 @@ class ClassicShipTestReport:
         self.doc_title = "ship_report_" + doc_title + "_" + serial_num + "_" + self.formattedDate
 
         self.c = canvas.Canvas(self.file_title, pagesize=landscape(letter))
-        self.c.drawString(self.cursor_x, self.cursor_y, "Report")
-        self.move_cursor(0, 10)
+        self.insert_text(self.doc_title)
 
     def get_canvas(self):
         return self.c
@@ -51,7 +50,7 @@ class ClassicShipTestReport:
 
     def insert_text(self, text):
         self.c.drawString(self.cursor_x, self.cursor_y, text)
-        self.move_cursor(0, 10)
+        self.move_cursor(0, 18)
 
     def move_cursor(self, x, y):
         # Move cursor by x y amount and insert new page if needed
