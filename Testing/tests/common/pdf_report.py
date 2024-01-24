@@ -122,7 +122,7 @@ class ClassicShipTestReport:
         pg = self.c.beginText()
         pg.setTextOrigin(562, self.h-10)
         pg.setFont("Helvetica", 8)
-        pg.textLine(self.current_page)
+        pg.textLine(str(self.current_page))
         self.c.drawText(pg)
         # logo
         insert_logo()
