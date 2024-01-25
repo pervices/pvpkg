@@ -13,9 +13,6 @@ def main(iterations, title="Crimson TX RX Gain Test"):
 
     sample_count = 0
 
-    report = pdf_report.ClassicShipTestReport("tx_rx_gain")
-    report.insert_title_page(title)
-
     fail_flag = 0
 
     for it in iterations:
@@ -77,27 +74,51 @@ def main(iterations, title="Crimson TX RX Gain Test"):
 
                 s = report.get_image_io_stream()
                 plt.savefig(s, format='png')
-                plt.close()
+                plt.close()     # remember to close or you'll use up all the memory 
                 img = report.get_image_from_io_stream(s)
                 images.append(img)
                 # plt.savefig(fname='Gain plot for channel {} at wave_freq {} at Tx gain {}'.format(ch, it["wave_freq"],it["tx_gain"],format='png'))
                 # report.insert_image_from_io_stream(s, "Gain plot of channel {} for wave_freq = {} Hz at Tx gain {} and Rx gain {} : ".format(a,it["wave_freq"], it["tx_gain"], it["rx_gain"]))
                 print("image inserted for Gain plot of {} for wave_freq = {} Hz at Tx gain {}".format(a,it["wave_freq"], it["tx_gain"]))
 
-            if (current_vsnk_i == (len(vsnks) - 1)):
+            if (current_vsnk_i == (len(vsnks) - 1) or len(vsnks) == 1):
                 # dont draw unnecessary stuff
+                report.insert_text(title)
                 report.insert_table(data)
+                report.insert_text(" ")
                 report.insert_image_quad_grid(images, desc)
                 report.new_page()
 
-
-    report.save()
+    # report.save()
     if (fail_flag == 1):
-        sys.exit(1)
+        return 1    # fail
+        # sys.exit(1)
+    else: 
+        return 0
 
+def to_pass_fail(input) -> str:
+    if (input == 0):
+        return "Pass"
+    else:
+        return "Fail"
 
-#Change the argument in the following function to select how many channels to test
-main(gen.lo_band_gain_tx(4))
-# main(gen.lo_band_gain_rx(4))
-# main(gen.hi_band_gain_tx(4))
-# main(gen.hi_band_gain_rx(4))
+if __name__ == "__main__":
+
+    global report
+    report = pdf_report.ClassicShipTestReport("tx_rx_gain")
+    report.insert_title_page("Crimson TX RX Gain Test")
+
+    test_status = [["Test", "Status"]]
+
+    # Change the argument in the following function to select how many channels to test
+    ret = main(gen.lo_band_gain_tx(4), "Low Band TX Gain Test")
+    test_status.append([to_pass_fail(ret), "Low Band TX Gain Test"])
+    #ret = main(gen.lo_band_gain_rx(4), "Low Band RX Gain Test")
+    #test_status.append([to_pass_fail(ret), "Low Band RX Gain Test"])
+    #ret = main(gen.hi_band_gain_tx(4), "High Band TX Gain Test")
+    #test_status.append([to_pass_fail(ret), "High Band TX Gain Test"])
+    #ret = main(gen.hi_band_gain_rx(4), "High Band RX Gain Test")
+    #test_status.append([to_pass_fail(ret), "High Band RX Gain Test"])
+
+    report.insert_table(test_status)
+    report.save()
