@@ -106,6 +106,7 @@ def to_pass_fail(input) -> str:
 if __name__ == "__main__":
 
     global report
+    
     report = pdf_report.ClassicShipTestReport("tx_rx_gain")
     report.insert_title_page("Crimson TX RX Gain Test")
 
@@ -114,12 +115,20 @@ if __name__ == "__main__":
     # Change the argument in the following function to select how many channels to test
     ret = main(gen.lo_band_gain_tx(4), "Low Band TX Gain Test")
     test_status.append(["Low Band TX Gain Test", to_pass_fail(ret)])
-    #ret = main(gen.lo_band_gain_rx(4), "Low Band RX Gain Test")
+
+    ret = main(gen.lo_band_gain_rx(4), "Low Band RX Gain Test")
     test_status.append(["Low Band RX Gain Test", to_pass_fail(ret)])
-    #ret = main(gen.hi_band_gain_tx(4), "High Band TX Gain Test")
+
+    ret = main(gen.hi_band_gain_tx(4), "High Band TX Gain Test")
     test_status.append(["High Band TX Gain Test", to_pass_fail(ret)])
-    #ret = main(gen.hi_band_gain_rx(4), "High Band RX Gain Test")
+
+    ret = main(gen.hi_band_gain_rx(4), "High Band RX Gain Test")
     test_status.append(["High Band RX Gain Test", to_pass_fail(ret)])
 
-    report.insert_table(test_status)
+    report.insert_text_large("Test Results")
+    report.insert_table(test_status, 20)
     report.save()
+
+    for test in test_status:
+        if "Fail" in test:
+            sys.exit(1)
