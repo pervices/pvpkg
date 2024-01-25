@@ -115,7 +115,7 @@ class ClassicShipTestReport:
     def insert_logo(self):
         logo_img_data = open(os.getcwd() + "/pervices-logo.png", "rb")
         logo_img = ImageReader(logo_img_data)
-        self.c.drawImage(logo_img, 476, self.h - 26, 43 ,15)
+        self.c.drawImage(logo_img, 476, self.h - 25, 43 ,15)
 
     def insert_table(self, data):
         input_table = Table(data, style=[('GRID', (0,0), (6,1), 1, colors.black),
@@ -140,7 +140,7 @@ class ClassicShipTestReport:
         # logo
         self.insert_logo()
         # line
-        self.c.line(30, 30, self.w - 30, 30)
+        self.c.line(30, self.h - 28, self.w - 30, self.h - 28)
     
     def insert_title_page(self, title_text="Ship Test Report"):
         self.insert_text_large(title_text)
