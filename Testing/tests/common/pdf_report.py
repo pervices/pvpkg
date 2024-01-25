@@ -63,17 +63,16 @@ class ClassicShipTestReport:
             self.new_page()
         
         if (desc != None):
-            self.insert_line_separator()
             self.insert_text(desc)
         
         # Get enough space
         self.move_cursor(0, 427 + 5)
 
         # Draw 4 image, each of size 284*213
-        self.c.drawImage(image[0], 22, self.cursor_y + 213, 284, 213)
-        self.c.drawImage(image[1], 22 + 284, self.cursor_y + 213, 284, 213)
-        self.c.drawImage(image[2], 22, self.cursor_y, 284, 213)
-        self.c.drawImage(image[3], 22 + 284, self.cursor_y, 284, 213)
+        self.c.drawImage(images[0], 22, self.cursor_y + 213, 284, 213)
+        self.c.drawImage(images[1], 22 + 284, self.cursor_y + 213, 284, 213)
+        self.c.drawImage(images[2], 22, self.cursor_y, 284, 213)
+        self.c.drawImage(images[3], 22 + 284, self.cursor_y, 284, 213)
 
         
     def get_image_io_stream(self) -> BytesIO:
