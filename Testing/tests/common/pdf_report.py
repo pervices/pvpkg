@@ -56,6 +56,25 @@ class ClassicShipTestReport:
         self.move_cursor(0, 274 + 5)
 
         self.c.drawImage(image, 122, self.cursor_y, 367, 274)
+
+    def insert_image_quad_grid(self, images, desc=None):
+        # Check space
+        if (self.cursor_y < 427):
+            self.new_page()
+        
+        if (desc != None):
+            self.insert_line_separator()
+            self.insert_text(desc)
+        
+        # Get enough space
+        self.move_cursor(0, 427 + 5)
+
+        # Draw 4 image, each of size 284*213
+        self.c.drawImage(image[0], 22, self.cursor_y + 213, 284, 213)
+        self.c.drawImage(image[1], 22 + 284, self.cursor_y + 213, 284, 213)
+        self.c.drawImage(image[2], 22, self.cursor_y, 284, 213)
+        self.c.drawImage(image[3], 22 + 284, self.cursor_y, 284, 213)
+
         
     def get_image_io_stream(self) -> BytesIO:
         stream = BytesIO()
@@ -65,6 +84,12 @@ class ClassicShipTestReport:
         stream.seek(0)
         image = ImageReader(stream)
         self.insert_image(image, desc)
+
+    @staticmethod
+    def get_image_from_io_stream(stream: BytesIO):
+        stream.seek(0)
+        image = ImageReader(stream)
+        return image
 
     def insert_text(self, text):
         # Get enough space
