@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import sys
 
-def main(iterations, title="Crimson TX RX Gain Test") -> int:
+def main(iterations, title="Crimson TX RX Gain Test") -> :
 
     # Collect.
     vsnks = []
@@ -63,9 +63,7 @@ def main(iterations, title="Crimson TX RX Gain Test") -> int:
                     except:
                         fail_flag = 1
             
-            if (current_vsnk_i == (len(vsnks) - 1) or len(vsnks) == 1):
-                # dont draw or plot unnecessary stuff
-
+        
                 #plot and save real component
                 plt.figure()
                 plt.title("Gain plot of ch{} for wave_freq = {} Hz".format(a,it["wave_freq"]))
@@ -84,6 +82,8 @@ def main(iterations, title="Crimson TX RX Gain Test") -> int:
                 # report.insert_image_from_io_stream(s, "Gain plot of channel {} for wave_freq = {} Hz at Tx gain {} and Rx gain {} : ".format(a,it["wave_freq"], it["tx_gain"], it["rx_gain"]))
                 print("image inserted for Gain plot of {} for wave_freq = {} Hz at Tx gain {}".format(a,it["wave_freq"], it["tx_gain"]))
 
+            if (current_vsnk_i == (len(vsnks) - 1) or len(vsnks) == 1):
+                # dont draw unnecessary stuff
                 report.insert_text_large(title)
                 report.insert_table(data)
                 report.insert_text(" ")
