@@ -89,7 +89,7 @@ class ClassicShipTestReport:
     def insert_line_separator(self):
         # Get some space
         self.move_cursor(0, 13)
-        self.c.line(70, self.cursor_y + 5, self.w - 70, self.cursor_y + 5)
+        self.c.line(65, self.cursor_y + 5, self.w - 65, self.cursor_y + 5)
 
     def move_cursor(self, x, y):
         # Move cursor by x y amount and insert new page if needed
@@ -115,7 +115,7 @@ class ClassicShipTestReport:
     def insert_logo(self):
         logo_img_data = open(os.getcwd() + "/pervices-logo.png", "rb")
         logo_img = ImageReader(logo_img_data)
-        self.c.drawImage(logo_img, 476, self.h - 25, 43 ,15)
+        self.c.drawImage(logo_img, 476, self.h - 23, 43 ,15)
 
     def insert_table(self, data):
         input_table = Table(data, style=[('GRID', (0,0), (6,1), 1, colors.black),
@@ -127,13 +127,13 @@ class ClassicShipTestReport:
     def insert_page_header(self):
         # header
         t = self.c.beginText()
-        t.setTextOrigin(50, self.h - 20)
+        t.setTextOrigin(50, self.h - 19)
         t.setFont("Helvetica", 8)
         t.textLine(self.doc_title)
         self.c.drawText(t)
         # page number
         pg = self.c.beginText()
-        pg.setTextOrigin(562, self.h - 20)
+        pg.setTextOrigin(562, self.h - 19)
         pg.setFont("Helvetica", 8)
         pg.textLine(str(self.current_page))
         self.c.drawText(pg)
