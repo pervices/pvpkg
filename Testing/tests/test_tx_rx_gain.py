@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import sys
 
-def main(iterations, title="Crimson TX RX Gain Test"):
+def main(iterations, title="Crimson TX RX Gain Test") -> int:
 
     # Collect.
     vsnks = []
@@ -22,15 +22,15 @@ def main(iterations, title="Crimson TX RX Gain Test"):
         rx_stack = [ (10.0, int(it["sample_count"])) ]
         vsnk = engine.run(it["channels"], it["wave_freq"], it["sample_rate"], it["center_freq"], it["tx_gain"], it["rx_gain"], tx_stack, rx_stack)
         vsnks.append(vsnk)
-        print("new iteration")
-        print(len(vsnks))
+        # print("new iteration")
+        # print(len(vsnks))
 
         iteration_areas = []
         current_vsnk_i = 0
         for vsnk in vsnks:
             channel_areas = []
             current_vsnk_i += 1
-            print("vsnk")
+            # print("vsnk")
             for ch, channel in enumerate(vsnk):
                 # print("channel")
                 real = [datum.real for datum in channel.data()]
@@ -62,7 +62,10 @@ def main(iterations, title="Crimson TX RX Gain Test"):
                         assert iteration_areas[b+1][a] - iteration_areas[b][a] > 1 
                     except:
                         fail_flag = 1
-                    
+            
+            if (current_vsnk_i == (len(vsnks) - 1) or len(vsnks) == 1):
+                # dont draw or plot unnecessary stuff
+
                 #plot and save real component
                 plt.figure()
                 plt.title("Gain plot of ch{} for wave_freq = {} Hz".format(a,it["wave_freq"]))
@@ -81,9 +84,7 @@ def main(iterations, title="Crimson TX RX Gain Test"):
                 # report.insert_image_from_io_stream(s, "Gain plot of channel {} for wave_freq = {} Hz at Tx gain {} and Rx gain {} : ".format(a,it["wave_freq"], it["tx_gain"], it["rx_gain"]))
                 print("image inserted for Gain plot of {} for wave_freq = {} Hz at Tx gain {}".format(a,it["wave_freq"], it["tx_gain"]))
 
-            if (current_vsnk_i == (len(vsnks) - 1) or len(vsnks) == 1):
-                # dont draw unnecessary stuff
-                report.insert_text(title)
+                report.insert_text_large(title)
                 report.insert_table(data)
                 report.insert_text(" ")
                 report.insert_image_quad_grid(images, desc)
@@ -112,13 +113,13 @@ if __name__ == "__main__":
 
     # Change the argument in the following function to select how many channels to test
     ret = main(gen.lo_band_gain_tx(4), "Low Band TX Gain Test")
-    test_status.append([to_pass_fail(ret), "Low Band TX Gain Test"])
+    test_status.append(["Low Band TX Gain Test", to_pass_fail(ret)])
     #ret = main(gen.lo_band_gain_rx(4), "Low Band RX Gain Test")
-    #test_status.append([to_pass_fail(ret), "Low Band RX Gain Test"])
+    test_status.append(["Low Band RX Gain Test", to_pass_fail(ret)])
     #ret = main(gen.hi_band_gain_tx(4), "High Band TX Gain Test")
-    #test_status.append([to_pass_fail(ret), "High Band TX Gain Test"])
+    test_status.append(["High Band TX Gain Test", to_pass_fail(ret)])
     #ret = main(gen.hi_band_gain_rx(4), "High Band RX Gain Test")
-    #test_status.append([to_pass_fail(ret), "High Band RX Gain Test"])
+    test_status.append(["High Band RX Gain Test", to_pass_fail(ret)])
 
     report.insert_table(test_status)
     report.save()
