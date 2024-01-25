@@ -89,7 +89,7 @@ class ClassicShipTestReport:
     def insert_line_separator(self):
         # Get some space
         self.move_cursor(0, 13)
-        self.c.line(65, self.cursor_y + 5, self.w - 65, self.cursor_y + 5)
+        self.c.line(70, self.cursor_y + 5, self.w - 70, self.cursor_y + 5)
 
     def move_cursor(self, x, y):
         # Move cursor by x y amount and insert new page if needed
@@ -139,6 +139,8 @@ class ClassicShipTestReport:
         self.c.drawText(pg)
         # logo
         self.insert_logo()
+        # line
+        self.c.line(30, 30, self.w - 30, 30)
     
     def insert_title_page(self, title_text="Ship Test Report"):
         self.insert_text_large(title_text)
