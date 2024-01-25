@@ -141,14 +141,14 @@ class ClassicShipTestReport:
         logo_img = ImageReader(logo_img_data)
         self.c.drawImage(logo_img, 476, self.h - 23, 43 ,15)
 
-    def insert_table(self, data):
+    def insert_table(self, data, x_offset = 0):
         rows = len(data)
         space_y_needed = rows * 25 + 5
         input_table = Table(data, style=[('GRID', (0,0), (-1,-1), 1, colors.black),
                                 ('BACKGROUND', (0,0), (-1,0), '#D5D6D5')])
         input_table.wrapOn(self.c, 400, 50)
         self.move_cursor(0, space_y_needed)
-        input_table.drawOn(self.c, 30, self.cursor_y)
+        input_table.drawOn(self.c, 30 + x_offset, self.cursor_y)
 
     def insert_page_header(self):
         # header
