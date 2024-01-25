@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import sys
 
-def main(iterations, title="Crimson TX RX Gain Test") -> :
+def main(iterations, title="Crimson TX RX Gain Test") -> int:
 
     # Collect.
     vsnks = []
