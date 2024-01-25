@@ -25,15 +25,15 @@ def main(iterations, title="Crimson TX RX Gain Test"):
         rx_stack = [ (10.0, int(it["sample_count"])) ]
         vsnk = engine.run(it["channels"], it["wave_freq"], it["sample_rate"], it["center_freq"], it["tx_gain"], it["rx_gain"], tx_stack, rx_stack)
         vsnks.append(vsnk)
-        #print("a")
-        #print(len(vsnks))
+        print("new iteration")
+        print(len(vsnks))
 
         iteration_areas = []
         for vsnk in vsnks:
             channel_areas = []
             print("vsnk")
             for ch, channel in enumerate(vsnk):
-                print("channel")
+                # print("channel")
                 real = [datum.real for datum in channel.data()]
                 imag = [datum.imag for datum in channel.data()]
                 #print('the value of the real array is', real)
@@ -75,15 +75,15 @@ def main(iterations, title="Crimson TX RX Gain Test"):
 
                 s = report.get_image_io_stream()
                 plt.savefig(s, format='png')
+                plt.close()
                 img = report.get_image_from_io_stream(s)
                 images.append(img)
                 # plt.savefig(fname='Gain plot for channel {} at wave_freq {} at Tx gain {}'.format(ch, it["wave_freq"],it["tx_gain"],format='png'))
                 # report.insert_image_from_io_stream(s, "Gain plot of channel {} for wave_freq = {} Hz at Tx gain {} and Rx gain {} : ".format(a,it["wave_freq"], it["tx_gain"], it["rx_gain"]))
                 print("image inserted for Gain plot of {} for wave_freq = {} Hz at Tx gain {}".format(a,it["wave_freq"], it["tx_gain"]))
 
-            report.insert_image_quad_grid(images, desc)
             report.insert_table(data)
-            report.insert_line_separator()
+            report.insert_image_quad_grid(images, desc)
             report.new_page()
 
 
