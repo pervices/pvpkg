@@ -29,8 +29,10 @@ def main(iterations, title="Crimson TX RX Gain Test"):
         print(len(vsnks))
 
         iteration_areas = []
+        current_vsnk_i = 0
         for vsnk in vsnks:
             channel_areas = []
+            current_vsnk_i += 1
             print("vsnk")
             for ch, channel in enumerate(vsnk):
                 # print("channel")
@@ -82,9 +84,11 @@ def main(iterations, title="Crimson TX RX Gain Test"):
                 # report.insert_image_from_io_stream(s, "Gain plot of channel {} for wave_freq = {} Hz at Tx gain {} and Rx gain {} : ".format(a,it["wave_freq"], it["tx_gain"], it["rx_gain"]))
                 print("image inserted for Gain plot of {} for wave_freq = {} Hz at Tx gain {}".format(a,it["wave_freq"], it["tx_gain"]))
 
-            report.insert_table(data)
-            report.insert_image_quad_grid(images, desc)
-            report.new_page()
+            if (current_vsnk_i == (len(vsnks) - 1)):
+                # dont draw unnecessary stuff
+                report.insert_table(data)
+                report.insert_image_quad_grid(images, desc)
+                report.new_page()
 
 
     report.save()
