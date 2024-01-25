@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import sys
 
-def main(iterations):
+def main(iterations, title="Crimson TX RX Gain Test"):
 
     # Collect.
     vsnks = []
@@ -14,7 +14,7 @@ def main(iterations):
     sample_count = 0
 
     report = pdf_report.ClassicShipTestReport("tx_rx_gain")
-    report.insert_title_page("Crimson TX RX Gain Test")
+    report.insert_title_page(title)
 
     fail_flag = 0
 
@@ -31,8 +31,9 @@ def main(iterations):
         iteration_areas = []
         for vsnk in vsnks:
             channel_areas = []
+            print("vsnk")
             for ch, channel in enumerate(vsnk):
-
+                print("channel")
                 real = [datum.real for datum in channel.data()]
                 imag = [datum.imag for datum in channel.data()]
                 #print('the value of the real array is', real)
@@ -51,7 +52,7 @@ def main(iterations):
             images = []
             data = [["Center Frequency (Hz)", "Wave Frequency (Hz)", "Sample Rate (SPS)", "Sample Count", "TX Gain (dB)", "RX Gain (dB)"],
                         [it["center_freq"], it["wave_freq"], it["sample_rate"], it["sample_count"], it["tx_gain"], it["rx_gain"]]]
-            report.insert_table(data)
+            
             
             for a in range(len(iteration_areas[0])):
                 #print(area)
@@ -65,7 +66,7 @@ def main(iterations):
                     
                 #plot and save real component
                 plt.figure()
-                plt.title("Gain plot of {} for wave_freq = {} Hz".format(a,it["wave_freq"]))
+                plt.title("Gain plot of ch{} for wave_freq = {} Hz".format(a,it["wave_freq"]))
                 plt.xlabel("Sample")
                 plt.ylabel("Amplitude")
                 plt.plot(imag[0:300], label='reals')
@@ -81,7 +82,10 @@ def main(iterations):
                 print("image inserted for Gain plot of {} for wave_freq = {} Hz at Tx gain {}".format(a,it["wave_freq"], it["tx_gain"]))
 
             report.insert_image_quad_grid(images, desc)
-                    
+            report.insert_table(data)
+            report.insert_line_separator()
+            report.new_page()
+
 
     report.save()
     if (fail_flag == 1):
