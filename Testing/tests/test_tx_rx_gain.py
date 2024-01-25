@@ -16,6 +16,8 @@ def main(iterations):
     report = pdf_report.ClassicShipTestReport("tx_rx_gain")
     report.insert_title_page("Crimson TX RX Gain Test")
 
+    fail_flag = 0
+
     for it in iterations:
         gen.dump(it)
         sample_count = it["sample_count"]
@@ -45,35 +47,45 @@ def main(iterations):
             #areas = np.array(areas).T.tolist() # Transpose.
             print("the areas of channel 0-3 for gain [5,10,20] are:", iteration_areas)
             # Assert area is increasing per channel.
+            desc = "Gain plot of channel {} for wave_freq = {} Hz at Tx gain {} and Rx gain {} : ".format(it["channels"], it["wave_freq"], it["tx_gain"], it["rx_gain"])
+            images = []
+            data = [["Center Frequency (Hz)", "Wave Frequency (Hz)", "Sample Rate (SPS)", "Sample Count", "TX Gain (dB)", "RX Gain (dB)"],
+                        [it["center_freq"], it["wave_freq"], it["sample_rate"], it["sample_count"], it["tx_gain"], it["rx_gain"]]]
+            report.insert_table(data)
+            
             for a in range(len(iteration_areas[0])):
                 #print(area)
                 for b in range(len(iteration_areas)-1):
-                    #plot and save real component
-                    plt.figure()
-                    plt.title("Gain plot of {} for wave_freq = {} Hz".format(ch,it["wave_freq"]))
-                    plt.xlabel("Sample")
-                    plt.ylabel("Amplitude")
-                    plt.plot(imag[0:300], label='reals')
-                    plt.plot(real[0:300], label='imags')
-                    plt.legend()
-
-                    data = [["Center Frequency (Hz)", "Wave Frequency (Hz)", "Sample Rate (SPS)", "Sample Count", "TX Gain (dB)", "RX Gain (dB)"],
-                            [it["center_freq"], it["wave_freq"], it["sample_rate"], it["sample_count"], it["tx_gain"], it["rx_gain"]]]
-                    report.insert_table(data)
-                    s = report.get_image_io_stream()
-                    plt.savefig(s, format='png')
-                    # plt.savefig(fname='Gain plot for channel {} at wave_freq {} at Tx gain {}'.format(ch, it["wave_freq"],it["tx_gain"],format='png'))
-                    report.insert_image_from_io_stream(s, "Gain plot of channel {} for wave_freq = {} Hz at Tx gain {} and Rx gain {} : ".format(a,it["wave_freq"], it["tx_gain"], it["rx_gain"]))
-                    print("image inserted for Gain plot of {} for wave_freq = {} Hz at Tx gain {}".format(a,it["wave_freq"], it["tx_gain"]))
-
+                    # test for area
                     try:
-                        assert iteration_areas[b+1][a] - iteration_areas[b][a] > 1 #makes sure the difference in area is significant
+                        # make sure the difference in area is significant
+                        assert iteration_areas[b+1][a] - iteration_areas[b][a] > 1 
                     except:
-                        print("insignificant difference in area")
-                        report.insert_text("The above test failed, insignificant difference in area")
-                        # report.save()
-                        # sys.exit(1)
+                        fail_flag = 1
+                    
+                #plot and save real component
+                plt.figure()
+                plt.title("Gain plot of {} for wave_freq = {} Hz".format(a,it["wave_freq"]))
+                plt.xlabel("Sample")
+                plt.ylabel("Amplitude")
+                plt.plot(imag[0:300], label='reals')
+                plt.plot(real[0:300], label='imags')
+                plt.legend()
+
+                s = report.get_image_io_stream()
+                plt.savefig(s, format='png')
+                img = report.get_image_from_io_stream(s)
+                images.append(img)
+                # plt.savefig(fname='Gain plot for channel {} at wave_freq {} at Tx gain {}'.format(ch, it["wave_freq"],it["tx_gain"],format='png'))
+                # report.insert_image_from_io_stream(s, "Gain plot of channel {} for wave_freq = {} Hz at Tx gain {} and Rx gain {} : ".format(a,it["wave_freq"], it["tx_gain"], it["rx_gain"]))
+                print("image inserted for Gain plot of {} for wave_freq = {} Hz at Tx gain {}".format(a,it["wave_freq"], it["tx_gain"]))
+
+            report.insert_image_quad_grid(images, desc)
+                    
+
     report.save()
+    if (fail_flag == 1):
+        sys.exit(1)
 
 
 #Change the argument in the following function to select how many channels to test
