@@ -62,10 +62,10 @@ def main(iterations, title="Cyan TX RX Gain Test") -> int:
                     # test for area
                     try:
                         # make sure the difference in area is significant
-                        print("ch" + str(a) + " iteration_areas[b+1][a] - iteration_areas[b][a] = " + str(iteration_areas[b+1][a] - iteration_areas[b][a]))
+                        print("Channel " + str(a) + ": iteration_areas[b+1][a] - iteration_areas[b][a] = " + str(iteration_areas[b+1][a] - iteration_areas[b][a]))
                         assert iteration_areas[b+1][a] - iteration_areas[b][a] > 1
                     except:
-                        print("This test has failed")
+                        print("Failed: Insignificant (<1) difference in area between gain settings")
                         fail_flag = 1
                         current_test_only_fail_flag = 1
 
