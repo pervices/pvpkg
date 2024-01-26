@@ -155,7 +155,7 @@ class ClassicShipTestReport:
 
     def insert_table(self, data, x_offset = 0, desc = None):
         rows = len(data)
-        space_y_needed = rows * 20 + 5
+        space_y_needed = rows * 18 + 5
         input_table = Table(data, style=[('GRID', (0,0), (-1,-1), 1, colors.black),
                                 ('BACKGROUND', (0,0), (-1,0), '#D5D6D5')])
         input_table.wrapOn(self.c, 400, 50)
@@ -165,7 +165,7 @@ class ClassicShipTestReport:
             self.move_cursor(0, 13)
             # Create text and draw it
             t = self.c.beginText()
-            t.setTextOrigin(30 + x_offset, self.cursor_y + rows * 20 - 10)
+            t.setTextOrigin(30 + x_offset, self.cursor_y + rows * 18 + 2)
             t.setFont("Helvetica", 11)
             t.textLine(desc)
             self.c.drawText(t)
