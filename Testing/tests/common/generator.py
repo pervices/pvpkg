@@ -266,7 +266,7 @@ class cyan:
             center_freq = 15000000  # 15MHz
             sample_rate = 9803922
             tx_gain = 10 #increasing the fixed gain may cause saturation
-            for rx_gain in [ 5, 10, 20 ]:
+            for rx_gain in [ 5, 10, 15 ]:
                 yield locals()
 
         @staticmethod
@@ -279,7 +279,7 @@ class cyan:
             center_freq = 15000000  # 15MHz
             sample_rate = 9803922
             rx_gain = 10#increasing the fixed gain may cause saturation
-            for tx_gain in [ 5, 10, 20 ]:
+            for tx_gain in [ 5, 10, 15 ]:
                 yield locals()
 
         @staticmethod
@@ -361,7 +361,7 @@ class cyan:
             center_freq = 2000000000    # 2GHz
             sample_rate = 9803922
             rx_gain = 40#increasing the fixed gain may cause saturation
-            for tx_gain in [ 5, 10, 20 ]:
+            for tx_gain in [ 5, 10, 15 ]:
                 yield locals()
 
         @staticmethod
@@ -375,7 +375,7 @@ class cyan:
             center_freq = 2000000000    # 2GHz
             sample_rate = 9803922
             tx_gain = 40#increasing the fixed gain may cause saturation
-            for rx_gain in [ 10, 20, 30 ]:
+            for rx_gain in [ 10, 20, 25 ]:
                 yield locals()
 
 
@@ -432,7 +432,7 @@ class cyan:
             center_freq = 9000000000   # 9GHz
             sample_rate = 9803922
             rx_gain = 60#increasing the fixed gain may cause saturation
-            for tx_gain in [ 10, 30, 35 ]:
+            for tx_gain in [ 15, 30, 35 ]:
                 yield locals()
 
         @staticmethod
@@ -446,6 +446,6 @@ class cyan:
             center_freq = 9000000000   # 9GHz
             sample_rate = 9803922
             tx_gain = 60#increasing the fixed gain may cause saturation
-            for rx_gain in [ 10, 40, 45 ]:
+            for rx_gain in [ 15, 40, 45 ]:
                 yield locals()
 
