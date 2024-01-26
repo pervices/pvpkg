@@ -137,9 +137,21 @@ class ClassicShipTestReport:
         self.c.save()
 
     def insert_logo(self):
-        logo_img_data = open(os.getcwd() + "/pervices-logo.png", "rb")
-        logo_img = ImageReader(logo_img_data)
-        self.c.drawImage(logo_img, 476, self.h - 23, 43 ,15)
+        try:
+            logo_img_data = open(os.getcwd() + "/pervices-logo.png", "rb")
+            logo_img = ImageReader(logo_img_data)
+            self.c.drawImage(logo_img, 476, self.h - 23, 43, 15)
+        except:
+            try: 
+                logo_img_data = open(os.getcwd() + "../../pervices-logo.png", "rb")
+                logo_img = ImageReader(logo_img_data)
+                self.c.drawImage(logo_img, 476, self.h - 23, 43, 15)
+            except:
+                t = self.c.beginText()
+                t.setTextOrigin(476, self.h - 23)
+                t.setFont("Helvetica", 12)
+                t.textLine("Per Vices Corp.")
+                self.c.drawText(t)
 
     def insert_table(self, data, x_offset = 0):
         rows = len(data)
