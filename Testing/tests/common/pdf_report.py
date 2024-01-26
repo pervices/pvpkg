@@ -143,9 +143,12 @@ class ClassicShipTestReport:
             self.c.drawImage(logo_img, 476, self.h - 23, 43, 15)
         except:
             try: 
-                logo_img_data = open(os.getcwd() + "../../pervices-logo.png", "rb")
+                tmp_dir = os.getcwd()
+                os.chdir("../..")
+                logo_img_data = open(os.getcwd() + "/pervices-logo.png", "rb")
                 logo_img = ImageReader(logo_img_data)
                 self.c.drawImage(logo_img, 476, self.h - 23, 43, 15)
+                os.chdir(tmp_dir)
             except:
                 t = self.c.beginText()
                 t.setTextOrigin(476, self.h - 23)
