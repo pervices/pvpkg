@@ -27,6 +27,8 @@ def main(iterations, title="Cyan TX RX Gain Test") -> int:
 
         iteration_areas = []
         current_vsnk_i = 0
+        current_test_only_fail_flag = 0
+
         for vsnk in vsnks:
             channel_areas = []
             current_vsnk_i += 1
@@ -52,7 +54,7 @@ def main(iterations, title="Cyan TX RX Gain Test") -> int:
             data = [["Center Frequency (Hz)", "Wave Frequency (Hz)", "Sample Rate (SPS)", "Sample Count", "TX Gain (dB)", "RX Gain (dB)"],
                         [it["center_freq"], it["wave_freq"], it["sample_rate"], it["sample_count"], it["tx_gain"], it["rx_gain"]]]
 
-            current_test_only_fail_flag = 0
+            
 
             for a in range(len(iteration_areas[0])):
                 #print(area)
@@ -60,6 +62,7 @@ def main(iterations, title="Cyan TX RX Gain Test") -> int:
                     # test for area
                     try:
                         # make sure the difference in area is significant
+                        print("ch" + str(a) + " iteration_areas[b+1][a] - iteration_areas[b][a] = " + str(iteration_areas[b+1][a] - iteration_areas[b][a]))
                         assert iteration_areas[b+1][a] - iteration_areas[b][a] > 1
                     except:
                         print("This test has failed")
@@ -93,6 +96,7 @@ def main(iterations, title="Cyan TX RX Gain Test") -> int:
                 report.insert_image_quad_grid(images, desc)
                 if (current_test_only_fail_flag == 1):
                     report.insert_text_large("This test has failed")
+                    current_test_only_fail_flag = 0
                 report.new_page()
 
     # report.save()
