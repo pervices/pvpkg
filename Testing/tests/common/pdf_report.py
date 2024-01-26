@@ -143,7 +143,7 @@ class ClassicShipTestReport:
 
     def insert_table(self, data, x_offset = 0):
         rows = len(data)
-        space_y_needed = rows * 25 + 5
+        space_y_needed = rows * 20 + 5
         input_table = Table(data, style=[('GRID', (0,0), (-1,-1), 1, colors.black),
                                 ('BACKGROUND', (0,0), (-1,0), '#D5D6D5')])
         input_table.wrapOn(self.c, 400, 50)
