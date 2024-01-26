@@ -62,6 +62,7 @@ def main(iterations, title="Cyan TX RX Gain Test") -> int:
                         # make sure the difference in area is significant
                         assert iteration_areas[b+1][a] - iteration_areas[b][a] > 1
                     except:
+                        print("This test has failed")
                         fail_flag = 1
                         current_test_only_fail_flag = 1
 
@@ -82,7 +83,7 @@ def main(iterations, title="Cyan TX RX Gain Test") -> int:
                 images.append(img)
                 # plt.savefig(fname='Gain plot for channel {} at wave_freq {} at Tx gain {}'.format(ch, it["wave_freq"],it["tx_gain"],format='png'))
                 # report.insert_image_from_io_stream(s, "Gain plot of channel {} for wave_freq = {} Hz at Tx gain {} and Rx gain {} : ".format(a,it["wave_freq"], it["tx_gain"], it["rx_gain"]))
-                print("image inserted for Gain plot of {} for wave_freq = {} Hz at Tx gain {}".format(a,it["wave_freq"], it["tx_gain"]))
+                # print("image inserted for Gain plot of {} for wave_freq = {} Hz at Tx gain {}".format(a,it["wave_freq"], it["tx_gain"]))
 
             if (current_vsnk_i == (len(vsnks) - 1) or len(vsnks) == 1):
                 # dont draw unnecessary stuff
@@ -91,7 +92,7 @@ def main(iterations, title="Cyan TX RX Gain Test") -> int:
                 report.insert_text(" ")
                 report.insert_image_quad_grid(images, desc)
                 if (current_test_only_fail_flag == 1):
-                    report.insert_text_large("This test have failed")
+                    report.insert_text_large("This test has failed")
                 report.new_page()
 
     # report.save()
