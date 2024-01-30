@@ -513,5 +513,6 @@ def main(iterations):
     for i in range(len(offsets)):
         dc_offset_table.addRow(str(i), str(offsets[i][0]), str(offsets[i][1]), str(offsets[i][2]), str(offsets[i][3]))
     dc_offset_table.printData()
-main(gen.lo_band_phaseCoherency(4))
 
+# main(gen.lo_band_phaseCoherency(4))
+main(gen.cyan.lo_band.phaseCoherency(4))
