@@ -40,6 +40,10 @@ def main(iterations, title="Cyan TX RX Gain Test") -> int:
                 #print('the value of the real array is', real)
                 #print('the value of the imag array is', imag)
 
+                # Discard the first 50 unstable samples
+                real = real[50:]
+                imag = imag[50:]
+
                 ## Calculate absolute area.
                 area = sigproc.absolute_area(real)
                 channel_areas.append(area)
@@ -91,7 +95,7 @@ def main(iterations, title="Cyan TX RX Gain Test") -> int:
             if (current_vsnk_i == (len(vsnks) - 1) or len(vsnks) == 1):
                 # dont draw unnecessary stuff
                 report.insert_text_large(title)
-                report.insert_table(data)
+                report.insert_table(data, 0, "Test Configuration")
                 report.insert_text(" ")
                 report.insert_image_quad_grid(images, desc)
                 if (current_test_only_fail_flag == 1):
