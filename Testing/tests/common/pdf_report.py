@@ -106,7 +106,7 @@ class ClassicShipTestReport:
     """
     def insert_image_double(self, images, desc=None):
         # Check y space for both image and text
-        if (self.cursor_y < (187 + 16):
+        if (self.cursor_y < (187 + 16)):
             self.new_page()
 
         if (desc != None):
