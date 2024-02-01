@@ -253,7 +253,7 @@ def makePlots():
         #plt.show()
         # fig.savefig(("run{}_together".format(z) + ".svg"))
         s = report.get_image_io_stream()
-        fig.savefig(s, format="png")
+        fig.savefig(s, format="png", dpi=600)
         img = report.get_image_from_io_stream(s)
         # report.insert_text("Run " + str(z))
         report.insert_image(img)
@@ -325,7 +325,7 @@ def main(iterations):
         if (table_printed_once == 0):
             table_data = [["Center Frequency (Hz)", "Wave Frequency (Hz)", "Sample Rate (SPS)", "Sample Count", "TX Gain (dB)", "RX Gain (dB)"],
                             [it["center_freq"], it["wave_freq"], sample_rate, it["sample_count"], it["tx_gain"], it["rx_gain"]]]
-            report.insert_table(table_data)
+            report.insert_table(table_data, 0 , "Test Configuration")
             table_printed_once = 1
 
         #Other important variables that require connection to the unit
@@ -599,7 +599,7 @@ def main(iterations):
         sum_phase_table.append(["Run " + str(i), str(data[2][0][i]), str(data[2][1][i]), str(data[2][2][i]), str(data[2][3][i])])
 
     report.insert_text(" ")
-    report.insert_table(sum_freq_table, -10, desc="Summary Frequency")
+    report.insert_table(sum_freq_table, -10, "Summary Frequency")
     report.insert_text(" ")
     report.insert_table(sum_ampl_table, -10, "Summary Amplitude")
     report.insert_text(" ")
@@ -611,7 +611,7 @@ def main(iterations):
     for i in range(len(offsets)):
         dc_offset_table_pdf.append(["Run " + str(i), str(offsets[i][0]), str(offsets[i][1]), str(offsets[i][2]), str(offsets[i][3])])
     report.insert_text(" ")
-    report.insert_table(dc_offset_table_pdf, -10, desc="DC Offsets")
+    report.insert_table(dc_offset_table_pdf, -10, "DC Offsets")
 
     #DC Offset Table
     dc_offset_table = out.Table(title="DC Offsets")
@@ -632,5 +632,4 @@ def main(iterations):
         sys.exit(1)
 
 # main(gen.lo_band_phaseCoherency_short(4))
-main(gen.lo_band_phaseCoherency(4))
-
+main(gen.cyan.lo_band.phaseCoherency(4))
