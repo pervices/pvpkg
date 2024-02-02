@@ -47,6 +47,9 @@ echo ":: Testing reachablity to DUT passed ::"
 echo $USER"@"$HOST | sudo -S netstat -pnltu &&
 echo $USER"@"$HOST | sudo -S ss -lntupe &&
 
+echo ":: DUT Firmware Info ::"
+uhd_usrp_info --all --git
+
 echo ":: Starting Functional Tests" > log.txt
 
 for (( i=0; i<$NUM_TESTS; i++))
