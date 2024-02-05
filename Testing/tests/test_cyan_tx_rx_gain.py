@@ -5,6 +5,7 @@ from common import pdf_report
 import matplotlib.pyplot as plt
 import numpy as np
 import sys
+import os
 
 def main(iterations, title="Cyan TX RX Gain Test") -> int:
 
