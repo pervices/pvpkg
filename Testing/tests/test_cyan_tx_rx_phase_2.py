@@ -629,7 +629,9 @@ def main(iterations):
 
     # get back outside to save
     os.chdir("../..")
-    os.system("mkdir report_output && cd $_")
+    os.system("mkdir report_output")
+    os.chdir("report_output")
+    report.draw_from_buffer()
     report.save()
     print("PDF report saved at " + str(os.getcwd()))
 
