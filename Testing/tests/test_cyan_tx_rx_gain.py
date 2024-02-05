@@ -147,7 +147,8 @@ if __name__ == "__main__":
     report.insert_text_large("Test Results")
     report.insert_table(test_status, 20)
     report.save()
-
+    print("PDF report saved at " + str(os.getcwd()) + report.get_filename())
+    
     for test in test_status:
         if "Fail" in test:
             sys.exit(1)

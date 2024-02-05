@@ -49,6 +49,9 @@ class ClassicShipTestReport:
     def get_buffer(self):
         return self.buffer
 
+    def get_filename(self):
+        return self.file_title
+
     """
         Put elements into the buffer
     """
