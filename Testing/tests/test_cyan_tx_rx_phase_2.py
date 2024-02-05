@@ -259,7 +259,7 @@ def makePlots():
         fig.savefig(s2, format="png", dpi=300)
         img2 = report.get_image_from_io_stream(s2)
 
-        report.buffer_put("image_double", [img1, img2])
+        report.buffer_put("image_double", [img1, img2], "Run " + str(z))
         print("Run figure has been put in buffer")
         plt.clf()
 
