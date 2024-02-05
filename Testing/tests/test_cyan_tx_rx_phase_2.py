@@ -513,11 +513,11 @@ def main(iterations):
         ["Amplitude", boolToWord(overall_bool[1])],
         ["Phase", boolToWord(overall_bool[2])]
         ]
-    # report.new_page()
-    report.buffer_insert("text_large", "Overall and Subtests Tables: ", idx=0)
-    report.buffer_insert("text", " ", idx=1)
-    report.buffer_insert("table", overall_table, "Overall Tests", idx=2)
-    report.buffer_insert("pagebreak", idx=3)
+    
+    report.new_page()
+    report.insert_text_large("Overall and Subtests Tables: ")
+    report.insert_text(" ")
+    report.insert_table(overall_table, 20, "Overall Tests")
 
     #Outputting the subtests
     max_crit = "< mean + " + str(std_ratio) + "*std"
@@ -611,26 +611,26 @@ def main(iterations):
     dc_offset_table.printData()
 
     # Summary PDF Table
-    report.buffer_insert("text_large", "Summary Statistics: ", idx=4)
-    report.buffer_insert("text", " ", idx=5)
-    report.buffer_insert("table_large", subtest_freq_table, "SubTest Results - Frequency Test", idx=6)
-    report.buffer_insert("text", " ", idx=7)
-    report.buffer_insert("table_large", subtest_ampl_table, "SubTest Results - Amplitude Test", idx=8)
-    report.buffer_insert("text", " ", idx=9)
-    report.buffer_insert("table_large", subtest_phase_table, "SubTest Results - Phase Test", idx=10)
-    report.buffer_insert("text", " ", idx=11)
-    report.buffer_insert("table_large", sum_freq_table, "Summary Frequency", idx=12)
-    report.buffer_insert("text", " ", idx=13)
-    report.buffer_insert("table_large", sum_ampl_table, "Summary Amplitude", idx=14)
-    report.buffer_insert("text", " ", idx=15)
-    report.buffer_insert("table_large", sum_phase_table, "Summary Phase", idx=16)
-    report.buffer_insert("text", " ", idx=17)
-    report.buffer_insert("table_large", dc_offset_table_pdf, "DC Offsets", idx=18)
+    report.insert_text_large("Summary Statistics: ")
+    report.insert_text(" ")
+    report.insert_table(subtest_freq_table, 20, "SubTest Results - Frequency Test")
+    report.insert_text(" ")
+    report.insert_table(subtest_ampl_table, 20, "SubTest Results - Amplitude Test")
+    report.insert_text(" ")
+    report.insert_table(subtest_phase_table, 20, "SubTest Results - Phase Test")
+    report.insert_text(" ")
+    report.insert_table(sum_freq_table, -10, "Summary Frequency")
+    report.insert_text(" ")
+    report.insert_table(sum_ampl_table, -10, "Summary Amplitude")
+    report.insert_text(" ")
+    report.insert_table(sum_phase_table, -10, "Summary Phase")
+    report.insert_text(" ")
+    report.insert_table(dc_offset_table_pdf, -10, "DC Offsets")
 
     # get back outside to save
     os.chdir("../..")
-    os.system("mkdir report_output")
-    os.chdir("report_output")
+    # os.system("mkdir report_output")
+    # os.chdir("report_output")
     report.draw_from_buffer()
     report.save()
     print("PDF report saved at " + str(os.getcwd()))
