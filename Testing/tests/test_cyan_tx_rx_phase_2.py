@@ -514,7 +514,7 @@ def main(iterations):
         ["Phase", boolToWord(overall_bool[2])]
         ]
     
-    report.new_page()
+    # report.new_page()
     report.insert_text_large("Overall and Subtests Tables: ")
     report.insert_text(" ")
     report.insert_table(overall_table, 20, "Overall Tests")
@@ -611,13 +611,15 @@ def main(iterations):
     dc_offset_table.printData()
 
     # Summary PDF Table
-    report.insert_text_large("Summary Statistics: ")
-    report.insert_text(" ")
     report.insert_table(subtest_freq_table, 20, "SubTest Results - Frequency Test")
     report.insert_text(" ")
     report.insert_table(subtest_ampl_table, 20, "SubTest Results - Amplitude Test")
     report.insert_text(" ")
     report.insert_table(subtest_phase_table, 20, "SubTest Results - Phase Test")
+
+    report.new_page()
+    report.insert_text_large("Summary Statistics: ")
+    report.insert_text(" ")
     report.insert_text(" ")
     report.insert_table(sum_freq_table, -10, "Summary Frequency")
     report.insert_text(" ")
@@ -626,6 +628,7 @@ def main(iterations):
     report.insert_table(sum_phase_table, -10, "Summary Phase")
     report.insert_text(" ")
     report.insert_table(dc_offset_table_pdf, -10, "DC Offsets")
+    report.new_page()
 
     # get back outside to save
     os.chdir("../..")
