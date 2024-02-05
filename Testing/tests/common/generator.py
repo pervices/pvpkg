@@ -287,7 +287,7 @@ class cyan:
             print(sys._getframe().f_code.co_name)
             channels = list(range(4))
             sample_count = int(round(25000000/10000))
-            tx_gain = 25
+            tx_gain = 30
             rx_gain = 25
             center_freq = 100000000     # 100MHz
             wave_freq = 500000
@@ -299,10 +299,10 @@ class cyan:
             print(sys._getframe().f_code.co_name)
             channels = list(range(4))
             sample_count = int(round(25000000/10000))
-            tx_gain = 25
+            tx_gain = 30
             rx_gain = 25
             center_freq = 100000000     # 100MHz
-            sample_rate = 25000000
+            sample_rate = 25000000      # 25 Msps
             wave_freq = 500000
             for i in range(2):
                 yield locals()
@@ -432,7 +432,7 @@ class cyan:
             center_freq = 9000000000   # 9GHz
             sample_rate = 9803922
             rx_gain = 60#increasing the fixed gain may cause saturation
-            for tx_gain in [ 15, 30, 35 ]:
+            for tx_gain in [ 35, 40, 45 ]:
                 yield locals()
 
         @staticmethod
