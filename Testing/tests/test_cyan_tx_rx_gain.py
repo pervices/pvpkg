@@ -84,7 +84,7 @@ def main(iterations, title="Cyan TX RX Gain Test") -> int:
                 plt.legend()
 
                 s = report.get_image_io_stream()
-                plt.savefig(s, format='png')
+                plt.savefig(s, format='png', dpi=300)
                 plt.close()     # remember to close or you'll use up all the memory
                 img = report.get_image_from_io_stream(s)
                 images.append(img)
@@ -94,15 +94,15 @@ def main(iterations, title="Cyan TX RX Gain Test") -> int:
 
             if (current_vsnk_i == (len(vsnks) - 1) or len(vsnks) == 1):
                 # dont draw unnecessary stuff
-                report.insert_text_large(title)
-                report.insert_table(data, 0, "Test Configuration")
-                report.insert_text(" ")
-                report.insert_image_quad_grid(images, desc)
+                report.buffer_put("pagebreak")
+                report.buffer_put("text_large", title)
+                report.buffer_put("table_wide", data, "Test Configuration")
+                report.buffer_put("text", " ")
+                report.buffer_put("image_quad", images, desc)
                 if (current_test_only_fail_flag == 1):
-                    report.insert_text_large("This test has failed")
+                    report.buffer_put("text_large", "This test has failed")
                     current_test_only_fail_flag = 0
-                report.new_page()
-
+                
     # report.save()
     if (fail_flag == 1):
         return 1    # fail
@@ -148,7 +148,7 @@ if __name__ == "__main__":
     report.insert_table(test_status, 20)
     report.save()
     print("PDF report saved at " + str(os.getcwd()) + report.get_filename())
-    
+
     for test in test_status:
         if "Fail" in test:
             sys.exit(1)
