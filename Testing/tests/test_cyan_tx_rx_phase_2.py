@@ -228,7 +228,7 @@ def makePlots():
         os.chdir(test_plots)
         fig.savefig(("run{}_indiv".format(z) + ".svg"))
         s1 = report.get_image_io_stream()
-        fig.savefig(s1, format="png", dpi=600)
+        fig.savefig(s1, format="png", dpi=300)
         img1 = report.get_image_from_io_stream(s1)
         plt.clf()
 
@@ -256,7 +256,7 @@ def makePlots():
         #plt.show()
         fig.savefig(("run{}_together".format(z) + ".svg"))
         s2 = report.get_image_io_stream()
-        fig.savefig(s2, format="png", dpi=600)
+        fig.savefig(s2, format="png", dpi=300)
         img2 = report.get_image_from_io_stream(s2)
 
         report.buffer_put("image_double", img1, img2)
