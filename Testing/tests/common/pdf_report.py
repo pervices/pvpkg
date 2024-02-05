@@ -304,7 +304,7 @@ class ClassicShipTestReport:
             ["3", "Lemon", "sour fruit"]
         ]
     """
-    def insert_table(self, data, x_offset = 0, title = None, fontsize = 12):
+    def insert_table(self, data, x_offset = 0, title = None, fontsize = 11):
         rows = len(data)
         space_y_needed = rows * 18 + 5
         input_table = Table(
