@@ -227,6 +227,9 @@ def makePlots():
         # plt.show()
         os.chdir(test_plots)
         fig.savefig(("run{}_indiv".format(z) + ".svg"))
+        s1 = report.get_image_io_stream()
+        fig.savefig(s1, format="png", dpi=600)
+        img1 = report.get_image_from_io_stream(s1)
         plt.clf()
 
 
@@ -251,13 +254,13 @@ def makePlots():
         plt.legend()
 
         #plt.show()
-        # fig.savefig(("run{}_together".format(z) + ".svg"))
-        s = report.get_image_io_stream()
-        fig.savefig(s, format="png", dpi=600)
-        img = report.get_image_from_io_stream(s)
-        # report.insert_text("Run " + str(z))
-        report.insert_image(img)
-        print("Run figure has been drawn")
+        fig.savefig(("run{}_together".format(z) + ".svg"))
+        s2 = report.get_image_io_stream()
+        fig.savefig(s2, format="png", dpi=600)
+        img2 = report.get_image_from_io_stream(s2)
+
+        report.buffer_put("image_double", img1, img2)
+        print("Run figure has been put in buffer")
         plt.clf()
 
 '''Turns the boolean into pass/fail NOTE: NOT SURE IF I NEED THIS
@@ -325,7 +328,8 @@ def main(iterations):
         if (table_printed_once == 0):
             table_data = [["Center Frequency (Hz)", "Wave Frequency (Hz)", "Sample Rate (SPS)", "Sample Count", "TX Gain (dB)", "RX Gain (dB)"],
                             [it["center_freq"], it["wave_freq"], sample_rate, it["sample_count"], it["tx_gain"], it["rx_gain"]]]
-            report.insert_table(table_data, 0 , "Test Configuration")
+            report.buffer_put("table_wide", table_data, "Test Configuration")
+            # report.insert_table(table_data, 0 , "Test Configuration")
             table_printed_once = 1
 
         #Other important variables that require connection to the unit
@@ -509,10 +513,11 @@ def main(iterations):
         ["Amplitude", boolToWord(overall_bool[1])],
         ["Phase", boolToWord(overall_bool[2])]
         ]
-    report.new_page()
-    report.insert_text_large("Overall and Subtests Tables: ")
-    report.insert_text(" ")
-    report.insert_table(overall_table, 20, "Overall Tests")
+    # report.new_page()
+    report.buffer_insert("text_large", "Overall and Subtests Tables: ", idx=0)
+    report.buffer_insert("text", " ", idx=1)
+    report.buffer_insert("table", overall_table, "Overall Tests", idx=2)
+    report.buffer_insert("pagebreak", idx=3)
 
     #Outputting the subtests
     max_crit = "< mean + " + str(std_ratio) + "*std"
@@ -548,12 +553,6 @@ def main(iterations):
         ["Max Value Outliers", ("<" + max_crit), boolToWord(subtest_bool[2][0][1]), boolToWord(subtest_bool[2][1][1]), boolToWord(subtest_bool[2][2][1])], 
         ["STD Deviation", ("<" + str(phase_std_thresh)), boolToWord(subtest_bool[2][0][2]), boolToWord(subtest_bool[2][1][2]), boolToWord(subtest_bool[2][2][2])]
     ]
-    report.insert_text(" ")
-    report.insert_table(subtest_freq_table, 20, "SubTest Results - Frequency Test" )
-    report.insert_text(" ")
-    report.insert_table(subtest_ampl_table, 20, "SubTest Results - Amplitude Tests")
-    report.insert_text(" ")
-    report.insert_table(subtest_phase_table, 20, "SubTest Results - Phase Tests")
 
     #Summary Statistics
     sum_freq  = out.Table(title="Summary Frequency")
@@ -565,9 +564,6 @@ def main(iterations):
     sum_phase  = out.Table(title="Summary Phase")
     summaryTable(overall_bool[2], abs_bool[2], sum_phase, means[2], mins[2], maxs[2], stds[2], data[2])
 
-    # Summary PDF Table
-    report.new_page()
-    report.insert_text_large("Summary Statistics: ")
     sum_freq_table = [
         ["Run", "Baseline A", "\u0394BA", "\u0394CA", "\u0394DA"],
         ["Mean", str(means[0][0]), str(means[0][1]), str(means[0][2]), str(means[0][3])],
@@ -598,21 +594,12 @@ def main(iterations):
     for i in range(runs + 1):
         sum_phase_table.append(["Run " + str(i), str(data[2][0][i]), str(data[2][1][i]), str(data[2][2][i]), str(data[2][3][i])])
 
-    report.insert_text(" ")
-    report.insert_table(sum_freq_table, -10, "Summary Frequency")
-    report.insert_text(" ")
-    report.insert_table(sum_ampl_table, -10, "Summary Amplitude")
-    report.insert_text(" ")
-    report.insert_table(sum_phase_table, -10, "Summary Phase")
-
     dc_offset_table_pdf = [
         ["Run", "\u0394BA", "\u0394CA", "\u0394DA"],
     ]
     for i in range(len(offsets)):
         dc_offset_table_pdf.append(["Run " + str(i), str(offsets[i][0]), str(offsets[i][1]), str(offsets[i][2]), str(offsets[i][3])])
-    report.insert_text(" ")
-    report.insert_table(dc_offset_table_pdf, -10, "DC Offsets")
-
+    
     #DC Offset Table
     dc_offset_table = out.Table(title="DC Offsets")
     dc_offset_table.addColumn("Run")
@@ -623,8 +610,26 @@ def main(iterations):
         dc_offset_table.addRow(str(i), str(offsets[i][0]), str(offsets[i][1]), str(offsets[i][2]), str(offsets[i][3]))
     dc_offset_table.printData()
 
+    # Summary PDF Table
+    report.buffer_insert("text_large", "Summary Statistics: ", idx=4)
+    report.buffer_insert("text", " ", idx=5)
+    report.buffer_insert("table_large", subtest_freq_table, "SubTest Results - Frequency Test", idx=6)
+    report.buffer_insert("text", " ", idx=7)
+    report.buffer_insert("table_large", subtest_ampl_table, "SubTest Results - Amplitude Test", idx=8)
+    report.buffer_insert("text", " ", idx=9)
+    report.buffer_insert("table_large", subtest_phase_table, "SubTest Results - Phase Test", idx=10)
+    report.buffer_insert("text", " ", idx=11)
+    report.buffer_insert("table_large", sum_freq_table, "Summary Frequency", idx=12)
+    report.buffer_insert("text", " ", idx=13)
+    report.buffer_insert("table_large", sum_ampl_table, "Summary Amplitude", idx=14)
+    report.buffer_insert("text", " ", idx=15)
+    report.buffer_insert("table_large", sum_phase_table, "Summary Phase", idx=16)
+    report.buffer_insert("text", " ", idx=17)
+    report.buffer_insert("table_large", dc_offset_table_pdf, "DC Offsets", idx=18)
+
     # get back outside to save
     os.chdir("../..")
+    os.system("mkdir report_output && cd $_")
     report.save()
     print("PDF report saved at " + str(os.getcwd()))
 

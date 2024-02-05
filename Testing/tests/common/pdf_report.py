@@ -55,8 +55,8 @@ class ClassicShipTestReport:
     def buffer_put(self, element_type, content, desc=None):
         self.buffer.append([element_type, content, desc])
 
-    def buffer_put_infront(self, element_type, content, desc=None):
-        self.buffer.insert(0, [element_type, content, desc])
+    def buffer_insert(self, element_type, content, desc=None, idx=0):
+        self.buffer.insert(idx, [element_type, content, desc])
 
     """
         Draw from the buffer
@@ -80,6 +80,8 @@ class ClassicShipTestReport:
                     self.insert_text_large(i[1])
                 case "table":
                     self.insert_table(i[1], 20, i[2])
+                case "table_wide":
+                    self.insert_table(i[1], 0, i[2])
                 case "table_large":
                     self.insert_table(i[1], -10, i[2], 8)
                 case "pagebreak":
