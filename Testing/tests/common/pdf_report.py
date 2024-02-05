@@ -52,10 +52,10 @@ class ClassicShipTestReport:
     """
         Put elements into the buffer
     """
-    def buffer_put(self, element_type, content, desc=None):
+    def buffer_put(self, element_type, content=None, desc=None):
         self.buffer.append([element_type, content, desc])
 
-    def buffer_insert(self, element_type, content, desc=None, idx=0):
+    def buffer_insert(self, element_type, content=None, desc=None, idx=0):
         self.buffer.insert(idx, [element_type, content, desc])
 
     """
