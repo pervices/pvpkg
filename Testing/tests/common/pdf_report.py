@@ -55,6 +55,9 @@ class ClassicShipTestReport:
     def buffer_put(self, element_type, content, desc=None):
         self.buffer.append([element_type, content, desc])
 
+    def buffer_put_infront(self, element_type, content, desc=None):
+        self.buffer.insert(0, [element_type, content, desc])
+
     """
         Draw from the buffer
     """
