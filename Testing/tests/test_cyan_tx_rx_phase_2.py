@@ -636,7 +636,7 @@ def main(iterations):
     # os.chdir("report_output")
     report.draw_from_buffer()
     report.save()
-    print("PDF report saved at " + str(os.getcwd()) + report.get_filename())
+    print("PDF report saved at " + str(os.getcwd()) + "/" + report.get_filename())
 
     if (fail_flag == 1):
         sys.exit(1)

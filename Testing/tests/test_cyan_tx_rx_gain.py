@@ -149,7 +149,7 @@ if __name__ == "__main__":
     report.insert_table(test_status, 20)
     report.draw_from_buffer()
     report.save()
-    print("PDF report saved at " + str(os.getcwd()) + report.get_filename())
+    print("PDF report saved at " + str(os.getcwd()) + "/" + report.get_filename())
 
     for test in test_status:
         if "Fail" in test:
