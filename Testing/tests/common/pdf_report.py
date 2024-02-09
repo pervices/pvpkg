@@ -310,13 +310,15 @@ class ClassicShipTestReport:
     def insert_table(self, data, x_offset = 0, title = None, fontsize = 10):
         rows = len(data)
         space_y_needed = rows * 18 + 5
+        mStyle=[
+                ('GRID', (0,0), (-1,-1), 1, colors.black),
+                ('FONTSIZE', (0,0), (-1,-1), fontsize)
+                ]
+        if (rows > 1):
+            mStyle.append(('BACKGROUND', (0,0), (-1,0), '#D5D6D5'))
         input_table = Table(
             data,
-            style=[
-                ('GRID', (0,0), (-1,-1), 1, colors.black),
-                ('BACKGROUND', (0,0), (-1,0), '#D5D6D5'),
-                ('FONTSIZE', (0,0), (-1,-1), fontsize)
-                ],
+            style=mStyle,
             splitByRow = 1,
             repeatRows = 1,
             repeatCols = 1
