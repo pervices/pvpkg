@@ -3,13 +3,21 @@ from gnuradio import uhd
 from gnuradio import gr
 
 from common import crimson
-import time
+from common import pdf_report
+import time, sys, os
 import numpy as np
-import sys
 
 # This test does not use the engine as it only tests the RX 
 
 def main():
+
+    global report
+
+    report = pdf_report.ClassicShipTestReport("rx_stack")
+    report.insert_title_page("Crimson RX Sample Count Test")
+    test_table = [
+        ['Channel', 'Expected Sample Count', 'Actual Sample Count', 'Result']
+    ]
 
     # Crimson TNG Setup.
     channels = np.array([0,1,2,3])
@@ -73,14 +81,37 @@ def main():
     flowgraph.stop()
     flowgraph.wait()
 
+    # flag for marking fails
+    failed = 0
+
     #Test 1: assure length of all Rx samples received are as expected
     for channel in channels:
         expect_sample_count = sample_count * (end - start)
         actual_sample_count = len((vsnk[channel].data()))
 
         print("the expected sample count and the actual sample count are:", expect_sample_count,actual_sample_count)
-        #Assert that both are true (or make a global pass bool)
-        assert expect_sample_count == actual_sample_count
+        test_table.append([str(channel), str(expect_sample_count), str(actual_sample_count), bool_to_passfail(expect_sample_count == actual_sample_count)])
 
-main()
+        #Assert that both are true (or make a global pass bool)
+        try:
+            assert expect_sample_count == actual_sample_count
+        except:
+            failed = 1
+
+    report.insert_text_large("Test Results")
+    report.insert_table(test_table, 20)
+    
+    report.save()
+    print("PDF report saved at " + str(os.getcwd()) + "/" + report.get_filename())
+
+    if (failed == 1):
+        sys.exit(1)
+
+def bool_to_passfail(input) -> str:
+    if (input):
+        return 'Pass'
+    return 'Fail'
+
+if __name__ == '__main__':
+    main()
 

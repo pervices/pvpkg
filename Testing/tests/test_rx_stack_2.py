@@ -1,16 +1,25 @@
 from gnuradio import blocks
 from gnuradio import uhd
 from gnuradio import gr
-
+from common import pdf_report
 from common import crimson
 import time
 import math
 import numpy as np
 import sys 
+import os
 
 # This test does not use the engine as it only tests the RX
 
 def main():
+
+    global report
+
+    report = pdf_report.ClassicShipTestReport("rx_stack2")
+    report.insert_title_page("Crimson RX Sample Count Test")
+    test_table = [
+        ['Channel', 'Expected Sample Count', 'Actual Sample Count', 'Result']
+    ]
 
     # Crimson TNG Setup.
     channels = np.array([0,1,2,3])
@@ -58,6 +67,13 @@ def main():
     expect_count_array= np.append(zero_count_array, sample_count_array)
     print("the theoretical expected sample count array is:", expect_count_array)
 
+    # PDF report table for expected count
+    table_data_expect_count_array = [['0']*len(expect_count_array)]
+    for i in range(len(expect_count_array)):
+        table_data_expect_count_array[0][i] = str(expect_count_array[i])
+    report.insert_text_large("Test Results")
+    report.insert_table(table_data_expect_count_array, 20, "Theoretical expected sample count array, for all channels")
+
     for second in range(start, end, interval):
         cmd = uhd.stream_cmd_t(uhd.stream_mode_t.STREAM_MODE_NUM_SAMPS_AND_DONE)
         cmd.num_samps = sample_count
@@ -102,7 +118,32 @@ def main():
     print("the collected channel 2 sample count array is:", ch_2_actual_array)
     print("the collected channel 3 sample count array is:", ch_3_actual_array)
     print("the collected channel 4 sample count array is:", ch_4_actual_array)
+    
+    # PDF report result tables
+    table_data_ch1_array = [['0']*len(ch_1_array)]
+    # rotate the table
+    for i in range(len(ch_1_array)):
+        table_data_ch1_array[0][i] = str(ch_1_array[i])
 
+    table_data_ch2_array = [['0']*len(ch_2_array)]
+    for i in range(len(ch_2_array)):
+        table_data_ch2_array[0][i] = str(ch_2_array[i])
+
+    table_data_ch3_array = [['0']*len(ch_3_array)]
+    for i in range(len(ch_3_array)):
+        table_data_ch3_array[0][i] = str(ch_3_array[i])
+
+    table_data_ch4_array = [['0']*len(ch_4_array)]
+    for i in range(len(ch_4_array)):
+        table_data_ch4_array[0][i] = str(ch_4_array[i])
+
+    
+    report.insert_table(table_data_ch1_array, 20, "Collected channel 1 sample count array")
+    report.insert_table(table_data_ch2_array, 20, "Collected channel 2 sample count array")
+    report.insert_table(table_data_ch3_array, 20, "Collected channel 3 sample count array")
+    report.insert_table(table_data_ch4_array, 20, "Collected channel 4 sample count array")
+
+    test_fail = 0
     #Test 2: Make sure that slots 0..start = 0, and start..end increment by sample count.
     try:
         assert (np.array_equal((ch_1_actual_array),(expect_count_array)))
@@ -111,6 +152,17 @@ def main():
         assert (np.array_equal((ch_4_actual_array),(expect_count_array)))
     except:
         print('expected and actual array are not equal, fail')
+        test_fail = 1
+
+    if (test_fail):
+        report.insert_text_large("Test failed")
+    else:
+        report.insert_text_large("Test passed")
+
+    report.save()
+    print("PDF report saved at " + str(os.getcwd()) + "/" + report.get_filename())
+
+    if (test_fail):
         sys.exit(1)
 
 main()
