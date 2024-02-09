@@ -456,10 +456,13 @@ class ClassicShipTestReport:
         os.system("rm shiptest_out.txt")
 
         #Adding the time, tx, rx board info in a table
-        board_styles = ([('GRID', (0,0), (self.num_channels+1, 9), 1, colors.black),
+        board_styles = ([
+                        ('GRID', (0,0), (self.num_channels+1, 9), 1, colors.black),
                         ('FONTSIZE', (1,4), (self.num_channels+1, 5),7.8),
                         ('BACKGROUND', (0, 0), (self.num_channels+1,0), '#D5D6D5'),
-                        ('BACKGROUND', (0, 0), (0,9), '#D5D6D5')])
+                        ('BACKGROUND', (0, 0), (0,9), '#D5D6D5'),
+                        ('VALIGN', (0,0), (-1, -1), 'MIDDLE')
+                    ])
 
         #Positional Values
         title_font_size = 26
