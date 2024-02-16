@@ -115,6 +115,12 @@ def bestFit(x, y):
     fit_freq = param[1]
     fit_phase = param[2]
     fit_offset = param[3]
+    if (fit_amp < 0):
+        fit_amp = -1 * fit_amp                  # if amplitude is negative, shift phase by pi and make amplitude positive
+        fit_phase = fit_phase + np.pi
+        if (fit_phase > 2*np.pi):               # if phase is more than 2 pi
+            fit_phase = fit_phase - (2*np.pi)   # wrap it around
+
     best_fit = waveEquation(x, fit_amp, fit_freq, fit_phase, fit_offset) #making the line of best fit
 
     return (best_fit, fit_offset), (fit_amp, fit_freq, fit_phase) #returns other values as tuple, so they can be easily referenced
@@ -436,9 +442,9 @@ def main(iterations):
 
     try:
         means[1][0] > std_ratio*stds[1][0]
-        print("The Amplitude is greater than " + str(std_ratio) +" * std" )
+        print("The Magnitude is greater than " + str(std_ratio) +" * std" )
     except:
-        print("The Amplitude failed to be greater than " + str(std_ratio) +" * std" )
+        print("The Magnitude failed to be greater than " + str(std_ratio) +" * std" )
         abs_bool[1] = True
 
     try:
@@ -475,7 +481,7 @@ def main(iterations):
     overall_tests.addColumn("Test")
     overall_tests.addColumn("Status")
     overall_tests.addRow("Frequency", boolToWord(overall_bool[0]))
-    overall_tests.addRow("Amplitude", boolToWord(overall_bool[1]))
+    overall_tests.addRow("Magnitude", boolToWord(overall_bool[1]))
     overall_tests.addRow("Phase", boolToWord(overall_bool[2]))
     overall_tests.printData()
 
@@ -488,7 +494,7 @@ def main(iterations):
         st_freq  = out.Table(title="SubTest Results - Frequency Tests")
         subtestTable(st_freq, min_crit, max_crit, str(freq_std_thresh), subtest_bool[0])
     if not overall_bool[1]:
-        st_ampl  = out.Table(title="SubTest Results - Amplitude Tests")
+        st_ampl  = out.Table(title="SubTest Results - Magnitude Tests")
         subtestTable(st_ampl, min_crit, max_crit, str(ampl_std_thresh), subtest_bool[1], bounds=False)
     if not overall_bool[2]:
         st_phase = out.Table(title="SubTest Results - Phase Tests")
@@ -498,7 +504,7 @@ def main(iterations):
     sum_freq  = out.Table(title="Summary Frequency")
     summaryTable(overall_bool[0], abs_bool[0], sum_freq, means[0], mins[0], maxs[0], stds[0], data[0])
 
-    sum_ampl  = out.Table(title="Summary Amplitude")
+    sum_ampl  = out.Table(title="Summary Magnitude")
     summaryTable(overall_bool[1], abs_bool[1], sum_ampl, means[1], mins[1], maxs[1], stds[1], data[1])
 
     sum_phase  = out.Table(title="Summary Phase")
