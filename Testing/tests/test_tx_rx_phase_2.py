@@ -13,10 +13,13 @@ import matplotlib.pyplot as plt
 from scipy.optimize import curve_fit
 from scipy.stats import norm
 from scipy.signal import find_peaks
+from scipy import signal
 import sys
 import os
 import time, datetime
+from math import pi
 
+import argparse
 
 #USER CHOSEN VALUES
 num_channel = 4 #dependent on unit
@@ -264,10 +267,18 @@ PARAMS: iterations
 RETURNS: <on console>'''
 def main(iterations):
 
+    # Setup argument parsing
+    parser = argparse.ArgumentParser(description = "Loopback phase coherency test")
+
+    # Adds arguments
+    parser.add_argument('-r', '--rate', default=25000000, type=int, help="Sample rate in samples per second")
+    parser.add_argument('-b', '--band', default=False, type=bool, help="Apply a band pass filter to the data")
+
+    args = parser.parse_args()
+
     '''This iteration loop will run through setting up the channels to the values associated to the generator code. It will also loop through
     each channel and save the information to temp arrays. These temp arrays allow us to format our data into 2D arrays, so it's easier to
     reference later'''
-    vsnks = []
     freq_A = []
     freq_AB_diff = []
     freq_AC_diff = []
@@ -290,11 +301,11 @@ def main(iterations):
         TX: Below, we will be sending oiut samples equiv. to sample_rate after 10 seconds, so this will end at 11 secondi
         RX: Calculate the oversampling rate to find the number of samples to intake that match your ideal (sample count)'''
         global sample_rate
-        sample_rate = int(it["sample_rate"])
+        sample_rate = args.rate
         tx_stack = [ (tx_burst , sample_rate)]
         rx_stack = [ (rx_burst, int(it["sample_count"]))]
         #this is the code that will actually tell the unit what values to run at
-        vsnk = engine.run(it["channels"], it["wave_freq"], it["sample_rate"], it["center_freq"], it["tx_gain"], it["rx_gain"], tx_stack, rx_stack)
+        vsnk = engine.run(it["channels"], it["wave_freq"], sample_rate, it["center_freq"], it["tx_gain"], it["rx_gain"], tx_stack, rx_stack)
 
 
         #Other important variables that require connection to the unit
@@ -320,29 +331,33 @@ def main(iterations):
         best = []
         real_hold = []
 
-        vsnks.append(vsnk)
-        for vsnk in vsnks:
-            #Clearing, so the appended values after this loop are only related to the latest channels
-            ampl.clear()
-            freq.clear()
-            phase.clear()
-            offset.clear()
-            best.clear()
-            real_hold.clear()
+        #Clearing, so the appended values after this loop are only related to the latest channels
+        ampl.clear()
+        freq.clear()
+        phase.clear()
+        offset.clear()
+        best.clear()
+        real_hold.clear()
 
-            for ch, channel in enumerate(vsnk): #Goes through each channel to sve data
+        for ch, channel in enumerate(vsnk): #Goes through each channel to sve data
 
-                real = [datum.real for datum in channel.data()] # saves data of real data in an array
+            real = [datum.real for datum in channel.data()] # saves data of real data in an array
 
-                real_hold.append(real[begin_cutoff:])
 
-                best_fit, param = bestFit(x_time, real[begin_cutoff:])
+            # Filter data so we only see the phase of the intended signal if requested by user
+            if args.band:
+                b,a = signal.bessel(1, [wave_freq * 0.9, wave_freq * 1.1], 'bandpass', analog=False, norm='delay', fs = sample_rate)
+                real = signal.filtfilt(b, a, real, padtype=None)
 
-                ampl.append(param[0])
-                freq.append(param[1])
-                phase.append(param[2])
-                best.append(best_fit[0])
-                offset.append((best_fit[1]))
+            real_hold.append(real[begin_cutoff:])
+
+            best_fit, param = bestFit(x_time, real[begin_cutoff:])
+
+            ampl.append(param[0])
+            freq.append(param[1])
+            phase.append(param[2])
+            best.append(best_fit[0])
+            offset.append((best_fit[1]))
 
         #Appending to the temp variables
         reals.append(real_hold)

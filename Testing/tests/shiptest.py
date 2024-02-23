@@ -42,20 +42,7 @@ from scipy import signal
 from reportlab.lib.utils import ImageReader
 from scipy.signal import find_peaks
 
-#Have chosn toe put some variables as global, so they're easy to access
-#TODO: Check where the final file should go
-#Making file and doc title
-date = datetime.datetime.now()
-formattedDate = date.isoformat("_")
-file_title = "ship_report_" + formattedDate + ".pdf"
-doc_title = "ship_report_" + formattedDate
-
-#SETTING UP PATH DIRECTORIES
-current_dir = os.getcwd()
-output_dir = current_dir + "/ship_reports"
-plots_dir = output_dir + "/plots_" + formattedDate
-os.makedirs(output_dir, exist_ok=True)
-os.makedirs(plots_dir, exist_ok=True)
+import traceback
 
 begin_cutoff_waves = 20 #how many waves to cut off before tracking data
 
@@ -71,9 +58,12 @@ parser.add_argument('-s', '--sigfigs', default=3, type=int, help="Number of sign
 parser.add_argument('-n', '--snr', default=20, type=int, help="Minimum signal to noise ratio in dBc")
 #TODO: verify this is a reasonable default value
 parser.add_argument('-o', '--freq_threshold', default=1, type=int, help="Allowable difference in wave frequency from the target")
+parser.add_argument('-q', '--spur_threshold', default=20, type=int, help="Minimum acceptable difference between the desired signal and the strongest spur")
+parser.add_argument('-g', '--gain_threshold', default = 5, type=int,  help="The maximum allowable difference in gain between channels")
 parser.add_argument('-a', '--serial', required=True, help="Serial number of the unit")
 parser.add_argument('-p', '--product', required=True, help="The product to be tested. v for Vaunt, t for Tate")
 parser.add_argument('-c', '--num_channels', default = 4, type=int,  help="The number of channels to test. Will test ch a, ch b, ...")
+parser.add_argument('-b', '--strict', default = False, type=bool,  help="Exit the test as soon as any test fails")
 
 args = parser.parse_args()
 
@@ -104,7 +94,26 @@ snr_min_check = args.snr
 #Frequency offset threshold
 freq_check_threshold = args.freq_threshold
 
+spur_check_threshold = args.spur_threshold
+
+gain_check_threshold = args.gain_threshold
+
 serial_num = args.serial
+
+strict_mode = args.strict
+
+#Making file and doc title
+date = datetime.datetime.now()
+formattedDate = date.isoformat("-", "minutes")
+file_title = "ship_report_" + serial_num + "_" + formattedDate + ".pdf"
+doc_title = "ship_report_" + serial_num + "_" + formattedDate
+
+#SETTING UP PATH DIRECTORIES
+current_dir = os.getcwd()
+output_dir = current_dir + "/ship_reports"
+plots_dir = output_dir + "/plots_" + formattedDate
+os.makedirs(output_dir, exist_ok=True)
+os.makedirs(plots_dir, exist_ok=True)
 
 #Asking what test to run and how many channels to run
 #NOTE: I think this could be expanded to just choosing which channels on the unit to test
@@ -208,7 +217,6 @@ tx_gain = -1
 rx_gain = -1
 being_cutoff = -1
 summary_info = [] #[iteration][[freq][amplitude][snr]]
-counter = 0 #Keeps track of run
 
 #page variables
 page_count = 1
@@ -484,6 +492,14 @@ def bestFit(x, raw_y, expected_freq):
     y = signal.sosfiltfilt(sos, raw_y)
 
     max_loc = np.argmax(y)
+
+    max_y = y[max_loc]
+
+    # Detect if all 0s
+    if max_y == 0:
+        # return redisuals (since raw_y is all 0s in this case we can just return it), (dc_offset = 0, ampl = 0)
+        return raw_y, (0, 0)
+
     period = 1/expected_freq
     predicted_phase = x[max_loc] + (period/4)
     if(predicted_phase < 0):
@@ -494,12 +510,12 @@ def bestFit(x, raw_y, expected_freq):
     dc_offset = y.mean()
 
     # Predicted amplitude must be above expected to avoid the minimizer going the wrong direction and ending up near 0
-    params = create_params(phase={'value': predicted_phase, 'min': 0, 'max': period}, ampl={'value': y[max_loc], 'min': y[max_loc]/10, 'max' : y[max_loc] * 1.1})
+    params = create_params(phase={'value': predicted_phase, 'min': 0, 'max': period}, ampl={'value': y[max_loc], 'min': max_y/10, 'max' : max_y * 1.1})
 
     try:
-        result = minimize(sineResiduals, params, args=(x,y,expected_freq, dc_offset), maxfev=100)
+        result = minimize(sineResiduals, params, args=(x,y,expected_freq, dc_offset), max_nfev=25)
     except:
-        print("minimize error")
+        traceback.print_exc()
     model = result.params['ampl'].value*np.sin(2*np.pi*expected_freq*(x + result.params['phase'].value)) + dc_offset
 
     return model, (dc_offset, result.params['ampl'])
@@ -629,7 +645,7 @@ PARAMS: y
 RETURNS: max_four'''
 def numPeaks(x, y, ampl, num):
 
-    peaks, properties = find_peaks(y, height=ampl) #NOTE: What should I use as the height...
+    peaks, properties = find_peaks(y, width=0.1e-9) #NOTE: What should I use as the height...
     x = np.asarray(x)
     y = np.asarray(y)
 
@@ -714,17 +730,46 @@ def quickSort(array, low, high, other_array):
 
 '''Checks if the given is within the SNR bounds
 PARAM:
-a: the signal to noise ratio
-RETURN: Boolean'''
-def checkSNR(a):
-    return (a > snr_min_check)
+snr_ratios: array of signal to noise ratios
+RETURN: Boolean: False if any of the snrs are below the threshold'''
+def checkSNRs(snr_ratios):
+    for snr_ratio in snr_ratios:
+        if snr_ratio <= snr_min_check:
+            return False
+    return True
 
 '''Checks if the freq is within desired location
 PARAM:
 a: The difference between that actual wave frequency and the target
 RETURN: Bool'''
 def checkFreq(a):
-    return (a > -freq_check_threshold) and (a < freq_check_threshold)
+    not_ch_result = np.any((a < -freq_check_threshold)|(a > freq_check_threshold ))
+    return not (not_ch_result.all())
+
+'''Checks if the difference between the peak and the strongest spur is acceptable
+PARAM:
+desired_signal: The strength of the signal in dB
+strongest_spur: The strength of the strongest spur in dB
+RETURN: Bool'''
+def checkSpur(peak_values, fail_threshold):
+    for ch_peaks in peak_values:
+        if ch_peaks[0][1] < (ch_peaks[1][1] + fail_threshold):
+            return False
+    return True
+
+'''Checks if the difference between channels is acceptable
+PARAM:
+desired_signal: The strength of the signal in dB
+strongest_spur: The strength of the strongest spur in dB
+RETURN: Bool'''
+def checkGainRelative(peak_values, fail_threshold):
+    min_gain = float('inf')
+    max_gain = float('-inf')
+    for ch_peaks in peak_values:
+        min_gain = min(ch_peaks[0][1], min_gain)
+        max_gain = max(ch_peaks[0][1], max_gain)
+
+    return (max_gain - min_gain) <= fail_threshold
 
 '''Turns true into "Pass" and false into "fail"
 PARAM: a
@@ -750,9 +795,27 @@ def main(iterations):
     #Make title page
     titlePage(pdf)
 
+    # Stores a list containing the 4 peaks from each fft
+    # Dimmensions:
+    # 0: test iteration len = len(iterations)
+    # 1: channel len = number of channels
+    # 2: peak pair (peak location, magnitude dB) len = 4
+    peaks_list = []
+
+    # Iteration number (not 0 indexed since it is used for labels in the pdf)
+    counter = 0
+
+    # Stores if SNR check passed for each iteration
+    snr_bools = []
+    # Stores if frequency check passed for each iteration
+    freq_bools = []
+    # Stores if spur check passed for each iteration
+    spur_bools = []
+    # Stores if gain check passed for each iteration
+    gain_bools = []
+
     #start of the testing
     for it in iterations: #Will iterate per Run
-        global counter
         counter += 1
 
         #Initilize Important Arrays
@@ -789,7 +852,11 @@ def main(iterations):
         tx_stack = [(5.0 , sample_rate)] #Equivalent to 1 second
         rx_stack = [(5.25, sample_count)] #TODO: Maybe add the burst start times to table - or title page
 
+        print("Started data collection for run " + str(counter))
+
         vsnk = engine.run(it["channels"], it["wave_freq"], it["sample_rate"], it["center_freq"], it["tx_gain"], it["rx_gain"], tx_stack, rx_stack)
+
+        print("Completed data collection for run " + str(counter))
 
         period_samples = int(round(1/(it["wave_freq"]/it["sample_rate"])))
         begin_cutoff = int(period_samples*begin_cutoff_waves)
@@ -846,12 +913,19 @@ def main(iterations):
         #This variable ensures only the number of waves requested will appear on the plots
         plotted_samples = int(period_samples*num_output_waves)
 
+        print("Waiting for time fitting")
+
         for thread in time_fitting_threads:
             thread.join()
+
+        print("Completed curve fitting for run " + str(counter))
+        print("Waiting for fft")
 
         # Moved here instead of later because of possible problematic interaction it matplotlib
         for thread in fft_threads:
             thread.join()
+
+        print("Completed fft for run " + str(counter))
 
         #PDF PREP: Doing the plotting of FFT and IQ prior to making pdf pages to enable having the "together plot" as the first page
         #Plotting IQ Data, but not putting on pdf
@@ -908,13 +982,19 @@ def main(iterations):
             #Noise Floor and std- in db
             noise_floor.append(noiseFloor(fft_x[i], fft_y[i], ampl_vec[i]))
         max_fours = np.asarray(max_fours)
+        peaks_list.append(max_fours)
         noise_floor = np.asarray(noise_floor)
         std = np.asarray(std)
 
         # Determines the range of the y axis to plot
-        # TODO: get max and min of the displayed range, currently it gets the max and min of everything
-        amplYTop = fft_y.max() * 1.1
-        amplYBottom = fft_y.min() * 1.1
+        amplYTop = 1
+        amplYBottom = -1
+        try:
+            amplYTop = fft_y[np.isfinite(fft_y)].max() * 1.1
+            amplYBottom = fft_y[np.isfinite(fft_y)].min() * 1.1
+        except:
+            amplYTop = 1
+            amplYBottom = -1
 
         FFT_plots = []
         FFT_plt_img = []
@@ -939,12 +1019,10 @@ def main(iterations):
                 # Sets the y axis of each of the individual plots to be the same
                 axis[-1].set_ylim(bottom = amplYBottom, top = amplYTop, auto = False)
 
-                try:
-                    FFT_plots.append(subPlotFFTs(fft_x[i], fft_y[i], axis[i], title, max_fours[i], np.mean(noise_floor[1])))
-                    ax_st = ax_end + 2
-                    ax_end = ax_st + 15
-                except:
-                    break
+                FFT_plots.append(subPlotFFTs(fft_x[i], fft_y[i], axis[i], title, max_fours[i], np.mean(noise_floor[1])))
+                ax_st = ax_end + 2
+                ax_end = ax_st + 15
+
                 #Rasterizes the plot/figures and converts to png)
             FFT_plt_img.append(plotToPdf(("FFTPlots_" + formattedDate), counter))
             plt.clf()
@@ -1011,15 +1089,12 @@ def main(iterations):
             IQ_table_info = [["IQ Data: "],["Channel"], ["Ampl I (fractional)"], ["Ampl Q (fractional)"]]
 
             for i in range(start, end):
-                # try:
                 IQ_table_info[1].append((chr(65+i)))
                 IQ_table_info[2].append(sig(ampl_reals[i], sigfigs=sigfigs))
                 IQ_table_info[3].append(sig(ampl_imags[i], sigfigs=sigfigs))
 
                 IQ_table = Table(IQ_table_info, style=[('GRID', (0,1), (num_channels+1,4), 1, colors.black),
                                                     ('BACKGROUND', (0, 1), (num_channels+1,1), '#D5D6D5')])
-                # except:
-                    # break
 
             IQ_table.wrapOn(pdf, IQ_width, IQ_height)
             IQ_table.drawOn(pdf, IQ_table_x, IQ_table_y)
@@ -1043,15 +1118,11 @@ def main(iterations):
             #Tables stuff
             max_peak_table_info = [["Top Peaks (Frequencty, Amplitude):"], ["Channel"], ["Highest Peak"], ["Second Highest"], ["Third Highest"], ["Fourth Heighest"]]
             for i in range(start, end):
-                try:
-                    max_peak_table_info[2].append(str((sig(max_fours[i][0][0], sigfigs=sigfigs), sig(max_fours[i][0][1], sigfigs=sigfigs))))
-                    max_peak_table_info[3].append(str((sig(max_fours[i][1][0], sigfigs=sigfigs), sig(max_fours[i][1][1], sigfigs=sigfigs))))
-                    max_peak_table_info[4].append(str((sig(max_fours[i][2][0], sigfigs=sigfigs), sig(max_fours[i][2][1], sigfigs=sigfigs))))
-                    max_peak_table_info[5].append(str((sig(max_fours[i][3][0], sigfigs=sigfigs), sig(max_fours[i][3][1], sigfigs=sigfigs))))
-                    max_peak_table_info[1].append((chr(65+i)))
-
-                except:
-                    break
+                max_peak_table_info[2].append(str((sig(max_fours[i][0][0], sigfigs=sigfigs), sig(max_fours[i][0][1], sigfigs=sigfigs))))
+                max_peak_table_info[3].append(str((sig(max_fours[i][1][0], sigfigs=sigfigs), sig(max_fours[i][1][1], sigfigs=sigfigs))))
+                max_peak_table_info[4].append(str((sig(max_fours[i][2][0], sigfigs=sigfigs), sig(max_fours[i][2][1], sigfigs=sigfigs))))
+                max_peak_table_info[5].append(str((sig(max_fours[i][3][0], sigfigs=sigfigs), sig(max_fours[i][3][1], sigfigs=sigfigs))))
+                max_peak_table_info[1].append((chr(65+i)))
 
             peak_table = Table(max_peak_table_info, style=[('GRID', (0,1), (num_channels+1,5), 1, colors.black),
                                     ('BACKGROUND', (0,1), (num_channels+1,1), '#D5D6D5')])
@@ -1132,6 +1203,38 @@ def main(iterations):
             else:
                 break
 
+        strict_failed = False
+        # Checking if this iteration passed SNR
+        snr_bools.append(checkSNRs(fft_snr))
+        if strict_mode and not snr_bools[-1]:
+            print("SNR test failed on iteraion " + str(counter) + ". Ending test early")
+            strict_failed = True
+
+
+        # Checking if this iteration passed the frequency check
+        freq_bools.append(checkFreq(max_fours[:,0,0]))
+        if strict_mode and not freq_bools[-1]:
+            print("Freq test failed on iteraion " + str(counter) + ". Ending test early")
+            strict_failed = True
+
+        # Checking if this iteration passed the spur check
+        spur_bools.append(checkSpur(max_fours, spur_check_threshold))
+        if strict_mode and not spur_bools[-1]:
+            print("Spur test failed on iteraion " + str(counter) + ". Ending test early")
+            strict_failed = True
+
+        # Checking if this iteration passed the relative gain check
+        gain_bools.append(checkGainRelative(max_fours, gain_check_threshold))
+        if strict_mode and not gain_bools[-1]:
+            print("Relative gain test failed on iteraion " + str(counter) + ". Ending test early")
+            strict_failed = True
+
+        if(strict_failed):
+            break
+
+
+    print("Data collection complete")
+
     #Pass/Fail final page
     pdf.showPage()
     page_count += 1
@@ -1179,49 +1282,16 @@ def main(iterations):
 
     summary_nump = np.asarray(summary_info)
 
-    #Checking the snr
-    snr_bools = list(map(checkSNR, summary_nump[:, 2]))
+    summary_table_info = [["Summary Table: "], ["Run", "SNR check", "Frequency check", "Spur check", "Gain variation check"]]
 
-    #Checking the Freq
-    freq_bools = list(map(checkFreq, summary_nump[:, 0]))
-
-    summary_table_info = [["Summary Table: "], ["Run", "SNR check", "Frequency check"]]
-
-    for i, snr, freq in zip(range(counter), snr_bools, freq_bools):
-        summary_table_info.append([str(i+1), isPass(snr), isPass(freq)])
+    for i, snr, freq, spur, gain in zip(range(counter), snr_bools, freq_bools, spur_bools, gain_bools):
+        summary_table_info.append([str(i+1), isPass(snr), isPass(freq), isPass(spur), isPass(gain)])
 
     summary = Table(summary_table_info, style=[('GRID', (0,1), (4, counter+1), 1, colors.black),
                                 ('BACKGROUND', (0,1), (2,1), '#D5D6D5')])
 
     summary.wrapOn(pdf, summary_width, summary_height)
     summary.drawOn(pdf, summary_x, summary_y)
-
-    #What the fails are
-    if False in snr_bools:
-        snr_x += summary_width + 5
-        fail_info = [["Fails in SNR: ", ("Not greater than " + str(snr_min_check) + "dBc")], ["Run", "SNR Value"]]
-
-        for i, snr in zip(range(counter), summary_nump[:,2]):
-            fail_info.append([str(i+1), str(snr)])
-
-        fail_table = Table(fail_info, style=[('GRID', (0,1), (4, counter+1), 1, colors.black),
-                                    ('BACKGROUND', (0,1), (4,1), '#D5D6D5')])
-        fail_table.wrapOn(pdf, summary_width, summary_height)
-        fail_table.drawOn(pdf, snr_x, summary_y)
-            #What the fails are
-    if False in freq_bools:
-        freq_x = snr_x + summary_width - 2
-
-        fail_info = [["Fails in Frequency: ", ("Not within " + str(freq_check_threshold) + "Hz of given")], ["Run"]]
-
-        for i, freq in zip(range(counter), summary_nump[:,0]):
-            fail_info.append([str(i+1), str(freq)])
-
-        fail_table = Table(fail_info, style=[('GRID', (0,1), (4, counter+1), 1, colors.black),
-                                    ('BACKGROUND', (0,1), (2,1), '#D5D6D5')])
-
-        fail_table.wrapOn(pdf, summary_width, summary_height)
-        fail_table.drawOn(pdf, freq_x, summary_y)
 
     os.chdir(output_dir) #Ensuring we are saving in the output directory
     pdf.save() #saving the pdf

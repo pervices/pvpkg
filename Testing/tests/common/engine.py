@@ -40,10 +40,10 @@ def run_tx(csnk, channels, stack, sample_rate, wave_freq):
             for ch in channels]
 
         flowgraph = gr.top_block()
-        for ch in channels:
-            flowgraph.connect(sigs[ch], heds[ch])
-            flowgraph.connect(heds[ch], c2ss[ch])
-            flowgraph.connect(c2ss[ch], (csnk, ch))
+        for channel_index in range(len(channels)):
+            flowgraph.connect(sigs[channel_index], heds[channel_index])
+            flowgraph.connect(heds[channel_index], c2ss[channel_index])
+            flowgraph.connect(c2ss[channel_index], (csnk, channel_index))
 
         # Run.
         csnk.set_start_time(uhd.time_spec(frame[0])) #frame[0]= tx_stack[10, ] in fund_freq test
@@ -75,8 +75,8 @@ def run_rx(csrc, channels, stack, sample_rate, _vsnk, timeout_occured):
 
 
     flowgraph = gr.top_block()
-    for ch in channels:
-        flowgraph.connect((csrc, ch), vsnk[ch])
+    for channel_index in range(len(channels)):
+        flowgraph.connect((csrc, channel_index), vsnk[channel_index])
 
     # Run. The flowgraph must be started before stream commands are sent.
     flowgraph.start()

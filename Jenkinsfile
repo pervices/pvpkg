@@ -5,7 +5,7 @@ pipeline {
 	label 'citests'
     }
 parameters {
-        choice(name: "CI_BUILD_TYPE", choices: ["UHD_ONLY", "FULL"], description: "Select whether to only build UHD package or to build Gnuradio with UHD. Gnuradio has a considerably longer compile time, so FULL should not be slected if a new UHD package is required quickly.")
+        choice(name: "CI_BUILD_TYPE", choices: ["FULL","UHD_ONLY"], description: "Select whether to only build UHD package or to build Gnuradio with UHD. Gnuradio has a considerably longer compile time, so FULL should not be slected if a new UHD package is required quickly.")
         choice(name: "BRANCH", choices: ["master", "test-branch"], description: "Select whether to build package from master branch and push to latest on the fileserver or to build from a testing branch and push to testing on the fileserver.")
 		booleanParam(name: "ENABLE_ARCH", defaultValue: true, description: "Select whether to generate packages for Archlinux.")
 		booleanParam(name: "ENABLE_UBUNTU20", defaultValue: true, description: "Select whether to generate packages for Ubuntu 20.04.")

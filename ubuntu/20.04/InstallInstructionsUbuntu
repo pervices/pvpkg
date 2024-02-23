@@ -35,7 +35,7 @@ git clone --branch v2.4.1 --recursive https://github.com/gnuradio/volk.git && \
 cd volk && \
 mkdir build && cd build && \
 cmake -DCMAKE_BUILD_TYPE=Release -DPYTHON_EXECUTABLE=/usr/bin/python3 ../ && \
-make && make install
+make && sudo make install
 
 #Install gnuradio by running commands in directory deb files are extracted into (Install libraries and then gnuradio package in same way UHD was installed)
 dpkg -i libgnuradio*.deb
