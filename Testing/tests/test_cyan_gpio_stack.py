@@ -1,0 +1,80 @@
+from gnuradio import blocks
+from gnuradio import uhd
+from gnuradio import gr
+from common import crimson
+from common import pdf_report
+import time, sys, os
+
+# Note that Tate has 80 GPIO pins
+# The following is the mapping of the GPIO pins to the registers
+#
+#    pwr_en        : Power on the HDR board
+#    hi_pwr_en     : Enable the high power branch
+#    atten64..1    : Amount of attenuation (all will be summed together).
+#                      9          8          7          6          5          4          3          2          1          0
+#                +----------+----------+----------+----------+----------+----------+----------+----------+----------+----------+
+# CHANNEL A:   9 | Reserved |   pwr_en | hi_pwr_en| atten64  | atten32  | atten16  | atten8   | atten4   | atten2   | atten1   |   0
+#                +----------+----------+----------+----------+----------+----------+----------+----------+----------+----------+
+# CHANNEL B:  19 | Reserved |   pwr_en | hi_pwr_en| atten64  | atten32  | atten16  | atten8   | atten4   | atten2   | atten1   |  10
+#                +----------+----------+----------+----------+----------+----------+----------+----------+----------+----------+
+# CHANNEL C:  29 | Reserved |   pwr_en | hi_pwr_en| atten64  | atten32  | atten16  | atten8   | atten4   | atten2   | atten1   |  20
+#                +----------+----------+----------+----------+----------+----------+----------+----------+----------+----------+
+# CHANNEL D:  39 | Reserved |   pwr_en | hi_pwr_en| atten64  | atten32  | atten16  | atten8   | atten4   | atten2   | atten1   |  30
+#                +----------+----------+----------+----------+----------+----------+----------+----------+----------+----------+
+# CHANNEL E:  49 | Reserved |   pwr_en | hi_pwr_en| atten64  | atten32  | atten16  | atten8   | atten4   | atten2   | atten1   |  40
+#                +----------+----------+----------+----------+----------+----------+----------+----------+----------+----------+
+# CHANNEL F:  59 | Reserved |   pwr_en | hi_pwr_en| atten64  | atten32  | atten16  | atten8   | atten4   | atten2   | atten1   |  50
+#                +----------+----------+----------+----------+----------+----------+----------+----------+----------+----------+
+# CHANNEL G:  69 | Reserved |   pwr_en | hi_pwr_en| atten64  | atten32  | atten16  | atten8   | atten4   | atten2   | atten1   |  60
+#                +----------+----------+----------+----------+----------+----------+----------+----------+----------+----------+
+# CHANNEL H:  79 | Reserved |   pwr_en | hi_pwr_en| atten64  | atten32  | atten16  | atten8   | atten4   | atten2   | atten1   |  70
+#                +----------+----------+----------+----------+----------+----------+----------+----------+----------+----------+
+
+def gpio_write(csrc, pins, mask, time):
+
+    csrc.set_command_time(uhd.time_spec(time))
+    csrc.set_user_register(0, (pins[0] >>  0))
+    csrc.set_user_register(1, (mask[0] >>  0))
+    csrc.set_user_register(2, (pins[0] >> 32))
+    csrc.set_user_register(3, (mask[0] >> 32))
+
+def main():
+
+    global report
+    duration_s = 10
+
+    report = pdf_report.ClassicShipTestReport("gpio")
+    report.insert_title_page("Cyan Stacked GPIO Commands Test")
+
+    csrc = crimson.get_src_c(list(range(4)), 20e6, 15e6, 0.0) # Does not matter if sink or source is used here.
+    pins = [0x0601806018060180, 0x6018]
+    mask = [0xFFFFFFFFFFFFFFFF, 0xFFFF]
+
+    test_failed = false
+    
+    report.insert_text_large("Test Results")
+
+    for second in range(1, duration_s, 1):
+        pins[0] ^= mask[0]
+        pins[1] ^= mask[1]
+        try:
+            gpio_write(csrc, pins, mask, second);
+        except:
+            print("GPIO write failed at " + str(second) + " second")
+            test_failed = True
+        
+    if (not test_failed):
+        report.insert_text("Test ran for " + str(duration_s) + " seconds")
+        report.insert_text("Test successfully completed")
+    else: 
+        report.insert_text("Test failed")
+    
+    report.save()
+    print("PDF report saved at " + str(os.getcwd()) + "/" + report.get_filename())
+
+    if (test_failed):
+        sys.exit(1)
+
+if __name__ == '__main__':
+    main()
+
