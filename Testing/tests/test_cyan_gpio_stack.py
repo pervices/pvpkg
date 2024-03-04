@@ -50,7 +50,7 @@ def main():
     pins = [0x0601806018060180, 0x6018]
     mask = [0xFFFFFFFFFFFFFFFF, 0xFFFF]
 
-    test_failed = false
+    test_failed = False
     
     report.insert_text_large("Test Results")
 

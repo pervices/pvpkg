@@ -31,7 +31,7 @@ def main():
     pins = 0x0
     all = 0xFFFFFFFFFFFFFFFF; # 64bit.
 
-    test_failed = false
+    test_failed = False
     
     report.insert_text_large("Test Results")
 
