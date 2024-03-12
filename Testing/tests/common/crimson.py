@@ -1,4 +1,5 @@
 from gnuradio import uhd
+import time
 
 def calibrate(end, channels, sample_rate, center_freq, gain):
 
@@ -10,7 +11,7 @@ def calibrate(end, channels, sample_rate, center_freq, gain):
         end.set_gain(gain, channel_index)
 
     end.set_time_now(uhd.time_spec(0.0))
-    sleep 1
+    time.sleep(1)
 
 
 def get_snk_s(channels, sample_rate, center_freq, gain):
