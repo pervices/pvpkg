@@ -36,7 +36,6 @@ runs = -1 #set later when runs are called
 iteration_count = -1
 sample_rate = -1
 plotted_samples = -1
-begin_cuttoff = -1
 sample_count = -1
 
 #Frequeny Checks
