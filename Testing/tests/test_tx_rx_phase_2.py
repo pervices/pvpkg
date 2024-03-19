@@ -342,11 +342,19 @@ def main(iterations):
 
             real = [datum.real for datum in channel.data()] # saves data of real data in an array
 
+            if len(real) == 0:
+                raise Exception ("No data received on rx")
+            elif len(real) <= begin_cutoff:
+                raise Exception ("Rx received less data than cutoff. Received: " + str(len(real)) + " required more than " + str(begin_cutoff))
+
 
             # Filter data so we only see the phase of the intended signal if requested by user
             if args.band:
                 b,a = signal.bessel(1, [wave_freq * 0.9, wave_freq * 1.1], 'bandpass', analog=False, norm='delay', fs = sample_rate)
                 real = signal.filtfilt(b, a, real, padtype=None)
+
+                if len(real) <= begin_cutoff:
+                    raise Exception ("Filter error, rx data lost")
 
             real_hold.append(real[begin_cutoff:])
 
