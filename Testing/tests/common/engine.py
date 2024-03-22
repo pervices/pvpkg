@@ -106,6 +106,8 @@ def run_rx(csrc, channels, stack, sample_rate, _vsnk, timeout_occured):
             timeout_occured.set()
             break
 
+    print("len(vsnk[0].data()): " + str(len(vsnk[0].data())))
+
     flowgraph.stop()
     flowgraph.wait()
 

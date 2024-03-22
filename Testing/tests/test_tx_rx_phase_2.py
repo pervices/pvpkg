@@ -265,6 +265,7 @@ def boolToWord(word):
 PARAMS: iterations
 RETURNS: <on console>'''
 def main(iterations):
+    print("ops/dwil/gp")
 
     # Setup argument parsing
     parser = argparse.ArgumentParser(description = "Loopback phase coherency test")
@@ -342,6 +343,8 @@ def main(iterations):
 
             real = [datum.real for datum in channel.data()] # saves data of real data in an array
 
+            print("len(real): " + str(len(real))
+
             if len(real) == 0:
                 raise Exception ("No data received on rx")
             elif len(real) <= begin_cutoff:
@@ -356,9 +359,13 @@ def main(iterations):
                 if len(real) <= begin_cutoff:
                     raise Exception ("Filter error, rx data lost")
 
-            real_hold.append(real[begin_cutoff:])
+            trimmed_real = real[begin_cutoff:]
 
-            best_fit, param = bestFit(x_time, real[begin_cutoff:])
+            print("len(trimmed_real): " + str(len(trimmed_real))
+
+            real_hold.append(trimmed_real)
+
+            best_fit, param = bestFit(x_time, trimmed_real)
 
             ampl.append(param[0])
             freq.append(param[1])
