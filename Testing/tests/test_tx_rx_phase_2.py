@@ -343,7 +343,7 @@ def main(iterations):
 
             real = [datum.real for datum in channel.data()] # saves data of real data in an array
 
-            print("len(real): " + str(len(real))
+            print("len(real): " + str(len(real)))
 
             if len(real) == 0:
                 raise Exception ("No data received on rx")
@@ -361,7 +361,7 @@ def main(iterations):
 
             trimmed_real = real[begin_cutoff:]
 
-            print("len(trimmed_real): " + str(len(trimmed_real))
+            print("len(trimmed_real): " + str(len(trimmed_real)))
 
             real_hold.append(trimmed_real)
 
