@@ -4,6 +4,7 @@ from gnuradio import gr
 from common import crimson
 from common import pdf_report
 import time, sys, os
+import argparse
 
 # Note that Tate has 80 GPIO pins
 # The following is the mapping of the GPIO pins to the registers
@@ -33,41 +34,73 @@ import time, sys, os
 def gpio_write(csrc, pins, mask, time):
 
     csrc.set_command_time(uhd.time_spec(time))
-    csrc.set_user_register(0, (pins[0] >>  0))
-    csrc.set_user_register(1, (mask[0] >>  0))
-    csrc.set_user_register(2, (pins[0] >> 32))
-    csrc.set_user_register(3, (mask[0] >> 32))
+    csrc.set_user_register(0, (pins >>  0) & 0xFFFFFFFF) # 32bit.
+    csrc.set_user_register(1, (pins >> 32) & 0xFFFFFFFF)
+    csrc.set_user_register(2, (mask >>  0) & 0xFFFFFFFF)
+    csrc.set_user_register(3, (mask >> 32) & 0xFFFFFFFF) # Queue.
 
 def main():
+    #Setup argument parsing
+    parser = argparse.ArgumentParser(description = "GPIO test for UHD")
+    parser.add_argument('-s', '--serial', required=True, help="Serial number of the unit")
+    parser.add_argument('-p', '--product', required=True, help="Product, v for vaunt t for tate")
+    args = parser.parse_args()
+    serial_num = args.serial
+    product = args.product
 
     global report
     duration_s = 10
-
-    report = pdf_report.ClassicShipTestReport("gpio")
-    report.insert_title_page("Cyan Stacked GPIO Commands Test")
-
-    csrc = crimson.get_src_c(list(range(4)), 20e6, 15e6, 0.0) # Does not matter if sink or source is used here.
-    pins = [0x0601806018060180, 0x6018]
-    mask = [0xFFFFFFFFFFFFFFFF, 0xFFFF]
-
     test_failed = False
-    
-    report.insert_text_large("Test Results")
+    report = pdf_report.ClassicShipTestReport("gpio", serial_num)
 
-    for second in range(1, duration_s, 1):
-        pins[0] ^= mask[0]
-        pins[1] ^= mask[1]
+    if(product == 't'):
+        product = "Tate"
+        report.insert_title_page("Cyan Stacked GPIO Commands Test")
+        csrc = crimson.get_src_c(list(range(4)), 20e6, 15e6, 0.0) # Does not matter if sink or source is used here.
+        pins = [0x0601806018060180, 0x6018]
+        mask = [0xFFFFFFFFFFFFFFFF, 0xFFFF]
+
+        report.insert_text_large("Test Results")
+
+        for second in range(1, duration_s, 1):
+            pins[0] ^= mask[0]
+            pins[1] ^= mask[1]
+            try:
+                gpio_write(csrc, pins, mask, second);
+            except:
+                print("GPIO write failed at " + str(second) + " second")
+                test_failed = True
+            
+        if (not test_failed):
+            report.insert_text("Test ran for " + str(duration_s) + " seconds")
+            report.insert_text("Test successfully completed")
+        else: 
+            report.insert_text("Test failed")
+
+    elif(product == 'v'):
+        product = "Vaunt"
+        report.insert_title_page("Crimson Stacked GPIO Commands Test")
+        csrc = crimson.get_src_c(list(range(4)), 20e6, 15e6, 0.0) # Does not matter if sink or source is used here.
+        pins = 0x0
+        all = 0xFFFFFFFFFFFFFFFF; # 64bit.
+
+        for second in range(1, duration_s, 1):
+            pins ^= all
         try:
-            gpio_write(csrc, pins, mask, second);
+            gpio_write(csrc, pins, all, second);
         except:
             print("GPIO write failed at " + str(second) + " second")
             test_failed = True
         
-    if (not test_failed):
-        report.insert_text("Test ran for " + str(duration_s) + " seconds")
-        report.insert_text("Test successfully completed")
-    else: 
-        report.insert_text("Test failed")
+        if (not test_failed):
+            report.insert_text("Test ran for " + str(duration_s) + " seconds")
+            report.insert_text("Test successfully completed")
+        else: 
+            report.insert_text("Test failed")
+    else:
+        print("Value of product argument must either be 'v' for vaunt or 't' for tate")
+        sys.exit(1)
+
     
     report.save()
     print("PDF report saved at " + str(os.getcwd()) + "/" + report.get_filename())
