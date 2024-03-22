@@ -15,8 +15,8 @@ def main(iterations):
     for it in iterations:
         gen.dump(it)
         sample_count = it["sample_count"]
-        tx_stack = [ (10.0, int(it["sample_count" ])) ]
-        rx_stack = [ (10.0, int(it["sample_count"])) ]
+        tx_stack = [ (5.0, int(it["sample_count" ])) ]
+        rx_stack = [ (5.0, int(it["sample_count"])) ]
         vsnk = engine.run(it["channels"], it["wave_freq"], it["sample_rate"], it["center_freq"], it["tx_gain"], it["rx_gain"], tx_stack, rx_stack)
         vsnks.append(vsnk)
         #print("a")

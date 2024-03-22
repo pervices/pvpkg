@@ -12,8 +12,8 @@ def test(it):
     gen.dump(it)
 
 
-    tx_stack = [ (10.0, it["sample_count"]) ] # One seconds worth.
-    rx_stack = [ (10.0, int(it["sample_count"]) ) ]
+    tx_stack = [ (5.0, it["sample_count"]) ] # One seconds worth.
+    rx_stack = [ (5.0, int(it["sample_count"]) ) ]
     vsnk = engine.run(it["channels"], it["wave_freq"], it["sample_rate"], it["center_freq"], it["tx_gain"], it["rx_gain"], tx_stack, rx_stack)
 
     for ch, channel in enumerate(vsnk):
