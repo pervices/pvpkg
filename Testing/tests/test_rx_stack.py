@@ -6,26 +6,49 @@ from common import crimson
 from common import pdf_report
 import time, sys, os
 import numpy as np
+import argparse
 
 # This test does not use the engine as it only tests the RX 
 
 def main():
+    #Setup argument parsing
+    parser = argparse.ArgumentParser(description = "RX stack for checking overflow errors")
+    parser.add_argument('-s', '--serial', required=True, help="Serial number of the unit")
+    parser.add_argument('-p', '--product', required=True, help="Product, v for vaunt t for tate")
+    args = parser.parse_args()
+    serial_num = args.serial
+    product = args.product
 
     global report
 
-    report = pdf_report.ClassicShipTestReport("rx_stack")
-    report.insert_title_page("Crimson RX Sample Count Test")
+    report = pdf_report.ClassicShipTestReport("rx_stack", serial_num)
+    if(product == 't'):
+        report.insert_title_page("Cyan RX Sample Count Test")
+        # Cyan NRNT Setup.
+        channels = np.array([0,1,2,3])
+        sample_rate = 100e6
+        sample_count = 4096
+
+        # Cyan acts as a source by providing complex float samples.
+        csrc = crimson.get_src_c(channels, sample_rate, 100e6, 1.0)
+
+    elif(product =='v'):
+        report.insert_title_page("Crimson RX Sample Count Test")
+        # Crimson TNG Setup.
+        channels = np.array([0,1,2,3])
+        sample_rate = 20e6
+        sample_count = 4096
+
+        # Crimson TNG acts as a source by providing complex float samples.
+        csrc = crimson.get_src_c(channels, sample_rate, 15e6, 1.0)
+
+    else:
+        print("Value of product argument must either be 'v' for vaunt or 't' for tate")
+        sys.exit(1)
+
     test_table = [
         ['Channel', 'Expected Sample Count', 'Actual Sample Count', 'Result']
     ]
-
-    # Crimson TNG Setup.
-    channels = np.array([0,1,2,3])
-    sample_rate = 20e6
-    sample_count = 4096
-
-    # Crimson TNG acts as a source by providing complex float samples.
-    csrc = crimson.get_src_c(channels, sample_rate, 15e6, 1.0)
 
     # Vector buffer that accepts complex float samples.
     vsnk = [blocks.vector_sink_c() for channel in channels]
