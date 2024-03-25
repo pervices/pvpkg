@@ -343,8 +343,6 @@ def main(iterations):
 
             real = [datum.real for datum in channel.data()] # saves data of real data in an array
 
-            print("len(real): " + str(len(real)))
-
             if len(real) == 0:
                 raise Exception ("No data received on rx")
             elif len(real) <= begin_cutoff:
@@ -359,9 +357,9 @@ def main(iterations):
                 if len(real) <= begin_cutoff:
                     raise Exception ("Filter error, rx data lost")
 
+            # Explicitly assigning the relevant slice of data to a variable, then passing said variable to bestFit
+            # Creating a slice anonymously may cause a crash where somehow data collected the the engine wasn't making it to bestFit
             trimmed_real = real[begin_cutoff:]
-
-            print("len(trimmed_real): " + str(len(trimmed_real)))
 
             real_hold.append(trimmed_real)
 
