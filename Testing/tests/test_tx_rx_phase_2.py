@@ -274,7 +274,7 @@ def boolToWord(word):
 '''Sets up output data, sets up test (and connecting to unit), sets up plots
 PARAMS: iterations
 RETURNS: <on console>'''
-def main(iterations):
+def main():
     print("ops/dwil/gp")
 
     # Setup argument parsing

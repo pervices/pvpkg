@@ -26,24 +26,58 @@ DUT_DATA_IP_ADDR1=10.10.10.2
 DUT_DATA_IP_ADDR2=10.10.11.2
 
 PRODUCT=$1
-if [ -z $PRODUCT ]; then
-	echo "Product must be specified, use 'v' for vaunt or 't' for tate. Usage: test-only-Arch.sh [v | t] [serial]"
+PRODUCT=$(echo $PRODUCT | tr '[:upper:]' '[:lower:]')
+case $PRODUCT in
+v | vaunt | crimson)
+	TEST_NAMES=("${V_TEST_NAMES[@]}")
+	TEST_FILES=("${V_TEST_FILES[@]}")
+	TEST_EXCEPTIONS=("${V_TEST_EXCEPTIONS[@]}")
+	;;
+t | tate | cyan)
+	TEST_NAMES=("${T_TEST_NAMES[@]}")
+	TEST_FILES=("${T_TEST_FILES[@]}")
+	TEST_EXCEPTIONS=("${T_TEST_EXCEPTIONS[@]}")
+	;;
+*)
+	echo "Product must be specified, use 'v' for vaunt or 't' for tate. Usage: test-only.sh [v | t] [serial] [jenkins_bn] [ftp_upload]"
 	exit 1
-elif [[ $PRODUCT != 'v' && $PRODUCT != 't' ]]; then
-	echo "Invalid product entered, use 'v' for vaunt or 't' for tate. Usage: test-only-Arch.sh [v | t] [serial]"
+	;;
+esac
+
+SN=$2
+if [ -z $SN ]; then
+	echo "Serial must be specified. Usage: test-only.sh [v | t] [serial] [jenkins_bn] [ftp_upload]"
 	exit 1
 fi
-SN=$2
+
+BN=$3
+if [ -z $BN ]; then
+	echo "Jenkins build number must be specified. Usage: test-only.sh [v | t] [serial] [jenkins_bn] [ftp_upload]"
+	exit 1
+fi
+
+UPLOAD=$4
+case $UPLOAD in
+t | true | TRUE | True | 1)
+	UPLOAD=1
+	;;
+f | false | FALSE | False | 0)
+	UPLOAD=0
+	;;
+*)
+	echo "FTP upload must be specified as true or false. Usage: test-only.sh [v | t] [serial] [jenkins_bn] [ftp_upload]"
+	exit 1
+	;;
+esac
+
+SN=$SN'_'$BN
+DATETIME=$(date '+%Y-%m-%d-%H-%M')
+TAR_NAME=$PRODUCT'_'$SN'_'$DATETIME
+
 
 echo ":: Starting preparation work"
 
-# cd .. &&
-# mkdir -p pkg-archive && touch 1.xz && mv *.xz pkg-archive/ && sync &&
-# echo $USER"@"$HOST | sudo -S rm -fv /usr/bin/usrp2_card_burner /usr/lib/uhd/utils/usrp2_card_burner.py /usr/lib/uhd/utils/usrp2_recovery.py &&
-# makepkg &&
-# echo $USER"@"$HOST | sudo -S pacman -U --noconfirm *.pkg.tar.xz &&
-# mv *.pkg.tar.xz pkg-archive/ && sync && cd scripts &&
-#cp src/uhd/host/build/examples/test_tx_trigger tests/ &&
+
 cd tests/
 if [ ! -d $REPORT_DIR ]; then
   mkdir -p $REPORT_DIR;
@@ -72,11 +106,8 @@ do
 	echo ":: Executing ${TEST_NAMES[$i]} test" >> log.txt
 	#echo "$i"
 	pwd
-	if [ -z $SN ]; then
-		python -u ${TEST_FILES[$i]}.py -p $PRODUCT -o $REPORT_DIR
-	else
-		python -u ${TEST_FILES[$i]}.py -p $PRODUCT -s $SN -o $REPORT_DIR
-	fi
+
+	python -u ${TEST_FILES[$i]}.py -p $PRODUCT -s $SN -o $REPORT_DIR
 
 	rv=$?
 	if [ $rv -eq 0 ]; then
@@ -110,4 +141,34 @@ echo "=================begin of log.txt================="
 echo ""
 cat log.txt
 echo "=================end of log.txt================="
+
+echo "Packaging reports into tarball.."
+tar -czvf $TAR_NAME $REPORT_DIR
+if [[ $? != 0 ]]; then
+	echo "Failed to create tarball"
+else
+	echo "Successfully created tarball"
+fi
+
+if [ $UPLOAD == 1 ]; then
+	echo "Uploading to FTP server.."
+	lftp -u $FTP_USER,$FTP_PW $FTP_ADD -e "$SSL_CERT; put -O $FTP_UPLOAD_DIR/ $TAR_NAME; bye"
+	if [[ $? != 0 ]]; then
+		echo "Failed to upload file $TAR_NAME to $FTP_UPLOAD_DIR"
+	else
+		echo "Successfully uploaded file $UPDATE_FILE_NAME to $FTP_UPLOAD_DIR"
+	fi
+fi
+
+echo "Creating archive.."
+cd ../..
+mkdir archive
+cp tests/$TAR_NAME archive/
+if [[ $? != 0 ]]; then
+	echo "Failed to create archive"
+else
+	echo "Successfully created archive"
+fi
+
+
 exit $RETURN

@@ -38,8 +38,8 @@ class ClassicShipTestReport:
         self.serial_num = serial_num
         if output_dir == "":
             output_dir = str(os.getcwd())
-        self.file_title = output_dir + "/ship_report_" + doc_title + "_" + serial_num + "_" + self.formattedDate + ".pdf"
-        self.doc_title = "ship_report_" + doc_title + "_" + serial_num + "_" + self.formattedDate
+        self.file_title = output_dir + "/" + doc_title + "_" + serial_num + "_" + self.formattedDate + ".pdf"
+        self.doc_title = doc_title + "_" + serial_num + "_" + self.formattedDate
 
         self.c = canvas.Canvas(self.file_title, pagesize=letter)
         self.insert_page_header()
