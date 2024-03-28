@@ -334,9 +334,13 @@ def main(iterations):
 
                 real = [datum.real for datum in channel.data()] # saves data of real data in an array
 
-                real_hold.append(real[begin_cutoff:])
+                # Explicitly assigning the relevant slice of data to a variable, then passing said variable to bestFit
+                # Creating a slice anonymously may cause a crash where somehow data collected the the engine wasn't making it to bestFit
+                trimmed_real = real[begin_cutoff:]
 
-                best_fit, param = bestFit(x_time, real[begin_cutoff:])
+                real_hold.append(trimmed_real)
+
+                best_fit, param = bestFit(x_time, trimmed_real)
 
                 ampl.append(param[0])
                 freq.append(param[1])
