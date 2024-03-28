@@ -25,38 +25,17 @@ DUT_MGT_IP_ADDR1=192.168.10.2
 DUT_DATA_IP_ADDR1=10.10.10.2
 DUT_DATA_IP_ADDR2=10.10.11.2
 
-PRODUCT=$1
-PRODUCT=$(echo $PRODUCT | tr '[:upper:]' '[:lower:]')
-case $PRODUCT in
-v | vaunt | crimson)
-	TEST_NAMES=("${V_TEST_NAMES[@]}")
-	TEST_FILES=("${V_TEST_FILES[@]}")
-	TEST_EXCEPTIONS=("${V_TEST_EXCEPTIONS[@]}")
-	;;
-t | tate | cyan)
-	TEST_NAMES=("${T_TEST_NAMES[@]}")
-	TEST_FILES=("${T_TEST_FILES[@]}")
-	TEST_EXCEPTIONS=("${T_TEST_EXCEPTIONS[@]}")
-	;;
-*)
-	echo "Product must be specified, use 'v' for vaunt or 't' for tate. Usage: test-only.sh [v | t] [serial] [jenkins_bn] [ftp_upload]"
-	exit 1
-	;;
-esac
-
-SN=$2
+SN=$1
 if [ -z $SN ]; then
-	echo "Serial must be specified. Usage: test-only.sh [v | t] [serial] [jenkins_bn] [ftp_upload]"
-	exit 1
+	echo "Serial must be specified. Usage: test-only.sh [serial] [jenkins_bn] [ftp_upload]" && exit 1
 fi
 
-BN=$3
+BN=$2
 if [ -z $BN ]; then
-	echo "Jenkins build number must be specified. Usage: test-only.sh [v | t] [serial] [jenkins_bn] [ftp_upload]"
-	exit 1
+	echo "Jenkins build number must be specified. Usage: test-only.sh [serial] [jenkins_bn] [ftp_upload]" && exit 1
 fi
 
-UPLOAD=$4
+UPLOAD=$3
 case $UPLOAD in
 t | true | TRUE | True | 1)
 	UPLOAD=1
@@ -65,11 +44,22 @@ f | false | FALSE | False | 0)
 	UPLOAD=0
 	;;
 *)
-	echo "FTP upload must be specified as true or false. Usage: test-only.sh [v | t] [serial] [jenkins_bn] [ftp_upload]"
-	exit 1
+	echo "FTP upload must be specified as true or false. Usage: test-only.sh [serial] [jenkins_bn] [ftp_upload]" && exit 1
 	;;
 esac
 
+PRODUCT=$(uhd_find_devices | grep 'type:')
+case $PRODUCT in
+*"crimson"*)
+	PRODUCT=v
+	;;
+*"cyan"*)
+	PRODUCT=t
+	;;
+*)
+	echo "Could not determine if unit is Crimson or Cyan" && exit 1
+	;;
+esac
 
 SN=$SN'_'$BN
 DATETIME=$(date '+%Y-%m-%d-%H-%M')
