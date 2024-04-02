@@ -47,6 +47,7 @@ def main(iterations):
                     try:
                         assert iteration_areas[b+1][a] - iteration_areas[b][a] > 1 #makes sure the difference in area is significant
                     except:
+                        print(sys.argv[0] + " unacceptable variation in gain")
                         #plot and save real component
                         plt.figure()
                         plt.title("Gain plot of {} for wave_freq = {} Hz".format(ch,it["wave_freq"]))
