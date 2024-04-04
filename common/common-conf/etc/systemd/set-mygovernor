@@ -1,0 +1,34 @@
+#! /bin/bash
+# J.T. 2022-10-02
+# This script is called by script /etc/systemd/system/mygovernor.service
+# It will set the CPU Frequency Scaling governor to the value passed in
+# the first command line argument "$1"
+
+set -eu
+
+FIRSTCPU=$(cut -f1 -d- /sys/devices/system/cpu/online)
+AVAILABLE=$(/bin/cat /sys/devices/system/cpu/cpu${FIRSTCPU}/cpufreq/scaling_available_governors)
+
+# Check if the specified commandline governor ID is supported on this PC
+
+GOVERNOR=""
+
+for gov in ${AVAILABLE}; do
+    if [[ "${gov}" == "${1}" ]]; then
+        GOVERNOR="${gov}"
+        break
+    fi
+done
+
+if [ -z ${GOVERNOR} ]; then
+        echo "Unknown governor =" \"${1}\"
+       exit 1
+fi
+
+echo "Setting CPUFreq Scaling governor = \"$GOVERNOR\" for all CPUs"
+
+for CPUFREQ in /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor
+do
+        [ -f "${CPUFREQ}" ] || continue
+        echo -n "${GOVERNOR}" > ${CPUFREQ}
+done

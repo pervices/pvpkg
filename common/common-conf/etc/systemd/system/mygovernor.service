@@ -1,0 +1,20 @@
+# J.T. 2022-10-02
+# This service set the cpufreq scaling governor, to the value of 
+# environment variable "GOVERNOR" defined in file "/etc/default/mygovernor"
+# This service will not execute unless Ubuntu service "power-profiles-daemon.service"
+# is masked. It may be masked with the following command:
+# "sudo systemctl mask power-profiles-daemon.service"
+
+[Unit]
+Description=Set CPU Frequency Scaling governor
+ConditionVirtualization=no
+ConditionPathExists=/sys/devices/system/cpu/online
+
+[Service]
+Type=idle
+EnvironmentFile=/etc/default/mygovernor
+#ExecCondition=/bin/bash -xc '/usr/bin/systemctl is-masked --quiet power-profiles-daemon.service && exit 1 || exit 0'
+ExecStart=/etc/systemd/set-mygovernor ${GOVERNOR}
+
+[Install]
+WantedBy=multi-user.target

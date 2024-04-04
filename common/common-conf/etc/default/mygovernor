@@ -1,0 +1,11 @@
+# J.T. 2022-10-02
+# Environment file for systemd service /etc/systemd/system /mygovernor.service
+# which set the cpufreq governor to be used by the system.  A list of supported
+# governors may be found by the following command:
+# "cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_available_governors"
+# conservative ondemand userspace powersave performance schedutil
+
+#GOVERNOR=powersave
+#GOVERNOR=schedutil
+#GOVERNOR=ondemand
+GOVERNOR=performance
