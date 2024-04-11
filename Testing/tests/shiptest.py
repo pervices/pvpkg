@@ -104,7 +104,7 @@ strict_mode = args.strict
 
 #Making file and doc title
 date = datetime.datetime.now()
-formattedDate = date.isoformat("-", "minutes")
+formattedDate = date.isoformat("-", "minutes").replace(':',"-")
 file_title = "ship_report_" + serial_num + "_" + formattedDate + ".pdf"
 doc_title = "ship_report_" + serial_num + "_" + formattedDate
 
