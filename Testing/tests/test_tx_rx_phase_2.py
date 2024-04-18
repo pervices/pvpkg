@@ -265,7 +265,6 @@ def boolToWord(word):
 PARAMS: iterations
 RETURNS: <on console>'''
 def main(iterations):
-    print("ops/dwil/gp")
 
     # Setup argument parsing
     parser = argparse.ArgumentParser(description = "Loopback phase coherency test")
