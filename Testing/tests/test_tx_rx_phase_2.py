@@ -98,8 +98,12 @@ def subPlot(x, y, ax, best_fit, offset, title):
     ax.axhline(y = offset, color='green', label='DC Offset')
     ax.legend()
 
+    peaks = find_peaks(y)
     f = open("Data_Plots.txt", "a")
-    f.write("\n" + title + ": " + str(y[find_peaks(y)[0][0]]))
+    if len(peaks[0]) > 0:
+        f.write("\n" + title + ": " + str(y[peaks[0][0]]))
+    else:
+        f.write("\n" + title + ": 0 find_peaks fail")
     f.write("\n" + str(y))
     f.close()
 
