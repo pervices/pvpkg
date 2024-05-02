@@ -314,9 +314,9 @@ def main():
     table_printed_once = 0
 
     if(targs.product == 'Vaunt'):
-        iterations = gen.lo_band_phaseCoherency_short(4)
+        iterations = gen.lo_band_phaseCoherency(4)
     else:
-        iterations = gen.cyan.lo_band.phaseCoherency_short(4)
+        iterations = gen.cyan.lo_band.phaseCoherency(4)
 
     for it in iterations:
 
