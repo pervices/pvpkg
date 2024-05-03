@@ -154,8 +154,6 @@ def check(criteria, mean, std, mins, maxs):
         return_array.append(False)
 
     #check std
-
-
     if (std < criteria[0]):
         return_array.append(True)
     else:
@@ -510,6 +508,11 @@ def main():
         if np.prod(subtest_bool[test]) == 0: #If list contains and 0
             overall_bool[test] =  False
             fail_flag = 1
+    # run to run phase coherency is handled seperately because it is only checked for one channel
+    if (stds[2][0] < phase_std_thresh):
+        overall_bool.append(True)
+    else:
+        overall_bool.append(False)
 
     #Checking if plots should print
 
@@ -523,7 +526,8 @@ def main():
     overall_tests.addColumn("Status")
     overall_tests.addRow("Frequency", boolToWord(overall_bool[0]))
     overall_tests.addRow("Amplitude", boolToWord(overall_bool[1]))
-    overall_tests.addRow("Phase", boolToWord(overall_bool[2]))
+    overall_tests.addRow("Channel-Channel Phase", boolToWord(overall_bool[2]))
+    overall_tests.addRow("Run-Run Phase", boolToWord(overall_bool[3]))
     overall_tests.printData()
 
     # PDF Overall Table
