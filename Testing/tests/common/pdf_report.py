@@ -395,7 +395,7 @@ class ClassicShipTestReport:
         os.system('rm shiptest_out.txt')
 
         # Update filename with unit name
-        self.c._filename = self.output_dir + "/" + unit_name + "_" + self.serial_num + "_" + self.formattedDate + ".pdf"
+        self.c._filename = self.output_dir + "/" + unit_name + "_" + self.doc_title + "_" + self.serial_num + "_" + self.formattedDate + ".pdf"
 
         self.insert_text("Hostname: " + hostname)
         self.insert_text("Operating System: " + operating_sys)
