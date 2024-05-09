@@ -352,7 +352,7 @@ def main():
 
         #Making the time array, starting at the cut off
         global x_time
-        x_time = np.arange(begin_cutoff/sample_rate, sample_count/sample_rate, 1/sample_rate)
+        x_time = np.linspace(begin_cutoff/sample_rate, sample_count/sample_rate, num=sample_count-begin_cutoff)
 
         ampl = []
         freq = []
