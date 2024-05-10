@@ -12,7 +12,7 @@ def ship_test_crimson(channels):
     # The highest frequency uses a higher gain because the signal begins to roll off as the frequency gets higher
     tx_gains = [25, 25, 25, 25, 25, 25, 25, 30]
     rx_gains = [25, 25, 25, 25, 25, 25, 25, 30]
-    center_freqs = [5000000, 300000000, 600000000, 1200000000, 2400000000, 4000000000, 4800000000, 5500000000]
+    center_freqs = [5000000, 300000000, 600000000, 1200000000, 2400000000, 4000000000, 5000000000, 5500000000]
     # #name = "Tx Operation"
     # for center_freq in [25000000, 300000000, 600000000]: #Just so my tests can go faster
     #     yield locals()
