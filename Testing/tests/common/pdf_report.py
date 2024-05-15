@@ -19,9 +19,10 @@ from reportlab.lib.utils import ImageReader
 class ClassicShipTestReport:
     c = None            # The Canvas
     w, h = letter       # 612, 792
-    date = datetime.datetime.now()
-    formattedDate = date.isoformat("-", "minutes")
-    formattedDate = formattedDate.replace(':', '-')     # cant have ':' in file path
+    date = datetime.datetime.now() #current date and time
+    iso_time = date.strftime("%Y%m%d%H%M%S.%f")
+    formattedDate = iso_time
+
     file_title = None
     doc_title = None
     output_dir = None
@@ -41,8 +42,9 @@ class ClassicShipTestReport:
         if output_dir == None:
             output_dir = str(os.getcwd())
         self.output_dir = output_dir
-        self.file_title = output_dir + "/" + doc_title + "_" + serial_num + "_" + self.formattedDate + ".pdf"
         self.doc_title = doc_title + "_" + serial_num + "_" + self.formattedDate
+        self.file_title = output_dir + "/" + doc_title + ".pdf"
+
 
         self.c = canvas.Canvas(self.file_title, pagesize=letter)
         self.insert_page_header()
