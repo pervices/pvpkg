@@ -398,10 +398,10 @@ class ClassicShipTestReport:
 
         os.system('rm shiptest_out.txt')
 
-	# Update doc_title, file_title, and file_name with the unit_name:
-	self.doc_title  = self.formattedDate + "-" + doc_title + "-" + unit_name + "-" + serial_num
+        # Update doc_title, file_title, and file_name with the unit_name:
+        self.doc_title  = self.formattedDate + "-" + doc_title + "-" + unit_name + "-" + serial_num
         self.file_title = self.doc_title
-	self.file_name =  self.output_dir + "/" + self.doc_title + ".pdf"
+        self.file_name =  self.output_dir + "/" + self.doc_title + ".pdf"
 
         # Update actual pdf filename with unit name
         self.c._filename = self.file_name
