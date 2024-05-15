@@ -46,9 +46,16 @@ class ClassicShipTestReport:
         self.file_title = self.doc_title
         #NOTE: We later update the doc_title, file_title, and filename with unit_name 
         #      from the unit
-        self.file_name = self.output_dir + "/" + self.doc_title
+        self.filename = self.output_dir + "/" + self.doc_title + ".pdf"
 
-        self.c = canvas.Canvas(self.file_title, pagesize=letter)
+        self.c = canvas.Canvas(self.file_title, pagesize=letter, lang="en-US")
+        self.c.setAuthor("Per Vices Corporation")
+        self.c.setTitle(self.doc_title)
+        self.c.setSubject("Automatic Ship Test Report")
+        self.c.setCreator("Per Vices Corporation CI/CD Tooling")
+        self.c.setProducer("Per Vices Corporation - pvpkg")
+
+
         self.insert_page_header()
         self.insert_text(self.doc_title)
 
@@ -59,7 +66,7 @@ class ClassicShipTestReport:
         return self.buffer
 
     def get_filename(self):
-        return self.file_title
+        return self.c._filename
 
     """
         Put elements into the buffer
@@ -293,17 +300,25 @@ class ClassicShipTestReport:
         except:
             try:
                 tmp_dir = os.getcwd()
-                os.chdir("../..")
+                os.chdir("../")
                 logo_img_data = open(os.getcwd() + "/pervices-logo.png", "rb")
                 logo_img = ImageReader(logo_img_data)
                 self.c.drawImage(logo_img, 476, self.h - 23, 43, 15)
                 os.chdir(tmp_dir)
             except:
-                t = self.c.beginText()
-                t.setTextOrigin(476, self.h - 23)
-                t.setFont("Helvetica", 12)
-                t.textLine("Per Vices Corp.")
-                self.c.drawText(t)
+                try:
+                    tmp_dir2 = os.getcwd()
+                    os.chdir("../")
+                    logo_img_data = open(os.getcwd() + "/pervices-logo.png", "rb")
+                    logo_img = ImageReader(logo_img_data)
+                    self.c.drawImage(logo_img, 476, self.h - 23, 43, 15)
+                    os.chdir(tmp_dir2)
+                except:
+                    t = self.c.beginText()
+                    t.setTextOrigin(476, self.h - 23)
+                    t.setFont("Helvetica", 12)
+                    t.textLine("Per Vices Corp.")
+                    self.c.drawText(t)
 
     """
         Insert a table from an 2D array
@@ -398,13 +413,13 @@ class ClassicShipTestReport:
 
         os.system('rm shiptest_out.txt')
 
-        # Update doc_title, file_title, and file_name with the unit_name:
+        # Update doc_title, file_title, and filename with the unit_name:
         self.doc_title  = self.doc_title + "-" + unit_name
         self.file_title = self.doc_title
-        self.file_name =  self.output_dir + "/" + self.doc_title + ".pdf"
+        self.filename =  self.output_dir + "/" + self.doc_title + ".pdf"
 
         # Update actual pdf filename with unit name
-        self.c._filename = self.file_name
+        self.c._filename = self.filename
 
         self.insert_text("Hostname: " + hostname)
         self.insert_text("Operating System: " + operating_sys)
