@@ -478,14 +478,14 @@ def main():
 
     try:
         means[1][0] > std_ratio*stds[1][0]
-        print("The Amplitude is greater than " + str(std_ratio) +" * std" )
+        print("Signal present on Ch A (Amplitude greater than " + str(std_ratio) +" * std)" )
     except:
-        print("The Amplitude failed to be greater than " + str(std_ratio) +" * std" )
+        print("Signal possibly absent (Amplitude is less than " + str(std_ratio) +" * std)" )
         abs_bool[1] = True
 
     try:
-        means[3][0] < (std_ratio*std[0][0])
-        means[3][0] > -1*(std_ratio*std[0][0])
+        means[2][0] < (std_ratio*std[0][0])
+        means[2][0] > -1*(std_ratio*std[0][0])
     except:
         print("The Phase failed to be within \u00B1" + str(std_ratio) +" * std")
         abs_bool[2] = True
