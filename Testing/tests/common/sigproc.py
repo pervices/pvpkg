@@ -12,8 +12,7 @@ from datetime import datetime
 now = datetime.now() #current date and time
 iso_time = now.strftime("%Y%m%d%H%M%S.%f")
 
-
-parent_dir = "./"
+parent_dir = os.getcwd()
 leaf_dir = "dump/"
 lead_dir_rawdat= iso_time + "-rawdat"
 leaf_dir_shiptest = iso_time + "-shiptest"

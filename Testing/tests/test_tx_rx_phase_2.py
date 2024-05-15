@@ -60,7 +60,7 @@ now = datetime.now()
 iso_time = now.strftime("%Y%m%d%H%M%S.%f")
 
 #Setting up directories for plots
-parent_dir = "./"
+parent_dir = os.getcwd()
 leaf_dir = "dump/"
 dump_dir = parent_dir + leaf_dir
 dump_path = os.path.join("./", dump_dir)
@@ -655,7 +655,7 @@ def main():
     report.new_page()
 
     # get back outside to save
-    os.chdir("../..")
+    os.chdir("parent_dir")
     # os.system("mkdir report_output")
     # os.chdir("report_output")
     report.draw_from_buffer()
