@@ -484,8 +484,8 @@ def main():
         abs_bool[1] = True
 
     try:
-        means[2][0] < (std_ratio*std[0][0])
-        means[2][0] > -1*(std_ratio*std[0][0])
+        mins[2][0] > ( means[2][0] - (std_ratio*std[2][0]) )
+        maxs[2][0] < ( means[2][0] + (std_ratio*std[2][0]) )
     except:
         print("The Phase failed to be within \u00B1" + str(std_ratio) +" * std")
         abs_bool[2] = True
