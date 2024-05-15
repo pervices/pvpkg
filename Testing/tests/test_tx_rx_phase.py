@@ -526,7 +526,7 @@ def main():
         ["Test", "Status"],
         ["Frequency", boolToWord(overall_bool[0])],
         ["Amplitude", boolToWord(overall_bool[1])],
-        ["Phase", boolToWord(overall_bool[2])]
+        ["Phase", boolToWord(overall_bool[2])],
         ["Run-to-Run Phase Consistency", boolToWord(overall_bool[3])]
         ]
 
