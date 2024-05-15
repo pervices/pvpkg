@@ -19,9 +19,10 @@ from reportlab.lib.utils import ImageReader
 class ClassicShipTestReport:
     c = None            # The Canvas
     w, h = letter       # 612, 792
-    date = datetime.datetime.now()
-    formattedDate = date.isoformat("-", "minutes")
-    formattedDate = formattedDate.replace(':', '-')     # cant have ':' in file path
+    date = datetime.datetime.now() #current date and time
+    iso_time = date.strftime("%Y%m%d%H%M%S.%f")
+    formattedDate = iso_time
+
     file_title = None
     doc_title = None
     output_dir = None
@@ -41,10 +42,20 @@ class ClassicShipTestReport:
         if output_dir == None:
             output_dir = str(os.getcwd())
         self.output_dir = output_dir
-        self.file_title = output_dir + "/" + doc_title + "_" + serial_num + "_" + self.formattedDate + ".pdf"
-        self.doc_title = doc_title + "_" + serial_num + "_" + self.formattedDate
+        self.doc_title  = self.formattedDate + "-" + doc_title + "-" + serial_num
+        self.file_title = self.doc_title
+        #NOTE: We later update the doc_title, file_title, and filename with unit_name 
+        #      from the unit
+        self.filename = self.output_dir + "/" + self.doc_title + ".pdf"
 
-        self.c = canvas.Canvas(self.file_title, pagesize=letter)
+        self.c = canvas.Canvas(self.file_title, pagesize=letter, lang="en-US")
+        self.c.setAuthor("Per Vices Corporation")
+        self.c.setTitle(self.doc_title)
+        self.c.setSubject("Automatic Ship Test Report")
+        self.c.setCreator("Per Vices Corporation CI/CD Tooling")
+        self.c.setProducer("Per Vices Corporation - pvpkg")
+
+
         self.insert_page_header()
         self.insert_text(self.doc_title)
 
@@ -55,7 +66,7 @@ class ClassicShipTestReport:
         return self.buffer
 
     def get_filename(self):
-        return self.file_title
+        return self.c._filename
 
     """
         Put elements into the buffer
@@ -289,17 +300,25 @@ class ClassicShipTestReport:
         except:
             try:
                 tmp_dir = os.getcwd()
-                os.chdir("../..")
+                os.chdir("../")
                 logo_img_data = open(os.getcwd() + "/pervices-logo.png", "rb")
                 logo_img = ImageReader(logo_img_data)
                 self.c.drawImage(logo_img, 476, self.h - 23, 43, 15)
                 os.chdir(tmp_dir)
             except:
-                t = self.c.beginText()
-                t.setTextOrigin(476, self.h - 23)
-                t.setFont("Helvetica", 12)
-                t.textLine("Per Vices Corp.")
-                self.c.drawText(t)
+                try:
+                    tmp_dir2 = os.getcwd()
+                    os.chdir("../")
+                    logo_img_data = open(os.getcwd() + "/pervices-logo.png", "rb")
+                    logo_img = ImageReader(logo_img_data)
+                    self.c.drawImage(logo_img, 476, self.h - 23, 43, 15)
+                    os.chdir(tmp_dir2)
+                except:
+                    t = self.c.beginText()
+                    t.setTextOrigin(476, self.h - 23)
+                    t.setFont("Helvetica", 12)
+                    t.textLine("Per Vices Corp.")
+                    self.c.drawText(t)
 
     """
         Insert a table from an 2D array
@@ -386,7 +405,7 @@ class ClassicShipTestReport:
         server_ver = subprocess.getstatusoutput("cat shiptest_out.txt | grep 'Server Version' | cut --complement -d ':' -f1 ")[1]
         fpga_ver = subprocess.getstatusoutput("cat shiptest_out.txt | grep 'FPGA' | cut --complement -d ':' -f1")[1]
         UHD_ver = subprocess.getstatusoutput("cat shiptest_out.txt | grep 'UHD' | cut --complement -d 'g' -f1")[1]
-        unit_name = subprocess.getstatusoutput("cat shiptest_out.txt | grep 'Device Type' | cut --complement -d ':' -f1 | cut -d '_' -f1 | tr -d [:blank:]")[1]
+        unit_name = subprocess.getstatusoutput("cat shiptest_out.txt | grep 'Device Type' | cut --complement -d ':' -f1 | tr -d [:blank:]")[1]
         unit_time = subprocess.getstatusoutput("cat shiptest_out.txt | grep -m1 'Date' | cut --complement -d ':' -f1")[1]
         unit_rtm = subprocess.getstatusoutput("cat shiptest_out.txt | grep 'RTM' | cut --complement -d ':' -f1")[1]
         hostname = subprocess.run(["cat /proc/sys/kernel/hostname | tr -d '\n' "], shell=True, capture_output=True, text=True).stdout
@@ -394,8 +413,13 @@ class ClassicShipTestReport:
 
         os.system('rm shiptest_out.txt')
 
-        # Update filename with unit name
-        self.c._filename = self.output_dir + "/" + unit_name + "_" + self.doc_title + "_" + self.serial_num + "_" + self.formattedDate + ".pdf"
+        # Update doc_title, file_title, and filename with the unit_name:
+        self.doc_title  = self.doc_title + "-" + unit_name
+        self.file_title = self.doc_title
+        self.filename =  self.output_dir + "/" + self.doc_title + ".pdf"
+
+        # Update actual pdf filename with unit name
+        self.c._filename = self.filename
 
         self.insert_text("Hostname: " + hostname)
         self.insert_text("Operating System: " + operating_sys)
@@ -577,21 +601,21 @@ if __name__ == "__main__":
 
     test_long_table = [
         ["Run", "Baseline A", "Diff AB", "Diff AC", "Diff AD"],
-        ["Mean", 1.5054301484289825, -0.005804664675146953, 0.3743332209620863, -0.3053471609126083, 1.5054301484289825, -0.005804664675146953, 0.3743332209620863, -0.3053471609126083],
-        ["Mean", 1.5054301484289825, -0.005804664675146953, 0.3743332209620863, -0.3053471609126083, 1.5054301484289825, -0.005804664675146953, 0.3743332209620863, -0.3053471609126083],
-        ["Mean", 1.5054301484289825, -0.005804664675146953, 0.3743332209620863, -0.3053471609126083, 1.5054301484289825, -0.005804664675146953, 0.3743332209620863, -0.3053471609126083],
-        ["Mean", 1.5054301484289825, -0.005804664675146953, 0.3743332209620863, -0.3053471609126083, 1.5054301484289825, -0.005804664675146953, 0.3743332209620863, -0.3053471609126083],
-        ["Mean", 1.5054301484289825, -0.005804664675146953, 0.3743332209620863, -0.3053471609126083, 1.5054301484289825, -0.005804664675146953, 0.3743332209620863, -0.3053471609126083],
-        ["Mean", 1.5054301484289825, -0.005804664675146953, 0.3743332209620863, -0.3053471609126083, 1.5054301484289825, -0.005804664675146953, 0.3743332209620863, -0.3053471609126083],
-        ["Mean", 1.5054301484289825, -0.005804664675146953, 0.3743332209620863, -0.3053471609126083, 1.5054301484289825, -0.005804664675146953, 0.3743332209620863, -0.3053471609126083],
-        ["Mean", 1.5054301484289825, -0.005804664675146953, 0.3743332209620863, -0.3053471609126083, 1.5054301484289825, -0.005804664675146953, 0.3743332209620863, -0.3053471609126083],
-        ["Mean", 1.5054301484289825, -0.005804664675146953, 0.3743332209620863, -0.3053471609126083, 1.5054301484289825, -0.005804664675146953, 0.3743332209620863, -0.3053471609126083],
-        ["Mean", 1.5054301484289825, -0.005804664675146953, 0.3743332209620863, -0.3053471609126083, 1.5054301484289825, -0.005804664675146953, 0.3743332209620863, -0.3053471609126083],
-        ["Mean", 1.5054301484289825, -0.005804664675146953, 0.3743332209620863, -0.3053471609126083, 1.5054301484289825, -0.005804664675146953, 0.3743332209620863, -0.3053471609126083],
-        ["Mean", 1.5054301484289825, -0.005804664675146953, 0.3743332209620863, -0.3053471609126083, 1.5054301484289825, -0.005804664675146953, 0.3743332209620863, -0.3053471609126083],
-        ["Mean", 1.5054301484289825, -0.005804664675146953, 0.3743332209620863, -0.3053471609126083, 1.5054301484289825, -0.005804664675146953, 0.3743332209620863, -0.3053471609126083],
-        ["Mean", 1.5054301484289825, -0.005804664675146953, 0.3743332209620863, -0.3053471609126083, 1.5054301484289825, -0.005804664675146953, 0.3743332209620863, -0.3053471609126083],
-        ["Mean", 1.5054301484289825, -0.005804664675146953, 0.3743332209620863, -0.3053471609126083, 1.5054301484289825, -0.005804664675146953, 0.3743332209620863, -0.3053471609126083]
+        ["Mean", 9.9999999999999999, -9.9999999999999999, 0.9999999999999999, -9.9999999999999999, 9.9999999999999999, -9.9999999999999999, 0.9999999999999999, -9.9999999999999999],
+        ["Mean", 9.9999999999999999, -9.9999999999999999, 0.9999999999999999, -9.9999999999999999, 9.9999999999999999, -9.9999999999999999, 0.9999999999999999, -9.9999999999999999],
+        ["Mean", 9.9999999999999999, -9.9999999999999999, 0.9999999999999999, -9.9999999999999999, 9.9999999999999999, -9.9999999999999999, 0.9999999999999999, -9.9999999999999999],
+        ["Mean", 9.9999999999999999, -9.9999999999999999, 0.9999999999999999, -9.9999999999999999, 9.9999999999999999, -9.9999999999999999, 0.9999999999999999, -9.9999999999999999],
+        ["Mean", 9.9999999999999999, -9.9999999999999999, 0.9999999999999999, -9.9999999999999999, 9.9999999999999999, -9.9999999999999999, 0.9999999999999999, -9.9999999999999999],
+        ["Mean", 9.9999999999999999, -9.9999999999999999, 0.9999999999999999, -9.9999999999999999, 9.9999999999999999, -9.9999999999999999, 0.9999999999999999, -9.9999999999999999],
+        ["Mean", 9.9999999999999999, -9.9999999999999999, 0.9999999999999999, -9.9999999999999999, 9.9999999999999999, -9.9999999999999999, 0.9999999999999999, -9.9999999999999999],
+        ["Mean", 9.9999999999999999, -9.9999999999999999, 0.9999999999999999, -9.9999999999999999, 9.9999999999999999, -9.9999999999999999, 0.9999999999999999, -9.9999999999999999],
+        ["Mean", 9.9999999999999999, -9.9999999999999999, 0.9999999999999999, -9.9999999999999999, 9.9999999999999999, -9.9999999999999999, 0.9999999999999999, -9.9999999999999999],
+        ["Mean", 9.9999999999999999, -9.9999999999999999, 0.9999999999999999, -9.9999999999999999, 9.9999999999999999, -9.9999999999999999, 0.9999999999999999, -9.9999999999999999],
+        ["Mean", 9.9999999999999999, -9.9999999999999999, 0.9999999999999999, -9.9999999999999999, 9.9999999999999999, -9.9999999999999999, 0.9999999999999999, -9.9999999999999999],
+        ["Mean", 9.9999999999999999, -9.9999999999999999, 0.9999999999999999, -9.9999999999999999, 9.9999999999999999, -9.9999999999999999, 0.9999999999999999, -9.9999999999999999],
+        ["Mean", 9.9999999999999999, -9.9999999999999999, 0.9999999999999999, -9.9999999999999999, 9.9999999999999999, -9.9999999999999999, 0.9999999999999999, -9.9999999999999999],
+        ["Mean", 9.9999999999999999, -9.9999999999999999, 0.9999999999999999, -9.9999999999999999, 9.9999999999999999, -9.9999999999999999, 0.9999999999999999, -9.9999999999999999],
+        ["Mean", 9.9999999999999999, -9.9999999999999999, 0.9999999999999999, -9.9999999999999999, 9.9999999999999999, -9.9999999999999999, 0.9999999999999999, -9.9999999999999999]
     ]
     report.buffer_put("table_large", test_long_table, "A Long Table")
 
