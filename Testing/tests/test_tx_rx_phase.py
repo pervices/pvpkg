@@ -639,7 +639,7 @@ def main():
     report.new_page()
 
     # get back outside to save
-    os.chdir("parent_dir")
+    os.chdir(parent_dir)
     # os.system("mkdir report_output")
     # os.chdir("report_output")
     report.draw_from_buffer()
