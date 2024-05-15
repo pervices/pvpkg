@@ -6,57 +6,52 @@ import os
 from scipy import signal
 from datetime import datetime
 
-#Creating Dump file
+#Standardize dump file naming schemes and directories
+
+#Use ISO time for filename creation
 now = datetime.now() #current date and time
 iso_time = now.strftime("%Y%m%d%H%M%S.%f")
 
-leaf_dir = "dump_" + iso_time
+
 parent_dir = "./"
+leaf_dir = "dump/"
+lead_dir_rawdat= iso_time + "-rawdat"
+leaf_dir_shiptest = iso_time + "-shiptest"
 
-dump_dir = parent_dir + leaf_dir
-path = os.path.join("./", dump_dir)
-os.makedirs(path)
+rawdat_dir = parent_dir + leaf_dir + lead_dir_rawdat
+rawdat_path = os.path.join("./", rawdat_dir)
+os.makedirs(rawdat_path,exist_ok=True)
 
+shiptest_dump_dir = parent_dir + leaf_dir + leaf_dir_shiptest
+shiptest_path=os.path.join("./", shiptest_dump_dir)
+os.makedirs(shiptest_path,exist_ok=True)
 
 def dump(vsnk):
-
     sample_count = range(len(vsnk[0].data()))
     channels = range(len(vsnk))
-
     for sample in sample_count:
         for channel in channels:
             datum = vsnk[channel].data()[sample]
             sys.stdout.write("%10.5f %10.5f\t" % (datum.real, datum.imag))
-
         sys.stdout.write("\n")
-
     sys.stdout.write("\n")
     return None
 
 def dump_file(vsnk, wave_freq):
-
     sample_count = range(len(vsnk[0].data()))
     channels = range(len(vsnk))
-
     for sample in sample_count:
-
         for channel in channels:
             datum = (vsnk[channel].data()[sample])
             #Writing to a file
-            f = open(path+"/CH_" + str(channel) + "_WF_" + str(wave_freq) + ".dat", "a")
+            f = open(rawdat_path+"/CH_" + str(channel) + "_WF_" + str(wave_freq) + ".dat", "a")
             f.write("%10.5f %10.5f\t" % (datum.real, datum.imag) + "\n")
-
     return None
 
-leaf_dir_shiptest = "shiptest_dump" 
-#parent_dir = "./"
-shiptest_dump_dir = parent_dir + leaf_dir_shiptest
-shiptest_path=os.path.join("./", shiptest_dump_dir)
-os.makedirs(shiptest_path,exist_ok=True)
 def dump_file_shiptest(vsnk, wave_freq, center_freq, sample_rate, tx_gain, sample_count):
+    #os.makedirs(shiptest_path,exist_ok=True)
     sample_count = range(len(vsnk[0].data()))
     channels = range(len(vsnk))
-
     for sample in sample_count:
         i=0
         for channel in channels:
@@ -65,28 +60,22 @@ def dump_file_shiptest(vsnk, wave_freq, center_freq, sample_rate, tx_gain, sampl
             f = open(shiptest_path + "/file_num_" + str(i) + "_CH_" + str(channel) + "_WF_" + str(wave_freq) + "_CF_" + str(center_freq) + "_SR_" + str(sample_rate) + "_gain_" + str(tx_gain) + "_SC_" + str(len(sample_count)) + ".dat", "a")
             f.write("%10.5f %10.5f\t" % (datum.real, datum.imag) + "\n")
             i+=1
-    
-
     return None
 
 
 def dump_file_shiptest_bin(vsnk, wave_freq, center_freq, sample_rate, tx_gain, sample_count):
-
     sample_count = range(len(vsnk[0].data()))
     channels = range(len(vsnk))
-
     for sample in sample_count:
-
         for channel in channels:
             datum = (vsnk[channel].data()[sample])
             #Writing to a file
-            f = open(path + "/CH_" + str(channel) + "_WF_" + str(wave_freq) + "_CF_" + str(center_freq) + "_SR_" + str(sample_rate) + "_gain_" + str(tx_gain) + "_SC_" + str(len(sample_count)) + ".dat", "a")
+            f = open(rawdat_path + "/CH_" + str(channel) + "_WF_" + str(wave_freq) + "_CF_" + str(center_freq) + "_SR_" + str(sample_rate) + "_gain_" + str(tx_gain) + "_SC_" + str(len(sample_count)) + ".dat", "a")
             byte_array=("%10.5f %10.5f\t" % (datum.real, datum.imag) + "\n")
             binary_format=bytearray(byte_array, encoding="ascii")
             #f.write( (datum.real, datum.imag) )
             #Or, try this - this should just store the array.
             f.write(binary_format)
-
     return None
     
 
