@@ -19,7 +19,7 @@ from scipy import signal
 import sys
 import os
 from datetime import datetime
-import time, datetime
+import time
 from math import pi
 
 import argparse
@@ -56,8 +56,7 @@ phase_std_thresh = 0.002
             #Frequency , Ampl, Phase
 plot_toggle = [True, True, True]
 #Calling date and time for simplicity - NOTE: THIS WOULD BE HELPFUL IN MOST CODES, SHOULD WE MAKE FILE IN COMMON FOR IT??
-#Calling date and time for simplicity - NOTE: THIS WOULD BE HELPFUL IN MOST CODES, SHOULD WE MAKE FILE IN COMMON FOR IT??
-now = datetime.now() #current date and time
+now = datetime.now()
 iso_time = now.strftime("%Y%m%d%H%M%S.%f")
 
 #Setting up directories for plots
@@ -67,10 +66,7 @@ dump_dir = parent_dir + leaf_dir
 dump_path = os.path.join("./", dump_dir)
 os.makedirs(dump_path,exist_ok=True)
 
-phase_plot_dir = dump_dir + "/tx_rx_phase"
-os.makedirs(phase_plot_dir, exist_ok = True)
-
-test_plots = phase_plot_dir + "/" + iso_time + "-pc"
+test_plots = dump_dir + "/" + iso_time + "-tx_rx_phase_2"
 os.makedirs(test_plots, exist_ok = True)
 
 #important variables

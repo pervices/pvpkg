@@ -20,7 +20,7 @@ from datetime import datetime
 import sys
 import os
 from datetime import datetime
-import time, datetime
+import time
 from math import pi
 import argparse
 
@@ -67,10 +67,7 @@ dump_dir = parent_dir + leaf_dir
 dump_path = os.path.join("./", dump_dir)
 os.makedirs(dump_path,exist_ok=True)
 
-phase_plot_dir = dump_dir + "/tx_rx_phase"
-os.makedirs(phase_plot_dir, exist_ok = True)
-
-test_plots = phase_plot_dir + "/" + iso_time + "-pc"
+test_plots = dump_dir + "/" + iso_time + "-tx_rx_phase"
 os.makedirs(test_plots, exist_ok = True)
 
 #important variables
