@@ -44,9 +44,9 @@ class ClassicShipTestReport:
         self.output_dir = output_dir
         self.doc_title  = self.formattedDate + "-" + doc_title + "-" + serial_num
         self.file_title = self.doc_title
-	#NOTE: We later update the doc_title, file_title, and filename with unit_name 
-	#      from the unit
-	self.file_name = self.output_dir + "/" + self.doc_title
+        #NOTE: We later update the doc_title, file_title, and filename with unit_name 
+        #      from the unit
+        self.file_name = self.output_dir + "/" + self.doc_title
 
         self.c = canvas.Canvas(self.file_title, pagesize=letter)
         self.insert_page_header()
