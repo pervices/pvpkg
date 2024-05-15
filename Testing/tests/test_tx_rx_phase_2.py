@@ -55,18 +55,21 @@ phase_std_thresh = 0.002
             #Frequency , Ampl, Phase
 plot_toggle = [True, True, True]
 #Calling date and time for simplicity - NOTE: THIS WOULD BE HELPFUL IN MOST CODES, SHOULD WE MAKE FILE IN COMMON FOR IT??
-date = datetime.datetime.now()
-formattedDate = date.isoformat()
-#Formatting the foldernames to be scriptable
-formattedDate = formattedDate.replace('-','')
-formattedDate = formattedDate.replace(':','')
+#Calling date and time for simplicity - NOTE: THIS WOULD BE HELPFUL IN MOST CODES, SHOULD WE MAKE FILE IN COMMON FOR IT??
+now = datetime.now() #current date and time
+iso_time = now.strftime("%Y%m%d%H%M%S.%f")
 
 #Setting up directories for plots
-current_dir = os.getcwd()
-phase_plot_dir = current_dir + "/phase_coherency_fails"
-test_plots = phase_plot_dir + "/" + formattedDate
+parent_dir = "./"
+leaf_dir = "dump/"
+dump_dir = parent_dir + leaf_dir
+dump_path = os.path.join("./", dump_dir)
+os.makedirs(dump_path,exist_ok=True)
 
+phase_plot_dir = dump_dir + "/tx_rx_phase"
 os.makedirs(phase_plot_dir, exist_ok = True)
+
+test_plots = phase_plot_dir + "/" + iso_time + "-pc"
 os.makedirs(test_plots, exist_ok = True)
 
 #important variables

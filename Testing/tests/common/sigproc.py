@@ -18,13 +18,17 @@ leaf_dir = "dump/"
 lead_dir_rawdat= iso_time + "-rawdat"
 leaf_dir_shiptest = iso_time + "-shiptest"
 
+dump_dir = parent_dir + leaf_dir
+dump_path = os.path.join("./", dump_dir)
+os.makedirs(dump_path,exist_ok=True)
+
 rawdat_dir = parent_dir + leaf_dir + lead_dir_rawdat
 rawdat_path = os.path.join("./", rawdat_dir)
-os.makedirs(rawdat_path,exist_ok=True)
+#os.makedirs(rawdat_path,exist_ok=True)
 
 shiptest_dump_dir = parent_dir + leaf_dir + leaf_dir_shiptest
 shiptest_path=os.path.join("./", shiptest_dump_dir)
-os.makedirs(shiptest_path,exist_ok=True)
+#os.makedirs(shiptest_path,exist_ok=True)
 
 def dump(vsnk):
     sample_count = range(len(vsnk[0].data()))
@@ -38,6 +42,7 @@ def dump(vsnk):
     return None
 
 def dump_file(vsnk, wave_freq):
+    os.makedirs(rawdat_path,exist_ok=True)
     sample_count = range(len(vsnk[0].data()))
     channels = range(len(vsnk))
     for sample in sample_count:
@@ -49,7 +54,7 @@ def dump_file(vsnk, wave_freq):
     return None
 
 def dump_file_shiptest(vsnk, wave_freq, center_freq, sample_rate, tx_gain, sample_count):
-    #os.makedirs(shiptest_path,exist_ok=True)
+    os.makedirs(shiptest_path,exist_ok=True)
     sample_count = range(len(vsnk[0].data()))
     channels = range(len(vsnk))
     for sample in sample_count:
@@ -62,8 +67,8 @@ def dump_file_shiptest(vsnk, wave_freq, center_freq, sample_rate, tx_gain, sampl
             i+=1
     return None
 
-
 def dump_file_shiptest_bin(vsnk, wave_freq, center_freq, sample_rate, tx_gain, sample_count):
+    os.makedirs(rawdat_path,exist_ok=True)
     sample_count = range(len(vsnk[0].data()))
     channels = range(len(vsnk))
     for sample in sample_count:
