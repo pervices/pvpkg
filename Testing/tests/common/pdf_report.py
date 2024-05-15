@@ -42,8 +42,8 @@ class ClassicShipTestReport:
         if output_dir == None:
             output_dir = str(os.getcwd())
         self.output_dir = output_dir
-        self.doc_title = doc_title + "_" + serial_num + "_" + self.formattedDate
-        self.file_title = output_dir + "/" + doc_title + ".pdf"
+        self.doc_title = self.formattedDate + "-" + doc_title + "-" + serial_num
+        self.file_title = output_dir + "/" + self.doc_title + ".pdf"
 
 
         self.c = canvas.Canvas(self.file_title, pagesize=letter)
