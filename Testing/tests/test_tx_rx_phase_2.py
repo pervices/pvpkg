@@ -508,14 +508,15 @@ def main():
         if np.prod(subtest_bool[test]) == 0: #If list contains and 0
             overall_bool[test] =  False
             fail_flag = 1
-    # run to run phase coherency is handled seperately because it is only checked for one channel
+
+    # Check run-to-run phase coherency for channel A only.
+    # If the STD exceeds threshold, then it's likely that channel A has non-uniform start time.
     if (stds[2][0] < phase_std_thresh):
         overall_bool.append(True)
     else:
         overall_bool.append(False)
 
     #Checking if plots should print
-
     if (np.prod(overall_bool) == 0 or plot_toggle or np.prod(abs_bool) == 0):
         makePlots()
 
@@ -535,7 +536,8 @@ def main():
         ["Test", "Status"],
         ["Frequency", boolToWord(overall_bool[0])],
         ["Amplitude", boolToWord(overall_bool[1])],
-        ["Phase", boolToWord(overall_bool[2])]
+        ["Phase", boolToWord(overall_bool[2])],
+        ["Run-to-Run Phase Consistency", boolToWord(overall_bool[3])]
         ]
 
     # report.new_page()
@@ -554,7 +556,7 @@ def main():
     if not overall_bool[1]:
         st_ampl  = out.Table(title="SubTest Results - Amplitude Tests")
         subtestTable(st_ampl, min_crit, max_crit, str(ampl_std_thresh), subtest_bool[1], bounds=False)
-    if not overall_bool[2]:
+    if (not overall_bool[2]) or (not overall_bool[3]):
         st_phase = out.Table(title="SubTest Results - Phase Tests")
         subtestTable(st_phase, min_crit, max_crit, str(phase_std_thresh), subtest_bool[2])
 
@@ -576,6 +578,11 @@ def main():
         ["Min Value Outliers", (">" + min_crit), boolToWord(subtest_bool[2][0][0]), boolToWord(subtest_bool[2][1][0]), boolToWord(subtest_bool[2][2][0])],
         ["Max Value Outliers", ("<" + max_crit), boolToWord(subtest_bool[2][0][1]), boolToWord(subtest_bool[2][1][1]), boolToWord(subtest_bool[2][2][1])],
         ["STD Deviation", ("<" + str(phase_std_thresh)), boolToWord(subtest_bool[2][0][2]), boolToWord(subtest_bool[2][1][2]), boolToWord(subtest_bool[2][2][2])]
+    ]
+
+    subtest_phase_consistency = [
+        ["Test", "Criteria", "Ch A."],
+        ["Run-to-Run Phase Consistency", ("std <" + phase_std_thresh), boolToWord(overall_bool[3]) ]
     ]
 
     #Summary Statistics
@@ -640,6 +647,9 @@ def main():
     report.insert_table(subtest_ampl_table, 20, "SubTest Results - Amplitude Test")
     report.insert_text(" ")
     report.insert_table(subtest_phase_table, 20, "SubTest Results - Phase Test")
+    report.insert_text(" ")
+    report.insert_table(subtest_phase_consistency, 20, "SubTest Results - Run-to-Run Phase Consistency Test")
+
 
     report.new_page()
     report.insert_text_large("Summary Statistics: ")
