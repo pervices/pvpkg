@@ -505,6 +505,7 @@ def main():
         overall_bool.append(True)
     else:
         overall_bool.append(False)
+        fail_flag = 1
 
     #Checking if plots should print
     if (np.prod(overall_bool) == 0 or plot_toggle or np.prod(abs_bool) == 0):
@@ -572,7 +573,7 @@ def main():
 
     subtest_phase_consistency = [
         ["Test", "Criteria", "Ch A."],
-        ["Run-to-Run Phase Consistency", ("std <" + phase_std_thresh), boolToWord(overall_bool[3]) ]
+        ["Run-to-Run Phase Consistency", ("std <" + str(phase_std_thresh)), boolToWord(overall_bool[3]) ]
     ]
 
     #Summary Statistics
