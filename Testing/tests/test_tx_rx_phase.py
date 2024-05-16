@@ -8,6 +8,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.optimize import curve_fit
 from scipy import stats
+import math
 
 from common import outputs as out
 import numpy as np
@@ -31,7 +32,8 @@ begin_cutoff_waves = 1 #0.00000425 #e(-5) - guessed from previous diagrams (but 
 tx_burst = 5.0 #burst should be slightly delayed to ensure all data is being collected
 rx_burst = 5.25
 
-std_ratio = 4 #number std gets multiplied by for checks
+std_ratio = 4  #number std gets multiplied by for checks, normalized to a sample size of 10
+               #This value is adjusted later depending on the number of runs.
 
 #changing global variables - referenced in multiple functions
 wave_freq = -1 #set later, when runs are called
@@ -316,8 +318,11 @@ def main():
     else:
         iterations = gen.cyan.lo_band.phaseCoherency_short(4)
 
+    num_iter = 0
+    
     for it in iterations:
 
+        num_iter = num_iter + 1
         gen.dump(it) #pulling info from generator
         #connecting and setting up the uniti
         '''Note how each step of time is equiv to 1/sample_rate
@@ -434,6 +439,14 @@ def main():
         stds.append(std_temp)
         mins.append(mins_temp)
         maxs.append(maxs_temp)
+
+    #Increase the std_ratio if the number of iterations implies a substantially
+    #smaller std_deviation
+    global std_ratio
+    alt_std_ratio = math.sqrt(num_iter)
+    if alt_std_ratio > std_ratio:
+        print("Replacing old std_ratio (=" + str(std_ratio) + ") with updated str_ratio (="+ str(alt_std_ratio) + ")due to iteration count.")
+        std_ratio = alt_std_ratio
 
     #Calculating the Criteria
     #2D array holding thresholds of: mean, std, min, max
