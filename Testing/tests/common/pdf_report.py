@@ -330,7 +330,7 @@ class ClassicShipTestReport:
             ["3", "Lemon", "sour fruit"]
         ]
     """
-    def insert_table(self, data, x_offset = 0, title = None, fontsize = 10):
+    def __table_helper(self, data, x_offset = 0, title = None, fontsize = 10):
         rows = len(data)
         space_y_needed = rows * 18 + 5
         mStyle=[
@@ -359,6 +359,14 @@ class ClassicShipTestReport:
             self.c.drawText(t)
 
         input_table.drawOn(self.c, 30 + x_offset, self.cursor_y)
+
+    def insert_table(self, data, x_offset = 0, title = None, fontsize = 10):
+        for i in range(1, len(data), 35):       # max 35 rows per page, if larger split into multiple tables on separate pages
+            if i != 1:
+                self.new_page()                 # put each subsection of table on a new page
+            table = data[i:i+35]
+            table.insert(0, data[0])            # insert header at top of every table
+            self.__table_helper(table, x_offset, title, fontsize)
 
     """
         Make the page header

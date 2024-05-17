@@ -105,12 +105,7 @@ def main(iterations, desc):
 def add_summary_table(title, data):
     report.insert_text_large("{} Testing Summary".format(title))
     report.insert_text("")
-    for i in range(1, len(data), 35):       # max 35 rows per page, if larger split into multiple tables on separate pages
-        if i != 1:
-            report.new_page()               # put each subsection of table on a new page
-        table = data[i:i+35]
-        table.insert(0, data[0])            # insert header at top of every table
-        report.insert_table(table)
+    report.insert_table(data)
     report.new_page()
 
 def build_report():
