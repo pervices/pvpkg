@@ -30,21 +30,21 @@ SN=$1
 BN=$2
 DOCKER_SHA=$3
 if [ -z $DOCKER_SHA ]; then
-	echo "Docker SHA must be specified. Usage: test-only.sh [serial] [jenkins_bn] [ftp_upload] [docker_sha]" && exit 1
+	echo "ERROR: Docker SHA must be specified. Usage: test-only.sh [serial] [jenkins_bn] [ftp_upload] [docker_sha]" && exit 22
 fi
 shift; shift; shift; shift
 TEST_LIST=("$@")
 
 if [ -z $SN ]; then
-	echo "Serial must be specified. Usage: test-only.sh [serial] [jenkins_bn] [ftp_upload] [docker_sha]" && exit 1
+	echo "ERROR: Serial must be specified. Usage: test-only.sh [serial] [jenkins_bn] [ftp_upload] [docker_sha]" && exit 22
 fi
 
 if [[ $SN != "TNG"* && $SN != "CYN"* && $SN != "int" ]]; then
-	echo "Invalid serial number provided. Valid serial numbers are TNG*, CYN*, or int" && exit 1
+	echo "ERROR: Invalid serial number provided. Valid serial numbers are TNG*, CYN*, or int" && exit 22
 fi
 
 if [ -z $BN ]; then
-	echo "Jenkins build number must be specified. Usage: test-only.sh [serial] [jenkins_bn] [ftp_upload] [docker_sha]" && exit 1
+	echo "ERROR: Jenkins build number must be specified. Usage: test-only.sh [serial] [jenkins_bn] [ftp_upload] [docker_sha]" && exit 22
 fi
 
 PRODUCT=$(uhd_find_devices | grep 'type:')
