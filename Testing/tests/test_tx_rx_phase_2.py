@@ -337,7 +337,12 @@ def main():
         tx_stack = [ (tx_burst , sample_rate)]
         rx_stack = [ (rx_burst, int(it["sample_count"]))]
         #this is the code that will actually tell the unit what values to run at
-        vsnk = engine.run(it["channels"], it["wave_freq"], sample_rate, it["center_freq"], it["tx_gain"], it["rx_gain"], tx_stack, rx_stack)
+        try:
+            vsnk = engine.run(it["channels"], it["wave_freq"], sample_rate, it["center_freq"], it["tx_gain"], it["rx_gain"], tx_stack, rx_stack)
+        except Exception as err:
+            report.draw_from_buffer()
+            report.save()
+            sys.exit(1)
 
         if (table_printed_once == 0):
             table_data = [["Center Frequency (Hz)", "Wave Frequency (Hz)", "Sample Rate (SPS)", "Sample Count", "TX Gain (dB)", "RX Gain (dB)"],

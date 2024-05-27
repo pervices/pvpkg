@@ -26,11 +26,15 @@ def test(it, data):
     tx_stack = [ (5.0, int(it["sample_count"])) ] # One seconds worth.
     rx_stack = [ (5.0, int(it["sample_count"]) ) ]
 
-    vsnk = engine.manual_tune_run(it["channels"], it["wave_freq"],
-                                  it["sample_rate"], it["sample_rate"],
-                                  it["center_freq"], rx_tune_request,
-                                  it["tx_gain"], it["rx_gain"],
-                                  tx_stack, rx_stack)
+    try:
+        vsnk = engine.manual_tune_run(it["channels"], it["wave_freq"],
+                                    it["sample_rate"], it["sample_rate"],
+                                    it["center_freq"], rx_tune_request,
+                                    it["tx_gain"], it["rx_gain"],
+                                    tx_stack, rx_stack)
+    except Exception as err:
+        build_report()
+        sys.exit(1)
 
     center_freq = "{:.3e}".format(it["center_freq"])
     rx_lo = "{:.2e}".format(it["rx_lo"])

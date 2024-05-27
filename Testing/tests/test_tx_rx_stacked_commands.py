@@ -24,7 +24,11 @@ def test(it, data):
     # First frame of TX/RX stack is gold standard (sample_count samples in middle of 1 second of TX).
     tx_stack = [ (5.0, it["sample_count" ]), (8.0, it["sample_count"]), (11.0, it["sample_count"]), (14.0, it["sample_count"]) ]
     rx_stack = [ (5.0, it["sample_count"]), (8.0, it["sample_count"]), (11.0, it["sample_count"]), (14.0, it["sample_count"]) ]
-    vsnk = engine.run(it["channels"], it["wave_freq"], it["sample_rate"], it["center_freq"], it["tx_gain"], it["rx_gain"], tx_stack, rx_stack)
+    try:
+        vsnk = engine.run(it["channels"], it["wave_freq"], it["sample_rate"], it["center_freq"], it["tx_gain"], it["rx_gain"], tx_stack, rx_stack)
+    except Exception as err:
+        build_report()
+        sys.exit(1)
 
     center_freq = "{:.1e}".format(it["center_freq"])
     wave_freq = "{:.1e}".format(it["wave_freq"])

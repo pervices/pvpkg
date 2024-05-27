@@ -6,9 +6,11 @@ from gnuradio import gr
 from . import crimson
 import threading
 from threading import Thread, Event
+from inspect import currentframe, getframeinfo
 import time
 import subprocess
 import sys
+import datetime
 
 def run_tx(csnk, channels, stack, sample_rate, wave_freq):
 
@@ -100,9 +102,13 @@ def run_rx(csrc, channels, stack, sample_rate, _vsnk, timeout_occured):
     while len(vsnk[0].data()) < total_sample_count:
         time.sleep(0.1)
         if (time.clock_gettime(time.CLOCK_MONOTONIC) > timeout_time):
-            print("ERROR: RX timed out")
-            print("Number of samples recieved: " + str(len(vsnk[0].data())) + " out of " + str(total_sample_count))
-            print("UHD failed to provide expected number of samples.")
+            frameinfo = getframeinfo(currentframe())
+            hostname = subprocess.run(["cat /proc/sys/kernel/hostname | tr -d '\n' "], shell=True, capture_output=True, text=True).stdout
+            uptime = subprocess.run(["cat /proc/uptime"], shell=True, capture_output=True, text=True).stdout
+            date = datetime.datetime.now() #current date and time
+            iso_time = date.strftime("%Y%m%dT%H%M%S.%fZ")
+            errmsg = "[ERROR][{}:{}] - UHD failed to provide expected number of samples before RX timeout - HOSTNAME:{} - TIME:{} - UPTIME:{} - SAMPS RECEIVED:{} - SAMPS EXPECTED:{}".format(frameinfo.filename, frameinfo.lineno, hostname, iso_time, uptime, str(len(vsnk[0].data())), str(total_sample_count))
+            print(errmsg)
             timeout_occured.set()
             break
 

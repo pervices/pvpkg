@@ -22,7 +22,13 @@ def main(iterations, title="TX RX Gain Test") -> int:
         sample_count = it["sample_count"]
         tx_stack = [ (5.0, int(it["sample_count" ])) ]
         rx_stack = [ (5.0, int(it["sample_count"])) ]
-        vsnk = engine.run(it["channels"], it["wave_freq"], it["sample_rate"], it["center_freq"], it["tx_gain"], it["rx_gain"], tx_stack, rx_stack)
+        try:
+            vsnk = engine.run(it["channels"], it["wave_freq"], it["sample_rate"], it["center_freq"], it["tx_gain"], it["rx_gain"], tx_stack, rx_stack)
+        except Exception as err:
+            report.draw_from_buffer()
+            report.save()
+            sys.exit(1)
+
         vsnks.append(vsnk)
         # print("new iteration")
         # print(len(vsnks))
