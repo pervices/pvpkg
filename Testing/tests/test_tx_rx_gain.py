@@ -33,6 +33,7 @@ def main(iterations, title="TX RX Gain Test") -> int:
 
         for vsnk in vsnks:
             channel_areas = []
+            images = []
             current_vsnk_i += 1
             # print("vsnk")
             for ch, channel in enumerate(vsnk):
@@ -50,16 +51,29 @@ def main(iterations, title="TX RX Gain Test") -> int:
                 area = sigproc.absolute_area(real)
                 channel_areas.append(area)
 
+                #plot and save real component
+                plt.figure()
+                plt.title("Gain plot of ch{} for wave_freq = {} Hz".format(ch,it["wave_freq"]))
+                plt.xlabel("Sample")
+                plt.ylabel("Amplitude")
+                plt.plot(imag[0:300], label='reals')
+                plt.plot(real[0:300], label='imags')
+                plt.legend()
+
+                s = report.get_image_io_stream()
+                plt.savefig(s, format='png', dpi=200)
+                plt.close()     # remember to close or you'll use up all the memory
+                img = report.get_image_from_io_stream(s)
+                images.append(img)
+
 
             iteration_areas.append(channel_areas)
             #areas = np.array(areas).T.tolist() # Transpose.
             print("the areas of channel 0-3 for gain [5,10,20] are:", iteration_areas)
             # Assert area is increasing per channel.
             desc = "Gain plot of channel {} for wave_freq = {} Hz at Tx gain {} and Rx gain {} : ".format(it["channels"], it["wave_freq"], it["tx_gain"], it["rx_gain"])
-            images = []
             data = [["Center Frequency (Hz)", "Wave Frequency (Hz)", "Sample Rate (SPS)", "Sample Count", "TX Gain (dB)", "RX Gain (dB)"],
                         [it["center_freq"], it["wave_freq"], it["sample_rate"], it["sample_count"], it["tx_gain"], it["rx_gain"]]]
-
 
 
             for a in range(len(iteration_areas[0])):
@@ -74,24 +88,6 @@ def main(iterations, title="TX RX Gain Test") -> int:
                         fail_flag = 1
                         current_test_only_fail_flag = 1
 
-
-                #plot and save real component
-                plt.figure()
-                plt.title("Gain plot of ch{} for wave_freq = {} Hz".format(a,it["wave_freq"]))
-                plt.xlabel("Sample")
-                plt.ylabel("Amplitude")
-                plt.plot(imag[0:300], label='reals')
-                plt.plot(real[0:300], label='imags')
-                plt.legend()
-
-                s = report.get_image_io_stream()
-                plt.savefig(s, format='png', dpi=200)
-                plt.close()     # remember to close or you'll use up all the memory
-                img = report.get_image_from_io_stream(s)
-                images.append(img)
-                # plt.savefig(fname='Gain plot for channel {} at wave_freq {} at Tx gain {}'.format(ch, it["wave_freq"],it["tx_gain"],format='png'))
-                # report.insert_image_from_io_stream(s, "Gain plot of channel {} for wave_freq = {} Hz at Tx gain {} and Rx gain {} : ".format(a,it["wave_freq"], it["tx_gain"], it["rx_gain"]))
-                # print("image inserted for Gain plot of {} for wave_freq = {} Hz at Tx gain {}".format(a,it["wave_freq"], it["tx_gain"]))
 
             if (current_vsnk_i == (len(vsnks) - 1) or len(vsnks) == 1):
                 # dont draw unnecessary stuff
