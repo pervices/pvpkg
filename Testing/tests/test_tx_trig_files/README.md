@@ -3,49 +3,34 @@ DOWNLOADS
 
 1) Download the required material.
 
-We've prepared two packages. The first is the update package that you will use
-to completely update the server, mcu code, and firmware in order to support that
-crimson revision.
-
-The second is a support package that includes a sample wave form, instructions
-for how to generate waveforms, a complete command invocation example that uses
-the provided data file, and confirmatory screen shots demonstrating what you
-should see on a scope output.
-
-In addition to these two packages, you will also have to download our latest UHD
-driver, from our master-fulltx branch. You *must* download the latest UHD
-version, taking care to checkout to the *master-fulltx* branch. If you don't
-also update your UHD version, you'll run into problems.
+The first is the update package that you will use
+to completely update the server, mcu code, and firmware.
+Please download the package according to your crimson revision.
 
 Please download the update package here:
 
-http://pervices.com/bin/update-crimson-rtm56-fulltx-d3
+https://github.com/pervices/releases
 
-Please download the support package here:
+Please find the update instructions here: 
 
-http://pervices.com/bin/trig-support.tar.gz
+https://support.pervices.com/how-to/pvht-5-updatefirmware/
 
-Please find the latest UHD version, supporting fulltx, here:
+In addition to the update package, you will also have to download our latest UHD
+driver.
 
-https://github.com/pervices/uhd/archive/tng-v2.5-fulltx.zip
+Please see instructions to update UHD here:
+https://support.pervices.com/how-to/pvht-3-softwaresetup/
 
-Consider downloading our update instructions from here;
+Please also clone this GitHub repository onto your host machine that will be used for connection to Crimson.
 
-https://raw.githubusercontent.com/pervices/releases/master/README.md
-
-If you would also like to print them out, you may do so from here;
-
-https://github.com/pervices/releases/blob/master/README.md
-
-(NOTE: As we have provided you with a custom image, you do not need to download
-or clone the releases directory).
+https://github.com/pervices/pvpkg
 
 FIRMWARE UPDATE INSTRUCTIONS
 ===
 
 UHD Updating
 
-1) To update UHD, checkout to the appropriate branch, and follow the same
+1) To update UHD, checkout to the master branch, and follow the same
 instructions you usually do. There should be no changes.
 
 -> To uninstall the old version of UHD, type, 'sudo make uninstall', in the same
@@ -59,24 +44,29 @@ recompile gnuradio, to ensure that it correctly links to our updated UHD library
 
 CRIMSON UPDATE INSTRUCTIONS
 
-1) To update Crimson using the upgrade package, please follow the instructions
-on our release repo, but start from step 2 - "COPY RELEASE BINARY TO CRIMSON".
+To update Crimson using the upgrade package, please follow the instructions below:
 
-2) The username to ssh into the crimson machine is 'dev0'. The password is the
+1) Copy the downloaded release package to the crimson machine.
+You may use SCP to copy the release package to crimson. 
+`scp <release_package_file> dev0@192.168.10.2:~/`
+
+2) SSH into the crimson machine
+The username to ssh into the crimson machine is 'dev0'. The password is the
 same as the username.
+`ssh dev0@192.168.10.2`
 
-3) I advise saving a copy of, or else printing the update instructions. You may
-find the update instructions here:
-
-https://github.com/pervices/releases/blob/master/README.md
+3) Run the update package and wait for the update process to complete. 
+It may take several hours. The update is complete when all LEDs on crimson stop blinking. 
+`sudo bash <release_package_file>`
 
 TRIGGER SUPPORT PACKAGE DESCRIPTION
 ===
 
-To assist you in verifying the performance, we've made a support package that
+To assist you in verifying the performance, we've provided several files that
 allows you to easily confirm trigger operation and visualize it with a scope.
 
-The trigger support package consists of 5 files.
+There are a total of 5 files.
+You may find them in the current GitHub repository, under Testing/tests/test_tx_trig_files.
 
 data.txt: The specific data file that contains the waveform data used when
 running the commands and capturing the waveform data.
@@ -87,10 +77,8 @@ support package.
 
 tek00001.png : Screenshot 1 of trigger and output waveform.
 
-tek00002.png : Screenshot 2 of trigger and output waveform.
-
 cmd : This is the specific command and arguments for the ./test_tx_trigger
-example code, that we used to verify performance for you.
+example code, that we used to verify performance for you. 
 
 NOTE 1: The "test_tx_trigger" binary is automatically created when you build
 UHD, provided that you have enabled the "examples on" CFLAG, as recommended in
@@ -119,16 +107,9 @@ sending data to the device.
 
 b) Hook up crimson channels a,b,c to CH 2,3,4 of the scope.
 
-1. To use the trigger support package, copy the tarball to a reasonable
-location, and the extract it. To extract the package from the terminal type;
+1. To use the trigger support package, copy the files to a reasonable location
 
-tar -xf trig-support.tar.gz
-
-2. Enter the directory with;
-
-cd trig-support/
-
-3. To correctly specify the arguments and data file, use the exact same command
+2. To correctly specify the arguments and data file, use the exact same command
 invocation as is specified in the cmd file. To easily do this, type the
 following into a terminal opened within the trig support directory;
 
@@ -153,7 +134,7 @@ sudo test_tx_trigger
 
 ---
 
-4. Wait until it starts queuing up samples, and starts transmitting the buffer.
+3. Wait until it starts queuing up samples, and starts transmitting the buffer.
 
 NOTE 1: Connect the Trig In port to the PPS port, in order to start
 transmitting data.
@@ -164,7 +145,7 @@ prior to data being available. This will be registered as an underflow, and the
 the program will NOT work for subsequent triggers. This is expected behaviour,
 as it attempts to ensure phase coherency with the remaining triggers.
 
-5. The next time you run it, however, you will see the PPS output become active,
+4. The next time you run it, however, you will see the PPS output become active,
 and everything should work as expected - if everything is correctly set up, you
 should see a waveform identical to that shown on our test set up.
 
