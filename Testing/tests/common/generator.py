@@ -52,7 +52,7 @@ def hi_band_wave_sweep():
 
     print(sys._getframe().f_code.co_name)
 
-    channels = list(range(4))
+    channels = list(range(2))
     sample_count = int(round(25000000/10000))
     tx_gain = 25
     rx_gain = 25
@@ -64,7 +64,7 @@ def hi_band_wave_sweep():
 def hi_band_wave_easy():
     print(sys._getframe().f_code.co_name)
 
-    channels = list(range(4))
+    channels = list(range(2))
     sample_rate = 9848485
     sample_count = int((round(9848485/1000)))
     #sample_count_tx = 9848485
@@ -79,7 +79,7 @@ def lo_band_wave_sweep():
 
     print(sys._getframe().f_code.co_name)
 
-    channels = list(range(4))
+    channels = list(range(2))
     sample_count = int(round(25000000/10000))
     tx_gain = 25
     rx_gain = 25
@@ -106,7 +106,7 @@ def lo_band_basic():
 
     print(sys._getframe().f_code.co_name)
 
-    channels = list(range(4))
+    channels = list(range(2))
     wave_freq = 1000000
     sample_count = 256
     tx_gain = 25
@@ -120,7 +120,7 @@ def hi_band_basic():
 
     print(sys._getframe().f_code.co_name)
 
-    channels = list(range(4))
+    channels = list(range(2))
     wave_freq = 1000000
     sample_count = 256
     tx_gain = 25
@@ -187,7 +187,7 @@ def hi_band_gain_rx(channels):
 
 def lo_band_phaseCoherency(channels):
     print(sys._getframe().f_code.co_name)
-    channels = list(range(4))
+    channels = list(range(2))
     sample_count = int(round(25000000/10000))
     tx_gain = 25
     rx_gain = 25
@@ -198,7 +198,7 @@ def lo_band_phaseCoherency(channels):
 
 def lo_band_phaseCoherency_short(channels):
     print(sys._getframe().f_code.co_name)
-    channels = list(range(4))
+    channels = list(range(2))
     sample_count = int(round(25000000/10000))
     tx_gain = 25
     rx_gain = 25
@@ -210,7 +210,7 @@ def lo_band_phaseCoherency_short(channels):
 
 def tx_trigger():
     print(sys._getframe().f_code.co_name)
-    channels = list(range(4))
+    channels = list(range(2))
     center_freq = 0
     sample_rate = 10156250
     tx_gain = 20
@@ -223,7 +223,7 @@ def tx_trigger():
 
 def rx_uhd_tune():
     print(sys._getframe().f_code.co_name)
-    channels = list(range(4))
+    channels = list(range(2))
     wave_freq = 1000000
     sample_count = 10000
     tx_gain = 25
@@ -235,7 +235,7 @@ def rx_uhd_tune():
 
 def tx_uhd_tune():
     print(sys._getframe().f_code.co_name)
-    channels = list(range(4))
+    channels = list(range(2))
     wave_freq = 1000000
     sample_count = 10000
     tx_gain = 25
@@ -256,7 +256,7 @@ class cyan:
         def wave_sweep(channels):
             print(sys._getframe().f_code.co_name)
 
-            channels = list(range(4))
+            channels = list(range(2))
             sample_count = int(round(25000000/10000))
             tx_gain = 40
             rx_gain = 40
@@ -282,7 +282,7 @@ class cyan:
         def basic(channels):
             print(sys._getframe().f_code.co_name)
 
-            channels = list(range(4))
+            channels = list(range(2))
             wave_freq = 1000000         # 1MHz
             sample_count = 256
             tx_gain = 25
@@ -320,7 +320,7 @@ class cyan:
         @staticmethod
         def phaseCoherency(channels):
             print(sys._getframe().f_code.co_name)
-            channels = list(range(4))
+            channels = list(range(2))
             sample_count = int(round(25000000/10000))
             tx_gain = 30
             rx_gain = 28
@@ -332,7 +332,7 @@ class cyan:
         @staticmethod
         def phaseCoherency_short(channels):
             print(sys._getframe().f_code.co_name)
-            channels = list(range(4))
+            channels = list(range(2))
             sample_count = int(round(25000000/10000))
             tx_gain = 30
             rx_gain = 28
@@ -345,7 +345,7 @@ class cyan:
         @staticmethod
         def tx_trigger(channels):
             print(sys._getframe().f_code.co_name)
-            channels = list(range(4))
+            channels = list(range(2))
             center_freq = 0
             sample_rate = 10204082
             tx_gain = 20
@@ -361,7 +361,7 @@ class cyan:
         def wave_sweep(channels):
             print(sys._getframe().f_code.co_name)
 
-            channels = list(range(4))
+            channels = list(range(2))
             sample_count = int(round(25000000/10000))
             tx_gain = 40
             rx_gain = 40
@@ -374,7 +374,7 @@ class cyan:
         def basic(channels):
             print(sys._getframe().f_code.co_name)
 
-            channels = list(range(4))
+            channels = list(range(2))
             wave_freq = 1000000         # 1MHz
             sample_count = 256
             tx_gain = 35
@@ -388,7 +388,7 @@ class cyan:
         def wave_easy(channels):
             print(sys._getframe().f_code.co_name)
 
-            channels = list(range(4))
+            channels = list(range(2))
             sample_rate = 10000000      # 10MSps
             sample_count = int((round(9803922/1000)))
             #sample_count_tx = 9803922
@@ -429,7 +429,7 @@ class cyan:
         @staticmethod
         def rx_uhd_tune():
             print(sys._getframe().f_code.co_name)
-            channels = list(range(4))
+            channels = list(range(2))
             wave_freq = 1000000
             sample_count = 10000
             tx_gain = 15            # keep gains low so strength of tone doesn't drown out LO feedthrough
@@ -442,7 +442,7 @@ class cyan:
         @staticmethod
         def tx_uhd_tune():
             print(sys._getframe().f_code.co_name)
-            channels = list(range(4))
+            channels = list(range(2))
             wave_freq = 1000000
             sample_count = 10000
             tx_gain = 15            # keep gains low so strength of tone doesn't drown out LO feedthrough
@@ -458,7 +458,7 @@ class cyan:
         def wave_sweep(channels):
             print(sys._getframe().f_code.co_name)
 
-            channels = list(range(4))
+            channels = list(range(2))
             sample_count = int(round(25000000/10000))
             tx_gain = 50
             rx_gain = 50
@@ -471,7 +471,7 @@ class cyan:
         def wave_easy(channels):
             print(sys._getframe().f_code.co_name)
 
-            channels = list(range(4))
+            channels = list(range(2))
             sample_rate = 9803922
             sample_count = int((round(9803922/1000)))
             #sample_count_tx = 9803922
@@ -486,7 +486,7 @@ class cyan:
         def basic(channels):
             print(sys._getframe().f_code.co_name)
 
-            channels = list(range(4))
+            channels = list(range(2))
             wave_freq = 1000000
             sample_count = 256
             tx_gain = 50
