@@ -96,7 +96,7 @@ def run_rx(csrc, channels, stack, sample_rate, _vsnk, timeout_occured):
     total_sample_count = sum([frame[1] for frame in stack])
 
     expected_duration = stack[0][0] + (stack[0][1]/sample_rate) #stack[0][0] is start and stack[0][1] is the sample count
-    timeout_time = time.clock_gettime(time.CLOCK_MONOTONIC) + expected_duration + 10
+    timeout_time = time.clock_gettime(time.CLOCK_MONOTONIC) + expected_duration + 30
 
     #print("total sample count is:", total_sample_count)
     while len(vsnk[0].data()) < total_sample_count:
