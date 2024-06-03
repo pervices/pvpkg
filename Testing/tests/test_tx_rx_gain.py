@@ -101,7 +101,7 @@ def main(iterations, title="TX RX Gain Test") -> int:
                 report.buffer_put("text_large", title)
                 report.buffer_put("table_wide", data, "Test Configuration")
                 report.buffer_put("text", " ")
-                report.buffer_put("image_quad", images, desc)
+                report.buffer_put("image_double", images, desc)
                 if (current_test_only_fail_flag == 1):
                     report.buffer_put("text_large", "This test has failed")
                     current_test_only_fail_flag = 0
@@ -132,22 +132,22 @@ if __name__ == "__main__":
         test_status = [["Test", "Status"]]
 
         # Change the argument in the following function to select how many channels to test
-        ret = main(gen.cyan.lo_band.gain_tx(4), "Low Band TX Gain Test")
+        ret = main(gen.cyan.lo_band.gain_tx(2), "Low Band TX Gain Test")
         test_status.append(["Low Band TX Gain Test", to_pass_fail(ret)])
 
-        ret = main(gen.cyan.lo_band.gain_rx(4), "Low Band RX Gain Test")
+        ret = main(gen.cyan.lo_band.gain_rx(2), "Low Band RX Gain Test")
         test_status.append(["Low Band RX Gain Test", to_pass_fail(ret)])
 
-        ret = main(gen.cyan.mid_band.gain_tx(4), "Mid Band TX Gain Test")
+        ret = main(gen.cyan.mid_band.gain_tx(2), "Mid Band TX Gain Test")
         test_status.append(["Mid Band TX Gain Test", to_pass_fail(ret)])
 
-        ret = main(gen.cyan.mid_band.gain_rx(4), "Mid Band RX Gain Test")
+        ret = main(gen.cyan.mid_band.gain_rx(2), "Mid Band RX Gain Test")
         test_status.append(["Mid Band RX Gain Test", to_pass_fail(ret)])
 
-        ret = main(gen.cyan.hi_band.gain_tx(4), "High Band TX Gain Test")
+        ret = main(gen.cyan.hi_band.gain_tx(2), "High Band TX Gain Test")
         test_status.append(["High Band TX Gain Test", to_pass_fail(ret)])
 
-        ret = main(gen.cyan.hi_band.gain_rx(4), "High Band RX Gain Test")
+        ret = main(gen.cyan.hi_band.gain_rx(2), "High Band RX Gain Test")
         test_status.append(["High Band RX Gain Test", to_pass_fail(ret)])
     else:
         report.insert_title_page("Crimson TX RX Gain Test")
