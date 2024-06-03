@@ -31,8 +31,8 @@ class ClassicShipTestReport:
     cursor_y = h-30
     current_page = 1
     # This should not be here for obvious reasons
-    num_channels = 4
-    channel_names = ["Channel A", "Channel B", "Channel C", "Channel D"]
+    num_channels = 2
+    channel_names = ["Channel A", "Channel B"]
     # This stores the elements temporarily before calling draw all
     buffer = []
 
