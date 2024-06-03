@@ -74,7 +74,7 @@ def test(it, data):
     report.buffer_put("text_large", title)
     report.buffer_put("table_wide", test_info, "")
     report.buffer_put("text", " ")
-    report.buffer_put("image_quad", images, "")
+    report.buffer_put("image_double", images, "")
     report.buffer_put("pagebreak")
 
     return data
@@ -105,9 +105,9 @@ if(targs.product == "Vaunt"):
     main(gen.lo_band_wave_sweep(), "Low Band")
     main(gen.hi_band_wave_sweep(), "High Band")
 else:
-    main(gen.cyan.lo_band.wave_sweep(4), "Low Band")
-    main(gen.cyan.mid_band.wave_sweep(4), "Mid Band")
-    main(gen.cyan.hi_band.wave_sweep(4), "High Band")
+    main(gen.cyan.lo_band.wave_sweep(2), "Low Band")
+    main(gen.cyan.mid_band.wave_sweep(2), "Mid Band")
+    main(gen.cyan.hi_band.wave_sweep(2), "High Band")
 
 build_report()
 sys.exit(test_fail)
