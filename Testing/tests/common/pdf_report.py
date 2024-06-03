@@ -163,10 +163,22 @@ class ClassicShipTestReport:
         self.move_cursor(0, 374 + 3)
 
         # Draw 4 image, each of size 250*187
-        self.c.drawImage(images[0], 50, self.cursor_y + 187, 250, 187)
-        self.c.drawImage(images[1], 312, self.cursor_y + 187, 250, 187)
-        self.c.drawImage(images[2], 50, self.cursor_y, 250, 187)
-        self.c.drawImage(images[3], 312, self.cursor_y, 250, 187)
+        try:
+            self.c.drawImage(images[0], 50, self.cursor_y + 187, 250, 187)
+        except:
+            print("No image")
+        try:
+            self.c.drawImage(images[1], 312, self.cursor_y + 187, 250, 187)
+        except:
+            print("No image")
+        try:
+            self.c.drawImage(images[2], 50, self.cursor_y, 250, 187)
+        except: 
+            print("No image")
+        try:
+            self.c.drawImage(images[3], 312, self.cursor_y, 250, 187)
+        except:
+            print("No image")
 
     """
         Insert an array of eight images
@@ -183,15 +195,17 @@ class ClassicShipTestReport:
         self.move_cursor(0, 719)
 
         # Draw 8 image, each of size 250*187
-        self.c.drawImage(images[0], 50, self.cursor_y + 180*3, 240, 180)
-        self.c.drawImage(images[1], 332, self.cursor_y + 180*3, 240, 180)
-        self.c.drawImage(images[2], 50, self.cursor_y + 180*2, 240, 180)
-        self.c.drawImage(images[3], 332, self.cursor_y + 180*2, 240, 180)
-        self.c.drawImage(images[4], 50, self.cursor_y + 180, 240, 180)
-        self.c.drawImage(images[5], 332, self.cursor_y + 180, 240, 180)
-        self.c.drawImage(images[6], 50, self.cursor_y, 240, 180)
-        self.c.drawImage(images[7], 332, self.cursor_y, 240, 180)
-
+        try:
+            self.c.drawImage(images[0], 50, self.cursor_y + 180*3, 240, 180)
+            self.c.drawImage(images[1], 332, self.cursor_y + 180*3, 240, 180)
+            self.c.drawImage(images[2], 50, self.cursor_y + 180*2, 240, 180)
+            self.c.drawImage(images[3], 332, self.cursor_y + 180*2, 240, 180)
+            self.c.drawImage(images[4], 50, self.cursor_y + 180, 240, 180)
+            self.c.drawImage(images[5], 332, self.cursor_y + 180, 240, 180)
+            self.c.drawImage(images[6], 50, self.cursor_y, 240, 180)
+            self.c.drawImage(images[7], 332, self.cursor_y, 240, 180)
+        except:
+            print("No image in at least one of the eight images")
     """
         Return a BytesIO stream
     """
