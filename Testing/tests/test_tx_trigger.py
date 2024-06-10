@@ -40,8 +40,9 @@ def test(it):
     max_div = 0
 
     with open(name, "r") as b:
-
         lines = b.readlines()
+        b.seek(0)
+        print(b.read())
 
         # For removing noise SMA setup / teardown.
         pad = 50
