@@ -19,7 +19,15 @@ def test(it):
     # TODO: Check if the following file exists; if it doesn't, throw and error and
     # indicate that the test_tx_trigger example binary was not found
     # Using invokation from tx_trig pkg
-    os.system("/usr/lib/uhd/examples/test_tx_trigger --path ./test_tx_trig_files/data.txt --start_time={} --period={} --tx_rate={} --tx_center_freq={} --tx_gain={} --setpoint={} --samples={} --num_trigger={} --gating=dsp > {}".format(it["start_time"], it["period"], it["sample_rate"], it["center_freq"], it["tx_gain"], it["setpoint"], it["sample_count"], it["num_trigger"], name))
+    test_fail = test_fail | os.system("/usr/lib/uhd/examples/test_tx_trigger --path ./test_tx_trig_files/data.txt --start_time={} --period={} --tx_rate={} --tx_center_freq={} --tx_gain={} --setpoint={} --samples={} --num_trigger={} --gating=dsp > {}".format(it["start_time"], it["period"], it["sample_rate"], it["center_freq"], it["tx_gain"], it["setpoint"], it["sample_count"], it["num_trigger"], name))
+
+    # Flag to indicate that triggers failed to activate
+    # Technically this could be caused by anything that returns an error code in UHD, but the trigger failing in time is most likely
+    trigger_error = False
+    if test_fail != 0:
+        trigger_error = True
+
+    #if exist_code != 0
 
     test_info = [["Center Freq", "Sampling Rate", "Tx Gain", "Period", "Setpoint", "Samples", "Start Time", "Num Trigger"],
                  [it["center_freq"], it["sample_rate"], it["tx_gain"], it["period"], it["setpoint"], it["sample_count"], it["start_time"], it["num_trigger"]]]
@@ -31,73 +39,118 @@ def test(it):
     report.buffer_put("text", " ")
 
     results = [["Description", "Value", "Acceptance Criteria", "Result"]]
-    buffer_info = [["Channel", "Max Buffer Level", "Average Buffer Level"]]
-    # [Ch, MaxLevel, AvLevel]
+    buffer_info = [["Channel", "Max Buffer Level", "Max difference from A"]]
+    # [Ch, MaxLevel, Max difference from A]
     ch_buf_info = [[0, 0, 0],
                    [1, 0, 0],
                    [2, 0, 0],
                    [3, 0, 0],]
+
+    # Maximum divergence between channels
     max_div = 0
+
+    # Flag for if there was stale data in the buffer after initialization
+    stale_data = False
+    # Flag for if data was not accepted by the system while priming
+    priming_error = False
+    #Flag for if an incorrect number of samples consumed per trigger
+    sample_count_error = False
+
 
     with open(name, "r") as b:
         lines = b.readlines()
         b.seek(0)
-        print(b.read())
 
-        # For removing noise SMA setup / teardown.
-        pad = 50
+        buffer_filled = False
+        first_line = True
+        previous_buffer_level = 0
 
-        # Max - Min for four columns stored in column 4 (indexed at 0) of log.
-        col = 4
+        for line in lines:
+            # Print lines so they end up in the logs
+            print(line, end='')
 
-        # Max divergence for four channels.
-        thresh = 10
-
-        # A sliding window is used because sometimes the buffer level is retrieved by UDP while being updated by the FPGA.
-        a = 0
-        b = 0
-        c = 0
-        i = 0
-        for line in lines[pad : len(lines) - pad]:
-
+            # Array containing the line seperated by " "
             row = line.split()
-            if len(row) > col:      # Log has some unrelated info printed during setup/teardown, ignore these lines.
-                # Slide the window.
-                a = b
-                b = c
-                c = float(row[col])
 
-                i += 1
-                ch_buf_info[0][1] = int(row[0]) if (int(row[0]) > ch_buf_info[0][1]) else ch_buf_info[0][1]     # ChA buffer level max
-                ch_buf_info[0][2] = round(((ch_buf_info[0][2]*(i-1)) + float(row[0]))/i, 3)                     # ChA buffer level average
-                ch_buf_info[1][1] = int(row[1]) if (int(row[1]) > ch_buf_info[1][1]) else ch_buf_info[1][1]     # ChB buffer level max
-                ch_buf_info[1][2] = round(((ch_buf_info[1][2]*(i-1)) + float(row[1]))/i, 3)                     # ChB buffer level average
-                ch_buf_info[2][1] = int(row[2]) if (int(row[2]) > ch_buf_info[2][1]) else ch_buf_info[2][1]     # ChC buffer level max
-                ch_buf_info[2][2] = round(((ch_buf_info[2][2]*(i-1)) + float(row[2]))/i, 3)                     # ChC buffer level average
-                ch_buf_info[3][1] = int(row[3]) if (int(row[3]) > ch_buf_info[3][1]) else ch_buf_info[3][1]     # ChD buffer level max
-                ch_buf_info[3][2] = round(((ch_buf_info[3][2]*(i-1)) + float(row[3]))/i, 3)                     # ChD buffer level average
+            if len(row) != 5:
+                # Line is not a data line, data line contain 5 values
+                continue
 
-                # Only fail if the past three trigger events were above threshold. The UHD program is not currently set up to grab the channel buffer levels
-                # in parrallel. If a trigger event happens in the middle of reading the channel levels, it will appear as though there is a huge difference.
-                try:
-                    assert a < thresh or b < thresh or c < thresh
-                except:
-                    test_fail = 1
-                    max_div = max(a, b, c)
+            all_numeric = True
+            for val in row:
+                if not val.isnumeric():
+                    all_numeric = False
+                    break
+            if not all_numeric:
+                # Not all values in the line are numberic, this is not a data line skip it
+                continue
 
-    # if any of the channels have an average or max buffer level of 0, something went wrong in the test
-    for i in range(2,4):
-        for j in range (2,3):
-            if ch_buf_info[i][j] == 0:
-                test_fail = 1
-                print("ERROR: Empty buffer found during tx trigger test.")
-                break
-        else:
-            continue
-        break
+            # Convert values from string to int
+            for n in range(len(row)):
+                row[n] = int(row[n])
 
-    res = "Fail" if test_fail else "Pass"
-    results.append(["Max Divergence", max_div, "< {}".format(thresh), res])
+            # The last column indicates the difference in buffer level between channels
+            # This value should always be 0 because all channels get the same data and should send the same amount at the same time
+            # Having different channels be read at different times is not a concern. The reading is taken as soon as data is sent, and data is sent immediatly after a trigger so the program has almost a full second to read all channels and have them be the same
+            if row[4] != 0:
+                if buffer_filled:
+                    print("ERROR: discrepency in buffer level between channels")
+                else:
+                    print("ERROR: discrepency in buffer level between channels while priming")
+                test_fail = test_fail | 1
+
+            for ch in range(len(ch_buf_info)):
+                # Update maximum buffer level
+                ch_buf_info[ch][1] = max(ch_buf_info[ch][1], row[ch])
+                # Update maximum difference from channel 0 (should be 0, error check is performaed above)
+                ch_buf_info[ch][2] = max(ch_buf_info[ch][2], abs(row[ch] - row[0]))
+                max_div = max(max_div, ch_buf_info[ch][2])
+
+            if first_line:
+                # Only the first column is checked since the rest should be identical unless the previous check failed
+                first_line = False
+                previous_buffer_level = row[0]
+                # If the buffer had data then data from previous runs wasn't cleared when initializing
+                if row[0] != 0:
+                    print("ERROR: data in buffer at start")
+                    stale_data = True
+                    test_fail = test_fail | 1
+
+            elif not buffer_filled:
+                # Check if the buffer level is being filled up
+                if(row[0] <= previous_buffer_level):
+                    print("ERROR: samples not accepted while priming buffer")
+                    priming_error = True
+                    test_fail = test_fail | 1
+
+                # Record that the buffer has been filled to the desired level
+                if(row[0] >= it["setpoint"]):
+                    buffer_filled = True
+
+                previous_buffer_level = row[0]
+
+            # During normal streaming between reads data should be consumed and the same amount of data should be sent to replace it
+            else:
+                if row[0] != previous_buffer_level:
+                    print("ERROR: incorrect number of samples consumed by trigger")
+                    sample_count_error = True
+                    test_fail = test_fail | 1
+
+                previous_buffer_level = row[0]
+
+    divergence_res = "Fail" if max_div != 0 else "Pass"
+    stale_data_res = "Fail" if stale_data else "Pass"
+    priming_res = "Fail" if priming_error else "Pass"
+    sample_count_res = "Fail" if sample_count_error else "Pass"
+    trigger_res = "Fail" if trigger_error else "Pass"
+
+    results.append(["Max Divergence", max_div, "== 0", divergence_res])
+    results.append(["Stale data", "--", "Starting buffer level > 0", stale_data_res])
+    results.append(["Dropped data while priming", "--", "During priming buffer level > buffer level before the previous send", priming_res])
+    results.append(["Correct samples per trigger", "--", "During streaming buffer level after each trigger + send is the same", sample_count_res])
+    results.append(["Other errors in program", "--", "No other errors (most likely from tirgger not activating", trigger_res])
+
+
     report.buffer_put("table", results, "Results")
     report.buffer_put("text", " ")
     for row in ch_buf_info:

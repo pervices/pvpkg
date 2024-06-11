@@ -218,7 +218,7 @@ def tx_trigger():
     period = 20
     setpoint = 1000
     start_time = 5
-    num_trigger = 400
+    num_trigger = 20
     yield locals()
 
 def rx_uhd_tune():
@@ -353,7 +353,9 @@ class cyan:
             period = 20
             setpoint = 1000
             start_time = 5
-            num_trigger = 400
+            # Cyan buffer level requests have a resolution of 128 samples
+            # In order to detect an off by 1 issue it must have more that that many samples
+            num_trigger = 130
             yield locals()
 
     class mid_band:
