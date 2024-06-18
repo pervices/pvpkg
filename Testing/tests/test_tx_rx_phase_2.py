@@ -71,7 +71,7 @@ dump_dir = parent_dir + leaf_dir
 dump_path = os.path.join("./", dump_dir)
 os.makedirs(dump_path,exist_ok=True)
 
-test_plots = dump_dir + iso_time + "-tx_rx_phase"
+test_plots = dump_dir + iso_time + "-tx_rx_phase_2"
 os.makedirs(test_plots, exist_ok = True)
 
 #important variables
@@ -294,8 +294,8 @@ def main():
 
     # PDF Report
     global report
-    report = pdf_report.ClassicShipTestReport("tx_rx_phase", targs.serial, targs.report_dir, targs.docker_sha)
-    report.insert_title_page("Low Band TX RX Phase Coherency Test")
+    report = pdf_report.ClassicShipTestReport("tx_rx_phase_2", targs.serial, targs.report_dir, targs.docker_sha)
+    report.insert_title_page("Low Band TX RX Phase Coherency Test 2")
 
     print("Title page generated")
     '''This iteration loop will run through setting up the channels to the values associated to the generator code. It will also loop through
