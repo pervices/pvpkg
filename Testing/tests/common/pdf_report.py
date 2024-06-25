@@ -410,7 +410,7 @@ class ClassicShipTestReport:
         os.system('uhd_usrp_info  -s > shiptest_out.txt')
 
         #Using terminal grep to set unit data
-        server_ver = subprocess.getstatusoutput("cat shiptest_out.txt | grep 'Server Version' | cut --complement -d ':' -f1 ")[1]
+        server_ver = subprocess.getstatusoutput("cat shiptest_out.txt | grep Revision | cut --complement -d ':' -f1 | tr -d [:blank:] ")[1]
         fpga_ver = subprocess.getstatusoutput("cat shiptest_out.txt | grep 'FPGA' | cut --complement -d ':' -f1")[1]
         UHD_ver = subprocess.getstatusoutput("cat shiptest_out.txt | grep 'UHD' | cut --complement -d 'g' -f1")[1]
         unit_name = subprocess.getstatusoutput("cat shiptest_out.txt | grep 'Device Type' | cut --complement -d ':' -f1 | tr -d [:blank:]")[1]
