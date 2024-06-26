@@ -399,9 +399,19 @@ def main():
 
             best_fit, param = bestFit(x_time, real[begin_cutoff:])
 
-            ampl.append(param[0])
+            # For intuitive phase comparison, amplitudes need to either be all pos or all neg. Here we'll take the absolute
+            # value of amplitude, and adjust the phase by pi if the amplitude was negative. Wrap phase if it exceeds 2pi.
+            adjusted_phase = param[2]
+            if param[0] < 0:
+                adjusted_phase += math.pi
+                if adjusted_phase > (2*math.pi):
+                    adjusted_phase -= (2*math.pi)
+
+            abs_ampl = abs(param[0])
+
+            ampl.append(abs_ampl)
             freq.append(param[1])
-            phase.append(param[2])
+            phase.append(adjusted_phase)
             best.append(best_fit[0])
             offset.append((best_fit[1]))
 
