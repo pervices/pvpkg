@@ -9,22 +9,7 @@ source variables.sh
 # Execute tests
 PASSED_TESTS=0
 FAILED_TESTS=0
-EXCEPTIONS=0
-TEST_RESULTS=()
 RETURN=0
-HOST=$(hostname)
-USER=$(whoami)
-OS=$(cat /etc/os-release | grep PRETTY_NAME | cut -d '=' -f2 | tr -d '\"' | tr -d '\n' | tr -d [:blank:] | tr . _)
-#NUMER_OF_EN_DEVICES=$(ip addr | grep enp | wc -l)
-PV_HOST=192.168.10.
-PV_INT=192.168.128.
-SFP0=10.10.11.10
-SFP1=10.10.10.10
-COUNT=0
-
-DUT_MGT_IP_ADDR1=192.168.10.2
-DUT_DATA_IP_ADDR1=10.10.10.2
-DUT_DATA_IP_ADDR2=10.10.11.2
 
 SN=$1
 BN=$2
@@ -53,13 +38,11 @@ case $PRODUCT in
 	PRODUCT=v
 	TEST_NAMES=("${V_TEST_NAMES[@]}")
 	TEST_FILES=("${V_TEST_FILES[@]}")
-	TEST_EXCEPTIONS=("${V_TEST_EXCEPTIONS[@]}")
 	;;
 *"cyan"*)
 	PRODUCT=t
 	TEST_NAMES=("${T_TEST_NAMES[@]}")
 	TEST_FILES=("${T_TEST_FILES[@]}")
-	TEST_EXCEPTIONS=("${T_TEST_EXCEPTIONS[@]}")
 	;;
 *)
 	echo "Could not determine if unit is Crimson or Cyan" && exit 1
@@ -111,18 +94,10 @@ if [ -z $TEST_LIST ]; then
 		if [ $rv -eq 0 ]; then
 			PASSED_TESTS=$((PASSED_TESTS+1))
 			echo "${TEST_NAMES[$i]} test PASSED" >> log.txt
-		elif [[ "${TEST_EXCEPTIONS[$i]}" == "true" ]]; then
-			EXCEPTIONS=$((EXCEPTIONS+1))
-			FAILED_TESTS=$((FAILED_TESTS+1))
-			echo "${TEST_NAMES[$i]} test FAILED but it is an exception" >> log.txt
-		elif [[ "${TEST_EXCEPTIONS[$i]}" == "false" ]]; then
-			FAILED_TESTS=$((FAILED_TESTS+1))
-			RETURN=$((RETURN+1))
-			echo "${TEST_NAMES[$i]} test FAILED" >> log.txt
 		else
 			FAILED_TESTS=$((FAILED_TESTS+1))
 			RETURN=$((RETURN+1))
-			echo "ERROR: Invalid or missing test exception for ${TEST_NAMES[$i]}: index $i may have a problem." >> log.txt
+			echo "${TEST_NAMES[$i]} test FAILED" >> log.txt
 		fi
 		echo "" >> log.txt
 	done
@@ -141,18 +116,10 @@ else
 		if [ $rv -eq 0 ]; then
 			PASSED_TESTS=$((PASSED_TESTS+1))
 			echo "${TEST_NAMES[$idx]} test PASSED" >> log.txt
-		elif [[ "${TEST_EXCEPTIONS[$idx]}" == "true" ]]; then
-			EXCEPTIONS=$((EXCEPTIONS+1))
-			FAILED_TESTS=$((FAILED_TESTS+1))
-			echo "${TEST_NAMES[$idx]} test FAILED but it is an exception" >> log.txt
-		elif [[ "${TEST_EXCEPTIONS[$idx]}" == "false" ]]; then
-			FAILED_TESTS=$((FAILED_TESTS+1))
-			RETURN=$((RETURN+1))
-			echo "${TEST_NAMES[$idx]} test FAILED" >> log.txt
 		else
 			FAILED_TESTS=$((FAILED_TESTS+1))
 			RETURN=$((RETURN+1))
-			echo "ERROR: Invalid or missing test exception for ${TEST_NAMES[$idx]}: index $idx may have a problem." >> log.txt
+			echo "${TEST_NAMES[$idx]} test FAILED" >> log.txt
 		fi
 		echo "" >> log.txt
 	done
@@ -160,20 +127,7 @@ fi
 
 
 echo "=================Functional Test Results================="
-echo "Summary: There are total $NUM_TESTS test(s), $PASSED_TESTS passed, $FAILED_TESTS failed with the following $EXCEPTIONS exception(s):"
-for (( i=0; i<$NUM_TESTS; i++)) do
-	if [ -z $TEST_LIST ]; then
-		idx=$i
-	else
-		idx="${TEST_INDICES[$i]}"
-	fi
-
-	if [[ "${TEST_EXCEPTIONS[$idx]}" == "true" ]]; then
-		echo "EXCEPTION:: ${TEST_NAMES[$idx]} , ${TEST_FILES[$idx]} "
-	fi
-done
-
-echo "Exceptions are tests that are presently allowed to fail. Please see below for more details"
+echo "Summary: There are total $NUM_TESTS test(s), $PASSED_TESTS passed, $FAILED_TESTS failed"
 echo "=================begin of log.txt================="
 echo ""
 cat log.txt
