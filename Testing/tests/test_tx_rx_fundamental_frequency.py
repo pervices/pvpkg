@@ -121,7 +121,7 @@ def test(it, data):
         freq_images.append(img)
 
         # data formatted as [center_freq, wave_freq, channel, frequency found, frequency result, spurs within 30dB found?, if yes strongest spur freq]
-        data.append([str(center_freq), str(wave_freq), str(ch), res])
+        data.append([str(center_freq), str(wave_freq), str(ch), fun_freq_res])
 
     report.buffer_put("text_large", title)
     report.buffer_put("table_wide", test_info, "")
