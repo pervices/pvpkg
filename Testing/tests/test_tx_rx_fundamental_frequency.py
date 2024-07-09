@@ -9,7 +9,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import sys
 import time, datetime
-
+import math
 
 targs = test_args.TestArgs(testDesc="Tx Rx Fundamental Frequency Test")
 report = pdf_report.ClassicShipTestReport("tx_rx_fundamental_frequency", targs.serial, targs.report_dir, targs.docker_sha)
@@ -36,11 +36,13 @@ def test(it, data):
     test_info = [["Center Frequency (Hz)", "Wave Frequency (Hz)", "Sample Rate (SPS)", "Sample Count", "TX Gain (dB)", "RX Gain (dB)"],
                         [center_freq, wave_freq, it["sample_rate"], it["sample_count"], it["tx_gain"], it["rx_gain"]]]
 
-    images = []
+    time_images = []
+    freq_images = []
     for ch, channel in enumerate(vsnk):
         real = [datum.real for datum in channel.data()]
         imag = [datum.imag for datum in channel.data()]
 
+        # TIME DOMAIN ANALYSIS
         fund_real = sigproc.fundamental(real, it["sample_rate"])
         fund_imag = sigproc.fundamental(imag, it["sample_rate"])
 
@@ -60,21 +62,73 @@ def test(it, data):
         plt.savefig(s, format='png')
         plt.close()
         img = report.get_image_from_io_stream(s)
-        images.append(img)
+        time_images.append(img)
 
-        res = ""
+        fun_freq_res = ""
         if(like_real > 0.95 and like_real < 1.05 and like_imag > 0.95 and like_imag < 1.05):
-            res = "pass"
+            fun_freq_res = "Pass"
         else:
-            res = "fail"
+            fun_freq_res = "Fail"
             test_fail = 1
 
+        # FREQUENCY DOMAIN ANALYSIS
+        comp = np.array([])
+        if len(real) == len(imag):
+            for idx, point in enumerate(real):
+                comp = np.append(comp, complex(point, imag[idx]))
+        else:
+            raise Exception("Length of real data does not match length of imaginary data. Real len: {} Imag len: {}".format(len(real), len(imag)))
+        peaks, xf, yf = sigproc.fft_peaks(comp, it["sample_rate"])
+
+        tolerance = 0.05  # within 5% of expected frequency
+        expected_tone_present = False
+        expected_tone_mag = -1
+        spur_present = False
+        max_spur_mag = -1
+        max_spur_freq = -1
+        peak_idx = 0
+        for peak in xf[peaks]:
+            if math.isclose(peak, it["wave_freq"], rel_tol=tolerance):
+                expected_tone_present = True
+                expected_tone_mag = yf[peaks[peak_idx]]
+            peak_idx += 1
+
+        if expected_tone_present:
+            peak_idx = 0
+            for peak in yf[peaks]:
+                if (peak + 30) >= expected_tone_mag:        # check if spur is within 30 dB of expected tone
+                    spur_present = True
+                    test_fail = 1
+                    if peak > max_spur_mag:
+                        max_spur_mag = peak
+                        max_spur_freq = xf[peaks[peak_idx]]
+                peak_idx += 1
+
+        print("Spur found: {}, Spur freq: {}, Spur mag: {}".format(spur_present, max_spur_freq, max_spur_mag))
+
+        plt.figure()
+        plt.title("Channel {} Rx FFT".format(ch), fontsize=14)
+        plt.xlabel("Frequency [Hz]", fontsize=12)
+        plt.ylabel("Magnitude [dB]", fontsize=12)
+        plt.plot(xf, yf, label="FFT")
+        plt.plot(xf[peaks], yf[peaks], "x", label="Detected peaks")
+        plt.legend()
+
+        s = report.get_image_io_stream()
+        plt.savefig(s, format='png')
+        plt.close()
+        img = report.get_image_from_io_stream(s)
+        freq_images.append(img)
+
+        # data formatted as [center_freq, wave_freq, channel, frequency found, frequency result, spurs within 30dB found?, if yes strongest spur freq]
         data.append([str(center_freq), str(wave_freq), str(ch), res])
 
     report.buffer_put("text_large", title)
     report.buffer_put("table_wide", test_info, "")
     report.buffer_put("text", " ")
-    report.buffer_put("image_quad", images, "")
+    report.buffer_put("image_quad", time_images, "")
+    report.buffer_put("pagebreak")
+    report.buffer_put("image_quad", freq_images, "")
     report.buffer_put("pagebreak")
 
     return data
