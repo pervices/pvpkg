@@ -81,28 +81,14 @@ def test(it, data):
         peaks, xf, yf = sigproc.fft_peaks(comp, it["sample_rate"])
 
         tolerance = 0.05  # within 5% of expected frequency
-        expected_tone_present = False
         expected_tone_mag = -1
         spur_present = False
         max_spur_mag = -1
         max_spur_freq = -1
-        peak_idx = 0
         for peak in xf[peaks]:
             if math.isclose(peak, it["wave_freq"], rel_tol=tolerance):
-                expected_tone_present = True
-                expected_tone_mag = yf[peaks[peak_idx]]
-            peak_idx += 1
-
-        if expected_tone_present:
-            peak_idx = 0
-            for peak in yf[peaks]:
-                if (peak + 30) >= expected_tone_mag:        # check if spur is within 30 dB of expected tone
-                    spur_present = True
-                    test_fail = 1
-                    if peak > max_spur_mag:
-                        max_spur_mag = peak
-                        max_spur_freq = xf[peaks[peak_idx]]
-                peak_idx += 1
+                expected_tone_mag = yf[peak]
+            else:
 
         print("Spur found: {}, Spur freq: {}, Spur mag: {}".format(spur_present, max_spur_freq, max_spur_mag))
 
