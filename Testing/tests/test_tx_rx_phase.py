@@ -395,10 +395,6 @@ def main():
 
             best_fit, param = bestFit(x_time, trimmed_real)
 
-            real_hold.append(real[begin_cutoff:])
-
-            best_fit, param = bestFit(x_time, real[begin_cutoff:])
-
             # For intuitive phase comparison, amplitudes need to either be all pos or all neg. Here we'll take the absolute
             # value of amplitude, and adjust the phase by pi if the amplitude was negative. Wrap phase if it exceeds 2pi.
             adjusted_phase = param[2]
