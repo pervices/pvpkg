@@ -17,12 +17,12 @@ from scipy.optimize import curve_fit
 from scipy.stats import norm
 from scipy.signal import find_peaks
 from scipy import signal
-from datetime import datetime
 import sys
 import os
 from datetime import datetime
 import time
 from math import pi
+
 import argparse
 
 #USER CHOSEN VALUES
@@ -32,12 +32,11 @@ begin_cutoff_waves = 1 #0.00000425 #e(-5) - guessed from previous diagrams (but 
 tx_burst = 5.0 #burst should be slightly delayed to ensure all data is being collected
 rx_burst = 5.25
 
-std_ratio = 4  #number std is normalized to a sample size of 10
+std_ratio = 4  #number std gets multiplied by for checks, normalized to a sample size of 10
                #This value is adjusted later depending on the number of runs.
 
-std_ratio_phase = 8  #number std is normalized to a sample size of 10
+std_ratio_phase = 8  #number std gets multiplied by for checks, normalized to a sample size of 10
                      #This value is adjusted later depending on the number of runs.
-
 
 #changing global variables - referenced in multiple functions
 wave_freq = -1 #set later, when runs are called
@@ -45,12 +44,11 @@ runs = -1 #set later when runs are called
 iteration_count = -1
 sample_rate = -1
 plotted_samples = -1
-begin_cuttoff = -1
 sample_count = -1
 
 #Frequeny Checks
-freq_mean_thresh = 5 #Hz bound
-freq_std_thresh = 0.6
+freq_mean_thresh = 5     #Hz bound
+freq_std_thresh = 0.6    #The frequency 
 
 #Amplitude Checks
 ampl_std_thresh = 0.001
@@ -63,11 +61,10 @@ phase_std_thresh = 0.002
             #Frequency , Ampl, Phase
 plot_toggle = [True, True, True]
 #Calling date and time for simplicity - NOTE: THIS WOULD BE HELPFUL IN MOST CODES, SHOULD WE MAKE FILE IN COMMON FOR IT??
-now = datetime.now() #current date and time
+now = datetime.now()
 iso_time = now.strftime("%Y%m%d%H%M%S.%f")
 
 #Setting up directories for plots
-
 parent_dir = os.getcwd()
 leaf_dir = "dump/"
 dump_dir = parent_dir + leaf_dir
@@ -108,8 +105,12 @@ def subPlot(x, y, ax, best_fit, offset, title):
     ax.axhline(y = offset, color='green', label='DC Offset')
     ax.legend()
 
+    peaks = find_peaks(y)
     f = open("Data_Plots.txt", "a")
-    f.write("\n" + title + ": " + str(y[find_peaks(y)[0][0]]))
+    if len(peaks[0]) > 0:
+        f.write("\n" + title + ": " + str(y[peaks[0][0]]))
+    else:
+        f.write("\n" + title + ": 0 find_peaks fail")
     f.write("\n" + str(y))
     f.close()
 
@@ -158,8 +159,6 @@ def check(criteria, mean, std, mins, maxs):
         return_array.append(False)
 
     #check std
-
-
     if (std < criteria[0]):
         return_array.append(True)
     else:
@@ -287,6 +286,7 @@ def main():
     # Add test specific arguments
     p = argparse.ArgumentParser(description = "Loopback phase coherency test")
     p.add_argument('-r', '--rate', default=25000000, type=int, help="Sample rate in samples per second")
+    p.add_argument('-i', '--iterations', default=15, type=int, help="Number of iterations to perform")
     p.add_argument('-b', '--band', default=False, type=bool, help="Apply a band pass filter to the data")
     # Add generic test arguments
     targs = test_args.TestArgs(parser=p, testDesc="Loopback phase coherency test")
@@ -318,12 +318,12 @@ def main():
     table_printed_once = 0
 
     if(targs.product == 'Vaunt'):
-        iterations = gen.lo_band_phaseCoherency_short(4)
+        iterations = gen.lo_band_phaseCoherency(4, args.iterations)
     else:
-        iterations = gen.cyan.lo_band.phaseCoherency_short(4)
-
-    num_iter = 0
+        iterations = gen.cyan.lo_band.phaseCoherency(4, args.iterations)
     
+    num_iter = 0
+
     for it in iterations:
 
         num_iter = num_iter + 1
@@ -386,6 +386,20 @@ def main():
         for ch, channel in enumerate(vsnk): #Goes through each channel to sve data
 
             real = [datum.real for datum in channel.data()] # saves data of real data in an array
+
+            if len(real) == 0:
+                raise Exception ("No data received on rx")
+            elif len(real) <= begin_cutoff:
+                raise Exception ("Rx received less data than cutoff. Received: " + str(len(real)) + " required more than " + str(begin_cutoff))
+
+
+            # Filter data so we only see the phase of the intended signal if requested by user
+            if args.band:
+                b,a = signal.bessel(1, [wave_freq * 0.9, wave_freq * 1.1], 'bandpass', analog=False, norm='delay', fs = sample_rate)
+                real = signal.filtfilt(b, a, real, padtype=None)
+
+                if len(real) <= begin_cutoff:
+                    raise Exception ("Filter error, rx data lost")
 
             # Explicitly assigning the relevant slice of data to a variable, then passing said variable to bestFit
             # Creating a slice anonymously may cause a crash where somehow data collected the the engine wasn't making it to bestFit
@@ -460,7 +474,7 @@ def main():
     global std_ratio
     alt_std_ratio = math.sqrt(num_iter)
     if alt_std_ratio > std_ratio:
-        print("Replacing old std_ratio (=" + str(std_ratio) + ") with updated str_ratio (="+ str(alt_std_ratio) + ")due to iteration count.")
+        print("Replacing old std_ratio (=" + str(std_ratio) + ") with updated str_ratio (="+ str(alt_std_ratio) + ") due to iteration count.")
         std_ratio = alt_std_ratio
 
     #Increase the std_ratio if the number of iterations implies a substantially
@@ -470,6 +484,7 @@ def main():
     if alt_std_ratio > std_ratio_phase:
         print("Replacing old std_ratio_phase (=" + str(std_ratio) + ") with updated std_ratio_phase (="+ str(alt_std_ratio) + ") due to iteration count.")
         std_ratio = alt_std_ratio
+
 
     #Calculating the Criteria
     #2D array holding thresholds of: mean, std, min, max
@@ -554,7 +569,7 @@ def main():
     overall_tests.addColumn("Status")
     overall_tests.addRow("Frequency", boolToWord(overall_bool[0]))
     overall_tests.addRow("Amplitude", boolToWord(overall_bool[1]))
-    overall_tests.addRow("Phase", boolToWord(overall_bool[2]))
+    overall_tests.addRow("Channel-Channel Phase", boolToWord(overall_bool[2]))
     overall_tests.addRow("Run-Run Phase", boolToWord(overall_bool[3]))
     overall_tests.printData()
 
@@ -676,6 +691,7 @@ def main():
     report.insert_table(subtest_phase_table, 20, "SubTest Results - Phase Test")
     report.insert_text(" ")
     report.insert_table(subtest_phase_consistency, 20, "SubTest Results - Run-to-Run Phase Consistency Test")
+
 
     report.new_page()
     report.insert_text_large("Summary Statistics: ")

@@ -199,6 +199,7 @@ def main():
     p = argparse.ArgumentParser(description = "Loopback channel alignment test")
     p.add_argument('-r', '--rate', default=25000000, type=int, help="Sample rate in samples per second")
     p.add_argument('-b', '--band', default=False, type=bool, help="Apply a band pass filter to the data")
+    p.add_argument('-i', '--iterations', default=3, type=int, help="Number of iterations to perform")
     # Add generic test arguments
     targs = test_args.TestArgs(parser=p, testDesc="Loopback channel alignment test")
 
@@ -229,9 +230,9 @@ def main():
     table_printed_once = 0
 
     if(targs.product == 'Vaunt'):
-        iterations = gen.lo_band_phaseCoherency_short(4)
+        iterations = gen.lo_band_phaseCoherency(4, args.iterations)
     else:
-        iterations = gen.cyan.lo_band.phaseCoherency_short(4)
+        iterations = gen.cyan.lo_band.phaseCoherency(4, args.iterations)
 
     num_iter = 0
 
@@ -505,6 +506,5 @@ def main():
 
     sys.exit(test_fail)
 
-# main(gen.lo_band_phaseCoherency_short(4))
 if __name__ == '__main__':
     main()
