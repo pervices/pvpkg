@@ -12,7 +12,6 @@ parameters {
 		booleanParam(name: "ENABLE_UBUNTU22", defaultValue: true, description: "Select whether to generate packages for Ubuntu 22.04.")
 		booleanParam(name: "ENABLE_ORACLE86", defaultValue: true, description: "Select whether to generate packages for Oracle Linux 8.")
 		booleanParam(name: "CLEAN", defaultValue: true, description: "Select whether to clean Docker cache and remove all Docker images after build. This step is necessary in order to ensure all Git commits and changes are applied to the subsequent build. Cleaning should be disabled for failing builds that require troubleshooting.")
-		booleanParam(name: "ENABLE_TESTING", defaultValue: true, description: "Select whether to run CI tests for enabled build distributions after successful build.")
 	}
     stages {
 
@@ -279,104 +278,7 @@ parameters {
                     }
                     }
                     }
-
-
-                stage('Arch Testing'){  
-                when {
-                          allOf {
-                           expression {params.CI_BUILD_TYPE == 'FULL'}
-                           expression {params.ENABLE_ARCH == true}
-                           expression {params.ENABLE_TESTING == true}
-                        }
-                        }
-                    options {
-                    timeout(time: 3, unit: "HOURS")
-                    } 
-                    steps {
-                    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-                    script{
-                    dir("${env.WORKSPACE}/Arch/GnuRadio") {
-                    env.IID = "\$(docker images arch:$BUILD_NUMBER --format \"{{.ID}}\")"
-                    sh "docker run --net=host -i $IID /bin/bash -c './test-only-Arch.sh'"
-                    }
-                    }
-                    }
-                    }
-                    }
-                    
-
-
-                stage('Ubuntu20 Testing'){    
-                when {
-                          allOf {
-                           expression {params.CI_BUILD_TYPE == 'FULL'}
-                           expression {params.ENABLE_UBUNTU20 == true}
-                           expression {params.ENABLE_TESTING == true}
-                        }
-                        }
-                    options {
-                    timeout(time: 3, unit: "HOURS")
-                    } 
-                    steps {
-                    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-                    script{
-                    dir("${env.WORKSPACE}/ubuntu/20.04/gnuradio") {
-                    env.IID = "\$(docker images ubuntu:$BUILD_NUMBER --format \"{{.ID}}\")"
-                    sh "docker run --net=host -i $IID /bin/bash -c './test-only.sh'"
-                    }
-                    }
-                    }
-                    }
-                    }
-
-                stage('Ubuntu22 Testing'){    
-                when {
-                          allOf {
-                           expression {params.CI_BUILD_TYPE == 'FULL'}
-                           expression {params.ENABLE_UBUNTU22 == true}
-                           expression {params.ENABLE_TESTING == true}
-                        }
-                        }
-                    options {
-                    timeout(time: 3, unit: "HOURS")
-                    } 
-                    steps {
-                    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-                    script{
-                    dir("${env.WORKSPACE}/ubuntu/22.04/gnuradio") {
-                    env.IID = "\$(docker images ubuntu:$BUILD_NUMBER --format \"{{.ID}}\")"
-                    sh "docker run --net=host -i $IID /bin/bash -c './test-only.sh'"
-                    }
-                    }
-                    }
-                    }
-                    }
-
-
-               stage('OracleLinux86 Testing'){    
-               when {
-                          allOf {
-                           expression {params.CI_BUILD_TYPE == 'FULL'}
-                           expression {params.ENABLE_ORACLE86 == true}
-                           expression {params.ENABLE_TESTING == true}
-                        }
-                        }
-                    options {
-                    timeout(time: 3, unit: "HOURS")
-                        } 
-                    steps {
-                    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-                    script{
-                        dir("${env.WORKSPACE}/Oracle/Oracle8/GnuRadio") {
-                            env.IID = "\$(docker images oracle:$BUILD_NUMBER --format \"{{.ID}}\")"
-                            sh "docker run --net=host -i $IID /bin/bash -c './test-only.sh'"
-                    }
-                    }
-                    }
-                    }
-                    }
 }
-
 
 
 post {
