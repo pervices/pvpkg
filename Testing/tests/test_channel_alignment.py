@@ -46,9 +46,9 @@ sample_rate = -1
 plotted_samples = -1
 sample_count = -1
 
-freq_alignment_thresh = 10      # Hz
+freq_alignment_thresh = 10
 ampl_alignment_thresh = 0.1
-phase_alignment_thresh = 0.1    # rad
+phase_alignment_thresh = 0.1
 
 #SHOULD ALL PLOTS BE MADE?
             #Frequency , Ampl, Phase
