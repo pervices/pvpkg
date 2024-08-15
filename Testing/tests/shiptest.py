@@ -60,7 +60,7 @@ parser.add_argument('-o', '--freq_threshold', default=1, type=int, help="Allowab
 parser.add_argument('-q', '--spur_threshold', default=20, type=int, help="Minimum acceptable difference between the desired signal and the strongest spur")
 parser.add_argument('-g', '--gain_threshold', default = 5, type=int,  help="The maximum allowable difference in gain between channels")
 parser.add_argument('-a', '--serial', required=True, help="Serial number of the unit")
-parser.add_argument('-p', '--product', required=True, help="The product to be tested. v for Vaunt, t for Tate")
+parser.add_argument('-p', '--product', required=True, help="The product to be tested. v for Vaunt, t for Tate, l for Lily")
 parser.add_argument('-c', '--num_channels', default = 4, type=int,  help="The number of channels to test. Will test ch a, ch b, ...")
 parser.add_argument('-b', '--strict', default = False, type=bool,  help="Exit the test as soon as any test fails")
 
@@ -118,17 +118,19 @@ os.makedirs(plots_dir, exist_ok=True)
 #NOTE: I think this could be expanded to just choosing which channels on the unit to test
 product = args.product
 try:
-    if (product != 't' and product != 'v'):
+    if (product != 't' and product != 'v' and product != 'l'):
         raise(ValueError)
 except:
-    sys.exit("Invalid product. Only v (Vaunt) and t (Crimson) supported")
+    sys.exit("Invalid product. Only v (Vaunt), t (Tate), and l (Lily) are supported")
 
 num_channels = args.num_channels
 channel_names = ["Channel A", "Channel B", "Channel C", "Channel D", "Channel E", "Channel F", "Channel G", "Channel H"]
 if(product == 'v'):
     max_channels = 4
-if(product == 't'):
+elif(product == 't'):
     max_channels = 8
+elif(product == 'l'):
+    max_channels = 4
 
 try:
     assert 1 <= num_channels <= max_channels
@@ -141,6 +143,8 @@ if(product == 'v'):
     generate = gen.ship_test_crimson(num_channels)
 elif(product == 't'):
     generate = gen.ship_test_cyan(num_channels)
+elif(product == 'l'):
+    generate = gen.ship_test_chestnut(num_channels)
 
 #Using the terminal to pull unit info
 # os.system('rm ' + current_dir + '/shiptest_out.txt')
@@ -222,7 +226,7 @@ page_count = 1
 graph_max = int(np.ceil(num_channels/4))
 multi = (graph_max > 1)
 #Page total based on the unit your testing
-page_total = ((2*graph_max)+2)*(8*(product == 'V' or product == 'v') + 6*(product == 'T' or product == 't')) + graph_max
+page_total = ((2*graph_max)+2)*(8*(product == 'V' or product == 'v') + 6*(product == 'T' or product == 't') + 6*(product == 'L' or product == 'l')) + graph_max
 
 
 #Adding logo - more efficent to just initialize at beginning
