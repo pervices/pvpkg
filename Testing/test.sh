@@ -44,8 +44,13 @@ case $PRODUCT in
 	TEST_NAMES=("${T_TEST_NAMES[@]}")
 	TEST_FILES=("${T_TEST_FILES[@]}")
 	;;
+*"chestnut"*)
+	PRODUCT=l
+	TEST_NAMES=("${L_TEST_NAMES[@]}")
+	TEST_FILES=("${L_TEST_FILES[@]}")
+	;;
 *)
-	echo "Could not determine if unit is Crimson or Cyan" && exit 1
+	echo "Could not determine if unit is Crimson, Cyan, or Chestnut" && exit 1
 	;;
 esac
 

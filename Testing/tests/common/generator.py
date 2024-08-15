@@ -38,9 +38,9 @@ def ship_test_chestnut(channels):
     sample_rate = 9803922
     sample_count = int(sample_rate/ 10)
     # The highest frequency uses a higher gain because the signal begins to roll off as the frequency gets higher
-    rx_gains = [25, 25, 25, 25, 25, 25, 45, 45, 45, 45]
-    tx_gains = [25, 25, 25, 25, 25, 25, 30, 30, 30, 30]
-    center_freqs = [5000000, 300000000, 600000000, 1200000000, 2000000000, 4500000000, 5500000000, 6500000000, 7500000000, 8500000000]
+    rx_gains = [25, 25, 30, 40, 40, 40, 50, 50, 50, 50]
+    tx_gains = [25, 25, 30, 30, 30, 30, 30, 40, 40, 40]
+    center_freqs = [10000000, 200000000, 600000000, 1200000000, 2000000000, 4500000000, 5500000000, 6500000000, 7500000000, 8500000000]
     for tx_gain, rx_gain, center_freq in zip(tx_gains, rx_gains, center_freqs):
         yield locals()
 
@@ -259,7 +259,6 @@ def dump(iteration):
         print("%20s : %r" % (key, value))
 
 class cyan:
-
     class lo_band:
         @staticmethod
         def wave_sweep(channels):
@@ -534,3 +533,278 @@ class cyan:
             for rx_gain in [ 35, 45, 50 ]:
                 yield locals()
 
+class chestnut:
+    class lo_band:
+        @staticmethod
+        def wave_sweep(channels):
+            print(sys._getframe().f_code.co_name)
+
+            channels = list(range(4))
+            sample_count = int(round(25000000/10000))
+            tx_gain = 40
+            rx_gain = 40
+            center_freq = 10000000      # 10MHz
+            sample_rate = 14705882
+            for wave_freq in [ 500000, 600000, 700000, 800000, 900000, 1000000 ]:
+                yield locals()
+
+        @staticmethod
+        def quick(channels):
+            print(sys._getframe().f_code.co_name)
+
+            channels = list(range(channels))
+            wave_freq = 1000000         # 1MHz
+            sample_count = 10000
+            tx_gain = 25
+            rx_gain = 25
+            center_freq = 14705882
+            sample_rate = 10000000      # 10MSps
+            yield locals()
+
+        @staticmethod
+        def basic(channels):
+            print(sys._getframe().f_code.co_name)
+
+            channels = list(range(4))
+            wave_freq = 1000000         # 1MHz
+            sample_count = 256
+            tx_gain = 25
+            rx_gain = 25
+            for center_freq in [ 15000000 ]:
+                for sample_rate in [ 9803922, 25000000 ]:
+                    yield locals()
+
+        @staticmethod
+        def gain_rx(channels):
+            print(sys._getframe().f_code.co_name)
+
+            channels = list(range(channels))
+            wave_freq = 1000000
+            sample_count = 1000
+            center_freq = 15000000  # 15MHz
+            sample_rate = 10000000  # 10MSps
+            tx_gain = 30 #increasing the fixed gain may cause saturation
+            for rx_gain in [ 15, 30, 45 ]:
+                yield locals()
+
+        @staticmethod
+        def gain_tx(channels):
+            print(sys._getframe().f_code.co_name)
+
+            channels = list(range(channels))
+            wave_freq = 1000000
+            sample_count = 1000
+            center_freq = 15000000  # 15MHz
+            sample_rate = 10000000  # 10MSps
+            rx_gain = 30#increasing the fixed gain may cause saturation
+            for tx_gain in [ 15, 30, 45 ]:
+                yield locals()
+
+        @staticmethod
+        def phaseCoherency(channels):
+            print(sys._getframe().f_code.co_name)
+            channels = list(range(4))
+            sample_count = int(round(25000000/10000))
+            tx_gain = 30
+            rx_gain = 30
+            center_freq = 100000000     # 100MHz
+            sample_rate = 25000000
+            wave_freq = 500000
+            for i in range(15):
+                yield locals()
+
+        @staticmethod
+        def phaseCoherency_short(channels):
+            print(sys._getframe().f_code.co_name)
+            channels = list(range(4))
+            sample_count = int(round(25000000/10000))
+            tx_gain = 30
+            rx_gain = 30
+            center_freq = 100000000     # 100MHz
+            sample_rate = 25000000      # 25 Msps
+            wave_freq = 500000
+            for i in range(2):
+                yield locals()
+
+        @staticmethod
+        def tx_trigger(channels):
+            print(sys._getframe().f_code.co_name)
+            channels = list(range(4))
+            center_freq = 0
+            sample_rate = 10204082
+            tx_gain = 20
+            sample_count = 400
+            period = 20
+            setpoint = 1000
+            start_time = 5
+            # Cyan buffer level requests have a resolution of 128 samples
+            # In order to detect an off by 1 issue it must have more that that many samples
+            num_trigger = 130
+            yield locals()
+
+    class mid_band:
+        @staticmethod
+        def wave_sweep(channels):
+            print(sys._getframe().f_code.co_name)
+
+            channels = list(range(4))
+            sample_count = int(round(25000000/10000))
+            tx_gain = 40
+            rx_gain = 40
+            center_freq = 1000000000    # 1GHz
+            sample_rate = 14705882
+            for wave_freq in [ 500000, 600000, 700000, 800000, 900000, 1000000 ]:
+                yield locals()
+
+        @staticmethod
+        def basic(channels):
+            print(sys._getframe().f_code.co_name)
+
+            channels = list(range(4))
+            wave_freq = 1000000         # 1MHz
+            sample_count = 256
+            tx_gain = 35
+            rx_gain = 35
+            for center_freq in [ 1000000000, 2000000000, 3000000000, 4000000000 ]:
+                for sample_rate in [ 9803922, 25000000, 35714286 ]:
+                    yield locals()
+
+
+        @staticmethod
+        def wave_easy(channels):
+            print(sys._getframe().f_code.co_name)
+
+            channels = list(range(4))
+            sample_rate = 10000000      # 10MSps
+            sample_count = int((round(9803922/1000)))
+            #sample_count_tx = 9803922
+            #sample_count_rx = int(round(9803922/1000))
+            tx_gain = 25
+            rx_gain = 25
+            center_freq = 1000000000    # 1GHz
+            for wave_freq in [ 50000 ]:
+                yield locals()
+
+        @staticmethod
+        def gain_tx(channels):
+            print(sys._getframe().f_code.co_name)
+
+            channels = list(range(channels))
+            wave_freq = 1000000
+            sample_count = 1000
+            center_freq = 2700000000    # 2.7GHz
+            sample_rate = 10000000      # 10MSps
+            rx_gain = 45#increasing the fixed gain may cause saturation
+            for tx_gain in [ 15, 30, 45 ]:
+                yield locals()
+
+        @staticmethod
+        def gain_rx(channels):
+            print(sys._getframe().f_code.co_name)
+
+            channels = list(range(channels))
+            #print(channels)
+            wave_freq = 1000000
+            sample_count = 1000
+            center_freq = 2700000000    # 2.7Hz
+            sample_rate = 10000000      # 10MSps
+            tx_gain = 45#increasing the fixed gain may cause saturation
+            for rx_gain in [ 15, 30, 45 ]:
+                yield locals()
+
+        @staticmethod
+        def rx_uhd_tune():
+            print(sys._getframe().f_code.co_name)
+            channels = list(range(4))
+            wave_freq = 1000000
+            sample_count = 10000
+            tx_gain = 10            # keep gains low so strength of tone doesn't drown out LO feedthrough
+            rx_gain = 10
+            rx_lo = 2250000000
+            sample_rate = 10000000
+            for center_freq in [ (rx_lo - 2000000), rx_lo, (rx_lo + 2000000) ]: # 3 cases for dsp nco (pos, zero, neg).
+                yield locals()
+
+        @staticmethod
+        def tx_uhd_tune():
+            print(sys._getframe().f_code.co_name)
+            channels = list(range(4))
+            wave_freq = 1000000
+            sample_count = 10000
+            tx_gain = 10            # keep gains low so strength of tone doesn't drown out LO feedthrough
+            rx_gain = 10
+            tx_lo = 2250000000
+            sample_rate = 10000000
+            for center_freq in [ (tx_lo - 2000000), tx_lo, (tx_lo + 2000000) ]: # 3 cases for dsp nco (pos, zero, neg).
+                yield locals()
+
+
+    class hi_band:
+        @staticmethod
+        def wave_sweep(channels):
+            print(sys._getframe().f_code.co_name)
+
+            channels = list(range(4))
+            sample_count = int(round(25000000/10000))
+            tx_gain = 50
+            rx_gain = 60
+            center_freq = 7000000000   # 7GHz
+            sample_rate = 14705882
+            for wave_freq in [ 500000, 600000, 700000, 800000, 900000, 1000000 ]:
+                yield locals()
+
+        @staticmethod
+        def wave_easy(channels):
+            print(sys._getframe().f_code.co_name)
+
+            channels = list(range(4))
+            sample_rate = 9803922
+            sample_count = int((round(9803922/1000)))
+            #sample_count_tx = 9803922
+            #sample_count_rx = int(round(9803922/1000))
+            tx_gain = 50
+            rx_gain = 60
+            center_freq = 7000000000   # 7GHz
+            for wave_freq in [ 50000 ]:
+                yield locals()
+
+        @staticmethod
+        def basic(channels):
+            print(sys._getframe().f_code.co_name)
+
+            channels = list(range(4))
+            wave_freq = 1000000
+            sample_count = 256
+            tx_gain = 50
+            rx_gain = 60
+            for center_freq in [ 6500000000, 7500000000, 8500000000 ]:
+                for sample_rate in [ 9803922, 25000000, 35714286 ]:
+                    yield locals()
+
+
+        @staticmethod
+        def gain_tx(channels):
+            print(sys._getframe().f_code.co_name)
+
+            channels = list(range(channels))
+            wave_freq = 1000000
+            sample_count = 1000
+            center_freq = 7000000000    # 7GHz
+            sample_rate = 10000000      # 10MSps
+            rx_gain = 60#increasing the fixed gain may cause saturation
+            for tx_gain in [ 20, 40, 60 ]:
+                yield locals()
+
+        @staticmethod
+        def gain_rx(channels):
+            print(sys._getframe().f_code.co_name)
+
+            channels = list(range(channels))
+            #print(channels)
+            wave_freq = 1000000
+            sample_count = 1000
+            center_freq = 7000000000    # 7GHz
+            sample_rate = 10000000      # 10MSps
+            tx_gain = 60#increasing the fixed gain may cause saturation
+            for rx_gain in [ 20, 40, 60 ]:
+                yield locals()

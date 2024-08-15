@@ -57,7 +57,7 @@ def main(iterations, title="TX RX Gain Test") -> int:
 
 
         iteration_areas.append(channel_areas)
-        print("the areas of channel 0-3 for gain [5,10,20] are:", iteration_areas)
+        print("the areas of channel 0-3 for gain are:", iteration_areas)
         # Assert area is increasing per channel.
         desc = "Gain plot of channel {} for wave_freq = {} Hz at Tx gain {} and Rx gain {} : ".format(it["channels"], it["wave_freq"], it["tx_gain"], it["rx_gain"])
         data = [["Center Frequency (Hz)", "Wave Frequency (Hz)", "Sample Rate (SPS)", "Sample Count", "TX Gain (dB)", "RX Gain (dB)"],
@@ -126,7 +126,30 @@ if __name__ == "__main__":
 
         ret = main(gen.cyan.hi_band.gain_rx(4), "High Band RX Gain Test")
         test_status.append(["High Band RX Gain Test", to_pass_fail(ret)])
-    else:
+    elif(targs.product == 'Lily'):
+        report.insert_title_page("Chestnut TX RX Gain Test")
+
+        test_status = [["Test", "Status"]]
+
+        # Change the argument in the following function to select how many channels to test
+        ret = main(gen.chestnut.lo_band.gain_tx(4), "Low Band TX Gain Test")
+        test_status.append(["Low Band TX Gain Test", to_pass_fail(ret)])
+
+        ret = main(gen.chestnut.lo_band.gain_rx(4), "Low Band RX Gain Test")
+        test_status.append(["Low Band RX Gain Test", to_pass_fail(ret)])
+
+        ret = main(gen.chestnut.mid_band.gain_tx(4), "Mid Band TX Gain Test")
+        test_status.append(["Mid Band TX Gain Test", to_pass_fail(ret)])
+
+        ret = main(gen.chestnut.mid_band.gain_rx(4), "Mid Band RX Gain Test")
+        test_status.append(["Mid Band RX Gain Test", to_pass_fail(ret)])
+
+        ret = main(gen.chestnut.hi_band.gain_tx(4), "High Band TX Gain Test")
+        test_status.append(["High Band TX Gain Test", to_pass_fail(ret)])
+
+        ret = main(gen.chestnut.hi_band.gain_rx(4), "High Band RX Gain Test")
+        test_status.append(["High Band RX Gain Test", to_pass_fail(ret)])
+    elif(targs.product == 'Vaunt'):
         report.insert_title_page("Crimson TX RX Gain Test")
 
         test_status = [["Test", "Status"]]

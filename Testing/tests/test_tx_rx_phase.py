@@ -101,7 +101,6 @@ def subPlot(x, y, ax, best_fit, offset, title):
     ax.set_title(title)
     ax.set_xlabel("Time")
     ax.set_ylabel("Amplitude")
-    ax.set_ylim(-0.475, 0.475)
     ax.plot(x, y, '.', color='magenta', label='Real')
     ax.plot(x, best_fit, '-', color='black', label='Best Fit')
     #ax.plot(x, offset, color='green', label='DC Offset')
@@ -246,7 +245,6 @@ def makePlots():
         plt.title("Amplitude versus Samples: All Channels for Run {}".format(z))
         plt.xlabel("Time")
         plt.ylabel("Amplitude")
-        plt.ylim(-0.475, 0.475)
 
         #dots
         plt.plot(x_time[0:plotted_samples], reals[z][0][0:plotted_samples], '.', markersize=3,  color='lightcoral', label='Real A')
@@ -319,8 +317,10 @@ def main():
 
     if(targs.product == 'Vaunt'):
         iterations = gen.lo_band_phaseCoherency_short(4)
-    else:
+    elif(targs.product == 'Tate'):
         iterations = gen.cyan.lo_band.phaseCoherency_short(4)
+    elif(targs.product == 'Lily'):
+        iterations = gen.chestnut.lo_band.phaseCoherency_short(4)
 
     num_iter = 0
     

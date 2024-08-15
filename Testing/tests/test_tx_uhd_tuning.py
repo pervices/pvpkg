@@ -124,7 +124,9 @@ def build_report():
 ## SCRIPT LOGIC ##
 if(targs.product == "Vaunt"):
     main(gen.tx_uhd_tune(), "")
-else:
+elif(targs.product == "Tate"):
     main(gen.cyan.mid_band.tx_uhd_tune(), "")
+elif(targs.product == "Lily"):
+    main(gen.chestnut.mid_band.tx_uhd_tune(), "")
 build_report()
 sys.exit(test_fail)

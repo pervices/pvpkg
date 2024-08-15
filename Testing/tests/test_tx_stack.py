@@ -27,11 +27,15 @@ def main():
         channels = np.array([0,1,2,3])
         sample_rate = 100e6
         sample_count = int(sample_rate)
-
-    else:
+    elif(targs.product == 'Vaunt'):
         # Crimson TNG Setup.
         channels = np.array([0,1,2,3])
         sample_rate = 20312500
+        sample_count = int(sample_rate)
+    elif(targs.product == 'Lily'):
+        # Chestnut Setup.
+        channels = np.array([0,1,2,3])
+        sample_rate = 100e6
         sample_count = int(sample_rate)
 
     global test_fail

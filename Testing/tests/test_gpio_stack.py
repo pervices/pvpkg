@@ -70,7 +70,30 @@ def main():
         else:
             report.insert_text("Test failed")
 
-    else:
+    elif(targs.product == 'Lily'):
+        report.insert_title_page("Chestnut Stacked GPIO Commands Test")
+        csrc = crimson.get_src_c(list(range(4)), 20e6, 15e6, 0.0) # Does not matter if sink or source is used here.
+        pins = [0x0601806018060180, 0x6018]
+        mask = [0xFFFFFFFFFFFFFFFF, 0xFFFF]
+
+        report.insert_text_large("Test Results")
+
+        for second in range(1, duration_s, 1):
+            pins[0] ^= mask[0]
+            pins[1] ^= mask[1]
+            try:
+                gpio_write(csrc, pins, mask, second);
+            except:
+                print("GPIO write failed at " + str(second) + " second")
+                test_failed = True
+
+        if (not test_failed):
+            report.insert_text("Test ran for " + str(duration_s) + " seconds")
+            report.insert_text("Test successfully completed")
+        else:
+            report.insert_text("Test failed")
+
+    elif(targs.product == "Vaunt"):
         report.insert_title_page("Crimson Stacked GPIO Commands Test")
         csrc = crimson.get_src_c(list(range(4)), 20312500, 15e6, 0.0) # Does not matter if sink or source is used here.
         pins = 0x0
