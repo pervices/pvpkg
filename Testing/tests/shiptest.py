@@ -34,11 +34,10 @@ import matplotlib.pyplot as plt
 from PIL import Image
 from io import BytesIO
 
-# from scipy.optimize import curve_fit
-from lmfit import Model, minimize, Parameters, create_params #apparently better for discrete things
 from scipy.signal.windows import blackman
 from scipy.fft import fft, fftfreq, fftshift
 from scipy import signal
+from scipy.optimize import curve_fit
 from reportlab.lib.utils import ImageReader
 from scipy.signal import find_peaks
 
@@ -464,112 +463,6 @@ def subPlotIQs (x, real,imag, best_fit_real, best_fit_imag, offset_real, offset_
 
     return bf_r
 
-'''
-# Returns the residuals of a predicts sinewave
-params['ampl']: predicted amplitude
-params['freq']: predicted frequency
-params['phase']: predicted phase shift
-params['dc_offset']: predicted dc offset
-actual_time: the x values from the wave to be fitted
-actual_amplitude: the y values from the wave to be fitted
-RETUNRS: y'''
-def sineResiduals(params, actual_time, actual_amplitude, freq, dc_offset):
-    ampl = params['ampl'].value
-    phase = params['phase'].value
-
-    # Predicted wave
-    model = ampl*np.sin(2*np.pi*freq*(actual_time + phase)) + dc_offset #model for wave equation
-
-    return model - actual_amplitude
-
-'''Creates the line of best fit for the given x and y (normal data, not complx)
-PARAMS: x,y
-RETURNS: best_fit (y values of the line of best fit '''
-def bestFit(x, raw_y, expected_freq):
-
-    # Applies a filter to the signal so we are only looking at the relevant sinewave
-    sos = signal.butter(2, [expected_freq * 0.95, expected_freq * 1.05], 'bandpass', output = 'sos', fs = sample_rate)
-    y = signal.sosfiltfilt(sos, raw_y)
-
-    max_loc = np.argmax(y)
-
-    max_y = y[max_loc]
-
-    # Detect if all 0s
-    if max_y == 0:
-        # return redisuals (since raw_y is all 0s in this case we can just return it), (dc_offset = 0, ampl = 0)
-        return raw_y, (0, 0)
-
-    period = 1/expected_freq
-    predicted_phase = x[max_loc] + (period/4)
-    if(predicted_phase < 0):
-        predicted_phase += period
-
-    predicted_phase = predicted_phase % period
-
-    dc_offset = y.mean()
-
-    # Predicted amplitude must be above expected to avoid the minimizer going the wrong direction and ending up near 0
-    params = create_params(phase={'value': predicted_phase, 'min': 0, 'max': period}, ampl={'value': y[max_loc], 'min': max_y/10, 'max' : max_y * 1.1})
-
-    try:
-        result = minimize(sineResiduals, params, args=(x,y,expected_freq, dc_offset), max_nfev=25)
-    except:
-        traceback.print_exc()
-    model = result.params['ampl'].value*np.sin(2*np.pi*expected_freq*(x + result.params['phase'].value)) + dc_offset
-
-    return model, (dc_offset, result.params['ampl'])
-
-'''Creates the line of best fit for the given x and y (complex), intended to be called in its ownthread
-PARAMS:
-channel: The channel number
-x: time axis
-y_reals: real part of amplitude
-y_imags: imaginary part of amplitude
-expected_freq: expected frequency, used to determine initial guess
-
-All parameters after this are used to store pseudo return values
-
-best_fit_reals: Array for points on the real lobf for each channel
-offset_reals: Array of DC offset for the real lobf for each channel
-ampl_reals: Array of amplitude for the real lobf for each channel
-freq_reals: Array of frequency for the real lobf for each channel
-best_fit_imags: Array for points on the imaginary lobf for each channel
-offset_imags: Array of DC offset for the imaginary lobf for each channel
-ampl_imags: Array of amplitude for the imaginary lobf for each channel
-freq_imags: Array of frequency for the real lobf for each channel
-ampl_vec: ? TODO: figure this out
-
-RETURNS none '''
-def bestFitComplex(ch, x, y_real, y_imag, expected_freq, best_fit_reals, offset_reals, ampl_reals, best_fit_imags, offset_imags, ampl_imags, ampl_vec):
-
-    #Gets best fit for real part of sinewave
-    best_fit, param = bestFit(x, y_real, expected_freq)
-
-    best_fit_reals[ch] = best_fit
-    offset_reals[ch] = param[0]
-    ampl_reals[ch] = param[1]
-
-    #Gets best fit for complex part of sinewave
-    best_fit, param = bestFit(x, y_imag, expected_freq)
-
-    best_fit_imags.append((best_fit))
-    offset_imags[ch] = param[0]
-    ampl_imags[ch] = param[1]
-
-    ampl_vec[ch] = np.sqrt(param[1]**2 + ampl_reals[len(ampl_reals)-1]**2)
-
-'''Function passed to numpy when normalizing data (shifting the range to be up to 1)
-Params:
-a: the value to be normalized
-peak: the maximum value of the dataset
-Returns: ans'''
-def safeNormalize(a, peak):
-    if(peak != 0):
-        return a/peak
-    else:
-        return 0
-
 '''Calculates the magnitude of the two given values
 PARAMS: a, b
 RETURNS: ans'''
@@ -780,9 +673,45 @@ def isPass(a):
     else:
         return "False"
 
-'''Runs the tests and data collection, then calls other functions to tests and format the code outputs
-PARAMS: iterations
-RETURNS: NONE, it is the main function'''
+
+
+def bestFit(ch, x, y_real, y_imag, expected_freq, best_fit_reals, offset_reals, ampl_reals, best_fit_imags, offset_imags, ampl_imags, ampl_vec):
+    # Real
+    guess = [max(y_real), expected_freq, 0.25, 0] #Based off generator code
+    param, covariance  = curve_fit(waveEquation, x, y_real, p0=guess) #using curve fit to give parameters
+    fit_amp = param[0]                                           #for wave equation that make a line of best fit
+    fit_freq = param[1]
+    fit_phase = param[2]
+    fit_offset = param[3]
+    best_fit = waveEquation(x, fit_amp, fit_freq, fit_phase, fit_offset) #making the line of best fit
+
+    best_fit_reals[ch] = best_fit
+    offset_reals[ch] = fit_offset
+    ampl_reals[ch] = fit_amp
+
+    # Imaginary
+    guess = [max(y_imag), expected_freq, 0.25, 0] #Based off generator code
+    param, covariance  = curve_fit(waveEquation, x, y_imag, p0=guess) #using curve fit to give parameters
+    fit_amp = param[0]                                           #for wave equation that make a line of best fit
+    fit_freq = param[1]
+    fit_phase = param[2]
+    fit_offset = param[3]
+    best_fit = waveEquation(x, fit_amp, fit_freq, fit_phase, fit_offset) #making the line of best fit
+
+    best_fit_imags[ch] = best_fit
+    offset_imags[ch] = fit_offset
+    ampl_imags[ch] = fit_amp
+
+    ampl_vec[ch] = np.sqrt(ampl_imags[ch]**2 + ampl_reals[len(ampl_reals)-1]**2)
+
+
+def waveEquation(time, ampl, freq, phase, dc_offset):
+
+    y = ampl*np.cos((2*np.pi*freq*time + phase)) + dc_offset #model for wave equation
+    return y
+
+
+
 def main(iterations):
 
     # Changes matplotlib backend. The default ktinker does not work headless
@@ -833,7 +762,7 @@ def main(iterations):
         ampl_reals = np.zeros(shape=(num_channels))
 
         #Data i
-        best_fit_imags = []
+        best_fit_imags = [None] * num_channels
         offset_imags = np.zeros(shape=(num_channels))
         ampl_imags = np.zeros(shape=(num_channels))
 
@@ -886,7 +815,7 @@ def main(iterations):
         fft_threads = []
         for ch in range(num_channels):
             # Starts time domain fitting threads
-            time_fitting_threads.append(threading.Thread(target = bestFitComplex, args = (ch, x, reals[ch], imags[ch], it["wave_freq"], best_fit_reals, offset_reals, ampl_reals, best_fit_imags, offset_imags, ampl_imags, ampl_vec)))
+            time_fitting_threads.append(threading.Thread(target = bestFit, args = (ch, x, reals[ch], imags[ch], it["wave_freq"], best_fit_reals, offset_reals, ampl_reals, best_fit_imags, offset_imags, ampl_imags, ampl_vec)))
             time_fitting_threads[-1].start()
 
             # Starts fft threads
