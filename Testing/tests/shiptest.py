@@ -578,52 +578,6 @@ RETURNS: SNR in dB'''
 def toSNR(noise, signal):
     return (signal - np.max(noise))
 
-'''Splits and swaps elements for the sort function
-PARAMS: array, low, high, other_array
-RETURN: i +1'''
-def partition(array, low, high, other_array):
-
-    # choose the rightmost element as pivot
-    pivot = array[high]
-
-    # pointer for greater element
-    i = low - 1
-
-    # traverse through all elements
-    # compare each element with pivot
-    for j in range(low, high):
-        if array[j] <= pivot:
-
-            # If element smaller than pivot is found
-            # swap it with the greater element pointed by i
-            i = i + 1
-            (array[i], array[j]) = (array[j], array[i])
-            (other_array[i], other_array[j]) = (other_array[j], other_array[i])
-
-
-    # Swap the pivot element with the greater element specified by i
-    (array[i + 1], array[high]) = (array[high], array[i + 1])
-    (other_array[i + 1], other_array[high]) = (other_array[high], other_array[i + 1])
-
-    # Return the position from where partition is done
-    return i + 1
-
-'''Quick sorts given data
-PARAM: array, low, high, optional: Other arrays to be sorted
-RETURNS: N/A'''
-def quickSort(array, low, high, other_array):
-    if low < high:
-
-        # Find pivot element such that
-        # element smaller than pivot are on the left
-        # element greater than pivot are on the right
-        pi = partition(array, low, high, other_array)
-
-        # Recursive call on the left of pivot
-        quickSort(array, low, pi - 1, other_array)
-
-        # Recursive call on the right of pivot
-        quickSort(array, pi + 1, high, other_array)
 
 '''Checks if the given is within the SNR bounds
 PARAM:
@@ -1086,8 +1040,6 @@ def main(iterations):
         max_top = []
         for first_max in max_fours:
             max_top.append((first_max[0][0], first_max[0][1]))
-
-        quickSort(fft_snr, 0, num_channels-1 , max_top) #X also gets sorted, so that the p/f is easier to check
 
         #Tables stuff
         for z in range(graph_max): #NOTE: It doesn't have to use graph max here, any value with the layout should be fine
