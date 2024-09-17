@@ -165,11 +165,14 @@ def build_report():
     print("PDF report saved at " + report.get_filename())
 
 def main(iterations):
+    print("P2")
     for it in iterations:
+        print("P3")
         test(it)
 
 ## SCRIPT LOGIC ##
 if(targs.product == "Vaunt"):
+    print("P1")
     main(gen.tx_trigger())
 elif(targs.product == "Lily"):
     main(gen.chestnut.lo_band.tx_trigger(4))
