@@ -33,11 +33,17 @@ import time, sys, os
 
 def gpio_write(csrc, pins, mask, time):
 
+    print("T1")
     csrc.set_command_time(uhd.time_spec(time))
+    print("T2")
     csrc.set_user_register(0, (pins >>  0) & 0xFFFFFFFF) # 32bit.
+    print("T3")
     csrc.set_user_register(1, (pins >> 32) & 0xFFFFFFFF)
+    print("T4")
     csrc.set_user_register(2, (mask >>  0) & 0xFFFFFFFF)
+    print("T5")
     csrc.set_user_register(3, (mask >> 32) & 0xFFFFFFFF) # Queue.
+    print("T6")
 
 def main():
     targs = test_args.TestArgs(testDesc="Stacked GPIO Commands Test")
