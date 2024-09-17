@@ -10,8 +10,11 @@ report = pdf_report.ClassicShipTestReport("tx_trigger", targs.serial, targs.repo
 test_fail = 0
 
 def test(it):
+    print("P4")
     global test_fail
+    print("P5")
     gen.dump(it)
+    print("P6")
 
     name = "tx_trigger_log.txt"
 
@@ -20,6 +23,7 @@ def test(it):
     # indicate that the test_tx_trigger example binary was not found
     # Using invokation from tx_trig pkg
     test_fail = test_fail | os.system("/usr/lib/uhd/examples/test_tx_trigger --path ./test_tx_trig_files/data.txt --start_time={} --period={} --tx_rate={} --tx_center_freq={} --tx_gain={} --setpoint={} --samples={} --num_trigger={} --gating=dsp > {}".format(it["start_time"], it["period"], it["sample_rate"], it["center_freq"], it["tx_gain"], it["setpoint"], it["sample_count"], it["num_trigger"], name))
+    print("P7")
 
     # Flag to indicate that triggers failed to activate
     # Technically this could be caused by anything that returns an error code in UHD, but the trigger failing in time is most likely
