@@ -14,6 +14,7 @@ def test(it):
     gen.dump(it)
 
     name = "tx_rx_rate_log.txt"
+    print("T1")
 
     # Call cpp program to run the benchmark since it is much faster and reliable
     if((len(it["rx_channel"])) != 0 and (len(it["rx_channel"]) != 0)):
@@ -25,6 +26,8 @@ def test(it):
     else:
         test_fail = test_fail | os.system("/usr/lib/uhd/examples/benchmark_rate --tx_rate={} --tx_channels {}  --overrun-threshold 0 --underrun-threshold 0 --drop-threshold 0 --seq-threshold 0 > {}".format(it["tx_rate"], it["tx_channel"], name))
 
+    print("T5")
+
     rate_error = test_fail != 0
 
     test_info = [ ["Description", "Rx Rate (Msps)", "Rx Channels", "Tx Rate (Msps)", "Tx Channels"],
@@ -32,8 +35,10 @@ def test(it):
 
     report.buffer_put("text_large", "Test Summary")
     report.buffer_put("text", " ")
-    report.buffer_put("table", test_info, "Parameters")
+    report.buffer_put("table", test_info)
     report.buffer_put("text", " ")
+
+    print("T10")
 
 def build_report():
     report.insert_title_page("Tx Rx Rate Test")
