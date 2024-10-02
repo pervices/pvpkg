@@ -28,8 +28,11 @@ def test(it):
     if((len(it["rx_channel"])) != 0 and (len(it["rx_channel"]) != 0)):
         print("T2")
         command = "/usr/lib/uhd/examples/benchmark_rate --rx_rate {} --rx_channels {} --tx_rate={} --tx_channels {}  --overrun-threshold 0 --underrun-threshold 0 --drop-threshold 0 --seq-threshold 0 > {}".format(it["rx_rate"], list_to_arg_string(it["rx_channel"]), it["tx_rate"], list_to_arg_string(it["tx_channel"]), name)
+        print(command)
         print("T2.5")
-        tmp = os.system(command)
+        os.system(command)
+        print("T2.6")
+        tmp = 0 os.system(command)
         print("T2.7")
         test_fail = test_fail | tmp
         print("T3")
