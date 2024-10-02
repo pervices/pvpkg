@@ -230,6 +230,25 @@ def tx_trigger():
     num_trigger = 20
     yield locals()
 
+def tx_rx_rate():
+    print(sys._getframe().f_code.co_name)
+
+    descriptions = ["Maximum rx rate on as many channels as can handle it", "Maximum tx rate on as many channels as can handle it", "Highest rate than be achieved on all rx and tx channels at the same time", "Highest rx rate achievable on all channels", "Highest tx rate achievable on all channels"]
+    rx_rates = [162.5e6, 0, 65e6, 81.25e6, 0]
+    rx_channels = [[0, 1], [], [0,1,2,3], [0,1,2,3], []]
+    tx_rates = [0, 162.5e6, 65e6, 0, 81.25e6]
+    tx_channels = [[], [0,1], [0,1,2,3], [], [0,1,2,3]]
+    assert(len(rx_rates) == len(rx_channels))
+    assert(len(rx_rates) == len(tx_rates))
+    assert(len(rx_rates) == len(tx_channels))
+    for n in range(len(rx_rates)):
+        description = descriptions[n]
+        rx_rate = rx_rates[n]
+        rx_channel = rx_channels[n]
+        tx_rate = tx_rates[n]
+        tx_channel = tx_channels[n]
+        yield locals()
+
 def rx_uhd_tune():
     print(sys._getframe().f_code.co_name)
     channels = list(range(4))
