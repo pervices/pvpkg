@@ -10,7 +10,7 @@ report = pdf_report.ClassicShipTestReport("tx_rx_rate", targs.serial, targs.repo
 test_fail = 0
 
 # Converts list of number l to a string that can be passed as an argument to another program
-def list_to_arg_string(l)
+def list_to_arg_string(l):
     s = ""
     for(element in l):
         s = s + str(element)
