@@ -27,7 +27,9 @@ def test(it):
     # Call cpp program to run the benchmark since it is much faster and reliable
     if((len(it["rx_channel"])) != 0 and (len(it["rx_channel"]) != 0)):
         print("T2")
-        test_fail = test_fail | os.system("/usr/lib/uhd/examples/benchmark_rate --rx_rate {} --rx_channels {} --tx_rate={} --tx_channels {}  --overrun-threshold 0 --underrun-threshold 0 --drop-threshold 0 --seq-threshold 0 > {}".format(it["rx_rate"], list_to_arg_string(it["rx_channel"]), it["tx_rate"], list_to_arg_string(it["tx_channel"]), name))
+        command = "/usr/lib/uhd/examples/benchmark_rate --rx_rate {} --rx_channels {} --tx_rate={} --tx_channels {}  --overrun-threshold 0 --underrun-threshold 0 --drop-threshold 0 --seq-threshold 0 > {}".format(it["rx_rate"], list_to_arg_string(it["rx_channel"]), it["tx_rate"], list_to_arg_string(it["tx_channel"]), name)
+        print("T2.5")
+        test_fail = test_fail | os.system(command)
         print("T3")
     # rx only
     elif(len(it["rx_channel"]) != 0):
