@@ -30,6 +30,7 @@ def test(it):
         command = "/usr/lib/uhd/examples/benchmark_rate --rx_rate {} --rx_channels {} --tx_rate={} --tx_channels {}  --overrun-threshold 0 --underrun-threshold 0 --drop-threshold 0 --seq-threshold 0 > {}".format(it["rx_rate"], list_to_arg_string(it["rx_channel"]), it["tx_rate"], list_to_arg_string(it["tx_channel"]), name)
         print("T2.5")
         tmp = os.system(command)
+        print("T2.7")
         test_fail = test_fail | tmp
         print("T3")
     # rx only
