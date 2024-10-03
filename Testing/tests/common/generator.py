@@ -247,7 +247,13 @@ def tx_rx_rate():
         rx_channel = rx_channels[n]
         tx_rate = tx_rates[n]
         tx_channel = tx_channels[n]
-        yield description, rx_rate, rx_channel, tx_rate, tx_channel
+        yield dict{
+            "description" : descriptions[n]
+            "rx_rate" : rx_rates[n]
+            "rx_channel" : rx_channels[n]
+            "tx_rate" : tx_rates[n]
+            "tx_channel" : tx_channels[n]
+        }
 
 def rx_uhd_tune():
     print(sys._getframe().f_code.co_name)
