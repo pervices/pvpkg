@@ -36,10 +36,10 @@ def test(it):
         iteration_result = os.system("/usr/lib/uhd/examples/benchmark_rate --rx_rate {} --rx_channels {} --tx_rate={} --tx_channels {}  --overrun-threshold 0 --underrun-threshold 0 --drop-threshold 0 --seq-threshold 0".format(it["rx_rate"], list_to_arg_string(it["rx_channel"]), it["tx_rate"], list_to_arg_string(it["tx_channel"])))
     # rx only
     elif(len(it["rx_channel"]) != 0):
-        iteration_result = os.system("/usr/lib/uhd/examples/benchmark_rate --rx_rate={} --rx_channels {}  --overrun-threshold 0 --underrun-threshold 0 --drop-threshold 0 --seq-threshold 0 > {}".format(it["rx_rate"], list_to_arg_string(it["rx_channel"]), name))
+        iteration_result = os.system("/usr/lib/uhd/examples/benchmark_rate --rx_rate={} --rx_channels {}  --overrun-threshold 0 --underrun-threshold 0 --drop-threshold 0 --seq-threshold 0".format(it["rx_rate"], list_to_arg_string(it["rx_channel"])))
     # tx only
     else:
-        iteration_result = os.system("/usr/lib/uhd/examples/benchmark_rate --tx_rate={} --tx_channels {}  --overrun-threshold 0 --underrun-threshold 0 --drop-threshold 0 --seq-threshold 0 > {}".format(it["tx_rate"], list_to_arg_string(it["tx_channel"]), name))
+        iteration_result = os.system("/usr/lib/uhd/examples/benchmark_rate --tx_rate={} --tx_channels {}  --overrun-threshold 0 --underrun-threshold 0 --drop-threshold 0 --seq-threshold 0".format(it["tx_rate"], list_to_arg_string(it["tx_channel"])))
 
     # Update flag if the test failed
     test_fail = test_fail | iteration_result
