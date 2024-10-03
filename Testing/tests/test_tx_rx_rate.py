@@ -8,6 +8,7 @@ import sys
 targs = test_args.TestArgs(testDesc="Tx and Rx Rate Test")
 report = pdf_report.ClassicShipTestReport("tx_rx_rate", targs.serial, targs.report_dir, targs.docker_sha)
 test_fail = 0
+summary_table = [ ["Description", "Rx Rate (Msps)", "Rx Channels", "Tx Rate (Msps)", "Tx Channels"] ]
 
 # Converts list of number l to a string that can be passed as an argument to another program
 def list_to_arg_string(l):
@@ -23,6 +24,7 @@ def list_to_arg_string(l):
 
 def test(it):
     global test_fail
+    global summary_table
     gen.dump(it)
 
     name = "tx_rx_rate_log.txt"
@@ -39,12 +41,7 @@ def test(it):
 
     rate_error = test_fail != 0
 
-    test_info = [ ["Description", "Rx Rate (Msps)", "Rx Channels", "Tx Rate (Msps)", "Tx Channels"],
-                 [it["description"], it["rx_rate"]/1e6, str(it["rx_channel"]), it["tx_rate"]/1e6, str(it["tx_channel"])] ]
-
-    report.buffer_put("text", " ")
-    report.buffer_put("table", test_info)
-    report.buffer_put("text", " ")
+    summary_table.append([it["description"], it["rx_rate"]/1e6, str(it["rx_channel"]), it["tx_rate"]/1e6, str(it["tx_channel"])])
 
 def build_report():
     report.insert_title_page("Tx Rx Rate Test")
@@ -53,9 +50,13 @@ def build_report():
     print("PDF report saved at " + report.get_filename())
 
 def main(iterations):
-    report.buffer_put("text_large", "Test Summary")
     for it in iterations:
         test(it)
+
+    report.buffer_put("text_large", "Test Summary")
+    report.buffer_put("text", " ")
+    report.buffer_put("table", test_info)
+    report.buffer_put("text", " ")
 
 ## SCRIPT LOGIC ##
 if(targs.product == "Vaunt"):
