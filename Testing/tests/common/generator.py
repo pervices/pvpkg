@@ -233,7 +233,7 @@ def tx_trigger():
 def tx_rx_rate():
     print(sys._getframe().f_code.co_name)
 
-    descriptions = ["Maximum rx rate on as many channels as can handle it", "Maximum tx rate on as many channels as can handle it", "Highest rate than be achieved on all rx and tx channels at the same time", "Highest rx rate achievable on all channels", "Highest tx rate achievable on all channels"]
+    descriptions = ["Maximum rx rate on as many channels\nas can handle it", "Maximum tx rate on as many channels\nas can handle it", "Highest rate than be achieved on all rx and tx\nchannels at the same time", "Highest rx rate achievable\non all channels", "Highest tx rate achievable\non all channels"]
     rx_rates = [162.5e6, 0, 325e6/6, 81.25e6, 0]
     rx_channels = [[0, 1], [], [0,1,2,3], [0,1,2,3], []]
     tx_rates = [0, 162.5e6, 325e6/6, 0, 81.25e6]
