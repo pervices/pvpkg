@@ -27,15 +27,13 @@ def test(it):
     global summary_table
     gen.dump(it)
 
-    # Filename to store output of program
-    name = "tx_rx_rate_log.txt"
-
+    # Error code for this iteration
     iteration_result = 0
 
     # Call cpp program to run the benchmark since it is much faster and reliable
     # The ifelse decides whether to pass rx only, tx only, or both args
     if((len(it["rx_channel"])) != 0 and (len(it["tx_channel"]) != 0)):
-        iteration_result = os.system("/usr/lib/uhd/examples/benchmark_rate --rx_rate {} --rx_channels {} --tx_rate={} --tx_channels {}  --overrun-threshold 0 --underrun-threshold 0 --drop-threshold 0 --seq-threshold 0 > {}".format(it["rx_rate"], list_to_arg_string(it["rx_channel"]), it["tx_rate"], list_to_arg_string(it["tx_channel"]), name))
+        iteration_result = os.system("/usr/lib/uhd/examples/benchmark_rate --rx_rate {} --rx_channels {} --tx_rate={} --tx_channels {}  --overrun-threshold 0 --underrun-threshold 0 --drop-threshold 0 --seq-threshold 0".format(it["rx_rate"], list_to_arg_string(it["rx_channel"]), it["tx_rate"], list_to_arg_string(it["tx_channel"])))
     # rx only
     elif(len(it["rx_channel"]) != 0):
         iteration_result = os.system("/usr/lib/uhd/examples/benchmark_rate --rx_rate={} --rx_channels {}  --overrun-threshold 0 --underrun-threshold 0 --drop-threshold 0 --seq-threshold 0 > {}".format(it["rx_rate"], list_to_arg_string(it["rx_channel"]), name))
