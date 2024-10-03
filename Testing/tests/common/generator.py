@@ -243,10 +243,10 @@ def tx_rx_rate():
     assert(len(rx_rates) == len(tx_channels))
     for n in range(len(rx_rates)):
         iteration_dict = {
-            "description" : descriptions[n]
-            "rx_rate" : rx_rates[n]
-            "rx_channel" : rx_channels[n]
-            "tx_rate" : tx_rates[n]
+            "description" : descriptions[n],
+            "rx_rate" : rx_rates[n],
+            "rx_channel" : rx_channels[n],
+            "tx_rate" : tx_rates[n],
             "tx_channel" : tx_channels[n]
         }
         yield iteration_dict
