@@ -242,18 +242,14 @@ def tx_rx_rate():
     assert(len(rx_rates) == len(tx_rates))
     assert(len(rx_rates) == len(tx_channels))
     for n in range(len(rx_rates)):
-        description = descriptions[n]
-        rx_rate = rx_rates[n]
-        rx_channel = rx_channels[n]
-        tx_rate = tx_rates[n]
-        tx_channel = tx_channels[n]
-        yield dict{
+        iteration_dict = {
             "description" : descriptions[n]
             "rx_rate" : rx_rates[n]
             "rx_channel" : rx_channels[n]
             "tx_rate" : tx_rates[n]
             "tx_channel" : tx_channels[n]
         }
+        yield iteration_dict
 
 def rx_uhd_tune():
     print(sys._getframe().f_code.co_name)
