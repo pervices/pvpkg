@@ -26,18 +26,10 @@ def test(it):
     gen.dump(it)
 
     name = "tx_rx_rate_log.txt"
-    print("T1")
 
     # Call cpp program to run the benchmark since it is much faster and reliable
     if((len(it["rx_channel"])) != 0 and (len(it["tx_channel"]) != 0)):
-        print("T2")
-        command = "/usr/lib/uhd/examples/benchmark_rate --rx_rate {} --rx_channels {} --tx_rate={} --tx_channels {}  --overrun-threshold 0 --underrun-threshold 0 --drop-threshold 0 --seq-threshold 0 > {}".format(it["rx_rate"], list_to_arg_string(it["rx_channel"]), it["tx_rate"], list_to_arg_string(it["tx_channel"]), name)
-        print(command)
-        print("T2.5")
-        tmp = os.system(command)
-        print("T2.7")
-        test_fail = test_fail | tmp
-        print("T3")
+        test_fail = test_fail | os.system("/usr/lib/uhd/examples/benchmark_rate --rx_rate {} --rx_channels {} --tx_rate={} --tx_channels {}  --overrun-threshold 0 --underrun-threshold 0 --drop-threshold 0 --seq-threshold 0 > {}".format(it["rx_rate"], list_to_arg_string(it["rx_channel"]), it["tx_rate"], list_to_arg_string(it["tx_channel"]), name))
     # rx only
     elif(len(it["rx_channel"]) != 0):
         test_fail = test_fail | os.system("/usr/lib/uhd/examples/benchmark_rate --rx_rate={} --rx_channels {}  --overrun-threshold 0 --underrun-threshold 0 --drop-threshold 0 --seq-threshold 0 > {}".format(it["rx_rate"], list_to_arg_string(it["rx_channel"]), name))
@@ -45,19 +37,14 @@ def test(it):
     else:
         test_fail = test_fail | os.system("/usr/lib/uhd/examples/benchmark_rate --tx_rate={} --tx_channels {}  --overrun-threshold 0 --underrun-threshold 0 --drop-threshold 0 --seq-threshold 0 > {}".format(it["tx_rate"], list_to_arg_string(it["tx_channel"]), name))
 
-    print("T5")
-
     rate_error = test_fail != 0
 
-    test_info = [ ["Description", "Rx Rate", "Rx Channels", "Tx Rate", "Tx Channels"],
-                 [it["description"], it["rx_rate"], str(it["rx_channel"]), it["tx_rate"], str(it["tx_channel"])] ]
+    test_info = [ ["Description", "Rx Rate (Msps)", "Rx Channels", "Tx Rate (Msps)", "Tx Channels"],
+                 [it["description"], it["rx_rate"]/1e6, str(it["rx_channel"]), it["tx_rate"]/1e6, str(it["tx_channel"])] ]
 
-    report.buffer_put("text_large", "Test Summary")
     report.buffer_put("text", " ")
     report.buffer_put("table", test_info)
     report.buffer_put("text", " ")
-
-    print("T10")
 
 def build_report():
     report.insert_title_page("Tx Rx Rate Test")
@@ -66,6 +53,7 @@ def build_report():
     print("PDF report saved at " + report.get_filename())
 
 def main(iterations):
+    report.buffer_put("text_large", "Test Summary")
     for it in iterations:
         test(it)
 
