@@ -8,7 +8,7 @@ import sys
 targs = test_args.TestArgs(testDesc="Tx and Rx Rate Test")
 report = pdf_report.ClassicShipTestReport("tx_rx_rate", targs.serial, targs.report_dir, targs.docker_sha)
 test_fail = 0
-summary_table = [ ["Description", "Rx Rate (Msps)", "Rx Channels", "Tx Rate (Msps)", "Tx Channels"] ]
+summary_table = [ ["Description", "Rx Rate (Msps)", "Rx Channels", "Tx Rate (Msps)", "Tx Channels", "Result"] ]
 
 # Converts list of number l to a string that can be passed as an argument to another program
 def list_to_arg_string(l):
@@ -27,21 +27,29 @@ def test(it):
     global summary_table
     gen.dump(it)
 
+    # Filename to store output of program
     name = "tx_rx_rate_log.txt"
 
+    iteration_result = 0
+
     # Call cpp program to run the benchmark since it is much faster and reliable
+    # The ifelse decides whether to pass rx only, tx only, or both args
     if((len(it["rx_channel"])) != 0 and (len(it["tx_channel"]) != 0)):
-        test_fail = test_fail | os.system("/usr/lib/uhd/examples/benchmark_rate --rx_rate {} --rx_channels {} --tx_rate={} --tx_channels {}  --overrun-threshold 0 --underrun-threshold 0 --drop-threshold 0 --seq-threshold 0 > {}".format(it["rx_rate"], list_to_arg_string(it["rx_channel"]), it["tx_rate"], list_to_arg_string(it["tx_channel"]), name))
+        iteration_result = os.system("/usr/lib/uhd/examples/benchmark_rate --rx_rate {} --rx_channels {} --tx_rate={} --tx_channels {}  --overrun-threshold 0 --underrun-threshold 0 --drop-threshold 0 --seq-threshold 0 > {}".format(it["rx_rate"], list_to_arg_string(it["rx_channel"]), it["tx_rate"], list_to_arg_string(it["tx_channel"]), name))
     # rx only
     elif(len(it["rx_channel"]) != 0):
-        test_fail = test_fail | os.system("/usr/lib/uhd/examples/benchmark_rate --rx_rate={} --rx_channels {}  --overrun-threshold 0 --underrun-threshold 0 --drop-threshold 0 --seq-threshold 0 > {}".format(it["rx_rate"], list_to_arg_string(it["rx_channel"]), name))
+        iteration_result = os.system("/usr/lib/uhd/examples/benchmark_rate --rx_rate={} --rx_channels {}  --overrun-threshold 0 --underrun-threshold 0 --drop-threshold 0 --seq-threshold 0 > {}".format(it["rx_rate"], list_to_arg_string(it["rx_channel"]), name))
     # tx only
     else:
-        test_fail = test_fail | os.system("/usr/lib/uhd/examples/benchmark_rate --tx_rate={} --tx_channels {}  --overrun-threshold 0 --underrun-threshold 0 --drop-threshold 0 --seq-threshold 0 > {}".format(it["tx_rate"], list_to_arg_string(it["tx_channel"]), name))
+        iteration_result = os.system("/usr/lib/uhd/examples/benchmark_rate --tx_rate={} --tx_channels {}  --overrun-threshold 0 --underrun-threshold 0 --drop-threshold 0 --seq-threshold 0 > {}".format(it["tx_rate"], list_to_arg_string(it["tx_channel"]), name))
 
-    rate_error = test_fail != 0
+    # Update flag if the test failed
+    test_fail = test_fail | iteration_result
 
-    summary_table.append([it["description"], it["rx_rate"]/1e6, str(it["rx_channel"]), it["tx_rate"]/1e6, str(it["tx_channel"])])
+    result_string = "Fail" if iteration_result != 0 else "Pass"
+
+    # Adds this iteration's results to the summary table
+    summary_table.append([it["description"], it["rx_rate"]/1e6, str(it["rx_channel"]), it["tx_rate"]/1e6, str(it["tx_channel"]), result_string])
 
 def build_report():
     report.insert_title_page("Tx Rx Rate Test")
@@ -55,7 +63,7 @@ def main(iterations):
 
     report.buffer_put("text_large", "Test Summary")
     report.buffer_put("text", " ")
-    report.buffer_put("table", test_info)
+    report.buffer_put("table", summary_table)
     report.buffer_put("text", " ")
 
 ## SCRIPT LOGIC ##
