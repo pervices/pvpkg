@@ -233,7 +233,7 @@ def tx_trigger():
 def tx_rx_rate():
     print(sys._getframe().f_code.co_name)
 
-    descriptions = ["Max achievable rx rate on any number of ch", "Max achievable tx rate on any number of ch", "Max achievable combined rx and tx rate on all ch", "Max achievable rx rate on all ch", "Max achievable tx rate on all ch"]
+    descriptions = ["Max achievable rx rate on any number of ch", "Max achievable tx rate on any number of ch", "Max achievable combined rate on all ch", "Max achievable rx rate on all ch", "Max achievable tx rate on all ch"]
     rx_rates = [162.5e6, 0, 325e6/6, 81.25e6, 0]
     rx_channels = [[0, 1], [], [0,1,2,3], [0,1,2,3], []]
     tx_rates = [0, 162.5e6, 325e6/6, 0, 81.25e6]
