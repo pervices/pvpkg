@@ -49,7 +49,7 @@ def test(it):
     result_string = "Fail" if iteration_result != 0 else "Pass"
 
     # Adds this iteration's results to the summary table
-    summary_table.append([it["description"], it["rx_rate"]/1e6, str(it["rx_channel"]), it["tx_rate"]/1e6, str(it["tx_channel"]), result_string])
+    summary_table.append([it["description"], "{:.2f}".format(it["rx_rate"]/1e6), str(it["rx_channel"]), "{:.2f}".format(it["tx_rate"]/1e6), str(it["tx_channel"]), result_string])
 
 def build_report():
     report.insert_title_page("Tx Rx Rate Test")
