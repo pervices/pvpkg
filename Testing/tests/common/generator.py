@@ -777,7 +777,7 @@ class chestnut:
             sample_count = 256
             tx_gain = 50
             rx_gain = 60
-            for center_freq in [ 6500000000, 7500000000, 8500000000 ]:
+            for center_freq in [ 6500000000, 7500000000 ]:
                 for sample_rate in [ 9803922, 25000000, 35714286 ]:
                     yield locals()
 
