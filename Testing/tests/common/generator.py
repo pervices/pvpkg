@@ -40,7 +40,7 @@ def ship_test_chestnut(channels):
     # The highest frequency uses a higher gain because the signal begins to roll off as the frequency gets higher
     rx_gains = [25, 25, 30, 40, 40, 40, 50, 50, 50, 50]
     tx_gains = [25, 25, 30, 30, 30, 30, 30, 40, 40, 40]
-    center_freqs = [10000000, 200000000, 600000000, 1200000000, 2000000000, 4500000000, 5500000000, 6500000000, 7500000000, 8500000000]
+    center_freqs = [10000000, 200000000, 600000000, 1200000000, 2000000000, 4500000000, 5000000000, 6500000000, 7500000000, 8500000000]
     for tx_gain, rx_gain, center_freq in zip(tx_gains, rx_gains, center_freqs):
         yield locals()
 
