@@ -520,7 +520,7 @@ class ClassicShipTestReport:
         title_y = 700
         list_font_size = 14
         list_x = title_x - 5
-        list_y = title_y - 50
+        list_y = title_y - 100
         logo_x, logo_y = 550, 450
         logo_width, logo_height = 200, 100
         board_width, board_height = 100, 100
