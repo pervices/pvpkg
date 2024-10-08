@@ -418,6 +418,8 @@ class ClassicShipTestReport:
         unit_rtm = subprocess.getstatusoutput("cat shiptest_out.txt | grep 'RTM' | cut --complement -d ':' -f1")[1]
         hostname = subprocess.run(["cat /proc/sys/kernel/hostname | tr -d '\n' "], shell=True, capture_output=True, text=True).stdout
         operating_sys = subprocess.run(["cat /etc/os-release | grep PRETTY_NAME | cut -d '=' -f2 | tr -d '\"' | tr -d '\n' "], shell=True, capture_output=True, text=True).stdout
+        pvpkg_commit = subprocess.run(["git rev-parse HEAD | tr -d '\n' "], shell=True, capture_output=True, text=True).stdout
+        pvpkg_branch = subprocess.run(["git rev-parse --abbrev-ref HEAD | tr -d '\n' "], shell=True, capture_output=True, text=True).stdout
 
         os.system('rm shiptest_out.txt')
 
@@ -435,6 +437,8 @@ class ClassicShipTestReport:
             self.insert_text("Docker SHA: " + self.docker_sha)
         self.insert_text("Computer Date: " + self.date.isoformat("-", "minutes"))
         self.insert_text("UHD Version : " + UHD_ver)
+        self.insert_text("pvpkg Version : " + pvpkg_commit)
+        self.insert_text("pvpkg Branch : " + pvpkg_branch)
         self.insert_text("RTM : " + unit_rtm)
         self.insert_text("Server Version: " + server_ver)
         self.insert_text("FPGA Version: " + fpga_ver)
