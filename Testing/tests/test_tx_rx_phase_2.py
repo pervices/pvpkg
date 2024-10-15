@@ -22,7 +22,6 @@ import os
 from datetime import datetime
 import time
 from math import pi
-
 import argparse
 
 #USER CHOSEN VALUES
@@ -61,7 +60,7 @@ phase_std_thresh = 0.002
             #Frequency , Ampl, Phase
 plot_toggle = [True, True, True]
 #Calling date and time for simplicity - NOTE: THIS WOULD BE HELPFUL IN MOST CODES, SHOULD WE MAKE FILE IN COMMON FOR IT??
-now = datetime.now()
+now = datetime.now() #current date and time
 iso_time = now.strftime("%Y%m%d%H%M%S.%f")
 
 #Setting up directories for plots
@@ -320,9 +319,8 @@ def main():
         iterations = gen.cyan.lo_band.phaseCoherency(4)
     elif(targs.product == 'Lily'):
         iterations = gen.chestnut.lo_band.phaseCoherency(4)
-    
-    num_iter = 0
 
+    num_iter = 0
     for it in iterations:
 
         num_iter = num_iter + 1
@@ -390,7 +388,6 @@ def main():
                 raise Exception ("No data received on rx")
             elif len(real) <= begin_cutoff:
                 raise Exception ("Rx received less data than cutoff. Received: " + str(len(real)) + " required more than " + str(begin_cutoff))
-
 
             # Filter data so we only see the phase of the intended signal if requested by user
             if args.band:
@@ -483,7 +480,6 @@ def main():
     if alt_std_ratio > std_ratio_phase:
         print("Replacing old std_ratio_phase (=" + str(std_ratio) + ") with updated std_ratio_phase (="+ str(alt_std_ratio) + ") due to iteration count.")
         std_ratio = alt_std_ratio
-
 
     #Calculating the Criteria
     #2D array holding thresholds of: mean, std, min, max
@@ -690,7 +686,6 @@ def main():
     report.insert_table(subtest_phase_table, 20, "SubTest Results - Phase Test")
     report.insert_text(" ")
     report.insert_table(subtest_phase_consistency, 20, "SubTest Results - Run-to-Run Phase Consistency Test")
-
 
     report.new_page()
     report.insert_text_large("Summary Statistics: ")
