@@ -418,7 +418,7 @@ class ClassicShipTestReport:
         unit_rtm = subprocess.getstatusoutput("cat shiptest_out.txt | grep 'RTM' | cut --complement -d ':' -f1")[1]
         hostname = subprocess.run(["cat /proc/sys/kernel/hostname | tr -d '\n' "], shell=True, capture_output=True, text=True).stdout
         operating_sys = subprocess.run(["cat /etc/os-release | grep PRETTY_NAME | cut -d '=' -f2 | tr -d '\"' | tr -d '\n' "], shell=True, capture_output=True, text=True).stdout
-        pvpkg_commit = subprocess.run(["git rev-parse HEAD | tr -d '\n' "], shell=True, capture_output=True, text=True).stdout
+        pvpkg_commit = subprocess.run(["git describe --abbrev=8 --dirty --always --long | tr -d '\n' "], shell=True, capture_output=True, text=True).stdout
         pvpkg_branch = subprocess.run(["git rev-parse --abbrev-ref HEAD | tr -d '\n' "], shell=True, capture_output=True, text=True).stdout
 
         os.system('rm shiptest_out.txt')
