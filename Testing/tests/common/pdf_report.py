@@ -443,7 +443,8 @@ class ClassicShipTestReport:
         self.insert_text("RTM : " + unit_rtm)
         self.insert_text("Server Version: " + server_ver)
         self.insert_text("FPGA Version: " + fpga_ver)
-        self.insert_text(fpga_ddr)
+        if "crimson" not in unit_name:
+            self.insert_text(fpga_ddr)
         self.insert_text("Unit Time: " + unit_time)
         self.insert_text("Unit Name: " + unit_name)
 
