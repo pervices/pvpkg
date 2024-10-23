@@ -86,5 +86,8 @@ else:
 
 print("2 test_fail: " + str(test_fail))
 build_report()
+# sys.exit only takes values in range 0-255 benchmark_rate returns EXIT_FAILURE which may be > 255. If that happens replace the value with 1
+if(test_fail > 255):
+    test_fail = 1
 sys.exit(test_fail)
 
