@@ -275,6 +275,17 @@ def tx_uhd_tune():
     for center_freq in [ (tx_lo - 2000000), tx_lo, (tx_lo + 2000000) ]: # 3 cases for dsp (pos, zero, neg).
         yield locals()
 
+def tx_rx_loopback():
+    print(sys._getframe().f_code.co_name)
+    channels = list(range(4))
+    center_freq = 0                 # Baseband
+    wave_freq = 1000000             # 1 MHz
+    sample_rate = 10000000          # 10 Msps
+    sample_count = 10000000 * 90    # 90 sec
+    tx_gain = 20
+    tx_gain = 20
+    yield locals()
+
 def dump(iteration):
     for key, value in iteration.items():
         print("%20s : %r" % (key, value))
