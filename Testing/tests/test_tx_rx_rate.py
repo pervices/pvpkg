@@ -41,9 +41,13 @@ def test(it):
     else:
         iteration_result = os.system("/usr/lib/uhd/examples/benchmark_rate --priority high --tx_rate={} --tx_channels {}  --overrun-threshold 0 --underrun-threshold 0 --drop-threshold 0 --seq-threshold 0".format(it["tx_rate"], list_to_arg_string(it["tx_channel"])))
 
+    print("iteration_result: " + str(iteration_result))
+
     # Set test_fail to the return code of the first failed iteration
     if(iteration_result and not test_fail):
         test_fail = iteration_result
+
+    print("1 test_fail: " + str(test_fail))
 
     result_string = "Fail" if iteration_result != 0 else "Pass"
 
@@ -80,7 +84,7 @@ else:
     test_fail = 1
     print("Error: invalid product specified")
 
-print("test_fail: " + str(test_fail))
+print("2 test_fail: " + str(test_fail))
 build_report()
 sys.exit(test_fail)
 
