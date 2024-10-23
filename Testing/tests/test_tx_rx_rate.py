@@ -80,6 +80,7 @@ else:
     test_fail = 1
     print("Error: invalid product specified")
 
+print("test_fail: " + str(test_fail))
 build_report()
 sys.exit(test_fail)
 
