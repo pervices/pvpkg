@@ -20,7 +20,7 @@ def ship_test_cyan(channels):
 
     print(sys._getframe().f_code.co_name)
 
-    channels = list(range(channels))
+    channels = [4,5,6,7]
     wave_freq = 100000
     sample_rate = 9803922
     sample_count = int(sample_rate/ 10)
