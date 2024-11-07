@@ -24,9 +24,12 @@ def ship_test_cyan(channels):
     wave_freq = 100000
     sample_rate = 9803922
     sample_count = int(sample_rate/ 10)
-    for rx_gain, tx_gain, center_hold in zip([16, 43.5, 44], [15, 15, 26.5], [[0, 200000000], [1000000000, 5000000000], [7000000000, 15000000000]]):
-        for center_freq in center_hold:
-            yield locals()
+    # The highest frequency uses a higher gain because the signal begins to roll off as the frequency gets higher
+    rx_gains = [20, 20, 20, 20, 20, 20, 20, 40, 40]
+    tx_gains = [20, 20, 20, 20, 20, 20, 20, 30, 30]
+    center_freqs = [5000000, 15000000, 200000000, 600000000, 1200000000, 2700000000, 4000000000, 9000000000, 17000000000]
+    for tx_gain, rx_gain, center_freq in zip(tx_gains, rx_gains, center_freqs):
+        yield locals()
 
 
 def ship_test_chestnut(channels):
