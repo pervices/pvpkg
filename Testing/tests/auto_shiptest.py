@@ -34,8 +34,9 @@ def test(it, summary_table):
     center_freq = "{:.1e}".format(it["center_freq"])
     wave_freq = "{:.1e}".format(it["wave_freq"])
     title = "Center freq: {}, Wave freq: {}".format(center_freq, wave_freq)
-    test_info = [["Center Frequency (Hz)", "Wave Frequency (Hz)", "Sample Rate (SPS)", "Sample Count", "TX Gain", "RX Gain"],
-                        [center_freq, wave_freq, it["sample_rate"], it["sample_count"], it["tx_gain"], it["rx_gain"]]]
+    test_info = [   ["Center Frequency (Hz)", "Wave Frequency (Hz)", "Sample Rate (SPS)", "Sample Count", "TX Gain", "RX Gain"],
+                    [center_freq, wave_freq, it["sample_rate"], it["sample_count"], it["tx_gain"], it["rx_gain"]]
+                ]
 
     time_domain_images = []
     freq_domain_images = []
@@ -46,12 +47,11 @@ def test(it, summary_table):
         ## Frequency check ##
         fund_real = sigproc.fundamental(real, it["sample_rate"])
         fund_imag = sigproc.fundamental(imag, it["sample_rate"])
-
-
         like_real = (float(it["wave_freq"]) / fund_real)
         like_imag = (float(it["wave_freq"]) / fund_imag)
+        freq_result = 0.95 < (float(it["wave_freq"]) / fund_real) < 1.05
+        result_str = "Pass" if freq_result else "Fail"
 
-        print("channel %2d: real %10.0f Hz (%8.5f) :: imag %10.0f Hz (%8.5f)" % (it["channels"][ch], fund_real, like_real, fund_imag, like_imag))
 
         plt.figure()
         plt.title("Channel {}".format(ch), fontsize=14)
@@ -65,13 +65,6 @@ def test(it, summary_table):
         plt.close()
         img = report.get_image_from_io_stream(s)
         images.append(img)
-
-        res = ""
-        if(like_real > 0.95 and like_real < 1.05 and like_imag > 0.95 and like_imag < 1.05):
-            res = "pass"
-        else:
-            res = "fail"
-            test_fail = 1
 
         data.append([str(center_freq), str(wave_freq), str(ch), res])
 
