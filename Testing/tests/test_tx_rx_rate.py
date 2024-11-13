@@ -70,12 +70,8 @@ if(targs.product == "Vaunt"):
     main(gen.tx_rx_rate())
 elif(targs.product == "Lily"):
     main(gen.chestnut.lo_band.tx_rx_rate(4))
-    print("Not implemented")
-    test_fail = 1
 elif(targs.product == "Tate"):
     main(gen.cyan.lo_band.tx_rx_rate(4))
-    print("Not implemented")
-    test_fail = 1
 else:
     test_fail = 1
     print("Error: invalid product specified")
