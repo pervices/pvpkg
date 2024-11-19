@@ -492,7 +492,7 @@ class cyan:
             sample_count = 10000
             tx_gain = 15            # keep gains low so strength of tone doesn't drown out LO feedthrough
             rx_gain = 15
-            rx_lo = 2250000000
+            rx_lo = 2300000000 #LO Frequency should be multiple of 100MHz for cyan/chestnut
             sample_rate = 10000000
             for center_freq in [ (rx_lo - 2000000), rx_lo, (rx_lo + 2000000) ]: # 3 cases for dsp nco (pos, zero, neg).
                 yield locals()
@@ -505,7 +505,7 @@ class cyan:
             sample_count = 10000
             tx_gain = 15            # keep gains low so strength of tone doesn't drown out LO feedthrough
             rx_gain = 15
-            tx_lo = 2250000000
+            tx_lo = 2300000000 #LO Frequency should be multiple of 100MHz for cyan/chestnut
             sample_rate = 10000000
             for center_freq in [ (tx_lo - 2000000), tx_lo, (tx_lo + 2000000) ]: # 3 cases for dsp nco (pos, zero, neg).
                 yield locals()
@@ -813,7 +813,7 @@ class chestnut:
             sample_count = 10000
             tx_gain = 10            # keep gains low so strength of tone doesn't drown out LO feedthrough
             rx_gain = 10
-            rx_lo = 2250000000
+            rx_lo =  2300000000 #LO Frequency should be multiple of 100MHz for cyan/chestnut
             sample_rate = 10000000
             for center_freq in [ (rx_lo - 2000000), rx_lo, (rx_lo + 2000000) ]: # 3 cases for dsp nco (pos, zero, neg).
                 yield locals()
@@ -826,7 +826,7 @@ class chestnut:
             sample_count = 10000
             tx_gain = 10            # keep gains low so strength of tone doesn't drown out LO feedthrough
             rx_gain = 10
-            tx_lo = 2250000000
+            tx_lo =  2300000000 #LO Frequency should be multiple of 100MHz for cyan/chestnut
             sample_rate = 10000000
             for center_freq in [ (tx_lo - 2000000), tx_lo, (tx_lo + 2000000) ]: # 3 cases for dsp nco (pos, zero, neg).
                 yield locals()
