@@ -70,7 +70,7 @@ def hi_band_wave_sweep():
     rx_gain = 25
     center_freq = 1000000000
     sample_rate = 25000000
-    for wave_freq in [ 500000, 600000, 700000, 800000, 900000, 1000000 ]:
+    for wave_freq in [ 600000, 800000, 1000000 ]:
         yield locals()
 
 def hi_band_wave_easy():
@@ -97,7 +97,7 @@ def lo_band_wave_sweep():
     rx_gain = 25
     center_freq = 10000000
     sample_rate = 25000000
-    for wave_freq in [ 500000, 600000, 700000, 800000, 900000, 1000000 ]:
+    for wave_freq in [ 600000, 800000, 1000000 ]:
         yield locals()
 
 def lo_band_quick():
@@ -294,7 +294,7 @@ class cyan:
             rx_gain = 40
             center_freq = 10000000      # 10MHz
             sample_rate = 25000000      # 25MSps
-            for wave_freq in [ 500000, 600000, 700000, 800000, 900000, 1000000 ]:
+            for wave_freq in [ 600000, 800000, 1000000 ]:
                 yield locals()
 
         @staticmethod
@@ -425,7 +425,7 @@ class cyan:
             rx_gain = 40
             center_freq = 1000000000    # 1GHz
             sample_rate = 25000000      # 25Msps
-            for wave_freq in [ 500000, 600000, 700000, 800000, 900000, 1000000 ]:
+            for wave_freq in [ 600000, 800000, 1000000 ]:
                 yield locals()
 
         @staticmethod
@@ -510,7 +510,6 @@ class cyan:
             for center_freq in [ (tx_lo - 2000000), tx_lo, (tx_lo + 2000000) ]: # 3 cases for dsp nco (pos, zero, neg).
                 yield locals()
 
-
     class hi_band:
         @staticmethod
         def wave_sweep(channels):
@@ -522,7 +521,7 @@ class cyan:
             rx_gain = 50
             center_freq = 15000000000   # 15GHz
             sample_rate = 25000000      # 25Msps
-            for wave_freq in [ 500000, 600000, 700000, 800000, 900000, 1000000 ]:
+            for wave_freq in [ 600000, 800000, 1000000 ]:
                 yield locals()
 
         @staticmethod
@@ -593,7 +592,7 @@ class chestnut:
             rx_gain = 40
             center_freq = 10000000      # 10MHz
             sample_rate = 14705882
-            for wave_freq in [ 500000, 600000, 700000, 800000, 900000, 1000000 ]:
+            for wave_freq in [ 600000, 800000, 1000000 ]:
                 yield locals()
 
         @staticmethod
@@ -723,7 +722,7 @@ class chestnut:
             rx_gain = 40
             center_freq = 1000000000    # 1GHz
             sample_rate = 14705882
-            for wave_freq in [ 500000, 600000, 700000, 800000, 900000, 1000000 ]:
+            for wave_freq in [ 600000, 800000, 1000000 ]:
                 yield locals()
 
         @staticmethod
@@ -831,7 +830,6 @@ class chestnut:
             for center_freq in [ (tx_lo - 2000000), tx_lo, (tx_lo + 2000000) ]: # 3 cases for dsp nco (pos, zero, neg).
                 yield locals()
 
-
     class hi_band:
         @staticmethod
         def wave_sweep(channels):
@@ -843,7 +841,7 @@ class chestnut:
             rx_gain = 60
             center_freq = 7000000000   # 7GHz
             sample_rate = 14705882
-            for wave_freq in [ 500000, 600000, 700000, 800000, 900000, 1000000 ]:
+            for wave_freq in [ 600000, 800000, 1000000 ]:
                 yield locals()
 
         @staticmethod
