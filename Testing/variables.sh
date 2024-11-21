@@ -12,9 +12,3 @@ L_TEST_FILES=(test_tx_rx_fundamental_frequency test_tx_trigger test_tx_rx_gain t
 T_TEST_NAMES=("${V_TEST_NAMES[@]}")
 T_TEST_FILES=("${V_TEST_FILES[@]}")
 
-FTP_USER=img
-FTP_PW=img
-FTP_ADD=korbin.pv
-FTP_UPLOAD_DIR=ftp/ci/report
-SSL_CERT="set ssl:verify-certificate no"
-
