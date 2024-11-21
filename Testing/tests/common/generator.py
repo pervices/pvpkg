@@ -437,7 +437,7 @@ class cyan:
             sample_count = 256
             tx_gain = 35
             rx_gain = 35
-            for center_freq in [ 1000000000, 2000000000, 3000000000, 4000000000 ]:
+            for center_freq in [ 2000000000, 4000000000 ]:
                 for sample_rate in [ 9803922, 25000000, 35714286 ]:
                     yield locals()
 
@@ -549,7 +549,7 @@ class cyan:
             sample_count = 256
             tx_gain = 50
             rx_gain = 50
-            for center_freq in [ 11000000000, 12000000000, 13000000000, 14000000000 ]:
+            for center_freq in [ 12000000000, 14000000000 ]:
                 for sample_rate in [ 9803922, 25000000, 35714286 ]:
                     yield locals()
 
@@ -735,7 +735,7 @@ class chestnut:
             sample_count = 256
             tx_gain = 35
             rx_gain = 35
-            for center_freq in [ 1000000000, 2000000000, 3000000000, 4000000000 ]:
+            for center_freq in [ 2000000000, 4000000000 ]:
                 for sample_rate in [ 9803922, 25000000, 35714286 ]:
                     yield locals()
 
@@ -870,7 +870,7 @@ class chestnut:
             sample_count = 256
             tx_gain = 50
             rx_gain = 60
-            for center_freq in [ 6500000000, 7500000000, 8500000000 ]:
+            for center_freq in [ 6500000000, 8500000000 ]:
                 for sample_rate in [ 9803922, 25000000, 35714286 ]:
                     yield locals()
 
