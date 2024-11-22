@@ -282,7 +282,7 @@ RETURNS: <on console>'''
 def main():
     # Add test specific arguments
     p = argparse.ArgumentParser(description = "Loopback phase coherency test")
-    p.add_argument('-r', '--rate', default=25000000, type=int, help="Sample rate in samples per second")
+    p.add_argument('-r', '--rate', default=1000000, type=int, help="Sample rate in samples per second")
     p.add_argument('-b', '--band', default=False, type=bool, help="Apply a band pass filter to the data")
     # Add generic test arguments
     targs = test_args.TestArgs(parser=p, testDesc="Loopback phase coherency test")
