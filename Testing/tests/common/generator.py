@@ -332,8 +332,8 @@ class cyan:
             sample_count = 1000
             center_freq = 15000000  # 15MHz
             sample_rate = 10000000  # 10MSps
-            tx_gain = 10 #increasing the fixed gain may cause saturation
-            for rx_gain in [ 5, 10, 15 ]:
+            tx_gain = 0 #increasing the fixed gain may cause saturation
+            for rx_gain in [5, 10, 15]:
                 yield locals()
 
         @staticmethod
@@ -345,8 +345,8 @@ class cyan:
             sample_count = 1000
             center_freq = 15000000  # 15MHz
             sample_rate = 10000000  # 10MSps
-            rx_gain = 10#increasing the fixed gain may cause saturation
-            for tx_gain in [ 5, 10, 15 ]:
+            rx_gain = 0
+            for tx_gain in [0, 10, 20]:
                 yield locals()
 
         @staticmethod
@@ -466,8 +466,8 @@ class cyan:
             sample_count = 1000
             center_freq = 2700000000    # 2.7GHz
             sample_rate = 10000000      # 10MSps
-            rx_gain = 45#increasing the fixed gain may cause saturation
-            for tx_gain in [ 5, 10, 15 ]:
+            rx_gain = 20#increasing the fixed gain may cause saturation
+            for tx_gain in [0, 15, 30]:
                 yield locals()
 
         @staticmethod
@@ -480,8 +480,8 @@ class cyan:
             sample_count = 1000
             center_freq = 2700000000    # 2.7Hz
             sample_rate = 10000000      # 10MSps
-            tx_gain = 45#increasing the fixed gain may cause saturation
-            for rx_gain in [ 10, 20, 25 ]:
+            tx_gain = 20#increasing the fixed gain may cause saturation
+            for rx_gain in [0, 15, 30]:
                 yield locals()
 
         @staticmethod
@@ -563,7 +563,7 @@ class cyan:
             center_freq = 9000000000    # 9GHz
             sample_rate = 10000000      # 10MSps
             rx_gain = 60#increasing the fixed gain may cause saturation
-            for tx_gain in [ 35, 40, 45 ]:
+            for tx_gain in [0, 15, 30]:
                 yield locals()
 
         @staticmethod
@@ -576,8 +576,8 @@ class cyan:
             sample_count = 1000
             center_freq = 9000000000    # 9GHz
             sample_rate = 10000000      # 10MSps
-            tx_gain = 60#increasing the fixed gain may cause saturation
-            for rx_gain in [ 35, 45, 50 ]:
+            tx_gain = 30#increasing the fixed gain may cause saturation
+            for rx_gain in [0, 30, 60]:
                 yield locals()
 
 class chestnut:
@@ -631,7 +631,7 @@ class chestnut:
             center_freq = 15000000  # 15MHz
             sample_rate = 10000000  # 10MSps
             tx_gain = 30 #increasing the fixed gain may cause saturation
-            for rx_gain in [ 15, 30, 45 ]:
+            for rx_gain in [0, 15, 30]:
                 yield locals()
 
         @staticmethod
@@ -644,7 +644,7 @@ class chestnut:
             center_freq = 15000000  # 15MHz
             sample_rate = 10000000  # 10MSps
             rx_gain = 30#increasing the fixed gain may cause saturation
-            for tx_gain in [ 15, 30, 45 ]:
+            for tx_gain in [ 0, 15, 30 ]:
                 yield locals()
 
         @staticmethod
@@ -764,7 +764,7 @@ class chestnut:
             center_freq = 2700000000    # 2.7GHz
             sample_rate = 10000000      # 10MSps
             rx_gain = 45#increasing the fixed gain may cause saturation
-            for tx_gain in [ 15, 30, 45 ]:
+            for tx_gain in [0, 15, 30]:
                 yield locals()
 
         @staticmethod
@@ -777,8 +777,8 @@ class chestnut:
             sample_count = 1000
             center_freq = 2700000000    # 2.7Hz
             sample_rate = 10000000      # 10MSps
-            tx_gain = 45#increasing the fixed gain may cause saturation
-            for rx_gain in [ 15, 30, 45 ]:
+            tx_gain = 30#increasing the fixed gain may cause saturation
+            for rx_gain in [0, 30, 60]:
                 yield locals()
 
         @staticmethod
@@ -882,8 +882,8 @@ class chestnut:
             sample_count = 1000
             center_freq = 7000000000    # 7GHz
             sample_rate = 10000000      # 10MSps
-            rx_gain = 60#increasing the fixed gain may cause saturation
-            for tx_gain in [ 20, 40, 60 ]:
+            rx_gain = 75#increasing the fixed gain may cause saturation
+            for tx_gain in [0, 15, 30]:
                 yield locals()
 
         @staticmethod
@@ -896,6 +896,6 @@ class chestnut:
             sample_count = 1000
             center_freq = 7000000000    # 7GHz
             sample_rate = 10000000      # 10MSps
-            tx_gain = 60#increasing the fixed gain may cause saturation
-            for rx_gain in [ 20, 40, 60 ]:
+            tx_gain = 30#increasing the fixed gain may cause saturation
+            for rx_gain in [45, 60, 75]:
                 yield locals()
