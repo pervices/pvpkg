@@ -11,6 +11,8 @@ import os
 def main(iterations, title="TX RX Gain Test") -> int:
     fail_flag = 0
 
+    iteration_areas = []
+
     for it in iterations:
         gen.dump(it)
         sample_count = it["sample_count"]
@@ -23,7 +25,7 @@ def main(iterations, title="TX RX Gain Test") -> int:
             report.save()
             sys.exit(1)
 
-        iteration_areas = []
+        
         current_test_only_fail_flag = 0
 
         channel_areas = []
@@ -63,19 +65,6 @@ def main(iterations, title="TX RX Gain Test") -> int:
         data = [["Center Frequency (Hz)", "Wave Frequency (Hz)", "Sample Rate (SPS)", "Sample Count", "TX Gain (dB)", "RX Gain (dB)"],
                         [it["center_freq"], it["wave_freq"], it["sample_rate"], it["sample_count"], it["tx_gain"], it["rx_gain"]]]
 
-
-        for a in range(len(iteration_areas[0])):
-            for b in range(len(iteration_areas)-1):
-                # test for area
-                try:
-                    # make sure the difference in area is significant
-                    assert iteration_areas[b+1][a] - iteration_areas[b][a] > 1
-                except:
-                    print(sys.argv[0] + " unacceptable variation in gain")
-                    fail_flag = 1
-                    current_test_only_fail_flag = 1
-
-
         report.buffer_put("pagebreak")
         report.buffer_put("text_large", title)
         report.buffer_put("table_wide", data, "Test Configuration")
@@ -84,6 +73,17 @@ def main(iterations, title="TX RX Gain Test") -> int:
         if (current_test_only_fail_flag == 1):
             report.buffer_put("text_large", "This test has failed")
             current_test_only_fail_flag = 0
+
+    for a in range(len(iteration_areas[0])):
+        for b in range(len(iteration_areas)-1):
+            # test for area
+            try:
+                # make sure the difference in area is significant
+                assert iteration_areas[b+1][a] - iteration_areas[b][a] > 1
+            except:
+                print(sys.argv[0] + " unacceptable variation in gain")
+                fail_flag = 1
+                current_test_only_fail_flag = 1
 
     if (fail_flag == 1):
         return 1    # fail
