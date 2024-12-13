@@ -53,8 +53,18 @@ def test(it):
             if "Press Ctrl " in str(line):
                 break
     
+    time.sleep(20)
     uhd_cmd.send_signal(signal.SIGINT)
     
+    while(True):
+        # read line without blocking
+        try:  line = q.get_nowait() # or q.get(timeout=.1)
+        except Empty:
+            pass
+        else: # got line
+            print(str(line))
+            if "CH A: Overflow Count" in str(line):
+                break
     # uhd_cmd.communicate() # Block Python until uhd_cmd Popen process exits
     '''
     # Read from STDOUT until we see that the Actual TX Rate has been set
