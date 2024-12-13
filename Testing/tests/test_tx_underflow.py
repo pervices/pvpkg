@@ -51,9 +51,6 @@ def test(it):
             if "Actual TX Rate:" in str(line):
                 break
     
-    # change the TX Rate
-    subprocess.run(["/usr/bin/uhd_manual_set", "--path", "/mboards/0/tx_dsps/0/rate/value", "--value", str(it["sample_rate"]/10), "--type", "double"])
-    
     # read the output until we see streaming has started
     while(True):
         # read line without blocking
@@ -66,7 +63,10 @@ def test(it):
                 break
     
     # wait so there is time for an underflow then end the stream
-    time.sleep(15)
+    time.sleep(10)
+    # change the TX Rate
+    subprocess.run(["/usr/bin/uhd_manual_set", "--path", "/mboards/0/tx_dsps/0/rate/value", "--value", str(it["sample_rate"]*10), "--type", "double"])
+    time.sleep(5)
     uhd_cmd.send_signal(signal.SIGINT)
     
     # read the output to make sure we see the Overflow Count
