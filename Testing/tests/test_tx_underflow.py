@@ -33,7 +33,7 @@ def test(it):
             break
 
     # set the SDR's rate to 10x the rate UHD is expecting. This should case underflow
-    #TODO
+    subprocess.run(["/usr/lib/uhd_manual_set", "--path", "/mboards/0/tx_dsps/0/rate/value", "--value", str(it["sample_rate"]*10), "--type", "double"])
 
     uhd_cmd.communicate() # Block Python until uhd_cmd Popen process exits
     print("making sure that I waited")
