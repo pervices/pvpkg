@@ -18,9 +18,9 @@ def test(it):
     # TODO: Check if the following file exists; if it doesn't, throw and error and
     # indicate that the test_tx_trigger example binary was not found
     # Using invokation from tx_trig pkg
-    uhd_cmd = subprocess.Popen(["/usr/lib/uhd/examples/tx_waveforms", "--first", str(it["start_time"]), "--rate", str(it["sample_rate"]), "--freq", str(it["center_freq"]), "--gain", str(it["tx_gain"]), "--nsamps", str(it["sample_count"])])
-    for stdout_line in iter(uhd_cmd.stdout.readline,""):
-        print(stdout_line)
+    uhd_cmd = subprocess.Popen(["/usr/lib/uhd/examples/tx_waveforms", "--first", str(it["start_time"]), "--rate", str(it["sample_rate"]), "--freq", str(it["center_freq"]), "--gain", str(it["tx_gain"]), "--nsamps", str(it["sample_count"])], stdout=subprocess.PIPE)
+    for line in uhd_cmd.stdout:
+        print("STDOUT: ", line)
     print("Is this when the rate should be changed?")
     uhd_cmd.communicate() # Block Python until uhd_cmd Popen process exits
     print("making sure that I waited")
