@@ -47,11 +47,13 @@ def test(it):
         # read line without blocking
         try:  line = q.get_nowait() # or q.get(timeout=.1)
         except Empty:
-            print('no output yet')
+            pass
         else: # got line
             print(str(line))
+            if "Press Ctrl " in str(line):
+                break
     
-    
+    uhd_cmd.send_signal(signal.SIGINT)
     
     # uhd_cmd.communicate() # Block Python until uhd_cmd Popen process exits
     '''
