@@ -111,7 +111,6 @@ def lo_band_quick():
     rx_gain = 25
     center_freq = 15000000
     sample_rate = 10000000
-    start_time = 10
     yield locals()
 
 
@@ -309,7 +308,6 @@ class cyan:
             rx_gain = 25
             center_freq = 15000000      # 15MHz
             sample_rate = 10000000      # 10MSps
-            start_time = 10
             yield locals()
 
         @staticmethod
@@ -608,7 +606,6 @@ class chestnut:
             rx_gain = 25
             center_freq = 14705882
             sample_rate = 10000000      # 10MSps
-            start_time = 10
             yield locals()
 
         @staticmethod
