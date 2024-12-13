@@ -4,7 +4,6 @@ from common import generator as gen
 from common import test_args
 import sys
 import subprocess
-import time
 
 
 targs = test_args.TestArgs(testDesc="Basic Tx Underflow Test")
@@ -20,8 +19,8 @@ def test(it):
     # indicate that the test_tx_trigger example binary was not found
     # Using invokation from tx_trig pkg
     uhd_cmd = subprocess.Popen(["/usr/lib/uhd/examples/tx_waveforms", "--first", str(it["start_time"]), "--rate", str(it["sample_rate"]), "--freq", str(it["center_freq"]), "--gain", str(it["tx_gain"]), "--nsamps", str(it["sample_count"])])
-    # TODO: can this wait be replaced by monitoring the stdout of the uhd_cmd until the rate has been set?
-    time.sleep(10) # wait until uhd has configured the SDR, but not long enough transmission has started
+    for line in uhd_cmd.stdout:
+        print(line)
     print("Is this when the rate should be changed?")
     uhd_cmd.communicate() # Block Python until uhd_cmd Popen process exits
     print("making sure that I waited")
