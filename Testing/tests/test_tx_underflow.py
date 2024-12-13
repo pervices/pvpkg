@@ -72,10 +72,9 @@ def test(it):
         print("STDOUT: ", line)
         if "CH A: Overflow Count:" in str(line):
             break
-    '''
-
 
     test_fail = test_fail | uhd_cmd.returncode
+    '''
 
     # Flag to indicate that triggers failed to activate
     # Technically this could be caused by anything that returns an error code in UHD, but the trigger failing in time is most likely
