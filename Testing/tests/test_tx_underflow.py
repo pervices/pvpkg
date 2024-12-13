@@ -25,7 +25,8 @@ def test(it):
     if test_fail > 0:
         sys.exit(test_fail)
 
-    uhd_cmd = subprocess.Popen(["/usr/lib/uhd/examples/tx_waveforms", "--rate", str(it["sample_rate"]), "--freq", str(it["center_freq"]), "--gain", str(it["tx_gain"])], stdout=subprocess.PIPE, shell=True)
+    # uhd_cmd = subprocess.Popen(["/usr/lib/uhd/examples/tx_waveforms", "--rate", str(it["sample_rate"]), "--freq", str(it["center_freq"]), "--gain", str(it["tx_gain"])], stdout=subprocess.PIPE)
+    uhd_cmd = subprocess.Popen(["/usr/lib/uhd/examples/tx_waveforms --rate " + str(it["sample_rate"]) + " --freq " + str(it["center_freq"]) + " --gain " + str(it["tx_gain"])], stdout=subprocess.PIPE, shell=True)
     '''
     # Read from STDOUT until we see that the Actual TX Rate has been set
     for line in uhd_cmd.stdout:
