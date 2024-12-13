@@ -3,6 +3,7 @@ from common import pdf_report
 from common import generator as gen
 from common import test_args
 import sys
+import subprocess
 
 
 targs = test_args.TestArgs(testDesc="Basic Tx Underflow Test")
@@ -19,7 +20,10 @@ def test(it):
     # TODO: Check if the following file exists; if it doesn't, throw and error and
     # indicate that the test_tx_trigger example binary was not found
     # Using invokation from tx_trig pkg
-    test_fail = test_fail | os.system("/usr/lib/uhd/examples/tx_waveforms --first={} --rate={} --freq={} --gain={} --nsamps={}".format(it["start_time"], it["sample_rate"], it["center_freq"], it["tx_gain"], it["sample_count"]))
+    uhd_cmd = subprocess.system("/usr/lib/uhd/examples/tx_waveforms --first={} --rate={} --freq={} --gain={} --nsamps={}".format(it["start_time"], it["sample_rate"], it["center_freq"], it["tx_gain"], it["sample_count"]))
+    uhd_cmd.communicate
+
+    test_fail = test_fail | uhd_cmd.returncode
 
     # Flag to indicate that triggers failed to activate
     # Technically this could be caused by anything that returns an error code in UHD, but the trigger failing in time is most likely
@@ -56,7 +60,7 @@ def test(it):
     #Flag for if an incorrect number of samples consumed per trigger
     sample_count_error = False
 
-
+'''
     with open(name, "r") as b:
         lines = b.readlines()
         b.seek(0)
@@ -156,7 +160,7 @@ def test(it):
     for row in ch_buf_info:
         buffer_info.append(row)
     report.buffer_put("table", buffer_info, "Buffer Information")
-
+'''
 
 def build_report():
     report.insert_title_page("Tx Underflow Test")
