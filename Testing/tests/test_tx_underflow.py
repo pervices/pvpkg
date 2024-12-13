@@ -32,6 +32,8 @@ def test(it):
     if test_fail > 0:
         sys.exit(test_fail)
 
+    # from the non Blocking queue question on Stack Overflow:
+    # https://stackoverflow.com/questions/375427/a-non-blocking-read-on-a-subprocess-pipe-in-python
     uhd_cmd = subprocess.Popen(["/usr/lib/uhd/examples/tx_waveforms", "--rate", str(it["sample_rate"]), "--freq", str(it["center_freq"]), "--gain", str(it["tx_gain"])], stdout=subprocess.PIPE)
     q = Queue()
     t = Thread(target=enqueue_output, args=(uhd_cmd.stdout, q))
@@ -40,15 +42,15 @@ def test(it):
     
     # ... do other things here
     
-    # read line without blocking
-    try:  line = q.get_nowait() # or q.get(timeout=.1)
-    except Empty:
-        print('no output yet')
-    else: # got line
-        print(str(line))
-    # ... do something with line
-    # from the non Blocking queue question on Stack Overflow:
-    # https://stackoverflow.com/questions/375427/a-non-blocking-read-on-a-subprocess-pipe-in-python
+    
+    while(True):
+        # read line without blocking
+        try:  line = q.get_nowait() # or q.get(timeout=.1)
+        except Empty:
+            print('no output yet')
+        else: # got line
+            print(str(line))
+    
     
     
     # uhd_cmd.communicate() # Block Python until uhd_cmd Popen process exits
