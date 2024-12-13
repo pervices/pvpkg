@@ -52,7 +52,7 @@ def test(it):
                 break
     
     # change the TX Rate
-    subprocess.run(["/usr/bin/uhd_manual_set", "--path", "/mboards/0/tx_dsps/0/rate/value", "--value", str(it["sample_rate"]), "--type", "double"])
+    subprocess.run(["/usr/bin/uhd_manual_set", "--path", "/mboards/0/tx_dsps/0/rate/value", "--value", str(it["sample_rate"]*10), "--type", "double"])
     
     # read the output until we see streaming has started
     while(True):
