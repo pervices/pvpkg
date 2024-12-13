@@ -303,7 +303,7 @@ class cyan:
 
             channels = list(range(channels))
             wave_freq = 1000000         # 1MHz
-            sample_count = 10000
+            sample_count = 100000
             tx_gain = 25
             rx_gain = 25
             center_freq = 15000000      # 15MHz
