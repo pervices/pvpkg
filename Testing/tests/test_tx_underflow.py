@@ -20,7 +20,7 @@ def test(it):
     # TODO: Check if the following file exists; if it doesn't, throw and error and
     # indicate that the test_tx_trigger example binary was not found
     # Using invokation from tx_trig pkg
-    uhd_cmd = subprocess.Popen(["/usr/lib/uhd/examples/tx_waveforms", "--first", it["start_time"], "--rate", it["sample_rate"], "--freq", it["center_freq"], "--gain", it["tx_gain"], "--nsamps", it["sample_count"]])
+    uhd_cmd = subprocess.Popen(["/usr/lib/uhd/examples/tx_waveforms", "--first", str(it["start_time"]), "--rate", str(it["sample_rate"]), "--freq", str(it["center_freq"]), "--gain", str(it["tx_gain"]), "--nsamps", str(it["sample_count"])])
     print("making sure that I didn't wait")
     uhd_cmd.communicate()
     print("making sure that I waited")
