@@ -40,9 +40,21 @@ def test(it):
     t.daemon = True # thread dies with the program
     t.start()
     
-    # ... do other things here
+    # read output until we see the Actual TX Rate has been set
+    while(True):
+        # read line without blocking
+        try:  line = q.get_nowait() # or q.get(timeout=.1)
+        except Empty:
+            pass
+        else: # got line
+            print(str(line))
+            if "Actual TX Rate:" in str(line):
+                break
     
+    # change the TX Rate
+    subprocess.run(["/usr/bin/uhd_manual_set", "--path", "/mboards/0/tx_dsps/0/rate/value", "--value", str(it["sample_rate"]), "--type", "double"])
     
+    # read the output until we see streaming has started
     while(True):
         # read line without blocking
         try:  line = q.get_nowait() # or q.get(timeout=.1)
@@ -53,9 +65,11 @@ def test(it):
             if "Press Ctrl " in str(line):
                 break
     
-    time.sleep(20)
+    # wait so there is time for an underflow then end the stream
+    time.sleep(15)
     uhd_cmd.send_signal(signal.SIGINT)
     
+    # read the output to make sure we see the Overflow Count
     while(True):
         # read line without blocking
         try:  line = q.get_nowait() # or q.get(timeout=.1)
