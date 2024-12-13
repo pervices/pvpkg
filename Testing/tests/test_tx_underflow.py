@@ -4,6 +4,7 @@ from common import generator as gen
 from common import test_args
 import sys
 import subprocess
+import time
 
 
 targs = test_args.TestArgs(testDesc="Basic Tx Underflow Test")
@@ -19,6 +20,7 @@ def test(it):
     # indicate that the test_tx_trigger example binary was not found
     # Using invokation from tx_trig pkg
     uhd_cmd = subprocess.Popen(["/usr/lib/uhd/examples/tx_waveforms", "--first", str(it["start_time"]), "--rate", str(it["sample_rate"]), "--freq", str(it["center_freq"]), "--gain", str(it["tx_gain"]), "--nsamps", str(it["sample_count"])])
+    time.sleep(6)
     for line in uhd_cmd.stdout:
         print(line)
     print("Is this when the rate should be changed?")
