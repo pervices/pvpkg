@@ -29,7 +29,6 @@ def test(it):
     for line in uhd_cmd.stdout:
         print("STDOUT: ", line)
         if "Actual TX Rate:" in str(line):
-            uhd_cmd.stdout = subprocess.None
             break
 
     # set the SDR's rate to 10x the rate UHD is expecting. This should case underflow
