@@ -21,7 +21,7 @@ def test(it):
     # Using invokation from tx_trig pkg
     uhd_cmd = subprocess.Popen(["/usr/lib/uhd/examples/tx_waveforms", "--first", str(it["start_time"]), "--rate", str(it["sample_rate"]), "--freq", str(it["center_freq"]), "--gain", str(it["tx_gain"]), "--nsamps", str(it["sample_count"])])
     # TODO: can this wait be replaced by monitoring the stdout of the uhd_cmd until the rate has been set?
-    time.sleep(5 # wait until uhd has configured the SDR, but not long enough transmission has started
+    time.sleep(5) # wait until uhd has configured the SDR, but not long enough transmission has started
     print("Is this when the rate should be changed?")
     uhd_cmd.communicate() # Block Python until uhd_cmd Popen process exits
     print("making sure that I waited")
