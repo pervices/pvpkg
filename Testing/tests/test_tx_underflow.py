@@ -25,8 +25,8 @@ def test(it):
     if test_fail > 0:
         sys.exit(test_fail)
 
-    # uhd_cmd = subprocess.Popen(["/usr/lib/uhd/examples/tx_waveforms", "--rate", str(it["sample_rate"]), "--freq", str(it["center_freq"]), "--gain", str(it["tx_gain"])], stdout=subprocess.PIPE)
-    uhd_cmd = subprocess.Popen(["/usr/lib/uhd/examples/tx_waveforms --rate " + str(it["sample_rate"]) + " --freq " + str(it["center_freq"]) + " --gain " + str(it["tx_gain"])], stdout=subprocess.PIPE, shell=True)
+    uhd_cmd = subprocess.Popen(["/usr/lib/uhd/examples/tx_waveforms", "--rate", str(it["sample_rate"]), "--freq", str(it["center_freq"]), "--gain", str(it["tx_gain"])], stdout=subprocess.PIPE)
+    uhd_cmd.communicate() # Block Python until uhd_cmd Popen process exits
     '''
     # Read from STDOUT until we see that the Actual TX Rate has been set
     for line in uhd_cmd.stdout:
@@ -48,7 +48,6 @@ def test(it):
         if "CH A: Overflow Count:" in str(line):
             break
     '''
-    uhd_cmd.communicate() # Block Python until uhd_cmd Popen process exits
 
 
     test_fail = test_fail | uhd_cmd.returncode
