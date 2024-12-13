@@ -4,6 +4,7 @@ from common import generator as gen
 from common import test_args
 import sys
 import subprocess
+import time
 
 
 targs = test_args.TestArgs(testDesc="Basic Tx Underflow Test")
@@ -33,6 +34,9 @@ def test(it):
 
     # set the SDR's rate to 10x the rate UHD is expecting. This should case underflow
     subprocess.run(["/usr/bin/uhd_manual_set", "--path", "/mboards/0/tx_dsps/0/rate/value", "--value", str(it["sample_rate"]*10), "--type", "double"])
+    
+    time.sleep(30)
+    uhd_cmd.send_signal(signal.SIGINT)
 
     # Continue printing the stdout for debug purposes
     for line in uhd_cmd.stdout:
