@@ -21,7 +21,7 @@ def test(it):
     uhd_cmd = subprocess.Popen(["/usr/lib/uhd/examples/tx_waveforms", "--first", str(it["start_time"]), "--rate", str(it["sample_rate"]), "--freq", str(it["center_freq"]), "--gain", str(it["tx_gain"]), "--nsamps", str(it["sample_count"])], stdout=subprocess.PIPE)
     for line in uhd_cmd.stdout:
         print("STDOUT: ", line)
-        if "Actual TX Rate:" in line:
+        if "Actual TX Rate:" in str(line):
                 break
     print("Is this when the rate should be changed?")
     uhd_cmd.communicate() # Block Python until uhd_cmd Popen process exits
