@@ -14,8 +14,15 @@ def test(it):
     global test_fail
     gen.dump(it)
 
-    # TODO: Check if the following file exists; if it doesn't, throw and error and
-    # indicate that the tx_waveforms example binary was not found
+    if not os.path.isfile("/usr/lib/uhd/examples/tx_waveforms"):
+        print("ERROR failed to find required file /usr/lib/uhd/examples/tx_waveforms")
+        test_fail += 1
+    if not os.path.isfile("/usr/bin/uhd_manual_set"):
+        print("ERROR failed to find required file /usr/bin/uhd_manual_set")
+        test_fail += 1
+    if test_fail > 0:
+        sys.exit(test_fail)
+
     uhd_cmd = subprocess.Popen(["/usr/lib/uhd/examples/tx_waveforms", "--first", str(it["start_time"]), "--rate", str(it["sample_rate"]), "--freq", str(it["center_freq"]), "--gain", str(it["tx_gain"]), "--nsamps", str(it["sample_count"])], stdout=subprocess.PIPE)
 
     # Read from STDOUT until we see that the Actual TX Rate has been set
