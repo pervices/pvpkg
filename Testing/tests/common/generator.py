@@ -104,7 +104,7 @@ def lo_band_quick():
 
     print(sys._getframe().f_code.co_name)
 
-    channels = list(range(channels))
+    channels = list(range(4))
     wave_freq = 1000000
     sample_count = 10000
     tx_gain = 25
