@@ -26,16 +26,18 @@ def test(it):
         sys.exit(test_fail)
 
     uhd_cmd = subprocess.Popen(["/usr/lib/uhd/examples/tx_waveforms", "--rate", str(it["sample_rate"]), "--freq", str(it["center_freq"]), "--gain", str(it["tx_gain"])], stdout=subprocess.PIPE)
-    '''
+
     # Read from STDOUT until we see that the Actual TX Rate has been set
     for line in uhd_cmd.stdout:
         print("STDOUT: ", line)
-        if "Actual TX Rate:" in str(line):
+        # if "Actual TX Rate:" in str(line):
+        if "Press Ctrl :" in str(line):
             break
-
+    uhd_cmd.send_signal(signal.SIGINT)
+'''
     # set the SDR's rate to 10x the rate UHD is expecting. This should case underflow
     subprocess.run(["/usr/bin/uhd_manual_set", "--path", "/mboards/0/tx_dsps/0/rate/value", "--value", str(it["sample_rate"]), "--type", "double"])
-    '''
+
     time.sleep(20)
     uhd_cmd.send_signal(signal.SIGINT)
 
@@ -44,7 +46,7 @@ def test(it):
         print("STDOUT: ", line)
         if "CH A: Overflow Count:" in str(line):
             break
-
+'''
     uhd_cmd.communicate() # Block Python until uhd_cmd Popen process exits
     print("making sure that I waited")
 
