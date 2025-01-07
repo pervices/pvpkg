@@ -24,8 +24,8 @@ firewall-cmd --zone=trusted --change-interface=$1 --permanent
 exit 0
 
 else
-    echo "Usage: ./openports-configSFP.sh {network interface} {number}"
-    echo "For example, to use enp1s0 with the IP address 10.10.10.10 (corresponding to SPFA):"
-    echo "./openports-configSFP.sh enp1s0 0"
+    echo "Usage: ./configMGMT.sh {management-interface}"
+    echo "For example, to use eth0 as the management interface:"
+    echo "./configMGMT.sh eth0"
     exit 1
 fi
