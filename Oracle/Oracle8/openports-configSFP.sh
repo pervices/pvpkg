@@ -14,8 +14,8 @@ ports='42836 42837 42838 42839 42840 42841 42842 42843 42809 42810 42811 42812 4
 
 echo -e "Configuring qSFP+ NIC\n"
 
-ip addr add 10.10.1$2.10/24 broadcast 10.10.1$2.255 dev $1
-ip link set mtu 9000 dev $1
+	ip addr add 10.10.1$2.10/24 broadcast + dev $1
+	ip link set mtu 9000 dev $1
 
 echo -e "Opening firewalld ports.\n"
 
@@ -26,7 +26,7 @@ done
 
 echo -e "Adding nics to trusted zones.\n"
 
-firewall-cmd --zone=trusted --change-interface=$1 --permanent
+	firewall-cmd --zone=trusted --change-interface=$1 --permanent
 
 exit 0
 
