@@ -21,12 +21,17 @@ echo -e "Opening firewalld ports.\n"
 
 for port in $ports
 do
-	firewall-cmd --zone=trusted --add-port=$port/udp
+	firewall-cmd --zone=trusted --permanent --add-port=$port/udp
 done
 
 echo -e "Adding nics to trusted zones.\n"
 
-	firewall-cmd --zone=trusted --change-interface=$1 --permanent
+	#Add adapter to trusted
+	firewall-cmd --zone=trusted --permanent --change-interface=$1
+	#Add SDR IP address to trusted
+	firewall-cmd --zone=trusted --permanent --add-source=10.10.1$2.2
+
+	firewall-cmd --reload
 
 exit 0
 
