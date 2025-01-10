@@ -1,0 +1,120 @@
+ARG OS_VER=20.04
+FROM ubuntu:$OS_VER
+
+# Setting up build arguments
+ARG DEBIAN_FRONTEND=noninteractive
+ARG DOCKER_USER=docker
+ARG UHD_BRANCH=master
+ARG PPA_USER=pervices
+
+# Getting essential build tools
+RUN apt-get update && \
+    apt-get install -yq sudo git vim software-properties-common locales tzdata xauth gosu make cmake lftp curl jq \
+    build-essential ccache clang curl abi-dumper ninja-build debootstrap devscripts pbuilder debhelper x11-apps
+
+# Setting up locales
+RUN echo "en_US.UTF-8 UTF-8" > /etc/locale.gen && locale-gen && ln -sf /usr/share/zoneinfo/UTC /etc/localtime
+
+ENV LANG en_US.utf8
+        
+# Adding Per Vices PPA and setting up source package, this way we can fetch build dependencies easily
+# RUN add-apt-repository --yes ppa:$PPA_USER/release && add-apt-repository --yes ppa:$PPA_USER/develop && \
+#    sed -i.bak 's/^# *deb-src/deb-src/g' /etc/apt/sources.list.d/$PPA_USER* && apt-get update
+
+ARG OS_VER=20.04
+# Adding gcc-13 support for 20.04 and 22.04
+RUN if [ "$OS_VER" != "24.04" ]; then \
+        add-apt-repository --yes ppa:$PPA_USER/tools && apt-get update ; \
+    fi
+
+# Adding pbuilder configuration file
+RUN echo "APTCONFDIR=/etc/apt" | tee -a /root/.pbuilderrc
+
+# Adding docker user
+RUN addgroup "$DOCKER_USER" && useradd -ms /bin/bash -g $DOCKER_USER -G sudo $DOCKER_USER && \
+    echo "${DOCKER_USER}:${DOCKER_USER}" | chpasswd && echo "${DOCKER_USER} ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+
+RUN git clone https://github.com/ncopa/su-exec.git  /usr/src/su-exec
+WORKDIR /usr/src/su-exec
+RUN make && install -m 0755 su-exec /usr/bin/
+
+USER $DOCKER_USER
+WORKDIR /home/$DOCKER_USER
+
+ARG OS_VER=20.04
+ARG PKG=base
+ARG GRC=false
+# Installing GNU Radio and test dependencies based on the GRC flag
+RUN if [ "$GRC" = "true" ]; then \
+        if [ "$PKG" = "nightly" ]; then \
+            sudo add-apt-repository --yes -s ppa:$PPA_USER/nightly && \
+            sudo apt update && sudo apt install -y --no-install-recommends --no-install-suggests gnuradiopv-nightly gnuradiopv-dev-nightly ; \
+        else \
+            sudo add-apt-repository --yes -s ppa:$PPA_USER/release && \
+            sudo apt update && sudo apt install -y --no-install-recommends --no-install-suggests gnuradiopv gnuradiopv-dev ; \
+        fi && \
+        sudo apt update && sudo apt install -y iproute2 iputils-ping python3-scipy python3-retrying python3-matplotlib ; \
+        if [ "$OS_VER" != "24.04" ]; then \
+            sudo apt install -y python3-pip && sudo pip3 install reportlab ; \
+        else \
+            sudo apt install -y python3-reportlab ; \
+        fi ; \
+    fi
+
+# ARG PKG=base
+# Building or downloading UHD based on the PKG flag
+RUN if [ "$PKG" = "internal" ]; then \
+        sudo apt-get build-dep -y uhdpv && \
+        git clone -b $UHD_BRANCH https://github.com/pervices/uhd.git && \
+        mkdir -p uhd/host/build && cd uhd/host/build && \
+        cmake -DCMAKE_C_COMPILER="/usr/bin/gcc-13" \
+              -DCMAKE_CXX_COMPILER="/usr/bin/g++-13" \
+              -DLIB_SUFFIX="/$(dpkg-architecture -q DEB_TARGET_MULTIARCH)" \
+              -DCMAKE_INSTALL_PREFIX="/usr" \
+              -DPKG_LIB_DIR="/usr/lib/uhd" \
+              -DENABLE_CRIMSON_TNG="ON" \
+              -DENABLE_CYAN_4R4T="ON" \
+              -DENABLE_CYAN_8R="ON" \
+              -DENABLE_CYAN_16T="ON" \
+              -DENABLE_CYAN_64T="OFF" \
+              -DENABLE_CYAN_P1HDR16T="ON" \
+              -DENABLE_CYAN_P1HDR32T="ON" \
+              -DENABLE_N300="OFF" \
+              -DENABLE_E320="OFF" \
+              -DENABLE_USRP1="OFF" \
+              -DENABLE_USRP2="ON" \
+              -DENABLE_B200="OFF" \
+              -DENABLE_B100="OFF" \
+              -DENABLE_X300="OFF" \
+              -DENABLE_OCTOCLOCK="OFF" \
+              -DENABLE_DOXYGEN="OFF" \
+              -DENABLE_USB="OFF" \
+              -DENABLE_TESTS="OFF" \
+              -DENABLE_EXAMPLES="ON" \
+              -DENABLE_UTILS="ON" \
+              -DENABLE_DPDK="OFF" \
+              -DPYTHON_EXECUTABLE=/usr/bin/python3 \
+              .. && \
+        make -j$(nproc) && sudo make install ; \
+    elif [ "$PKG" = "release" ]; then \
+        sudo add-apt-repository --yes -s ppa:$PPA_USER/release && sudo apt update && \
+        sudo apt install -y libuhdpv libuhdpv-dev uhdpv-host ; \
+    elif [ "$PKG" = "nightly" ]; then \
+        sudo add-apt-repository --yes -s ppa:$PPA_USER/nightly && sudo apt update && \
+        sudo apt install -y libuhdpv-nightly libuhdpv-dev-nightly uhdpv-host-nightly ; \
+    elif [ "$PKG" = "base" ]; then \
+        echo "Building base image.." ; \
+    else \
+        exit 1 ; \
+    fi
+
+# Finishing up
+WORKDIR /home/$DOCKER_USER
+COPY SimpleShipTest.grc SimpleShipTest.grc
+RUN rm -rf uhd && touch .Xauthority
+USER root
+COPY rev-dkr /usr/local/sbin/
+COPY entrypoint /
+RUN chmod 0755 /entrypoint && \
+    sed "s/\$DOCKER_USER/$DOCKER_USER/g" -i /entrypoint
+ENTRYPOINT ["/entrypoint"]

@@ -1,0 +1,80 @@
+FROM archlinux/archlinux:base
+ARG DOCKER_USER=docker
+ARG UHD_BRANCH=master
+ARG OBS_LINK_RELEASE=https://download.opensuse.org/repositories/home:/pervices:/release/Arch/x86_64
+ARG OBS_LINK_DEVELOP=https://download.opensuse.org/repositories/home:/pervices:/develop/Arch/x86_64
+ARG OS_VER=default
+
+# Installing required binaries
+RUN pacman -Sy --noconfirm git xorg-xauth fakeroot binutils sudo cmake make gcc vim wget patch debugedit xorg-xclock lftp curl jq
+
+# Creating users and groups
+RUN groupadd "$DOCKER_USER" && \
+    groupadd sudo && \
+    useradd -ms /bin/bash -g $DOCKER_USER -G sudo $DOCKER_USER && \
+    echo "${DOCKER_USER}:${DOCKER_USER}" | chpasswd  && \
+    echo "$DOCKER_USER ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+
+# Granting access to openSUSE OBS
+RUN pacman-key --init && wget -qO - https://download.opensuse.org/repositories/openSUSE:/Tools/Arch/x86_64/openSUSE_Tools_Arch.key | sudo pacman-key --add - && \
+    pacman-key --lsign-key openSUSE:Tools@build.opensuse.org && echo "" >> /etc/pacman.conf && echo "[openSUSE_Tools_Arch]" >> /etc/pacman.conf && \
+    echo 'Server = https://download.opensuse.org/repositories/openSUSE:/Tools/Arch/$arch' >> /etc/pacman.conf && pacman -Sy --noconfirm osc build
+    
+# Granting access to Per Vices OBS develop
+RUN pacman-key --init && wget -qO - https://download.opensuse.org/repositories/home:/pervices:/develop/Arch/x86_64/home_pervices_develop_Arch.key | sudo pacman-key --add - && \
+    pacman-key --lsign-key home:pervices@build.opensuse.org && echo "" >> /etc/pacman.conf && echo "[home_pervices_develop_Arch]" >> /etc/pacman.conf && \
+    echo "Server = https://download.opensuse.org/repositories/home:/pervices:/develop/Arch/\$arch" >> /etc/pacman.conf && pacman -Sy
+    
+# Granting access to Per Vices OBS release
+RUN pacman-key --init && wget -qO - https://download.opensuse.org/repositories/home:/pervices:/release/Arch/x86_64/home_pervices_release_Arch.key | sudo pacman-key --add - && \
+    pacman-key --lsign-key home:pervices@build.opensuse.org && echo "" >> /etc/pacman.conf && echo "[home_pervices_release_Arch]" >> /etc/pacman.conf && \
+    echo "Server = https://download.opensuse.org/repositories/home:/pervices:/release/Arch/\$arch" >> /etc/pacman.conf && pacman -Sy
+    
+# Changing user
+USER $DOCKER_USER
+
+# Installing yay and su-exec
+#WORKDIR /home/$DOCKER_USER
+#RUN git clone https://aur.archlinux.org/yay-bin.git && cd yay-bin && makepkg --noconfirm --syncdeps --rmdeps --install --clean --needed
+
+# Installing su-exec the faster way instead of using yay since chroot in docker takes forever
+WORKDIR /home/$DOCKER_USER
+RUN git clone https://github.com/ncopa/su-exec.git su-exec && cd su-exec && make && sudo install -m 0755 su-exec /usr/bin/
+
+ARG GRC=false
+# Installing GNU Radio and test dependencies based on the GRC flag
+RUN if [ "$GRC" = "true" ]; then \
+        sudo pacman -Sy --noconfirm gnuradiopv || \
+        sudo pacman -U --noconfirm $OBS_LINK_RELEASE/gnuradiopv-$(sudo pacman -Ss gnuradiopv | head -1 | cut -d " " -f2)-$(uname -m).pkg.tar.zst && \
+        sudo pacman -Sy --noconfirm inetutils net-tools python-reportlab python-retrying ; \
+    fi
+
+ARG PKG=base
+# Building or downloading UHD based on the PKG flag
+RUN if [ "$PKG" = "internal" ]; then \
+        wget https://raw.githubusercontent.com/pervices/uhd/master/host/cmake/pkg-pv/PKGBUILD && \
+        wget https://raw.githubusercontent.com/pervices/uhd/master/host/cmake/pkg-pv/libuhdpv.install && \
+        sed -i s#master#$UHD_BRANCH#g PKGBUILD && \
+        makepkg --noconfirm --syncdeps --rmdeps --clean --needed && sudo pacman -U --noconfirm *.zst ; \
+    elif [ "$PKG" = "release" ]; then \
+        sudo pacman -Sy --noconfirm libuhdpv || \
+        sudo pacman -U --noconfirm $OBS_LINK_RELEASE/libuhdpv-$(sudo pacman -Ss libuhdpv | head -1 | cut -d " " -f2)-$(uname -m).pkg.tar.zst ; \
+    elif [ "$PKG" = "nightly" ]; then \
+        sudo pacman -Sy --noconfirm libuhdpv-nightly || \
+        sudo pacman -U --noconfirm $OBS_LINK_DEVELOP/libuhdpv-nightly-$(sudo pacman -Ss libuhdpv-nightly | head -1 | cut -d " " -f2)-$(uname -m).pkg.tar.zst ; \
+    elif [ "$PKG" = "base" ]; then \
+        echo "Building base image.." ; \
+    else \
+        exit 1 ; \
+    fi
+
+# Finishing up
+WORKDIR /home/$DOCKER_USER
+COPY SimpleShipTest.grc SimpleShipTest.grc
+RUN rm -rf uhd && touch .Xauthority
+USER root
+COPY rev-dkr /usr/local/sbin/
+COPY entrypoint /
+RUN chmod 0755 /entrypoint && \
+    sed "s/\$DOCKER_USER/$DOCKER_USER/g" -i /entrypoint
+ENTRYPOINT ["/entrypoint"]
