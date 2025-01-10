@@ -1,0 +1,47 @@
+--------------------------------------------------------
+Per Vices package build process
+
+All packages are built in docker containers for their respective distributions. 
+The build system regularly generates three types of docker images:
+
+1. Base image
+2. Internal testing image
+3. Release testing image
+
+The base image is acted as a base layer to generate all the binaries where internal and release images are just used for testing by fetching the corresponding binaries. 
+The base image contains the bare minimum required for the build process, once finished will be pushed to DockerHub. 
+The actual dependencies are fetched during package build process and will not be preserved in the base image after the package is built.
+Per Vices Dockerfiles are available on GitHub see https://github.com/pervices/pvpkg/tree/master/docker.
+
+By passing parameters based on the what we need, one of the three images will be built. 
+An example command is shown below which builds an internal image for the Oracle Linux version 8 based on UHD master branch and the release version of GNU Radio from Per Vices.
+
+docker build --tag YOUR_TAG_HERE --file Dockerfile-oraclelinux --build-arg OS_VER=8 --build-arg UHD_BRANCH=master --build-arg PKG=internal --build-arg GRC=true .
+
+--------------------------------------------------------
+Per Vices UHD and GNU Radio Package generation process
+
+This assumes you have the basic knowledge required to generate a package for the operating system you are interested in. 
+All the packages are built in a base image mentioned above.
+
+The build files (all distros) for Per Vices UHD are located in the Per Vices UHD repository here https://github.com/pervices/uhd/tree/master/host/cmake (master)
+
+1. debian-pv contains the build files used to generate Per Vices UHD package in a Debian like distro e.g. Ubuntu.
+2. rpm-pv contains the build files use to generate Per Vices UHD package in a Fedora like distro e.g. CentOS/OracleLinux/RHEL.
+3. pkg-pv contains the build files use to generate Per Vices UHD package in Arch Linux.
+
+The build files (all distros) for Per Vices GNU Radio are located in the Per Vices GNU Radio repository here https://github.com/pervices/gnuradio/tree/main-pv/cmake (main-pv)
+
+1. debian-pv contains the build files used to generate Per Vices GNU Radio package in a Debian like distro e.g. Ubuntu.
+2. rpm-pv contains the build files use to generate Per Vices GNU Radio package in a Fedora like distro e.g. CentOS/OracleLinux/RHEL.
+3. pkg-pv contains the build files use to generate Per Vices GNU Radio package in Arch Linux.
+
+You can find all the details including build dependencies in the build files. 
+
+NOTE Not all build dependencies are readily available.
+For example on Oracle Linux 8 we built a repository of Per Vices build dependency packages see https://copr.fedorainfracloud.org/coprs/pervices/tools/packages/ 
+You can find the build file for the packages by clicking on the packages shown on that web page: package name → build ID → Chroot Name then it will take you to the build root of the package.
+For example on Ubuntu 20.04 and 22.04 we provided a repository of Per Vices build dependency packages see https://launchpad.net/~pervices/+archive/ubuntu/tools/
+You can find the build file for the packages by clicking on the View package details shown on that web page.
+
+
