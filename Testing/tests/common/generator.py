@@ -315,7 +315,7 @@ class cyan:
             print(sys._getframe().f_code.co_name)
 
             channels = list(range(4))
-            wave_freq = 2500000         # 1MHz
+            wave_freq = 5000000         # 1MHz
             sample_count = 256
             tx_gain = 25
             rx_gain = 25
