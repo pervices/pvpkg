@@ -116,8 +116,8 @@ if(targs.product == "Vaunt"):
     main(gen.hi_band_basic(), "High Band")
 elif(targs.product == "Tate"):
     main(gen.cyan.lo_band.basic(4), "Low Band")
-    main(gen.cyan.mid_band.basic(4), "Mid Band")
-    main(gen.cyan.hi_band.basic(4), "High Band")
+    # main(gen.cyan.mid_band.basic(4), "Mid Band")
+    # main(gen.cyan.hi_band.basic(4), "High Band")
 elif(targs.product == "Lily"):
     main(gen.chestnut.lo_band.basic(4), "Low Band")
     main(gen.chestnut.mid_band.basic(4), "Mid Band")
