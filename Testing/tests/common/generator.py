@@ -222,7 +222,6 @@ def lo_band_phaseCoherency_short(channels):
 
 def tx_trigger():
     print(sys._getframe().f_code.co_name)
-    channels = list(range(4))
     center_freq = 0
     sample_rate = 10156250
     tx_gain = 20
@@ -374,9 +373,8 @@ class cyan:
                 yield locals()
 
         @staticmethod
-        def tx_trigger(channels):
+        def tx_trigger():
             print(sys._getframe().f_code.co_name)
-            channels = list(range(4))
             center_freq = 0
             sample_rate = 10204082
             tx_gain = 20
@@ -670,9 +668,8 @@ class chestnut:
                 yield locals()
 
         @staticmethod
-        def tx_trigger(channels):
+        def tx_trigger():
             print(sys._getframe().f_code.co_name)
-            channels = list(range(4))
             center_freq = 0
             sample_rate = 10204082
             tx_gain = 20

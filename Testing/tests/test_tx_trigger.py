@@ -19,7 +19,8 @@ def test(it):
     # TODO: Check if the following file exists; if it doesn't, throw and error and
     # indicate that the test_tx_trigger example binary was not found
     # Using invokation from tx_trig pkg
-    test_fail = test_fail | os.system("/usr/lib/uhd/examples/test_tx_trigger --path ./test_tx_trig_files/data.txt --start_time={} --period={} --tx_rate={} --tx_center_freq={} --tx_gain={} --setpoint={} --samples={} --num_trigger={} --gating=dsp > {}".format(it["start_time"], it["period"], it["sample_rate"], it["center_freq"], it["tx_gain"], it["setpoint"], it["sample_count"], it["num_trigger"], name))
+    channels = ','.join(str(x) for x in targs.channels)
+    test_fail = test_fail | os.system("/usr/lib/uhd/examples/test_tx_trigger --channels={} --path ./test_tx_trig_files/data.txt --start_time={} --period={} --tx_rate={} --tx_center_freq={} --tx_gain={} --setpoint={} --samples={} --num_trigger={} --gating=dsp > {}".format(channels, it["start_time"], it["period"], it["sample_rate"], it["center_freq"], it["tx_gain"], it["setpoint"], it["sample_count"], it["num_trigger"], name))
 
     # Flag to indicate that triggers failed to activate
     # Technically this could be caused by anything that returns an error code in UHD, but the trigger failing in time is most likely
@@ -41,10 +42,9 @@ def test(it):
     results = [["Description", "Value", "Acceptance Criteria", "Result"]]
     buffer_info = [["Channel", "Max Buffer Level", "Max difference from A"]]
     # [Ch, MaxLevel, Max difference from A]
-    ch_buf_info = [[0, 0, 0],
-                   [1, 0, 0],
-                   [2, 0, 0],
-                   [3, 0, 0],]
+    ch_buf_info = []
+    for ch in targs.channels:
+        ch_buf_info.append([ch, 0, 0])
 
     # Maximum divergence between channels
     max_div = 0
@@ -72,10 +72,6 @@ def test(it):
             # Array containing the line seperated by " "
             row = line.split()
 
-            if len(row) != 5:
-                # Line is not a data line, data line contain 5 values
-                continue
-
             all_numeric = True
             for val in row:
                 if not val.isnumeric():
@@ -92,7 +88,7 @@ def test(it):
             # The last column indicates the difference in buffer level between channels
             # This value should always be 0 because all channels get the same data and should send the same amount at the same time
             # Having different channels be read at different times is not a concern. The reading is taken as soon as data is sent, and data is sent immediatly after a trigger so the program has almost a full second to read all channels and have them be the same
-            if row[4] != 0:
+            if row[-1] != 0:
                 if buffer_filled:
                     print("ERROR: discrepency in buffer level between channels")
                 else:
@@ -172,9 +168,9 @@ def main(iterations):
 if(targs.product == "Vaunt"):
     main(gen.tx_trigger())
 elif(targs.product == "Lily"):
-    main(gen.chestnut.lo_band.tx_trigger(4))
+    main(gen.chestnut.lo_band.tx_trigger())
 else:
-    main(gen.cyan.lo_band.tx_trigger(4))
+    main(gen.cyan.lo_band.tx_trigger())
 
 build_report()
 sys.exit(test_fail)
