@@ -19,10 +19,10 @@ class TestArgs:
         args = parser.parse_args()
         
         self.serial = args.serial
-        if args.channels.len() > 8 or args.channels.len() < 1:
+        if len(args.channels) > 8 or len(args.channels) < 1:
             print("[ERROR][{}][{}]: Channels list must contain between 1 and 8 channels".format(frameinfo.filename, frameinfo.lineno))
             sys.exit(1)
-        if len(a) != len(set(a)):
+        if len(args.channels) != len(set(args.channels)):
             print("[ERROR][{}][{}]: Channels list must contain unique elements.".format(frameinfo.filename, frameinfo.lineno))
         else:
             self.channels = args.channels
