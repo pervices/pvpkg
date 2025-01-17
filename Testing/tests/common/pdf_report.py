@@ -92,6 +92,8 @@ class ClassicShipTestReport:
                 self.insert_image_quad_grid(i[1], i[2])
             elif i[0] == "image_octo":
                 self.insert_image_octo_grid(i[1], i[2])
+            elif i[0] == "image_list_dynamic":
+                self.insert_image_list_dynamic(i[1], i[2])
             elif i[0] == "text":
                 self.insert_text(i[1])
             elif i[0] == "text_large":
@@ -191,6 +193,41 @@ class ClassicShipTestReport:
         self.c.drawImage(images[5], 332, self.cursor_y + 180, 240, 180)
         self.c.drawImage(images[6], 50, self.cursor_y, 240, 180)
         self.c.drawImage(images[7], 332, self.cursor_y, 240, 180)
+
+    def insert_image_list_dynamic(self, images, desc=None):
+        image_height = 187
+        image_width = 250
+        left_x_coord = 50
+        right_x_coord = 312
+        # Check space
+        if (self.cursor_y < (image_height + 18)):
+            self.new_page()
+
+        if (desc != None):
+            self.insert_text(desc)
+
+        # # Get enough space
+        self.move_cursor(0, image_height + 8)
+
+        y_i = 0
+        x_i = 0
+        y_coord = 0
+        for image in images:
+            y_coord = self.cursor_y - (image_height*int(y_i/2))
+            x_coord = left_x_coord if x_i % 2 == 0 else right_x_coord
+
+            self.c.drawImage(image, x_coord, y_coord, image_width, image_height)
+
+            y_i+=1
+            x_i+=1
+
+            if (y_coord < image_height) and (x_i % 2 == 0):
+                self.new_page()
+                self.move_cursor(0, image_height + 8)
+                y_i = 0
+                y_coord = self.cursor_y - (image_height*int(y_i/2))
+
+        self.move_cursor(0, 8)
 
     """
         Return a BytesIO stream
@@ -613,6 +650,12 @@ if __name__ == "__main__":
         report.buffer_put("image_octo", eight_pictures, desc="Octuple Picture grid")
     except:
         print("Cant draw Octuple pictues")
+
+    try:
+        eight_pictures = [test_pic, test_pic, test_pic, test_pic, test_pic, test_pic, test_pic, test_pic]
+        report.buffer_put("image_list_dynamic", eight_pics, desc="Dynamic image list - 8")
+    except:
+        print("Cant draw dynamic image list pictues")
 
     test_long_table = [
         ["Run", "Baseline A", "Diff AB", "Diff AC", "Diff AD"],
