@@ -25,7 +25,7 @@ def test(it, data):
     tx_stack = [ (5.0, it["sample_count"]) ] # One seconds worth.
     rx_stack = [ (5.0, int(it["sample_count"]) ) ]
     try:
-        vsnk = engine.run(it["channels"], it["wave_freq"], it["sample_rate"], it["center_freq"], it["tx_gain"], it["rx_gain"], tx_stack, rx_stack)
+        vsnk = engine.run(targs.channels, it["wave_freq"], it["sample_rate"], it["center_freq"], it["tx_gain"], it["rx_gain"], tx_stack, rx_stack)
     except Exception as err:
         build_report()
         sys.exit(1)
@@ -47,10 +47,10 @@ def test(it, data):
         like_real = (float(it["wave_freq"]) / fund_real)
         like_imag = (float(it["wave_freq"]) / fund_imag)
 
-        print("channel %2d: real %10.0f Hz (%8.5f) :: imag %10.0f Hz (%8.5f)" % (it["channels"][ch], fund_real, like_real, fund_imag, like_imag))
+        print("channel %2d: real %10.0f Hz (%8.5f) :: imag %10.0f Hz (%8.5f)" % (targs.channels[ch], fund_real, like_real, fund_imag, like_imag))
 
         plt.figure()
-        plt.title("Channel {}".format(ch), fontsize=14)
+        plt.title("Channel {}".format(targs.channels[ch]), fontsize=14)
         plt.xlabel("Sample", fontsize=12)
         plt.ylabel("Amplitude", fontsize=12)
         plt.plot(real[0:300], label='real')
@@ -74,7 +74,7 @@ def test(it, data):
     report.buffer_put("text_large", title)
     report.buffer_put("table_wide", test_info, "")
     report.buffer_put("text", " ")
-    report.buffer_put("image_quad", images, "")
+    report.buffer_put("image_list_dynamic", images, "")
     report.buffer_put("pagebreak")
 
     return data
@@ -105,13 +105,13 @@ if(targs.product == "Vaunt"):
     main(gen.lo_band_wave_sweep(), "Low Band")
     main(gen.hi_band_wave_sweep(), "High Band")
 elif(targs.product == "Tate"):
-    main(gen.cyan.lo_band.wave_sweep(4), "Low Band")
-    main(gen.cyan.mid_band.wave_sweep(4), "Mid Band")
-    main(gen.cyan.hi_band.wave_sweep(4), "High Band")
+    main(gen.cyan.lo_band.wave_sweep(), "Low Band")
+    main(gen.cyan.mid_band.wave_sweep(), "Mid Band")
+    main(gen.cyan.hi_band.wave_sweep(), "High Band")
 elif(targs.product == "Lily"):
-    main(gen.chestnut.lo_band.wave_sweep(4), "Low Band")
-    main(gen.chestnut.mid_band.wave_sweep(4), "Mid Band")
-    main(gen.chestnut.hi_band.wave_sweep(4), "High Band")
+    main(gen.chestnut.lo_band.wave_sweep(), "Low Band")
+    main(gen.chestnut.mid_band.wave_sweep(), "Mid Band")
+    main(gen.chestnut.hi_band.wave_sweep(), "High Band")
 
 build_report()
 sys.exit(test_fail)
