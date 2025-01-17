@@ -285,10 +285,9 @@ def dump(iteration):
 class cyan:
     class lo_band:
         @staticmethod
-        def wave_sweep(channels):
+        def wave_sweep():
             print(sys._getframe().f_code.co_name)
 
-            channels = list(range(4))
             sample_count = int(round(25000000/10000))
             tx_gain = 40
             rx_gain = 40
@@ -416,10 +415,9 @@ class cyan:
 
     class mid_band:
         @staticmethod
-        def wave_sweep(channels):
+        def wave_sweep():
             print(sys._getframe().f_code.co_name)
 
-            channels = list(range(4))
             sample_count = int(round(25000000/10000))
             tx_gain = 40
             rx_gain = 40
@@ -512,10 +510,9 @@ class cyan:
 
     class hi_band:
         @staticmethod
-        def wave_sweep(channels):
+        def wave_sweep():
             print(sys._getframe().f_code.co_name)
 
-            channels = list(range(4))
             sample_count = int(round(25000000/10000))
             tx_gain = 50
             rx_gain = 50
@@ -583,10 +580,9 @@ class cyan:
 class chestnut:
     class lo_band:
         @staticmethod
-        def wave_sweep(channels):
+        def wave_sweep():
             print(sys._getframe().f_code.co_name)
 
-            channels = list(range(4))
             sample_count = int(round(25000000/10000))
             tx_gain = 40
             rx_gain = 40
@@ -713,10 +709,9 @@ class chestnut:
 
     class mid_band:
         @staticmethod
-        def wave_sweep(channels):
+        def wave_sweep():
             print(sys._getframe().f_code.co_name)
 
-            channels = list(range(4))
             sample_count = int(round(25000000/10000))
             tx_gain = 40
             rx_gain = 40
@@ -832,10 +827,9 @@ class chestnut:
 
     class hi_band:
         @staticmethod
-        def wave_sweep(channels):
+        def wave_sweep():
             print(sys._getframe().f_code.co_name)
 
-            channels = list(range(4))
             sample_count = int(round(25000000/10000))
             tx_gain = 50
             rx_gain = 60
