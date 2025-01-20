@@ -19,7 +19,7 @@ def main(iterations, title="TX RX Gain Test") -> int:
         tx_stack = [ (5.0, int(it["sample_count" ])) ]
         rx_stack = [ (5.0, int(it["sample_count"])) ]
         try:
-            vsnk = engine.run(it["channels"], it["wave_freq"], it["sample_rate"], it["center_freq"], it["tx_gain"], it["rx_gain"], tx_stack, rx_stack)
+            vsnk = engine.run(targs.channels, it["wave_freq"], it["sample_rate"], it["center_freq"], it["tx_gain"], it["rx_gain"], tx_stack, rx_stack)
         except Exception as err:
             report.draw_from_buffer()
             report.save()
@@ -44,7 +44,7 @@ def main(iterations, title="TX RX Gain Test") -> int:
 
             #plot and save real component
             plt.figure()
-            plt.title("Gain plot of ch{} for wave_freq = {} Hz".format(ch,it["wave_freq"]))
+            plt.title("Gain plot of ch{} for wave_freq = {} Hz".format(targs.channels[ch],it["wave_freq"]))
             plt.xlabel("Sample")
             plt.ylabel("Amplitude")
             plt.plot(imag[0:300], label='reals')
@@ -59,9 +59,9 @@ def main(iterations, title="TX RX Gain Test") -> int:
 
 
         iteration_areas.append(channel_areas)
-        print("the areas of channel 0-3 for gain are:", iteration_areas)
+        print("the areas of {} for gain are: {}".format(targs.channels, iteration_areas))
         # Assert area is increasing per channel.
-        desc = "Gain plot of channel {} for wave_freq = {} Hz at Tx gain {} and Rx gain {} : ".format(it["channels"], it["wave_freq"], it["tx_gain"], it["rx_gain"])
+        desc = "Gain plot of channels {} for wave_freq = {} Hz at Tx gain {} and Rx gain {} : ".format(targs.channels, it["wave_freq"], it["tx_gain"], it["rx_gain"])
         data = [["Center Frequency (Hz)", "Wave Frequency (Hz)", "Sample Rate (SPS)", "Sample Count", "TX Gain (dB)", "RX Gain (dB)"],
                         [it["center_freq"], it["wave_freq"], it["sample_rate"], it["sample_count"], it["tx_gain"], it["rx_gain"]]]
 
@@ -69,7 +69,7 @@ def main(iterations, title="TX RX Gain Test") -> int:
         report.buffer_put("text_large", title)
         report.buffer_put("table_wide", data, "Test Configuration")
         report.buffer_put("text", " ")
-        report.buffer_put("image_quad", images, desc)
+        report.buffer_put("image_list_dynamic", images, desc)
         if (current_test_only_fail_flag == 1):
             report.buffer_put("text_large", "This test has failed")
             current_test_only_fail_flag = 0
@@ -109,22 +109,22 @@ if __name__ == "__main__":
         test_status = [["Test", "Status"]]
 
         # Change the argument in the following function to select how many channels to test
-        ret = main(gen.cyan.lo_band.gain_tx(4), "Low Band TX Gain Test")
+        ret = main(gen.cyan.lo_band.gain_tx(), "Low Band TX Gain Test")
         test_status.append(["Low Band TX Gain Test", to_pass_fail(ret)])
 
-        ret = main(gen.cyan.lo_band.gain_rx(4), "Low Band RX Gain Test")
+        ret = main(gen.cyan.lo_band.gain_rx(), "Low Band RX Gain Test")
         test_status.append(["Low Band RX Gain Test", to_pass_fail(ret)])
 
-        ret = main(gen.cyan.mid_band.gain_tx(4), "Mid Band TX Gain Test")
+        ret = main(gen.cyan.mid_band.gain_tx(), "Mid Band TX Gain Test")
         test_status.append(["Mid Band TX Gain Test", to_pass_fail(ret)])
 
-        ret = main(gen.cyan.mid_band.gain_rx(4), "Mid Band RX Gain Test")
+        ret = main(gen.cyan.mid_band.gain_rx(), "Mid Band RX Gain Test")
         test_status.append(["Mid Band RX Gain Test", to_pass_fail(ret)])
 
-        ret = main(gen.cyan.hi_band.gain_tx(4), "High Band TX Gain Test")
+        ret = main(gen.cyan.hi_band.gain_tx(), "High Band TX Gain Test")
         test_status.append(["High Band TX Gain Test", to_pass_fail(ret)])
 
-        ret = main(gen.cyan.hi_band.gain_rx(4), "High Band RX Gain Test")
+        ret = main(gen.cyan.hi_band.gain_rx(), "High Band RX Gain Test")
         test_status.append(["High Band RX Gain Test", to_pass_fail(ret)])
     elif(targs.product == 'Lily'):
         report.insert_title_page("Chestnut TX RX Gain Test")
@@ -132,22 +132,22 @@ if __name__ == "__main__":
         test_status = [["Test", "Status"]]
 
         # Change the argument in the following function to select how many channels to test
-        ret = main(gen.chestnut.lo_band.gain_tx(4), "Low Band TX Gain Test")
+        ret = main(gen.chestnut.lo_band.gain_tx(), "Low Band TX Gain Test")
         test_status.append(["Low Band TX Gain Test", to_pass_fail(ret)])
 
-        ret = main(gen.chestnut.lo_band.gain_rx(4), "Low Band RX Gain Test")
+        ret = main(gen.chestnut.lo_band.gain_rx(), "Low Band RX Gain Test")
         test_status.append(["Low Band RX Gain Test", to_pass_fail(ret)])
 
-        ret = main(gen.chestnut.mid_band.gain_tx(4), "Mid Band TX Gain Test")
+        ret = main(gen.chestnut.mid_band.gain_tx(), "Mid Band TX Gain Test")
         test_status.append(["Mid Band TX Gain Test", to_pass_fail(ret)])
 
-        ret = main(gen.chestnut.mid_band.gain_rx(4), "Mid Band RX Gain Test")
+        ret = main(gen.chestnut.mid_band.gain_rx(), "Mid Band RX Gain Test")
         test_status.append(["Mid Band RX Gain Test", to_pass_fail(ret)])
 
-        ret = main(gen.chestnut.hi_band.gain_tx(4), "High Band TX Gain Test")
+        ret = main(gen.chestnut.hi_band.gain_tx(), "High Band TX Gain Test")
         test_status.append(["High Band TX Gain Test", to_pass_fail(ret)])
 
-        ret = main(gen.chestnut.hi_band.gain_rx(4), "High Band RX Gain Test")
+        ret = main(gen.chestnut.hi_band.gain_rx(), "High Band RX Gain Test")
         test_status.append(["High Band RX Gain Test", to_pass_fail(ret)])
     elif(targs.product == 'Vaunt'):
         report.insert_title_page("Crimson TX RX Gain Test")
@@ -155,16 +155,16 @@ if __name__ == "__main__":
         test_status = [["Test", "Status"]]
 
         # Change the argument in the following function to select how many channels to test
-        ret = main(gen.lo_band_gain_tx(4), "Low Band TX Gain Test")
+        ret = main(gen.lo_band_gain_tx(), "Low Band TX Gain Test")
         test_status.append(["Low Band TX Gain Test", to_pass_fail(ret)])
 
-        ret = main(gen.lo_band_gain_rx(4), "Low Band RX Gain Test")
+        ret = main(gen.lo_band_gain_rx(), "Low Band RX Gain Test")
         test_status.append(["Low Band RX Gain Test", to_pass_fail(ret)])
 
-        ret = main(gen.hi_band_gain_tx(4), "High Band TX Gain Test")
+        ret = main(gen.hi_band_gain_tx(), "High Band TX Gain Test")
         test_status.append(["High Band TX Gain Test", to_pass_fail(ret)])
 
-        ret = main(gen.hi_band_gain_rx(4), "High Band RX Gain Test")
+        ret = main(gen.hi_band_gain_rx(), "High Band RX Gain Test")
         test_status.append(["High Band RX Gain Test", to_pass_fail(ret)])
 
 
