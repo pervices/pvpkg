@@ -137,11 +137,10 @@ def hi_band_basic():
         for sample_rate in [ 9848485, 25000000, 36111111 ]:
             yield locals()
 
-def lo_band_gain_rx(channels):
+def lo_band_gain_rx():
 
     print(sys._getframe().f_code.co_name)
 
-    channels = list(range(channels))
     wave_freq = 1000000
     sample_count = 1000
     center_freq = 15000000
@@ -151,11 +150,10 @@ def lo_band_gain_rx(channels):
         yield locals()
 
 
-def lo_band_gain_tx(channels):
+def lo_band_gain_tx():
 
     print(sys._getframe().f_code.co_name)
 
-    channels = list(range(channels))
     wave_freq = 1000000
     sample_count = 1000
     center_freq = 15000000
@@ -165,11 +163,10 @@ def lo_band_gain_tx(channels):
         yield locals()
 
 
-def hi_band_gain_tx(channels):
+def hi_band_gain_tx():
 
     print(sys._getframe().f_code.co_name)
 
-    channels = list(range(channels))
     wave_freq = 1000000
     sample_count = 1000
     center_freq = 2000000000
@@ -179,12 +176,10 @@ def hi_band_gain_tx(channels):
         yield locals()
 
 
-def hi_band_gain_rx(channels):
+def hi_band_gain_rx():
 
     print(sys._getframe().f_code.co_name)
 
-    channels = list(range(channels))
-    #print(channels)
     wave_freq = 1000000
     sample_count = 1000
     center_freq = 2000000000
@@ -193,27 +188,14 @@ def hi_band_gain_rx(channels):
     for rx_gain in [ 10, 20, 30 ]:
         yield locals()
 
-def lo_band_phaseCoherency(channels):
+def lo_band_phaseCoherency(runs):
     print(sys._getframe().f_code.co_name)
-    channels = list(range(4))
     sample_count = int(round(25000000/10000))
     tx_gain = 25
     rx_gain = 25
     center_freq = 10000000
     wave_freq = 500000
-    for i in range(15):
-        yield locals()
-
-def lo_band_phaseCoherency_short(channels):
-    print(sys._getframe().f_code.co_name)
-    channels = list(range(4))
-    sample_count = int(round(25000000/10000))
-    tx_gain = 25
-    rx_gain = 25
-    center_freq = 10000000
-    sample_rate = 25000000
-    wave_freq = 500000
-    for i in range(2):
+    for i in range(runs):
         yield locals()
 
 def tx_trigger():
@@ -317,10 +299,9 @@ class cyan:
                     yield locals()
 
         @staticmethod
-        def gain_rx(channels):
+        def gain_rx():
             print(sys._getframe().f_code.co_name)
 
-            channels = list(range(channels))
             wave_freq = 1000000
             sample_count = 1000
             center_freq = 15000000  # 15MHz
@@ -330,10 +311,9 @@ class cyan:
                 yield locals()
 
         @staticmethod
-        def gain_tx(channels):
+        def gain_tx():
             print(sys._getframe().f_code.co_name)
 
-            channels = list(range(channels))
             wave_freq = 1000000
             sample_count = 1000
             center_freq = 15000000  # 15MHz
@@ -343,28 +323,14 @@ class cyan:
                 yield locals()
 
         @staticmethod
-        def phaseCoherency(channels):
+        def phaseCoherency(runs):
             print(sys._getframe().f_code.co_name)
-            channels = list(range(4))
             sample_count = int(round(25000000/10000))
             tx_gain = 30
             rx_gain = 28
             center_freq = 100000000     # 100MHz
             wave_freq = 500000
-            for i in range(15):
-                yield locals()
-
-        @staticmethod
-        def phaseCoherency_short(channels):
-            print(sys._getframe().f_code.co_name)
-            channels = list(range(4))
-            sample_count = int(round(25000000/10000))
-            tx_gain = 30
-            rx_gain = 28
-            center_freq = 100000000     # 100MHz
-            sample_rate = 25000000      # 25 Msps
-            wave_freq = 500000
-            for i in range(2):
+            for i in range(runs):
                 yield locals()
 
         @staticmethod
@@ -448,10 +414,9 @@ class cyan:
                 yield locals()
 
         @staticmethod
-        def gain_tx(channels):
+        def gain_tx():
             print(sys._getframe().f_code.co_name)
 
-            channels = list(range(channels))
             wave_freq = 1000000
             sample_count = 1000
             center_freq = 2700000000    # 2.7GHz
@@ -461,11 +426,9 @@ class cyan:
                 yield locals()
 
         @staticmethod
-        def gain_rx(channels):
+        def gain_rx():
             print(sys._getframe().f_code.co_name)
 
-            channels = list(range(channels))
-            #print(channels)
             wave_freq = 1000000
             sample_count = 1000
             center_freq = 2700000000    # 2.7Hz
@@ -542,10 +505,9 @@ class cyan:
 
 
         @staticmethod
-        def gain_tx(channels):
+        def gain_tx():
             print(sys._getframe().f_code.co_name)
 
-            channels = list(range(channels))
             wave_freq = 1000000
             sample_count = 1000
             center_freq = 9000000000    # 9GHz
@@ -555,11 +517,9 @@ class cyan:
                 yield locals()
 
         @staticmethod
-        def gain_rx(channels):
+        def gain_rx():
             print(sys._getframe().f_code.co_name)
 
-            channels = list(range(channels))
-            #print(channels)
             wave_freq = 1000000
             sample_count = 1000
             center_freq = 9000000000    # 9GHz
@@ -608,10 +568,9 @@ class chestnut:
                     yield locals()
 
         @staticmethod
-        def gain_rx(channels):
+        def gain_rx():
             print(sys._getframe().f_code.co_name)
 
-            channels = list(range(channels))
             wave_freq = 1000000
             sample_count = 1000
             center_freq = 15000000  # 15MHz
@@ -621,10 +580,9 @@ class chestnut:
                 yield locals()
 
         @staticmethod
-        def gain_tx(channels):
+        def gain_tx():
             print(sys._getframe().f_code.co_name)
 
-            channels = list(range(channels))
             wave_freq = 1000000
             sample_count = 1000
             center_freq = 15000000  # 15MHz
@@ -634,29 +592,15 @@ class chestnut:
                 yield locals()
 
         @staticmethod
-        def phaseCoherency(channels):
+        def phaseCoherency(runs):
             print(sys._getframe().f_code.co_name)
-            channels = list(range(4))
             sample_count = int(round(25000000/10000))
             tx_gain = 30
             rx_gain = 30
             center_freq = 100000000     # 100MHz
             sample_rate = 25000000
             wave_freq = 500000
-            for i in range(15):
-                yield locals()
-
-        @staticmethod
-        def phaseCoherency_short(channels):
-            print(sys._getframe().f_code.co_name)
-            channels = list(range(4))
-            sample_count = int(round(25000000/10000))
-            tx_gain = 30
-            rx_gain = 30
-            center_freq = 100000000     # 100MHz
-            sample_rate = 25000000      # 25 Msps
-            wave_freq = 500000
-            for i in range(2):
+            for i in range(runs):
                 yield locals()
 
         @staticmethod
@@ -738,10 +682,9 @@ class chestnut:
                 yield locals()
 
         @staticmethod
-        def gain_tx(channels):
+        def gain_tx():
             print(sys._getframe().f_code.co_name)
 
-            channels = list(range(channels))
             wave_freq = 1000000
             sample_count = 1000
             center_freq = 2700000000    # 2.7GHz
@@ -751,11 +694,9 @@ class chestnut:
                 yield locals()
 
         @staticmethod
-        def gain_rx(channels):
+        def gain_rx():
             print(sys._getframe().f_code.co_name)
 
-            channels = list(range(channels))
-            #print(channels)
             wave_freq = 1000000
             sample_count = 1000
             center_freq = 2700000000    # 2.7Hz
@@ -855,10 +796,9 @@ class chestnut:
 
 
         @staticmethod
-        def gain_tx(channels):
+        def gain_tx():
             print(sys._getframe().f_code.co_name)
 
-            channels = list(range(channels))
             wave_freq = 1000000
             sample_count = 1000
             center_freq = 7000000000    # 7GHz
@@ -868,11 +808,9 @@ class chestnut:
                 yield locals()
 
         @staticmethod
-        def gain_rx(channels):
+        def gain_rx():
             print(sys._getframe().f_code.co_name)
 
-            channels = list(range(channels))
-            #print(channels)
             wave_freq = 1000000
             sample_count = 1000
             center_freq = 7000000000    # 7GHz
