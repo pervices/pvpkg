@@ -356,7 +356,7 @@ class cyan:
             sample_count = int(round(25000000/10000))
             tx_gain = 30
             rx_gain = 28
-            center_freq = 100000000     # 100MHz
+            center_freq = 0     # 100MHz
             wave_freq = 500000
             for i in range(15):
                 yield locals()
@@ -368,7 +368,7 @@ class cyan:
             sample_count = int(round(25000000/10000))
             tx_gain = 30
             rx_gain = 28
-            center_freq = 100000000     # 100MHz
+            center_freq = 0     # 100MHz
             sample_rate = 25000000      # 25 Msps
             wave_freq = 500000
             for i in range(2):
