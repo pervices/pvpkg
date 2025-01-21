@@ -68,7 +68,7 @@ def test(it, data):
 
             print("\tframe %d: aboslute area: likeness %f" % (i, likeness))
 
-            plt.plot(frame_data, '-o', label="Frame {}".format(i))
+            plt.plot(frame_data[0:125], label="Frame {}".format(i))
 
             try:
                 assert likeness > 0.5 and likeness < 1.5, "tx_rx_stacked_commands fail comparison"
