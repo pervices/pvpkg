@@ -370,7 +370,7 @@ class cyan:
             rx_gain = 28
             center_freq = 0     # 100MHz
             sample_rate = 25000000      # 25 Msps
-            wave_freq = 5000000
+            wave_freq = 2500000
             for i in range(2):
                 yield locals()
 
