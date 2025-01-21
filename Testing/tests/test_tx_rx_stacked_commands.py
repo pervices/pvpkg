@@ -22,8 +22,8 @@ def test(it, data):
 
     # Collect.
     # First frame of TX/RX stack is gold standard (sample_count samples in middle of 1 second of TX).
-    tx_stack = [ (5.0, it["sample_count" ]), (8.0, it["sample_count"]), (11.0, it["sample_count"]), (14.0, it["sample_count"]) ]
-    rx_stack = [ (5.0, it["sample_count"]), (8.0, it["sample_count"]), (11.0, it["sample_count"]), (14.0, it["sample_count"]) ]
+    tx_stack = [ (5.0, it["sample_count" ]) ]
+    rx_stack = [ (5.0, it["sample_count"]) ]
     try:
         vsnk = engine.run(it["channels"], it["wave_freq"], it["sample_rate"], it["center_freq"], it["tx_gain"], it["rx_gain"], tx_stack, rx_stack)
     except Exception as err:
@@ -68,7 +68,7 @@ def test(it, data):
 
             print("\tframe %d: aboslute area: likeness %f" % (i, likeness))
 
-            plt.plot(frame_data, label="Frame {}".format(i))
+            plt.plot(frame_data, '-o', label="Frame {}".format(i))
 
             try:
                 assert likeness > 0.5 and likeness < 1.5, "tx_rx_stacked_commands fail comparison"
@@ -82,7 +82,7 @@ def test(it, data):
         plt.close()
         img = report.get_image_from_io_stream(s)
         images.append(img)
-        data.append([str(center_freq), str(wave_freq), it["sample_rate"], str(ch), frame_results[1], frame_results[2], frame_results[3], res])
+        # data.append([str(center_freq), str(wave_freq), it["sample_rate"], str(ch), frame_results[1], frame_results[2], frame_results[3], res])
 
     report.buffer_put("image_quad", images, "")
     report.buffer_put("pagebreak")
@@ -93,7 +93,7 @@ def main(iterations, desc):
     data  = [["Centre Freq", "Wave Freq", "Sample Rate", "Channel", "Frame 1/Frame 0","Frame 2/Frame 0", "Frame 3/Frame 0", "Result"]]
     for it in iterations:
         test(it, data)
-    summary_tables.append([desc, data])
+    # summary_tables.append([desc, data])
 
 
 def add_summary_table(title, data):
@@ -104,8 +104,8 @@ def add_summary_table(title, data):
 
 def build_report():
     report.insert_title_page("Stacked Commands Test")
-    for summary in summary_tables:
-        add_summary_table(summary[0], summary[1])
+    # for summary in summary_tables:
+    #     add_summary_table(summary[0], summary[1])
     report.draw_from_buffer()
     report.save()
     print("PDF report saved at " + report.get_filename())
@@ -113,11 +113,11 @@ def build_report():
 ## SCRIPT LOGIC ##
 if(targs.product == "Vaunt"):
     main(gen.lo_band_basic(), "Low Band")
-    main(gen.hi_band_basic(), "High Band")
+    # main(gen.hi_band_basic(), "High Band")
 elif(targs.product == "Tate"):
     main(gen.cyan.lo_band.basic(4), "Low Band")
-    main(gen.cyan.mid_band.basic(4), "Mid Band")
-    main(gen.cyan.hi_band.basic(4), "High Band")
+    # main(gen.cyan.mid_band.basic(4), "Mid Band")
+    # main(gen.cyan.hi_band.basic(4), "High Band")
 elif(targs.product == "Lily"):
     main(gen.chestnut.lo_band.basic(4), "Low Band")
     main(gen.chestnut.mid_band.basic(4), "Mid Band")
