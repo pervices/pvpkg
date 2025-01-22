@@ -315,12 +315,12 @@ class cyan:
             print(sys._getframe().f_code.co_name)
 
             channels = list(range(4))
-            wave_freq = 1000000         # 1MHz
+            wave_freq = 2500000         # 1MHz
             sample_count = 256
-            tx_gain = 25
-            rx_gain = 25
-            for center_freq in [ 15000000 ]:
-                for sample_rate in [ 9803922, 25000000 ]:
+            tx_gain = 5
+            rx_gain = 5
+            for center_freq in [ 100000000, 0 ]:
+                for sample_rate in [ 25000000, 50000000 ]:
                     yield locals()
 
         @staticmethod
@@ -617,8 +617,8 @@ class chestnut:
             sample_count = 256
             tx_gain = 25
             rx_gain = 25
-            for center_freq in [ 15000000 ]:
-                for sample_rate in [ 9803922, 25000000 ]:
+            for center_freq in [ 100000000, 0 ]:
+                for sample_rate in [ 25000000, 50000000 ]:
                     yield locals()
 
         @staticmethod
