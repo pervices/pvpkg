@@ -113,7 +113,7 @@ def build_report():
 ## SCRIPT LOGIC ##
 if(targs.product == "Vaunt"):
     main(gen.lo_band_basic(), "Low Band")
-    main(gen.hi_band_basic(), "High Band")
+    # main(gen.hi_band_basic(), "High Band")
 elif(targs.product == "Tate"):
     main(gen.cyan.lo_band.basic(4), "Low Band")
     # main(gen.cyan.mid_band.basic(4), "Mid Band")
