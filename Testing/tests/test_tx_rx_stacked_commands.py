@@ -25,7 +25,7 @@ def test(it, data):
     tx_stack = [ (5.0, it["sample_count" ]), (8.0, it["sample_count"]), (11.0, it["sample_count"]), (14.0, it["sample_count"]) ]
     rx_stack = [ (5.0, it["sample_count"]), (8.0, it["sample_count"]), (11.0, it["sample_count"]), (14.0, it["sample_count"]) ]
     try:
-        vsnk = engine.run(it["channels"], it["wave_freq"], it["sample_rate"], it["center_freq"], it["tx_gain"], it["rx_gain"], tx_stack, rx_stack)
+        vsnk = engine.run(targs.channels, it["wave_freq"], it["sample_rate"], it["center_freq"], it["tx_gain"], it["rx_gain"], tx_stack, rx_stack)
     except Exception as err:
         build_report()
         sys.exit(1)
@@ -47,11 +47,11 @@ def test(it, data):
     # Stacked commands vsnk channel extensions and must be indexed manually with sample_count.
     for ch, channel in enumerate(vsnk):
 
-        print("channel %d" % ch)
+        print("channel %d" % targs.channels[ch])
         areas = []
         res = "pass"
         plt.figure()
-        plt.title("Channel {}".format(ch))
+        plt.title("Channel {}".format(targs.channels[ch]))
         frame_results = []
         for i, frame in enumerate(rx_stack):
             sample_count = frame[1]
@@ -82,9 +82,9 @@ def test(it, data):
         plt.close()
         img = report.get_image_from_io_stream(s)
         images.append(img)
-        data.append([str(center_freq), str(wave_freq), it["sample_rate"], str(ch), frame_results[1], frame_results[2], frame_results[3], res])
+        data.append([str(center_freq), str(wave_freq), it["sample_rate"], str(targs.channels[ch]), frame_results[1], frame_results[2], frame_results[3], res])
 
-    report.buffer_put("image_quad", images, "")
+    report.buffer_put("image_list_dynamic", images, "")
     report.buffer_put("pagebreak")
     return data
 
@@ -115,13 +115,13 @@ if(targs.product == "Vaunt"):
     main(gen.lo_band_basic(), "Low Band")
     main(gen.hi_band_basic(), "High Band")
 elif(targs.product == "Tate"):
-    main(gen.cyan.lo_band.basic(4), "Low Band")
-    main(gen.cyan.mid_band.basic(4), "Mid Band")
-    main(gen.cyan.hi_band.basic(4), "High Band")
+    main(gen.cyan.lo_band.basic(), "Low Band")
+    main(gen.cyan.mid_band.basic(), "Mid Band")
+    main(gen.cyan.hi_band.basic(), "High Band")
 elif(targs.product == "Lily"):
-    main(gen.chestnut.lo_band.basic(4), "Low Band")
-    main(gen.chestnut.mid_band.basic(4), "Mid Band")
-    main(gen.chestnut.hi_band.basic(4), "High Band")
+    main(gen.chestnut.lo_band.basic(), "Low Band")
+    main(gen.chestnut.mid_band.basic(), "Mid Band")
+    main(gen.chestnut.hi_band.basic(), "High Band")
 
 build_report()
 sys.exit(test_fail)

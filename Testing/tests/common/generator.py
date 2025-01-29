@@ -115,10 +115,8 @@ def lo_band_quick():
 
 
 def lo_band_basic():
-
     print(sys._getframe().f_code.co_name)
 
-    channels = list(range(4))
     wave_freq = 1000000
     sample_count = 256
     tx_gain = 25
@@ -129,10 +127,8 @@ def lo_band_basic():
 
 
 def hi_band_basic():
-
     print(sys._getframe().f_code.co_name)
 
-    channels = list(range(4))
     wave_freq = 1000000
     sample_count = 256
     tx_gain = 25
@@ -309,10 +305,9 @@ class cyan:
             yield locals()
 
         @staticmethod
-        def basic(channels):
+        def basic():
             print(sys._getframe().f_code.co_name)
 
-            channels = list(range(4))
             wave_freq = 1000000         # 1MHz
             sample_count = 256
             tx_gain = 25
@@ -425,10 +420,9 @@ class cyan:
                 yield locals()
 
         @staticmethod
-        def basic(channels):
+        def basic():
             print(sys._getframe().f_code.co_name)
 
-            channels = list(range(4))
             wave_freq = 1000000         # 1MHz
             sample_count = 256
             tx_gain = 35
@@ -535,10 +529,9 @@ class cyan:
                 yield locals()
 
         @staticmethod
-        def basic(channels):
+        def basic():
             print(sys._getframe().f_code.co_name)
 
-            channels = list(range(4))
             wave_freq = 1000000
             sample_count = 256
             tx_gain = 50
@@ -603,10 +596,9 @@ class chestnut:
             yield locals()
 
         @staticmethod
-        def basic(channels):
+        def basic():
             print(sys._getframe().f_code.co_name)
 
-            channels = list(range(4))
             wave_freq = 1000000         # 1MHz
             sample_count = 256
             tx_gain = 25
@@ -718,10 +710,9 @@ class chestnut:
                 yield locals()
 
         @staticmethod
-        def basic(channels):
+        def basic():
             print(sys._getframe().f_code.co_name)
 
-            channels = list(range(4))
             wave_freq = 1000000         # 1MHz
             sample_count = 256
             tx_gain = 35
@@ -851,10 +842,9 @@ class chestnut:
                 yield locals()
 
         @staticmethod
-        def basic(channels):
+        def basic():
             print(sys._getframe().f_code.co_name)
 
-            channels = list(range(4))
             wave_freq = 1000000
             sample_count = 256
             tx_gain = 50
