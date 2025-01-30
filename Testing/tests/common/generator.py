@@ -315,11 +315,11 @@ class cyan:
             print(sys._getframe().f_code.co_name)
 
             channels = list(range(4))
-            wave_freq = 1000000         # 1MHz
+            wave_freq = 3000000         # 1MHz
             sample_count = 256
             tx_gain = 25
             rx_gain = 25
-            for center_freq in [ 100000000 ]:
+            for center_freq in [ 0 ]:
                 for sample_rate in [ 25000000 ]:
                     yield locals()
 
