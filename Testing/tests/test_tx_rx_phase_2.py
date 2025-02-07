@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 from scipy.optimize import curve_fit
 from scipy import stats
 import math
+import numpy as np
 
 from common import outputs as out
 import matplotlib.pyplot as plt
