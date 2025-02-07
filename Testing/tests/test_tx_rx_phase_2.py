@@ -4,7 +4,6 @@ from common import generator as gen
 from common import pdf_report
 from common import test_args
 
-import pandas as pd
 import matplotlib.pyplot as plt
 from scipy.optimize import curve_fit
 from scipy import stats
