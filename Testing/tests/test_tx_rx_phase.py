@@ -10,6 +10,8 @@ from scipy.optimize import curve_fit
 from scipy import stats
 import math
 
+from inspect import currentframe, getframeinfo
+
 from common import outputs as out
 import numpy as np
 import matplotlib.pyplot as plt
@@ -118,12 +120,17 @@ PARAMS: x,y
 RETURNS: best_fit (y values of the line of best fit '''
 def bestFit(x, y):
     guess = [max(y), wave_freq, 0.25, 0] #Based off generator code
-    param, covariance  = curve_fit(waveEquation, x, y, p0=guess) #using curve fit to give parameters
-    fit_amp = param[0]                                           #for wave equation that make a line of best fit
+    try:
+        param, covariance  = curve_fit(waveEquation, x, y, p0=guess)
+    except:
+        frameinfo = getframeinfo(currentframe())
+        print("[ERROR][{}][{}]: Failed to fit curve to data.".format(frameinfo.filename, frameinfo.lineno))
+        return (0, 0), (0, 0, 0)
+    fit_amp = param[0]                                           
     fit_freq = param[1]
     fit_phase = param[2]
     fit_offset = param[3]
-    best_fit = waveEquation(x, fit_amp, fit_freq, fit_phase, fit_offset) #making the line of best fit
+    best_fit = waveEquation(x, fit_amp, fit_freq, fit_phase, fit_offset)
 
     return (best_fit, fit_offset), (fit_amp, fit_freq, fit_phase) #returns other values as tuple, so they can be easily referenced
 
