@@ -121,7 +121,7 @@ def run_rx(csrc, channels, stack, sample_rate, _vsnk, timeout_occured):
 def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stack, rx_stack):
 
     # Setup.
-    csnk = crimson.get_snk_s(channels, sample_rate, center_freq, tx_gain)
+    csnk = crimson.get_snk_s(channels, sample_rate, 0, tx_gain)
     csrc = crimson.get_src_c(channels, sample_rate, center_freq, rx_gain)
 
     rx_timeout_occured = Event()
