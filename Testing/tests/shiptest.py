@@ -175,6 +175,7 @@ time.append(subprocess.getstatusoutput("cat hold.txt | grep 'Fuse00' | cut --com
 time.append(subprocess.getstatusoutput("cat hold.txt | grep 'Fuse02' | cut --complement -d ':' -f1")[1])
 time.append(subprocess.getstatusoutput("cat hold.txt | grep 'Fuse03' | cut --complement -d ':' -f1")[1])
 time.append(subprocess.getstatusoutput("cat hold.txt | grep 'GCC' | cut --complement -d ':' -f1")[1])
+time.append(subprocess.getstatusoutput("cat shiptest_out.txt | grep time/eeprom -A 1 | tail -n 1 | cut -d ':' -f2- | grep -o -E 'SERIAL [A-Z]{1,2}'")[1])
 
 #Setting up rx dictionary to hold board data
 rx_info = {}
@@ -191,7 +192,7 @@ for i, name in zip(range(num_channels), channel_names): #NOTE: This might be mor
     rx_info["RX: " + name].append(subprocess.getstatusoutput("cat hold.txt | grep 'Fuse02' | cut --complement -d ':' -f1")[1])
     rx_info["RX: " + name].append(subprocess.getstatusoutput("cat hold.txt | grep 'Fuse03' | cut --complement -d ':' -f1")[1])
     rx_info["RX: " + name].append(subprocess.getstatusoutput("cat hold.txt | grep 'GCC' | cut --complement -d ':' -f1")[1])
-
+    rx_info["RX: " + name].append(subprocess.getstatusoutput("cat shiptest_out.txt | grep rx/{}/eeprom -A 1 | tail -n 1 | cut -d ':' -f2- | grep -o -E 'SERIAL [A-Z]{{1,2}}'".format(i))[1])
 
 #Setting up tx dictionary to hold board data
 tx_info = {}
@@ -207,6 +208,7 @@ for i, name in zip(range(num_channels), channel_names):
     tx_info["TX: " + name].append(subprocess.getstatusoutput("cat hold.txt | grep 'Fuse02' | cut --complement -d ':' -f1")[1])
     tx_info["TX: " + name].append(subprocess.getstatusoutput("cat hold.txt | grep 'Fuse03' | cut --complement -d ':' -f1")[1])
     tx_info["TX: " + name].append(subprocess.getstatusoutput("cat hold.txt | grep 'GCC' | cut --complement -d ':' -f1")[1])
+    tx_info["TX: " + name].append(subprocess.getstatusoutput("cat shiptest_out.txt | grep tx/{}/eeprom -A 1 | tail -n 1 | cut -d ':' -f2- | grep -o -E 'SERIAL [A-Z]{{1,2}}'".format(i))[1])
 
 #Removing the temp files from the systems
 os.system("rm hold.txt")
@@ -269,7 +271,7 @@ def titlePage(pdf):
     #everything will be attached to unitList text object
     unitList = pdf.beginText(list_x, list_y)
 
-    #Writing Date and TIme Version
+    #Writing Date and Time Version
     unitList.setFont(bold_font, list_font_size)
     unitList.textOut("Computer Date: ")
     unitList.setFont(font, list_font_size)
@@ -310,13 +312,27 @@ def titlePage(pdf):
     pdf.drawImage(header_img, logo_x, logo_y, logo_width, logo_height)
 
     #Adding the time, tx, rx board info in a table
-    board_styles = ([('GRID', (0,0), (num_channels+1, 9), 1, colors.black),
+    board_styles = ([('GRID', (0,0), (num_channels+1, 10), 1, colors.black),
                     ('FONTSIZE', (1,4), (num_channels+1, 5),7.8),
                     ('BACKGROUND', (0, 0), (num_channels+1,0), '#D5D6D5'),
-                    ('BACKGROUND', (0, 0), (0,9), '#D5D6D5')])
+                    ('BACKGROUND', (0, 0), (0,10), '#D5D6D5')])
 
     #Time Board table
-    board_info = [["Time Board Information: "], ["Board"], ["Branch"], ["Revision"], ["Date"], ["MCU Serial"], ["Fuse 00"], ["Fuse 02"], ["Fuse 03"], ["GCC"]]
+    board_x, board_y = 3, list_y - rowHeight*10
+    global page_count, page_total
+    page_total +=1
+    page_count += 1
+    pdf.showPage() #Page break on pdf
+    pdf.drawText(title)
+    pdf.drawImage(header_img, logo_x, logo_y, logo_width, logo_height)
+    pg_x, pg_y = 650,10
+    pg_num = pdf.beginText()
+    pg_num.setTextOrigin(pg_x, pg_y)
+    pg_num.setFont(font, 10)
+    pg_num.textLine(text=("Page " + str(page_count) + " of " + str(page_total)))
+    pdf.drawText(pg_num)
+
+    board_info = [["Time Board Information: "], ["Board"], ["Branch"], ["Revision"], ["Date"], ["MCU Serial"], ["Fuse 00"], ["Fuse 02"], ["Fuse 03"], ["GCC"], ["Board Serial"]]
     for z in range(len(time)):
         board_info[z+1].append((time[z]))
 
@@ -329,9 +345,7 @@ def titlePage(pdf):
 
         if (z != 0): #If there are more than 4 channels, make another page for the board info
             board_x, board_y = 3, list_y - rowHeight*10
-            global page_total
             page_total +=1
-            global page_count
             page_count += 1
             pdf.showPage() #Page break on pdf
             pdf.drawText(title)
@@ -346,7 +360,7 @@ def titlePage(pdf):
         start, end = z*4, (z*4)+4 #only have to be calculated once
 
         #Adding Tx Board Table
-        board_info = [["TX Board Information: "], ["Board"], ["Branch"], ["Revision"], ["Date"], ["MCU Serial"], ["Fuse 00"], ["Fuse 02"], ["Fuse 03"], ["GCC"]]
+        board_info = [["TX Board Information: "], ["Board"], ["Branch"], ["Revision"], ["Date"], ["MCU Serial"], ["Fuse 00"], ["Fuse 02"], ["Fuse 03"], ["GCC"], ["Board Serial"]]
         for i, name in zip(range(start, end), channel_names[start:end]):
             board_info[0].append(chr(65+i))
             for z in range(len(tx_info["TX: " + name])):
@@ -358,7 +372,7 @@ def titlePage(pdf):
         board_y -= rowHeight*11
 
         #Adding Rx Board Table
-        board_info = [["RX Board Information: "], ["Board"], ["Branch"], ["Revision"], ["Date"], ["MCU Serial"], ["Fuse 00"], ["Fuse 02"], ["Fuse 03"], ["GCC"]]
+        board_info = [["RX Board Information: "], ["Board"], ["Branch"], ["Revision"], ["Date"], ["MCU Serial"], ["Fuse 00"], ["Fuse 02"], ["Fuse 03"], ["GCC"], ["Board Serial"]]
 
         for q, rxname in zip(range(start, end), channel_names[start:end]):
             board_info[0].append(chr(65+q))
