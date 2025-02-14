@@ -319,7 +319,7 @@ class cyan:
             sample_count = 256
             tx_gain = 10
             rx_gain = 10
-            for center_freq in [ 5e7 ]:
+            for center_freq in [ 1e8 ]:
                 for sample_rate in [ 25000000 ]:
                     yield locals()
 
