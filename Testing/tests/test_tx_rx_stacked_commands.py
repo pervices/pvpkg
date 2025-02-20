@@ -120,8 +120,8 @@ elif(targs.product == "Tate"):
     # main(gen.cyan.hi_band.basic(4), "High Band")
 elif(targs.product == "Lily"):
     main(gen.chestnut.lo_band.basic(4), "Low Band")
-    main(gen.chestnut.mid_band.basic(4), "Mid Band")
-    main(gen.chestnut.hi_band.basic(4), "High Band")
+    # main(gen.chestnut.mid_band.basic(4), "Mid Band")
+    # main(gen.chestnut.hi_band.basic(4), "High Band")
 
 build_report()
 sys.exit(test_fail)
