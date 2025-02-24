@@ -146,6 +146,8 @@ elif(product == 't'):
 elif(product == 'l'):
     generate = gen.ship_test_chestnut(num_channels)
 
+eeprom_programmed = False
+
 #Using the terminal to pull unit info
 # os.system('rm ' + current_dir + '/shiptest_out.txt')
 os.system('touch shiptest_out.txt')
@@ -175,7 +177,10 @@ time.append(subprocess.getstatusoutput("cat hold.txt | grep 'Fuse00' | cut --com
 time.append(subprocess.getstatusoutput("cat hold.txt | grep 'Fuse02' | cut --complement -d ':' -f1")[1])
 time.append(subprocess.getstatusoutput("cat hold.txt | grep 'Fuse03' | cut --complement -d ':' -f1")[1])
 time.append(subprocess.getstatusoutput("cat hold.txt | grep 'GCC' | cut --complement -d ':' -f1")[1])
-time.append(subprocess.getstatusoutput("cat shiptest_out.txt | grep time/eeprom -A 1 | tail -n 1 | cut -d ':' -f2- | grep -o -E 'SERIAL [A-Z]{1,2}'")[1])
+time_eep = subprocess.getstatusoutput("cat shiptest_out.txt | grep time/eeprom -A 1 | tail -n 1 | cut -d ':' -f2- | grep -o -E 'SERIAL [A-Z]{1,2}'")[1]
+if time_eep == "":
+    eeprom_programmed = True
+time.append(time_eep)
 
 #Setting up rx dictionary to hold board data
 rx_info = {}
@@ -192,7 +197,10 @@ for i, name in zip(range(num_channels), channel_names): #NOTE: This might be mor
     rx_info["RX: " + name].append(subprocess.getstatusoutput("cat hold.txt | grep 'Fuse02' | cut --complement -d ':' -f1")[1])
     rx_info["RX: " + name].append(subprocess.getstatusoutput("cat hold.txt | grep 'Fuse03' | cut --complement -d ':' -f1")[1])
     rx_info["RX: " + name].append(subprocess.getstatusoutput("cat hold.txt | grep 'GCC' | cut --complement -d ':' -f1")[1])
-    rx_info["RX: " + name].append(subprocess.getstatusoutput("cat shiptest_out.txt | grep rx/{}/eeprom -A 1 | tail -n 1 | cut -d ':' -f2- | grep -o -E 'SERIAL [A-Z]{{1,2}}'".format(i))[1])
+    rx_eep = subprocess.getstatusoutput("cat shiptest_out.txt | grep rx/{}/eeprom -A 1 | tail -n 1 | cut -d ':' -f2- | grep -o -E 'SERIAL [A-Z]{{1,2}}'".format(i))[1]
+    if rx_eep == "":
+        eeprom_programmed = 1
+    rx_info["RX: " + name].append(rx_eep)
 
 #Setting up tx dictionary to hold board data
 tx_info = {}
@@ -208,7 +216,10 @@ for i, name in zip(range(num_channels), channel_names):
     tx_info["TX: " + name].append(subprocess.getstatusoutput("cat hold.txt | grep 'Fuse02' | cut --complement -d ':' -f1")[1])
     tx_info["TX: " + name].append(subprocess.getstatusoutput("cat hold.txt | grep 'Fuse03' | cut --complement -d ':' -f1")[1])
     tx_info["TX: " + name].append(subprocess.getstatusoutput("cat hold.txt | grep 'GCC' | cut --complement -d ':' -f1")[1])
-    tx_info["TX: " + name].append(subprocess.getstatusoutput("cat shiptest_out.txt | grep tx/{}/eeprom -A 1 | tail -n 1 | cut -d ':' -f2- | grep -o -E 'SERIAL [A-Z]{{1,2}}'".format(i))[1])
+    tx_eep = subprocess.getstatusoutput("cat shiptest_out.txt | grep tx/{}/eeprom -A 1 | tail -n 1 | cut -d ':' -f2- | grep -o -E 'SERIAL [A-Z]{{1,2}}'".format(i))[1]
+    if tx_eep == "":
+        eeprom_programmed = True
+    tx_info["TX: " + name].append(tx_eep)
 
 #Removing the temp files from the systems
 os.system("rm hold.txt")
@@ -1191,6 +1202,14 @@ def main(iterations):
 
     summary.wrapOn(pdf, summary_width, summary_height)
     summary.drawOn(pdf, summary_x, summary_y)
+
+    eeprom_result = [["EEPROM Results: "], ["EEPROM Test"]]
+    eeprom_result.append([isPass(eeprom_programmed)])
+    eepromTable = Table(eeprom_result, style=[('GRID', (0,1), (4, counter+1), 1, colors.black),
+                                ('BACKGROUND', (0,1), (2,1), '#D5D6D5')])
+
+    eepromTable.wrapOn(pdf, summary_width, summary_height)
+    eepromTable.drawOn(pdf, summary_x, summary_y)
 
     os.chdir(output_dir) #Ensuring we are saving in the output directory
     pdf.save() #saving the pdf
