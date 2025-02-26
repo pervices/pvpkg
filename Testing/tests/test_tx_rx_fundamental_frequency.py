@@ -80,6 +80,9 @@ def test(it, data):
     return data
 
 def main(iterations, desc):
+    #Ensure a non interactive rederer is used to avoid issues on headless systems
+    matplotlib.use('PDF')
+
     data  = [["Centre Freq", "Wave Freq", "Channel", "Result"]]
     for it in iterations:
         test(it, data)
