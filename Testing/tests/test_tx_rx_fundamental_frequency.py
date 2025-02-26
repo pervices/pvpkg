@@ -6,6 +6,7 @@ from common import pdf_report
 from common import test_args
 from retrying import retry
 import numpy as np
+import matplotlib
 import matplotlib.pyplot as plt
 import sys
 import time, datetime
