@@ -334,6 +334,17 @@ class cyan:
                 yield locals()
 
         @staticmethod
+        def phaseCoherencyAllBands(runs):
+            print(sys._getframe().f_code.co_name)
+            sample_count = int(round(25000000/10000))
+            tx_gain = 30
+            rx_gain = 28
+            wave_freq = 500000
+            for center_freq in [100000000, 2000000000, 9000000000]: #100MHz, 2GHz, 9GHz
+                for i in range(runs):
+                    yield locals()
+
+        @staticmethod
         def tx_trigger():
             print(sys._getframe().f_code.co_name)
             center_freq = 0

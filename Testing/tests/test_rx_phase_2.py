@@ -60,7 +60,7 @@ dump_dir = parent_dir + leaf_dir
 dump_path = os.path.join("./", dump_dir)
 os.makedirs(dump_path,exist_ok=True)
 
-test_plots = dump_dir + iso_time + "-tx_rx_phase_2"
+test_plots = dump_dir + iso_time + "-rx_phase_2"
 os.makedirs(test_plots, exist_ok = True)
 
 reals = []
@@ -174,19 +174,19 @@ def boolToWord(word):
 
 def main():
     # Add test specific arguments
-    p = argparse.ArgumentParser(description = "TX/RX phase coherency test")
+    p = argparse.ArgumentParser(description = "RX phase coherency test")
     p.add_argument('-r', '--rate', default=25000000, type=int, help="Sample rate in samples per second")
     p.add_argument('-b', '--band', default=False, type=bool, help="Apply a band pass filter to the data")
     # Add generic test arguments
     global targs 
-    targs = test_args.TestArgs(parser=p, testDesc="TX/RX phase coherency test")
+    targs = test_args.TestArgs(parser=p, testDesc="RX phase coherency test")
 
     args = p.parse_args()
 
     # PDF Report
     global report
-    report = pdf_report.ClassicShipTestReport("tx_rx_phase_2", targs.serial, targs.report_dir, targs.docker_sha)
-    report.insert_title_page("Low Band TX RX Phase Coherency Test 2")
+    report = pdf_report.ClassicShipTestReport("rx_phase_2", targs.serial, targs.report_dir, targs.docker_sha)
+    report.insert_title_page("Low Band RX Phase Coherency Test 2")
 
     print("Title page generated")
     '''This iteration loop will run through setting up the channels to the values associated to the generator code. It will also loop through
@@ -196,12 +196,11 @@ def main():
     table_printed_once = 0
     num_runs = 15
 
-    if(targs.product == 'Vaunt'):
-        iterations = gen.lo_band_phaseCoherency(num_runs)
-    elif(targs.product == 'Tate'):
-        iterations = gen.cyan.lo_band.phaseCoherency(num_runs)
-    elif(targs.product == 'Lily'):
-        iterations = gen.chestnut.lo_band.phaseCoherency(num_runs)
+    if(targs.product == 'Tate'):
+        iterations = gen.cyan.lo_band.phaseCoherencyAllBands(num_runs)
+    else:
+        print("ERROR: RX phase coherency test is currently only supported for Cyan units.")
+        sys.exit(1)
 
     
     # First column is the first channel's value. Subsequent columns are the delta between that channel and the first.
@@ -212,9 +211,17 @@ def main():
     phase_delta_matrix = np.zeros((num_runs, len(targs.channels)))
     offset_delta_matrix = np.zeros((num_runs, len(targs.channels)))
 
+    siggen_freq = 0
     num_iter = 0
     for it in iterations:
         num_iter+=1
+
+        # Prompt the user with the frequency of the signal to inject, unless it is the same as the most recent instruction
+        if (siggen_freq != it["wave_freq"] + it["center_freq"]):
+            siggen_freq = it["wave_freq"] + it["center_freq"]
+            print("Connect {} MHz signal to each RX channel.".format(siggen_freq/1000000))
+            input("Press Enter to continue...")
+
         gen.dump(it) 
 
         '''
@@ -226,7 +233,7 @@ def main():
 
         global sample_rate
         sample_rate = args.rate
-        tx_stack = [ (tx_burst , sample_rate)]
+        tx_stack = None
         rx_stack = [ (rx_burst, int(it["sample_count"]))]
 
         try:
