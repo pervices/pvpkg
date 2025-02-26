@@ -3,12 +3,14 @@ from common import engine
 from common import generator as gen
 from common import pdf_report
 from common import test_args
+import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 import sys
 import os
 
 def main(iterations, title="TX RX Gain Test") -> int:
+    matplotlib.use('PDF')
     fail_flag = 0
 
     iteration_areas = []
