@@ -45,6 +45,8 @@ import traceback
 
 begin_cutoff_waves = 20 #how many waves to cut off before tracking data
 
+np.set_printoptions(legacy='1.25')
+
 #USER SET VARIABLES
 channel_names = []
 
