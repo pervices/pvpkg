@@ -163,14 +163,9 @@ def boolToWord(word):
         return("Fail")
 
 def main():
-    # Add test specific arguments
-    p = argparse.ArgumentParser(description = "TX/RX phase coherency test")
-    p.add_argument('-r', '--rate', default=25000000, type=int, help="Sample rate in samples per second")
-    p.add_argument('-b', '--band', default=False, type=bool, help="Apply a band pass filter to the data")
     # Add generic test arguments
     global targs 
-    targs = test_args.TestArgs(parser=p, testDesc="TX/RX phase coherency test")
-    args = p.parse_args()
+    targs = test_args.TestArgs(testDesc="TX/RX phase coherency test")
 
     global report
     report = pdf_report.ClassicShipTestReport("tx_rx_phase_2", targs.serial, targs.report_dir, targs.docker_sha)
@@ -251,14 +246,6 @@ def main():
                     raise Exception ("No data received on rx")
                 elif len(real) <= begin_cutoff:
                     raise Exception ("Rx received less data than cutoff. Received: " + str(len(real)) + ". Required: " + str(begin_cutoff))
-
-                # Filter data so we only see the phase of the intended signal if requested by user
-                if args.band:
-                    b,a = signal.bessel(1, [wave_freq * 0.9, wave_freq * 1.1], 'bandpass', analog=False, norm='delay', fs = sample_rate)
-                    real = signal.filtfilt(b, a, real, padtype=None)
-
-                    if len(real) <= begin_cutoff:
-                        raise Exception ("Filter error, rx data lost")
 
                 # Explicitly assigning the relevant slice of data to a variable, then passing said variable to bestFit
                 # Creating a slice anonymously may cause a crash where somehow data collected the the engine wasn't making it to bestFit
@@ -387,6 +374,13 @@ def main():
         # Add plots to the report
         makePlots(x_time, reals, best_fits, offsets, wave_freq, sample_rate)
 
+        # If we have more than 4 channels, we need to cap our values at 6 digits such that all channels fit on the page
+        if len(channel_list) > 4:
+            freq_df = freq_df.round(6)
+            ampl_df = ampl_df.round(6)
+            phase_df = phase_df.round(6)
+            offset_df = offset_df.round(6)
+
         # Add results tables to the report
         report.buffer_put("table_wide", [tuple(freq_res.columns.tolist())] + freq_res.to_records(index=False).tolist(), "Frequency Results:")
         report.buffer_put("text", " ")
@@ -401,6 +395,8 @@ def main():
         report.buffer_put("table_wide", [tuple(' ') + tuple(ampl_df.columns.tolist())] + ampl_df.to_records(index=True).tolist(), "Amplitude Data:")
         report.buffer_put("text", " ")
         report.buffer_put("table_wide", [tuple(' ') + tuple(phase_df.columns.tolist())] + phase_df.to_records(index=True).tolist(), "Phase Data:")
+        report.buffer_put("text", " ")
+        report.buffer_put("table_wide", [tuple(' ') + tuple(offset_df.columns.tolist())] + offset_df.to_records(index=True).tolist(), "Offset Data:")
         report.buffer_put("pagebreak")
     
     # Add overall summary table
@@ -410,8 +406,6 @@ def main():
     
     # get back outside to save
     os.chdir(parent_dir)
-    # os.system("mkdir report_output")
-    # os.chdir("report_output")
     report.draw_from_buffer()
     report.save()
     print("PDF report saved at " + report.get_filename())
