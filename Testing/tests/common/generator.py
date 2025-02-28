@@ -188,15 +188,16 @@ def hi_band_gain_rx():
     for rx_gain in [ 10, 20, 30 ]:
         yield locals()
 
-def lo_band_phaseCoherency(runs):
+def lo_band_phaseCoherency():
     print(sys._getframe().f_code.co_name)
-    sample_count = int(round(25000000/10000))
+    sample_rate = 25000000
+    sample_count = int(round(sample_rate/10000))
     tx_gain = 25
     rx_gain = 25
+    sample_rate = 25000000
     center_freq = 10000000
     wave_freq = 500000
-    for i in range(runs):
-        yield locals()
+    yield locals()
 
 def tx_trigger():
     print(sys._getframe().f_code.co_name)
@@ -323,26 +324,26 @@ class cyan:
                 yield locals()
 
         @staticmethod
-        def phaseCoherency(runs):
+        def phaseCoherency():
             print(sys._getframe().f_code.co_name)
-            sample_count = int(round(25000000/10000))
+            sample_rate = 25000000
+            sample_count = int(round(sample_rate/10000))
             tx_gain = 30
             rx_gain = 28
             center_freq = 100000000     # 100MHz
             wave_freq = 500000
-            for i in range(runs):
-                yield locals()
+            yield locals()
 
         @staticmethod
-        def phaseCoherencyAllBands(runs):
+        def phaseCoherencyAllBands():
             print(sys._getframe().f_code.co_name)
-            sample_count = int(round(25000000/10000))
+            sample_rate = 25000000
+            sample_count = int(round(sample_rate/10000))
             tx_gain = 30
             rx_gain = 28
             wave_freq = 500000
             for center_freq in [100000000, 2000000000, 9000000000]: #100MHz, 2GHz, 9GHz
-                for i in range(runs):
-                    yield locals()
+                yield locals()
 
         @staticmethod
         def tx_trigger():
@@ -603,16 +604,16 @@ class chestnut:
                 yield locals()
 
         @staticmethod
-        def phaseCoherency(runs):
+        def phaseCoherency():
             print(sys._getframe().f_code.co_name)
-            sample_count = int(round(25000000/10000))
+            sample_rate = 25000000
+            sample_count = int(round(sample_rate/10000))
             tx_gain = 30
             rx_gain = 30
             center_freq = 100000000     # 100MHz
             sample_rate = 25000000
             wave_freq = 500000
-            for i in range(runs):
-                yield locals()
+            yield locals()
 
         @staticmethod
         def tx_trigger():
