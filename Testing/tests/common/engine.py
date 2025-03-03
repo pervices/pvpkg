@@ -130,7 +130,7 @@ def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stac
     vsnk = [] # Will be extended when using stacked commands.
     threads = [
         threading.Thread(target = run_tx, args = (csnk, channels, tx_stack, sample_rate, wave_freq)),
-        threading.Thread(target = run_rx, args = (csrc, channels, rx_stack, sample_rate, vsnk, rx_timeout_occured)),
+        # threading.Thread(target = run_rx, args = (csrc, channels, rx_stack, sample_rate, vsnk, rx_timeout_occured)),
         ]
 
     for thread in threads:
