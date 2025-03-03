@@ -14,6 +14,7 @@ import pandas as pd
 from inspect import currentframe, getframeinfo
 
 from common import outputs as out
+from inspect import currentframe, getframeinfo
 import matplotlib.pyplot as plt
 from scipy.optimize import curve_fit
 from scipy.stats import norm
@@ -37,18 +38,14 @@ std_ratio = 4  #number std gets multiplied by for checks, normalized to a sample
 std_ratio_phase = 8  #number std gets multiplied by for checks, normalized to a sample size of 10
                      #This value is adjusted later depending on the number of runs.
 
-wave_freq = -1 
-runs = -1 
-iteration_count = -1
-sample_rate = -1
-plotted_samples = -1
-sample_count = -1
-
 # Criteria  
 freq_std_thresh = 0.6    
 ampl_std_thresh = 0.001
 phase_mean_thresh = 0.0349066 #rad bound
 phase_std_thresh = 0.002
+
+# Number of test runs per frequency
+num_runs = 15
 
 now = datetime.now() 
 iso_time = now.strftime("%Y%m%d%H%M%S.%f")
@@ -60,13 +57,8 @@ dump_dir = parent_dir + leaf_dir
 dump_path = os.path.join("./", dump_dir)
 os.makedirs(dump_path,exist_ok=True)
 
-test_plots = dump_dir + iso_time + "-rx_phase_2"
+test_plots = dump_dir + iso_time + "-tx_rx_phase_2"
 os.makedirs(test_plots, exist_ok = True)
-
-reals = []
-best_fits = []
-x_time = []
-offsets = []
 
 baselineCh_index = 0
 channel_map = np.array(['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'])
@@ -95,8 +87,8 @@ def subPlot(x, y, ax, best_fit, offset, title):
     f.write("\n" + str(y))
     f.close()
 
-def bestFit(x, y):
-    guess = [max(y), wave_freq, 0.25, 0] #Based off generator code
+def bestFit(x, y, wave_freq):
+    guess = [max(y), wave_freq, 0.25, 0]
     try:
         param, covariance  = curve_fit(waveEquation, x, y, p0=guess)
     except:
@@ -109,17 +101,15 @@ def bestFit(x, y):
     fit_offset = param[3]
     best_fit = waveEquation(x, fit_amp, fit_freq, fit_phase, fit_offset) 
 
-    return (best_fit, fit_offset), (fit_amp, fit_freq, fit_phase) #returns other values as tuple, so they can be easily referenced
+    return (best_fit, fit_offset), (fit_amp, fit_freq, fit_phase) 
 
-def makePlots():
-
-    global plotted_samples
+def makePlots(x_time, real_data, best_fit_data, offset_data, wave_freq, sample_rate):
     plotted_samples = int(round(1/(int(wave_freq)/sample_rate))*num_output_waves)
     f = open("Data_Plots.txt", "w")
     f.close()
 
     num_subplot_rows = int(math.ceil(len(targs.channels) / 2))
-    for run in range(runs+1):
+    for run in range(num_runs):
         fig, axes = plt.subplots(num_subplot_rows, 2)
         plt.suptitle("Amplitude versus Samples: Individual Channels for Run {}".format(run))
 
@@ -128,7 +118,7 @@ def makePlots():
         row = 0
         for ch in range(len(targs.channels)):
             subplot_row = int(ch / 2)
-            subPlot(x_time[0:plotted_samples], reals[run][ch][0:plotted_samples], axes[subplot_row][ch%2], best_fits[run][ch][0:plotted_samples], offsets[run][ch], "Channel {}".format(channel_map[targs.channels[ch]]))
+            subPlot(x_time[0:plotted_samples], real_data[run][ch][0:plotted_samples], axes[subplot_row][ch%2], best_fit_data[run][ch][0:plotted_samples], offset_data[run][ch], "Channel {}".format(channel_map[targs.channels[ch]]))
 
         plt.tight_layout(pad=0.4, w_pad=0.5, h_pad=1.0) #Formatting the plots nicely
 
@@ -147,11 +137,11 @@ def makePlots():
 
         #dots
         for ch in range(len(targs.channels)):
-            plt.plot(x_time[0:plotted_samples], reals[run][ch][0:plotted_samples], '.', markersize=3, label="Real {}".format(channel_map[targs.channels[ch]]))
+            plt.plot(x_time[0:plotted_samples], real_data[run][ch][0:plotted_samples], '.', markersize=3, label="Real {}".format(channel_map[targs.channels[ch]]))
 
         #Best fits
         for ch in range(len(targs.channels)):
-            plt.plot(x_time[0:plotted_samples], best_fits[run][ch][0:plotted_samples], '-', linewidth= 0.75, label="Best Fit {}".format(channel_map[targs.channels[ch]]))
+            plt.plot(x_time[0:plotted_samples], best_fit_data[run][ch][0:plotted_samples], '-', linewidth= 0.75, label="Best Fit {}".format(channel_map[targs.channels[ch]]))
 
         plt.legend()
 
@@ -173,274 +163,253 @@ def boolToWord(word):
         return("Fail")
 
 def main():
-    # Add test specific arguments
-    p = argparse.ArgumentParser(description = "RX phase coherency test")
-    p.add_argument('-r', '--rate', default=25000000, type=int, help="Sample rate in samples per second")
-    p.add_argument('-b', '--band', default=False, type=bool, help="Apply a band pass filter to the data")
     # Add generic test arguments
     global targs 
-    targs = test_args.TestArgs(parser=p, testDesc="RX phase coherency test")
+    targs = test_args.TestArgs(testDesc="RX phase coherency test")
 
-    args = p.parse_args()
-
-    # PDF Report
     global report
     report = pdf_report.ClassicShipTestReport("rx_phase_2", targs.serial, targs.report_dir, targs.docker_sha)
-    report.insert_title_page("Low Band RX Phase Coherency Test 2")
-
-    print("Title page generated")
-    '''This iteration loop will run through setting up the channels to the values associated to the generator code. It will also loop through
-    each channel and save the information to temp arrays. These temp arrays allow us to format our data into 2D arrays, so it's easier to
-    reference later'''
-
-    table_printed_once = 0
-    num_runs = 15
+    report.insert_title_page("RX Phase Coherency Test 2")
 
     if(targs.product == 'Tate'):
-        iterations = gen.cyan.lo_band.phaseCoherencyAllBands(num_runs)
+        iterations = gen.cyan.lo_band.phaseCoherencyAllBands()
     else:
         print("ERROR: RX phase coherency test is currently only supported for Cyan units.")
         sys.exit(1)
 
-    
-    # First column is the first channel's value. Subsequent columns are the delta between that channel and the first.
-    # Example: channel list is [0, 1, 3], freq_delta_matrix for a single iteration would be as follows:
-    # [freqCh0, freqCh1 - freqCh0, freqCh3 - freqCh0]
-    freq_delta_matrix = np.zeros((num_runs, len(targs.channels)))
-    ampl_delta_matrix = np.zeros((num_runs, len(targs.channels)))
-    phase_delta_matrix = np.zeros((num_runs, len(targs.channels)))
-    offset_delta_matrix = np.zeros((num_runs, len(targs.channels)))
-
-    siggen_freq = 0
-    num_iter = 0
-    for it in iterations:
-        num_iter+=1
-
-        # Prompt the user with the frequency of the signal to inject, unless it is the same as the most recent instruction
-        if (siggen_freq != it["wave_freq"] + it["center_freq"]):
-            siggen_freq = it["wave_freq"] + it["center_freq"]
-            print("Connect {} MHz signal to each RX channel.".format(siggen_freq/1000000))
-            input("Press Enter to continue...")
-
-        gen.dump(it) 
-
-        '''
-        Note how each step of time is equiv to 1/sample_rate
-        When you reach sample_rate/sample_rate, one second has passed.
-        TX: Below, we will be sending oiut samples equiv. to sample_rate after 10 seconds, so this will end at 11 seconds
-        RX: Calculate the oversampling rate to find the number of samples to intake that match your ideal (sample count)
-        '''
-
-        global sample_rate
-        sample_rate = args.rate
-        tx_stack = None
-        rx_stack = [ (rx_burst, int(it["sample_count"]))]
-
-        try:
-            vsnk = engine.run(targs.channels, it["wave_freq"], sample_rate, it["center_freq"], it["tx_gain"], it["rx_gain"], tx_stack, rx_stack)
-        except Exception as err:
-            report.draw_from_buffer()
-            report.save()
-            sys.exit(1)
-
-        if (table_printed_once == 0):
-            table_data = [["Center Frequency (Hz)", "Wave Frequency (Hz)", "Sample Rate (SPS)", "Sample Count", "TX Gain (dB)", "RX Gain (dB)"],
-                            [it["center_freq"], it["wave_freq"], sample_rate, it["sample_count"], it["tx_gain"], it["rx_gain"]]]
-            report.buffer_put("table_wide", table_data, "Test Configuration")
-            table_printed_once = 1
-
-        global sample_count
-        sample_count = int(it["sample_count"])
-        global runs
-        runs = it["i"] #equal sign because we only care about the last value
-        global wave_freq
-        wave_freq = int(it["wave_freq"])
-
-        # Number of waves to cutoff before starting analysis
-        global begin_cutoff_waves
-        begin_cutoff = int(round((1/(wave_freq/sample_rate))*begin_cutoff_waves))
-
-        global x_time
-        x_time = np.linspace(begin_cutoff/sample_rate, sample_count/sample_rate, num=sample_count-begin_cutoff)
-
-        ampl = []
-        freq = []
-        phase = []
-        offset = []
-        best = []
-        ch_real_data = []
-
-        for ch, channel in enumerate(vsnk): 
-            real = [datum.real for datum in channel.data()]
-
-            if len(real) == 0:
-                raise Exception ("No data received on rx")
-            elif len(real) <= begin_cutoff:
-                raise Exception ("Rx received less data than cutoff. Received: " + str(len(real)) + ". Required: " + str(begin_cutoff))
-
-            # Filter data so we only see the phase of the intended signal if requested by user
-            if args.band:
-                b,a = signal.bessel(1, [wave_freq * 0.9, wave_freq * 1.1], 'bandpass', analog=False, norm='delay', fs = sample_rate)
-                real = signal.filtfilt(b, a, real, padtype=None)
-
-                if len(real) <= begin_cutoff:
-                    raise Exception ("Filter error, rx data lost")
-
-            # Explicitly assigning the relevant slice of data to a variable, then passing said variable to bestFit
-            # Creating a slice anonymously may cause a crash where somehow data collected the the engine wasn't making it to bestFit
-            trimmed_real = real[begin_cutoff:]
-
-            ch_real_data.append(trimmed_real)
-
-            best_fit, param = bestFit(x_time, trimmed_real)
-
-            # For intuitive phase comparison, amplitudes need to either be all pos or all neg. Here we'll take the absolute
-            # value of amplitude, and adjust the phase by pi if the amplitude was negative. Wrap phase if it exceeds 2pi.
-            adjusted_phase = param[2]
-            if param[0] < 0:
-                adjusted_phase += math.pi
-                if adjusted_phase > (2*math.pi):
-                    adjusted_phase -= (2*math.pi)
-
-            abs_ampl = abs(param[0])
-
-            ampl.append(abs_ampl)
-            freq.append(param[1])
-            phase.append(adjusted_phase)
-            best.append(best_fit[0])
-            offset.append((best_fit[1]))
-
-        #Appending to the temp variables
-        reals.append(ch_real_data)
-        best_fits.append(best)
-        offsets.append(offset)
-
-        freq_delta_matrix[runs][baselineCh_index] = freq[baselineCh_index]
-        ampl_delta_matrix[runs][baselineCh_index] = ampl[baselineCh_index]
-        phase_delta_matrix[runs][baselineCh_index] = phase[baselineCh_index]
-        offset_delta_matrix[runs][baselineCh_index] = offset[baselineCh_index]
-        for channel in range(1, len(targs.channels)):
-            freq_delta_matrix[runs][channel] = freq[channel] - freq[baselineCh_index]
-            ampl_delta_matrix[runs][channel] = ampl[channel] - ampl[baselineCh_index]
-            phase_delta_matrix[runs][channel] = phase[channel] - phase[baselineCh_index]
-            offset_delta_matrix[runs][channel] = offset[channel] - offset[baselineCh_index]
-
-    
-    # Add collected data into dataframes so that we can manipulate/visulasize the data easily
     channel_list = channel_map[targs.channels].tolist()
     for ch in range(1, len(channel_list)):
         channel_list[ch] = "\u0394" + channel_list[ch] + channel_map[targs.channels[0]]
 
-    # Organize data into a datatable such that we can manipulate/visualize more easily
-    freq_df = pd.DataFrame(columns=channel_list, data=freq_delta_matrix)
-    ampl_df = pd.DataFrame(columns=channel_list, data=ampl_delta_matrix)
-    phase_df = pd.DataFrame(columns=channel_list, data=phase_delta_matrix)
-    offset_df = pd.DataFrame(columns=channel_list, data=offset_delta_matrix)
+    summary_table = [["Center Freq", "Wave Freq", "Freq Result", "Ampl Result", "Phase Result"]]
+
+    for it in iterations:
+        # Prompt the user with the frequency of the signal to inject
+        siggen_freq = it["wave_freq"] + it["center_freq"]
+        print("Connect {} MHz signal to each RX channel.".format(siggen_freq/1000000))
+        input("Press Enter to continue...")
+
+        gen.dump(it) 
+
+        # First column is the first channel's value. Subsequent columns are the delta between that channel and the first.
+        # Example: channel list is [0, 1, 3], freq_delta_matrix for a single iteration would be as follows:
+        # [freqCh0, freqCh1 - freqCh0, freqCh3 - freqCh0]
+        freq_delta_matrix = np.zeros((num_runs, len(targs.channels)))
+        ampl_delta_matrix = np.zeros((num_runs, len(targs.channels)))
+        phase_delta_matrix = np.zeros((num_runs, len(targs.channels)))
+        offset_delta_matrix = np.zeros((num_runs, len(targs.channels)))
+
+        reals = []
+        best_fits = []
+        offsets = []
+        sample_rate = int(it["sample_rate"])
+        sample_count = int(it["sample_count"])
+        wave_freq = int(it["wave_freq"])
+        for run in range(num_runs):
+            print("Beginning run {}/{}".format(run, num_runs - 1))
+            '''
+            Note how each step of time is equiv to 1/sample_rate
+            When you reach sample_rate/sample_rate, one second has passed.
+            TX: Below, we will be sending oiut samples equiv. to sample_rate after 10 seconds, so this will end at 11 seconds
+            RX: Calculate the oversampling rate to find the number of samples to intake that match your ideal (sample count)
+            '''
+            tx_stack = None
+            rx_stack = [ (rx_burst, int(it["sample_count"]))]
+
+            try:
+                vsnk = engine.run(targs.channels, it["wave_freq"], sample_rate, it["center_freq"], it["tx_gain"], it["rx_gain"], tx_stack, rx_stack)
+            except Exception as err:
+                frameinfo = getframeinfo(currentframe())
+                print("[ERROR][{}][{}]: Exception occured while streaming:\n {}".format(frameinfo.filename, frameinfo.lineno, err))
+                report.draw_from_buffer()
+                report.save()
+                sys.exit(1)
+
+            if (run == 0):
+                table_data = [["Center Frequency (Hz)", "Wave Frequency (Hz)", "Sample Rate (SPS)", "Sample Count", "TX Gain (dB)", "RX Gain (dB)"],
+                                [it["center_freq"], it["wave_freq"], sample_rate, it["sample_count"], it["tx_gain"], it["rx_gain"]]]
+                report.buffer_put("table_wide", table_data, "Test Configuration")
+            
+
+            # Number of waves to cutoff before starting analysis
+            begin_cutoff = int(round((1/(wave_freq/sample_rate))*begin_cutoff_waves))
+
+            x_time = np.linspace(begin_cutoff/sample_rate, sample_count/sample_rate, num=sample_count-begin_cutoff)
+
+            ampl = []
+            freq = []
+            phase = []
+            offset = []
+            best = []
+            ch_real_data = []
+
+            for ch, channel in enumerate(vsnk): 
+                real = [datum.real for datum in channel.data()]
+
+                if len(real) == 0:
+                    raise Exception ("No data received on rx")
+                elif len(real) <= begin_cutoff:
+                    raise Exception ("Rx received less data than cutoff. Received: " + str(len(real)) + ". Required: " + str(begin_cutoff))
+
+                # Explicitly assigning the relevant slice of data to a variable, then passing said variable to bestFit
+                # Creating a slice anonymously may cause a crash where somehow data collected the the engine wasn't making it to bestFit
+                trimmed_real = real[begin_cutoff:]
+
+                ch_real_data.append(trimmed_real)
+
+                best_fit, param = bestFit(x_time, trimmed_real, wave_freq)
+
+                # For intuitive phase comparison, amplitudes need to either be all pos or all neg. Here we'll take the absolute
+                # value of amplitude, and adjust the phase by pi if the amplitude was negative. Wrap phase if it exceeds 2pi.
+                adjusted_phase = param[2]
+                if param[0] < 0:
+                    adjusted_phase += math.pi
+                    if adjusted_phase > (2*math.pi):
+                        adjusted_phase -= (2*math.pi)
+
+                abs_ampl = abs(param[0])
+
+                ampl.append(abs_ampl)
+                freq.append(param[1])
+                phase.append(adjusted_phase)
+                best.append(best_fit[0])
+                offset.append((best_fit[1]))
+
+            #Appending to the temp variables
+            reals.append(ch_real_data)
+            best_fits.append(best)
+            offsets.append(offset)
+
+            freq_delta_matrix[run][baselineCh_index] = freq[baselineCh_index]
+            ampl_delta_matrix[run][baselineCh_index] = ampl[baselineCh_index]
+            phase_delta_matrix[run][baselineCh_index] = phase[baselineCh_index]
+            offset_delta_matrix[run][baselineCh_index] = offset[baselineCh_index]
+            for channel in range(1, len(targs.channels)):
+                freq_delta_matrix[run][channel] = freq[channel] - freq[baselineCh_index]
+                ampl_delta_matrix[run][channel] = ampl[channel] - ampl[baselineCh_index]
+                phase_delta_matrix[run][channel] = phase[channel] - phase[baselineCh_index]
+                offset_delta_matrix[run][channel] = offset[channel] - offset[baselineCh_index]
+
+        # Organize data into a datatable such that we can manipulate/visualize more easily
+        freq_df = pd.DataFrame(columns=channel_list, data=freq_delta_matrix)
+        ampl_df = pd.DataFrame(columns=channel_list, data=ampl_delta_matrix)
+        phase_df = pd.DataFrame(columns=channel_list, data=phase_delta_matrix)
+        offset_df = pd.DataFrame(columns=channel_list, data=offset_delta_matrix)
+        
+        # Add summary statistics to the dataframes
+        freq_df = pd.concat([freq_df.describe().loc[['min', 'max', 'mean', 'std']], freq_df])
+        ampl_df = pd.concat([ampl_df.describe().loc[['min', 'max', 'mean', 'std']], ampl_df])
+        phase_df = pd.concat([phase_df.describe().loc[['min', 'max', 'mean', 'std']], phase_df])
+        offset_df = pd.concat([offset_df.describe().loc[['min', 'max', 'mean', 'std']], offset_df])
+
+        # Increase the std_ratio if the number of iterations implies a substantially smaller std_deviation
+        global std_ratio
+        alt_std_ratio = math.sqrt(num_runs)
+        if alt_std_ratio > std_ratio:
+            print("Replacing old std_ratio (=" + str(std_ratio) + ") with updated str_ratio (="+ str(alt_std_ratio) + ") due to iteration count.")
+            std_ratio = alt_std_ratio
+
+        # Increase the std_ratio_phase if the number of iterations implies a substantially smaller std_deviation
+        global std_ratio_phase
+        alt_std_ratio = math.sqrt(num_runs)
+        if alt_std_ratio > std_ratio_phase:
+            print("Replacing old std_ratio_phase (=" + str(std_ratio) + ") with updated std_ratio_phase (="+ str(alt_std_ratio) + ") due to iteration count.")
+            std_ratio_phase = alt_std_ratio
+
+        # Basic test to check if signal is present on our baseline channel. 
+        if wave_freq - (std_ratio * freq_std_thresh) < freq_df.loc['mean'][channel_list[0]] < wave_freq + (std_ratio * freq_std_thresh):
+            print("[ERROR][{}][{}]: Signal not detected on Ch{}".format(frameinfo.filename, frameinfo.lineno, channel_list[0]))
+
+        # Get test results for min, max, and stddev for freq, ampl, and phase
+        result_cols = ['Test', 'Criteria'] + channel_list
+
+        freq_res = pd.DataFrame(columns=result_cols)
+        freq_res['Test'] = ['min', 'max', 'std']
+        freq_res['Criteria'] = ['> mean - 4*std', '< mean + 4*std', "< " + str(freq_std_thresh)]
+        freq_res.set_index('Test', drop=False, inplace=True)
+        for ch in channel_list:
+            freq_res.at['min', ch] = boolToWord(freq_df.loc['min'][ch] > (freq_df.loc['mean'][ch] - 4*freq_df.loc['std'][ch]))
+            freq_res.at['max', ch] = boolToWord(freq_df.loc['max'][ch] < (freq_df.loc['mean'][ch] + 4*freq_df.loc['std'][ch]))
+            freq_res.at['std', ch] = boolToWord(freq_df.loc['std'][ch] < freq_std_thresh)
+
+        ampl_res = pd.DataFrame(columns=result_cols)
+        ampl_res['Test'] = ['min', 'max', 'std']
+        ampl_res['Criteria'] = ['> mean - 4*std', '< mean + 4*std', "< " + str(ampl_std_thresh)]
+        ampl_res.set_index('Test', drop=False, inplace=True)
+        for ch in channel_list:
+            ampl_res.at['min', ch] = boolToWord(ampl_df.loc['min'][ch] > (ampl_df.loc['mean'][ch] - 4*ampl_df.loc['std'][ch]))
+            ampl_res.at['max', ch] = boolToWord(ampl_df.loc['max'][ch] < (ampl_df.loc['mean'][ch] + 4*ampl_df.loc['std'][ch]))
+            ampl_res.at['std', ch] = boolToWord(ampl_df.loc['std'][ch] < ampl_std_thresh)
+        
+        phase_res = pd.DataFrame(columns=result_cols)
+        phase_res['Test'] = ['min', 'max', 'std']
+        phase_res['Criteria'] = ['> mean - 4*std', '< mean + 4*std', "< " + str(ampl_std_thresh)]
+        phase_res.set_index('Test', drop=False, inplace=True)
+        for ch in channel_list:
+            phase_res.at['min', ch] = boolToWord(phase_df.loc['min'][ch] > (phase_df.loc['mean'][ch] - 4*phase_df.loc['std'][ch]))
+            phase_res.at['max', ch] = boolToWord(phase_df.loc['max'][ch] < (phase_df.loc['mean'][ch] + 4*phase_df.loc['std'][ch]))
+            phase_res.at['std', ch] = boolToWord(phase_df.loc['std'][ch] < phase_std_thresh)
+
+        # Return a failure if any of the tests failed
+        fail_flag = 0
+        freq_overall_res = freq_res[channel_list].apply(lambda column: column.str.contains("Pass")).all().all()
+        ampl_overall_res = ampl_res[channel_list].apply(lambda column: column.str.contains("Pass")).all().all()
+        phase_overall_res = phase_res[channel_list].apply(lambda column: column.str.contains("Pass")).all().all()
+        if not freq_overall_res or not ampl_overall_res or not phase_overall_res:
+            fail_flag = 1
+
+        # Update overall summary table with this iteration
+        summary_table.append([it["center_freq"], it["wave_freq"], boolToWord(freq_overall_res), boolToWord(ampl_overall_res), boolToWord(phase_overall_res)])
+
+        # Print data and results table to console
+        print("\nFrequency Data:")
+        print(freq_df.to_markdown(index=True))
+        print("\nAmplitude Data:")
+        print(ampl_df.to_markdown(index=True))
+        print("\nPhase Data:")
+        print(phase_df.to_markdown(index=True))
+        print("\nFrequency Results:")
+        print(freq_res.to_markdown(index=False))
+        print("\nAmplitude Results:")
+        print(ampl_res.to_markdown(index=False))
+        print("\nPhase Results:")
+        print(phase_res.to_markdown(index=False))
+
+        # Add plots to the report
+        makePlots(x_time, reals, best_fits, offsets, wave_freq, sample_rate)
+
+        # If we have more than 4 channels, we need to cap our decimal precision at 6 digits such that all channels fit on the page
+        if len(channel_list) > 4:
+            freq_df = freq_df.round(6)
+            ampl_df = ampl_df.round(6)
+            phase_df = phase_df.round(6)
+            offset_df = offset_df.round(6)
+
+        # Add results tables to the report
+        report.buffer_put("table_wide", [tuple(freq_res.columns.tolist())] + freq_res.to_records(index=False).tolist(), "Frequency Results:")
+        report.buffer_put("text", " ")
+        report.buffer_put("table_wide", [tuple(ampl_res.columns.tolist())] + ampl_res.to_records(index=False).tolist(), "Amplitude Results:")
+        report.buffer_put("text", " ")
+        report.buffer_put("table_wide", [tuple(phase_res.columns.tolist())] + phase_res.to_records(index=False).tolist(), "Phase Results:")
+
+        # Add data tables to the report
+        report.buffer_put("text", " ")
+        report.buffer_put("table_wide", [tuple(' ') + tuple(freq_df.columns.tolist())] + freq_df.to_records(index=True).tolist(), "Frequency Data:")
+        report.buffer_put("text", " ")
+        report.buffer_put("table_wide", [tuple(' ') + tuple(ampl_df.columns.tolist())] + ampl_df.to_records(index=True).tolist(), "Amplitude Data:")
+        report.buffer_put("text", " ")
+        report.buffer_put("table_wide", [tuple(' ') + tuple(phase_df.columns.tolist())] + phase_df.to_records(index=True).tolist(), "Phase Data:")
+        report.buffer_put("text", " ")
+        report.buffer_put("table_wide", [tuple(' ') + tuple(offset_df.columns.tolist())] + offset_df.to_records(index=True).tolist(), "Offset Data:")
+        report.buffer_put("pagebreak")
     
-    # Add summary statistics to the dataframes
-    freq_df = pd.concat([freq_df.describe().loc[['min', 'max', 'mean', 'std']], freq_df])
-    ampl_df = pd.concat([ampl_df.describe().loc[['min', 'max', 'mean', 'std']], ampl_df])
-    phase_df = pd.concat([phase_df.describe().loc[['min', 'max', 'mean', 'std']], phase_df])
-    offset_df = pd.concat([offset_df.describe().loc[['min', 'max', 'mean', 'std']], offset_df])
-
-    # Increase the std_ratio if the number of iterations implies a substantially smaller std_deviation
-    global std_ratio
-    alt_std_ratio = math.sqrt(num_iter)
-    if alt_std_ratio > std_ratio:
-        print("Replacing old std_ratio (=" + str(std_ratio) + ") with updated str_ratio (="+ str(alt_std_ratio) + ") due to iteration count.")
-        std_ratio = alt_std_ratio
-
-    # Increase the std_ratio_phase if the number of iterations implies a substantially smaller std_deviation
-    global std_ratio_phase
-    alt_std_ratio = math.sqrt(num_iter)
-    if alt_std_ratio > std_ratio_phase:
-        print("Replacing old std_ratio_phase (=" + str(std_ratio) + ") with updated std_ratio_phase (="+ str(alt_std_ratio) + ") due to iteration count.")
-        std_ratio_phase = alt_std_ratio
-
-    # Basic test to check if signal is present on our baseline channel. 
-    if wave_freq - (std_ratio * freq_std_thresh) < freq_df.loc['mean'][channel_list[0]] < wave_freq + (std_ratio * freq_std_thresh):
-        print("[ERROR][{}][{}]: Signal not detected on Ch{}".format(frameinfo.filename, frameinfo.lineno, channel_list[0]))
-
-    # Get test results for min, max, and stddev for freq, ampl, and phase
-    result_cols = ['Test', 'Criteria'] + channel_list
-
-    freq_res = pd.DataFrame(columns=result_cols)
-    freq_res['Test'] = ['min', 'max', 'std']
-    freq_res['Criteria'] = ['> mean - 4*std', '< mean + 4*std', "< " + str(freq_std_thresh)]
-    freq_res.set_index('Test', drop=False, inplace=True)
-    for ch in channel_list:
-        freq_res.at['min', ch] = boolToWord(freq_df.loc['min'][ch] > (freq_df.loc['mean'][ch] - 4*freq_df.loc['std'][ch]))
-        freq_res.at['max', ch] = boolToWord(freq_df.loc['max'][ch] < (freq_df.loc['mean'][ch] + 4*freq_df.loc['std'][ch]))
-        freq_res.at['std', ch] = boolToWord(freq_df.loc['std'][ch] < freq_std_thresh)
-
-    ampl_res = pd.DataFrame(columns=result_cols)
-    ampl_res['Test'] = ['min', 'max', 'std']
-    ampl_res['Criteria'] = ['> mean - 4*std', '< mean + 4*std', "< " + str(ampl_std_thresh)]
-    ampl_res.set_index('Test', drop=False, inplace=True)
-    for ch in channel_list:
-        ampl_res.at['min', ch] = boolToWord(ampl_df.loc['min'][ch] > (ampl_df.loc['mean'][ch] - 4*ampl_df.loc['std'][ch]))
-        ampl_res.at['max', ch] = boolToWord(ampl_df.loc['max'][ch] < (ampl_df.loc['mean'][ch] + 4*ampl_df.loc['std'][ch]))
-        ampl_res.at['std', ch] = boolToWord(ampl_df.loc['std'][ch] < ampl_std_thresh)
-    
-    phase_res = pd.DataFrame(columns=result_cols)
-    phase_res['Test'] = ['min', 'max', 'std']
-    phase_res['Criteria'] = ['> mean - 4*std', '< mean + 4*std', "< " + str(ampl_std_thresh)]
-    phase_res.set_index('Test', drop=False, inplace=True)
-    for ch in channel_list:
-        phase_res.at['min', ch] = boolToWord(phase_df.loc['min'][ch] > (phase_df.loc['mean'][ch] - 4*phase_df.loc['std'][ch]))
-        phase_res.at['max', ch] = boolToWord(phase_df.loc['max'][ch] < (phase_df.loc['mean'][ch] + 4*phase_df.loc['std'][ch]))
-        phase_res.at['std', ch] = boolToWord(phase_df.loc['std'][ch] < phase_std_thresh)
-
-    # Return a failure if any of the tests failed
-    fail_flag = 0
-    freq_overall_res = freq_res[channel_list].apply(lambda column: column.str.contains("Pass")).all().all()
-    ampl_overall_res = ampl_res[channel_list].apply(lambda column: column.str.contains("Pass")).all().all()
-    phase_overall_res = phase_res[channel_list].apply(lambda column: column.str.contains("Pass")).all().all()
-    if not freq_overall_res or not ampl_overall_res or not phase_overall_res:
-        fail_flag = 1
-
-    # Print data and results table to console
-    print("\nFrequency Data:")
-    print(freq_df.to_markdown(index=True))
-    print("\nAmplitude Data:")
-    print(ampl_df.to_markdown(index=True))
-    print("\nPhase Data:")
-    print(phase_df.to_markdown(index=True))
-    print("\nFrequency Results:")
-    print(freq_res.to_markdown(index=False))
-    print("\nAmplitude Results:")
-    print(ampl_res.to_markdown(index=False))
-    print("\nPhase Results:")
-    print(phase_res.to_markdown(index=False))
-
-    # Add results tables to the report
-    report.insert_text_large("Overall and Subtests Tables: ")
-    report.insert_text(" ")
-    report.insert_table([tuple(freq_res.columns.tolist())] + freq_res.to_records(index=False).tolist(), 20, "Frequency Results:")
-    report.insert_text(" ")
-    report.insert_table([tuple(ampl_res.columns.tolist())] + ampl_res.to_records(index=False).tolist(), 20, "Amplitude Results:")
-    report.insert_text(" ")
-    report.insert_table([tuple(phase_res.columns.tolist())] + phase_res.to_records(index=False).tolist(), 20, "Phase Results:")
+    # Add overall summary table
+    report.insert_text_large("Test Overview:")
+    report.insert_table(summary_table, 20)
     report.new_page()
-
-    # Add data tables to the report
-    report.insert_text_large("Test Data")
-    report.insert_text(" ")
-    report.insert_table([tuple(' ') + tuple(freq_df.columns.tolist())] + freq_df.to_records(index=True).tolist(), 20, "Frequency Data:")
-    report.insert_text(" ")
-    report.insert_table([tuple(' ') + tuple(ampl_df.columns.tolist())] + ampl_df.to_records(index=True).tolist(), 20, "Amplitude Data:")
-    report.insert_text(" ")
-    report.insert_table([tuple(' ') + tuple(phase_df.columns.tolist())] + phase_df.to_records(index=True).tolist(), 20, "Phase Data:")
-    report.new_page()
-
-    # Add plots to the report
-    makePlots()
     
-
     # get back outside to save
     os.chdir(parent_dir)
-    # os.system("mkdir report_output")
-    # os.chdir("report_output")
     report.draw_from_buffer()
     report.save()
     print("PDF report saved at " + report.get_filename())
