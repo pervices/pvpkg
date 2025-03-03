@@ -57,7 +57,7 @@ dump_dir = parent_dir + leaf_dir
 dump_path = os.path.join("./", dump_dir)
 os.makedirs(dump_path,exist_ok=True)
 
-test_plots = dump_dir + iso_time + "-tx_rx_phase_2"
+test_plots = dump_dir + iso_time + "-rx_phase_2"
 os.makedirs(test_plots, exist_ok = True)
 
 baselineCh_index = 0
