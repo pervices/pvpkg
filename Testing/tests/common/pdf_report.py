@@ -30,15 +30,19 @@ class ClassicShipTestReport:
     cursor_x = 50
     cursor_y = h-30
     current_page = 1
-    # This should not be here for obvious reasons
+
     num_channels = 4
-    channel_names = ["Channel A", "Channel B", "Channel C", "Channel D"]
+    channel_names = ["Channel A", "Channel B", "Channel C", "Channel D", "Channel E", "Channel F", "Channel G", "Channel H"]
+
     # This stores the elements temporarily before calling draw all
     buffer = []
 
-    def __init__(self, doc_title, serial_num = "SERIAL", output_dir = None, docker_sha = None):
+    def __init__(self, doc_title, serial_num = "SERIAL", output_dir = None, docker_sha = None, channels=[0,1,2,3]):
         self.serial_num = serial_num
         self.docker_sha = docker_sha
+        self.channels = channels
+        self.channel_names = [self.channel_names[channel] for channel in self.channels]
+        self.num_channels = len(self.channels)
         if output_dir == None:
             output_dir = str(os.getcwd())
         self.output_dir = output_dir
@@ -87,7 +91,7 @@ class ClassicShipTestReport:
             if i[0] == "image":
                 self.insert_image(i[1], i[2])
             elif i[0] == "image_double":
-                self.insert_image_double(i[1], i[2])
+                self.insert_image_double(i[1], i[2], i[3], i[4])
             elif i[0] == "image_quad":
                 self.insert_image_quad_grid(i[1], i[2])
             elif i[0] == "image_octo":
@@ -129,7 +133,7 @@ class ClassicShipTestReport:
     """
         Insert two images side by side
     """
-    def insert_image_double(self, images, desc=None):
+    def insert_image_double(self, images, desc=None, width=250, height=187):
         # Check y space for both image and text
         if (self.cursor_y < (187 + 16)):
             self.new_page()
@@ -142,11 +146,11 @@ class ClassicShipTestReport:
         self.move_cursor(0, 187 + 3)
 
         try:
-            self.c.drawImage(images[0], 50, self.cursor_y, 250, 187)
+            self.c.drawImage(images[0], 50, self.cursor_y, width, height)
         except:
             print("Left image not found")
         try:
-            self.c.drawImage(images[1], 312, self.cursor_y, 250, 187)
+            self.c.drawImage(images[1], 312, self.cursor_y, width, height)
         except:
             print("Right image not found")
 
@@ -505,12 +509,9 @@ class ClassicShipTestReport:
         time.append(subprocess.getstatusoutput("cat hold.txt | grep 'Fuse03' | cut --complement -d ':' -f1")[1])
         time.append(subprocess.getstatusoutput("cat hold.txt | grep 'GCC' | cut --complement -d ':' -f1")[1])
 
-        num_channels = self.num_channels
-        channel_names = self.channel_names
-
         # Setting up rx dictionary to hold board data
         rx_info = {}
-        for i, name in zip(range(num_channels), channel_names): #NOTE: This might be more efficent with numpy arrays
+        for i, name in zip(range(self.num_channels), self.channel_names): #NOTE: This might be more efficent with numpy arrays
             os.system("grep 'rx/{}/fw_version' shiptest_out.txt -A 15 > hold.txt".format(i))
 
             rx_info["RX: " + name] = []
@@ -527,7 +528,7 @@ class ClassicShipTestReport:
 
         # Setting up tx dictionary to hold board data
         tx_info = {}
-        for i, name in zip(range(num_channels), channel_names):
+        for i, name in zip(range(self.num_channels), self.channel_names):
             os.system("grep 'tx/{}/fw_version' shiptest_out.txt -A 15 > hold.txt".format(i))
             tx_info["TX: " + name] = []
             tx_info["TX: " + name].append(subprocess.getstatusoutput("cat hold.txt | grep 'Board Version' | cut --complement -d ':' -f1")[1])
@@ -586,7 +587,7 @@ class ClassicShipTestReport:
 
             #Adding Tx Board Table
             board_info = [["TX Board Information: "], ["Board"], ["Branch"], ["Revision"], ["Date"], ["MCU Serial"], ["Fuse 00"], ["Fuse 02"], ["Fuse 03"], ["GCC"]]
-            for i, name in zip(range(start, end), channel_names[start:end]):
+            for i, name in zip(range(start, end), self.channel_names[start:end]):
                 board_info[0].append(chr(65+i))
                 for z in range(len(tx_info["TX: " + name])):
                     board_info[z+1].append((tx_info["TX: " + name][z]))
@@ -599,7 +600,7 @@ class ClassicShipTestReport:
             #Adding Rx Board Table
             board_info = [["RX Board Information: "], ["Board"], ["Branch"], ["Revision"], ["Date"], ["MCU Serial"], ["Fuse 00"], ["Fuse 02"], ["Fuse 03"], ["GCC"]]
 
-            for q, rxname in zip(range(start, end), channel_names[start:end]):
+            for q, rxname in zip(range(start, end), self.channel_names[start:end]):
                 board_info[0].append(chr(65+q))
                 for z in range(len(rx_info["RX: " + rxname])):
                     board_info[z+1].append((rx_info["RX: " + rxname][z]))

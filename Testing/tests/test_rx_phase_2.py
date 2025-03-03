@@ -150,7 +150,12 @@ def makePlots(x_time, real_data, best_fit_data, offset_data, wave_freq, sample_r
         fig.savefig(s2, format="png", dpi=300)
         img2 = report.get_image_from_io_stream(s2)
 
-        report.buffer_put("image_double", [img1, img2], "Run " + str(run))
+        img_width = 250
+        img_height = 187
+        if len(targs.channels) > 4:
+            img_height = 374
+
+        report.buffer_put("image_double", [img1, img2], "Run " + str(run), img_width, img_height)
         print("Run figure has been put in buffer")
         plt.clf()
 
