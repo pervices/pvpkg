@@ -13,6 +13,7 @@ import sys
 import datetime
 
 def run_tx(csnk, channels, stack, sample_rate, wave_freq):
+    print("PT1")
 
     """                                       +-----------+
     +---------+   +---------+   +---------+   |           |
@@ -49,13 +50,16 @@ def run_tx(csnk, channels, stack, sample_rate, wave_freq):
 
         # Run.
         csnk.set_start_time(uhd.time_spec(frame[0])) #frame[0]= tx_stack[10, ] in fund_freq test
+        print("PT2")
         flowgraph.run()
+        print("PT3")
         #print("tx time spec is:", uhd.time_spec(frame[0]))
         for hed in heds:
             hed.reset()
 
 
 def run_rx(csrc, channels, stack, sample_rate, _vsnk, timeout_occured):
+    print("PR1")
 
     """
     +-----------+
@@ -81,7 +85,9 @@ def run_rx(csrc, channels, stack, sample_rate, _vsnk, timeout_occured):
         flowgraph.connect((csrc, channel_index), vsnk[channel_index])
 
     # Run. The flowgraph must be started before stream commands are sent.
+    print("PR2")
     flowgraph.start()
+    print("PR3")
 
     for frame in stack: #rx_stack in fund_freq
         cmd = uhd.stream_cmd_t(uhd.stream_mode_t.STREAM_MODE_NUM_SAMPS_AND_DONE)
@@ -98,6 +104,8 @@ def run_rx(csrc, channels, stack, sample_rate, _vsnk, timeout_occured):
     expected_duration = stack[0][0] + (stack[0][1]/sample_rate) #stack[0][0] is start and stack[0][1] is the sample count
     timeout_time = time.clock_gettime(time.CLOCK_MONOTONIC) + expected_duration + 10
 
+    print("PR4")
+
     #print("total sample count is:", total_sample_count)
     while len(vsnk[0].data()) < total_sample_count:
         time.sleep(0.1)
@@ -112,13 +120,18 @@ def run_rx(csrc, channels, stack, sample_rate, _vsnk, timeout_occured):
             timeout_occured.set()
             break
 
+    print("PR5")
+
     flowgraph.stop()
+    print("PR6")
     flowgraph.wait()
+    print("PR7")
 
     # Cannot return from thread so extend instead.
     _vsnk.extend(vsnk)
 
 def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stack, rx_stack):
+    print("PRR1")
     rx_timeout_occured = Event()
 
     vsnk = [] # Will be extended when using stacked commands.
@@ -133,12 +146,18 @@ def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stac
     for thread in threads:
         thread.start()
 
+    print("PRR2")
+
     # Stop.
     for thread in threads:
         thread.join()
 
+    print("PRR3")
+
     if rx_timeout_occured.is_set():
         raise Exception ("RX TIMED OUT")
+
+    print("PRR4")
 
     return vsnk
 
