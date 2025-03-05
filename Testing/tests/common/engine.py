@@ -136,9 +136,9 @@ def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stac
 
     vsnk = [] # Will be extended when using stacked commands.
     threads = []
-    if tx_stack != None:
-        csnk = crimson.get_snk_s(channels, sample_rate, center_freq, tx_gain)
-        threads.append(threading.Thread(target = run_tx, args = (csnk, channels, tx_stack, sample_rate, wave_freq)))
+    # if tx_stack != None:
+    #     csnk = crimson.get_snk_s(channels, sample_rate, center_freq, tx_gain)
+    #     threads.append(threading.Thread(target = run_tx, args = (csnk, channels, tx_stack, sample_rate, wave_freq)))
     if rx_stack != None:
         csrc = crimson.get_src_c(channels, sample_rate, center_freq, rx_gain)
         threads.append(threading.Thread(target = run_rx, args = (csrc, channels, rx_stack, sample_rate, vsnk, rx_timeout_occured)))
