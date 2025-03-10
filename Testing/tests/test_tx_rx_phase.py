@@ -95,9 +95,17 @@ def bestFit(x, y, wave_freq):
         frameinfo = getframeinfo(currentframe())
         print("[ERROR][{}][{}]: Failed to fit curve to data.".format(frameinfo.filename, frameinfo.lineno))
         return (0, 0), (0, 0, 0)
-    fit_amp = param[0]                                         
+    fit_amp = abs(param[0])
     fit_freq = param[1]
     fit_phase = param[2]
+    # inverting the amplitude acts like phase offset by pi rad (180 degrees)
+    if param[0] < 0:
+        fit_phase += math.pi
+    # ensure the 0 <= phase < 2*pi to make comparison easy
+    while fit_phase < 0:
+        fit_phase += (2*math.pi)
+    while fit_phase >= (2*math.pi):
+        fit_phase -= (2*math.pi)
     fit_offset = param[3]
     best_fit = waveEquation(x, fit_amp, fit_freq, fit_phase, fit_offset) 
 
@@ -255,19 +263,9 @@ def main():
 
                 best_fit, param = bestFit(x_time, trimmed_real, wave_freq)
 
-                # For intuitive phase comparison, amplitudes need to either be all pos or all neg. Here we'll take the absolute
-                # value of amplitude, and adjust the phase by pi if the amplitude was negative. Wrap phase if it exceeds 2pi.
-                adjusted_phase = param[2]
-                if param[0] < 0:
-                    adjusted_phase += math.pi
-                    if adjusted_phase > (2*math.pi):
-                        adjusted_phase -= (2*math.pi)
-
-                abs_ampl = abs(param[0])
-
-                ampl.append(abs_ampl)
+                ampl.append(param[0])
                 freq.append(param[1])
-                phase.append(adjusted_phase)
+                phase.append(param[2])
                 best.append(best_fit[0])
                 offset.append((best_fit[1]))
 
@@ -284,6 +282,8 @@ def main():
                 freq_delta_matrix[run][channel] = freq[channel] - freq[baselineCh_index]
                 ampl_delta_matrix[run][channel] = ampl[channel] - ampl[baselineCh_index]
                 phase_delta_matrix[run][channel] = phase[channel] - phase[baselineCh_index]
+                if phase_delta_matrix[run][channel] < 0:
+                    phase_delta_matrix[run][channel] += (2*math.pi)
                 offset_delta_matrix[run][channel] = offset[channel] - offset[baselineCh_index]
 
         # Organize data into a datatable such that we can manipulate/visualize more easily
