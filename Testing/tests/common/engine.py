@@ -48,7 +48,7 @@ def run_tx(csnk, channels, stack, sample_rate, wave_freq):
             flowgraph.connect(c2ss[channel_index], (csnk, channel_index))
 
         # Run.
-        csnk.set_start_time(uhd.time_spec(frame[0])) #frame[0]= tx_stack[10, ] in fund_freq test
+        csnk.set_start_time(uhd.time_spec(frame[0] + 10)) #frame[0]= tx_stack[10, ] in fund_freq test
         flowgraph.run()
         #print("tx time spec is:", uhd.time_spec(frame[0]))
         for hed in heds:
@@ -88,7 +88,7 @@ def run_rx(csrc, channels, stack, sample_rate, _vsnk, timeout_occured):
         cmd.num_samps = frame[1] #frame[1]= rx_stack[( , it["sample_count"])] in fund_freq
         cmd.stream_now = False
         #print(frame[0])
-        cmd.time_spec = uhd.time_spec(frame[0]) #frame[0]=rx_stack[ 10.005, ] in fund_freq
+        cmd.time_spec = uhd.time_spec(frame[0] + 10) #frame[0]=rx_stack[ 10.005, ] in fund_freq
         csrc.issue_stream_cmd(cmd)
         #print("rx stack time is:", cmd.time_spec)
 
@@ -126,6 +126,10 @@ def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stac
     if tx_stack != None:
         csnk = crimson.get_snk_s(channels, sample_rate, center_freq, tx_gain)
         threads.append(threading.Thread(target = run_tx, args = (csnk, channels, tx_stack, sample_rate, wave_freq)))
+
+
+    time.sleep(10)
+
     if rx_stack != None:
         csrc = crimson.get_src_c(channels, sample_rate, center_freq, rx_gain)
         threads.append(threading.Thread(target = run_rx, args = (csrc, channels, rx_stack, sample_rate, vsnk, rx_timeout_occured)))
