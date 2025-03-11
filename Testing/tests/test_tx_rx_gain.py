@@ -161,11 +161,23 @@ if __name__ == "__main__":
         ret = main(gen.lo_band_gain_rx(), "Low Band RX Gain Test")
         test_status.append(["Low Band RX Gain Test", to_pass_fail(ret)])
 
-        ret = main(gen.hi_band_gain_tx(), "High Band TX Gain Test")
-        test_status.append(["High Band TX Gain Test", to_pass_fail(ret)])
+        ret = main(gen.hi_band_gain_tx800M(), "High Band 800M TX Gain Test")
+        test_status.append(["High Band TX 800M Gain Test", to_pass_fail(ret)])
 
-        ret = main(gen.hi_band_gain_rx(), "High Band RX Gain Test")
-        test_status.append(["High Band RX Gain Test", to_pass_fail(ret)])
+        ret = main(gen.hi_band_gain_rx800M(), "High Band 800M RX Gain Test")
+        test_status.append(["High Band RX 800M Gain Test", to_pass_fail(ret)])
+
+        ret = main(gen.hi_band_gain_tx1G(), "High Band 1G TX Gain Test")
+        test_status.append(["High Band TX 1G Gain Test", to_pass_fail(ret)])
+
+        ret = main(gen.hi_band_gain_rx1G(), "High Band 1G RX Gain Test")
+        test_status.append(["High Band RX 1G Gain Test", to_pass_fail(ret)])
+
+        ret = main(gen.hi_band_gain_tx2G(), "High Band 2G TX Gain Test")
+        test_status.append(["High Band TX 800M Gain Test", to_pass_fail(ret)])
+
+        ret = main(gen.hi_band_gain_rx2G(), "High Band 2G RX Gain Test")
+        test_status.append(["High Band RX 800M Gain Test", to_pass_fail(ret)])
 
 
     report.insert_text_large("Test Results")

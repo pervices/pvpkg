@@ -163,7 +163,7 @@ def lo_band_gain_tx():
         yield locals()
 
 
-def hi_band_gain_tx():
+def hi_band_gain_tx2G():
 
     print(sys._getframe().f_code.co_name)
 
@@ -174,15 +174,59 @@ def hi_band_gain_tx():
     rx_gain = 40#increasing the fixed gain may cause saturation
     for tx_gain in [ 5, 10, 20 ]:
         yield locals()
+def hi_band_gain_tx1G():
+
+    print(sys._getframe().f_code.co_name)
+
+    wave_freq = 1000000
+    sample_count = 1000
+    center_freq = 1000000000
+    sample_rate = 9848485
+    rx_gain = 40#increasing the fixed gain may cause saturation
+    for tx_gain in [ 5, 10, 20 ]:
+        yield locals()
+def hi_band_gain_tx800M():
+
+    print(sys._getframe().f_code.co_name)
+
+    wave_freq = 1000000
+    sample_count = 1000
+    center_freq = 800000000
+    sample_rate = 9848485
+    rx_gain = 40#increasing the fixed gain may cause saturation
+    for tx_gain in [ 5, 10, 20 ]:
+        yield locals()
 
 
-def hi_band_gain_rx():
+def hi_band_gain_rx2G():
 
     print(sys._getframe().f_code.co_name)
 
     wave_freq = 1000000
     sample_count = 1000
     center_freq = 2000000000
+    sample_rate = 4062500
+    tx_gain = 40#increasing the fixed gain may cause saturation
+    for rx_gain in [ 10, 20, 30 ]:
+        yield locals()
+def hi_band_gain_rx1G():
+
+    print(sys._getframe().f_code.co_name)
+
+    wave_freq = 1000000
+    sample_count = 1000
+    center_freq = 1000000000
+    sample_rate = 4062500
+    tx_gain = 40#increasing the fixed gain may cause saturation
+    for rx_gain in [ 10, 20, 30 ]:
+        yield locals()
+def hi_band_gain_rx800M():
+
+    print(sys._getframe().f_code.co_name)
+
+    wave_freq = 1000000
+    sample_count = 1000
+    center_freq = 800000000
     sample_rate = 4062500
     tx_gain = 40#increasing the fixed gain may cause saturation
     for rx_gain in [ 10, 20, 30 ]:
