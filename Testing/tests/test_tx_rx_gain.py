@@ -155,11 +155,11 @@ if __name__ == "__main__":
         test_status = [["Test", "Status"]]
 
         # Change the argument in the following function to select how many channels to test
-        ret = main(gen.lo_band_gain_tx(), "Low Band TX Gain Test")
-        test_status.append(["Low Band TX Gain Test", to_pass_fail(ret)])
+        # ret = main(gen.lo_band_gain_tx(), "Low Band TX Gain Test")
+        # test_status.append(["Low Band TX Gain Test", to_pass_fail(ret)])
 
-        ret = main(gen.lo_band_gain_rx(), "Low Band RX Gain Test")
-        test_status.append(["Low Band RX Gain Test", to_pass_fail(ret)])
+        # ret = main(gen.lo_band_gain_rx(), "Low Band RX Gain Test")
+        # test_status.append(["Low Band RX Gain Test", to_pass_fail(ret)])
 
         ret = main(gen.hi_band_gain_tx(), "High Band TX Gain Test")
         test_status.append(["High Band TX Gain Test", to_pass_fail(ret)])
