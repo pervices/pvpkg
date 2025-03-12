@@ -68,10 +68,10 @@ def hi_band_wave_sweep():
     sample_count = int(round(25000000/10000))
     tx_gain = 25
     rx_gain = 25
-    center_freq = 1000000000
     sample_rate = 25000000
-    for wave_freq in [ 600000, 800000, 1000000 ]:
-        yield locals()
+    for center_freq in [1000000000, 2000000000, 3000000000]:
+        for wave_freq in [ 600000, 800000, 1000000 ]:
+            yield locals()
 
 def hi_band_wave_easy():
     print(sys._getframe().f_code.co_name)
