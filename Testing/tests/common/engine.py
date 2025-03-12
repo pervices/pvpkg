@@ -86,7 +86,7 @@ def run_rx(csrc, channels, stack, sample_rate, _vsnk, timeout_occured):
 
     # Run. The flowgraph must be started before stream commands are sent.
     print("PR2")
-    flowgraph.start()
+    flowgraph.run()
     print("PR3")
 
     for frame in stack: #rx_stack in fund_freq
