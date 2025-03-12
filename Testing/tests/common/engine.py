@@ -141,7 +141,6 @@ def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stac
     #     threads.append(threading.Thread(target = run_tx, args = (csnk, channels, tx_stack, sample_rate, wave_freq)))
     if rx_stack != None:
         csrc = crimson.get_src_c(channels, sample_rate, center_freq, rx_gain)
-        print("PRR1.5")
         run_rx(csrc, channels, rx_stack, sample_rate, vsnk, rx_timeout_occured)
         # threads.append(threading.Thread(target = run_rx, args = (csrc, channels, rx_stack, sample_rate, vsnk, rx_timeout_occured)))
 
