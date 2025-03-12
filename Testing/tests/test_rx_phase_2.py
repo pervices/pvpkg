@@ -112,7 +112,6 @@ def bestFit(x, y, wave_freq):
     return (best_fit, fit_offset), (fit_amp, fit_freq, fit_phase) 
 
 def makePlots(x_time, real_data, best_fit_data, offset_data, wave_freq, sample_rate):
-    plotted_samples = int(round(1/(int(wave_freq)/sample_rate))*num_output_waves)
     f = open("Data_Plots.txt", "w")
     f.close()
 
@@ -126,7 +125,7 @@ def makePlots(x_time, real_data, best_fit_data, offset_data, wave_freq, sample_r
         row = 0
         for ch in range(len(targs.channels)):
             subplot_row = int(ch / 2)
-            subPlot(x_time[0:plotted_samples], real_data[run][ch][0:plotted_samples], axes[subplot_row][ch%2], best_fit_data[run][ch][0:plotted_samples], offset_data[run][ch], "Channel {}".format(channel_map[targs.channels[ch]]))
+            subPlot(x_time, real_data[run][ch], axes[subplot_row][ch%2], best_fit_data[run][ch], offset_data[run][ch], "Channel {}".format(channel_map[targs.channels[ch]]))
 
         plt.tight_layout(pad=0.4, w_pad=0.5, h_pad=1.0) #Formatting the plots nicely
 
@@ -145,11 +144,11 @@ def makePlots(x_time, real_data, best_fit_data, offset_data, wave_freq, sample_r
 
         #dots
         for ch in range(len(targs.channels)):
-            plt.plot(x_time[0:plotted_samples], real_data[run][ch][0:plotted_samples], '.', markersize=3, label="Real {}".format(channel_map[targs.channels[ch]]))
+            plt.plot(x_time, real_data[run][ch], '.', markersize=3, label="Real {}".format(channel_map[targs.channels[ch]]))
 
         #Best fits
         for ch in range(len(targs.channels)):
-            plt.plot(x_time[0:plotted_samples], best_fit_data[run][ch][0:plotted_samples], '-', linewidth= 0.75, label="Best Fit {}".format(channel_map[targs.channels[ch]]))
+            plt.plot(x_time, best_fit_data[run][ch], '-', linewidth= 0.75, label="Best Fit {}".format(channel_map[targs.channels[ch]]))
 
         plt.legend()
 
