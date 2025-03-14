@@ -16,3 +16,4 @@ tomlkit~=0.12.2
 widgetsnbextension~=4.0.10
 yq~=3.2.3
 pandas
+tabulate
