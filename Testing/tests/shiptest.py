@@ -11,6 +11,7 @@ from gnuradio import uhd
 import time, datetime
 import os
 import sys
+import re
 import subprocess
 import threading
 import argparse
@@ -167,6 +168,7 @@ os.system("touch hold.txt")
 os.system("grep '0/time/fw_version' shiptest_out.txt -A 15 > hold.txt")
 
 #Setting up time array to hold board data
+eeprom_fail = False
 time = []
 time.append(subprocess.getstatusoutput("cat hold.txt | grep 'Board Version' | cut --complement -d ':' -f1")[1])
 time.append(subprocess.getstatusoutput("cat hold.txt | grep 'Branch' | cut --complement -d ':' -f1")[1])
@@ -177,7 +179,11 @@ time.append(subprocess.getstatusoutput("cat hold.txt | grep 'Fuse00' | cut --com
 time.append(subprocess.getstatusoutput("cat hold.txt | grep 'Fuse02' | cut --complement -d ':' -f1")[1])
 time.append(subprocess.getstatusoutput("cat hold.txt | grep 'Fuse03' | cut --complement -d ':' -f1")[1])
 time.append(subprocess.getstatusoutput("cat hold.txt | grep 'GCC' | cut --complement -d ':' -f1")[1])
-time.append(subprocess.getstatusoutput("cat shiptest_out.txt | grep time/eeprom -A 1 | tail -n 1 | cut -d ':' -f2- | grep -o -E 'SERIAL [A-Z]{1,2}'")[1])
+time_eep = subprocess.getstatusoutput("cat shiptest_out.txt | grep time/eeprom -A 1 | tail -n 1 | cut -d ':' -f2- | grep -o -E 'SERIAL [A-Z]{1,2}'")[1]
+if len(re.findall("SERIAL [a-zA-Z]{1,2}", time_eep)) != 1:
+    print("[ERROR]: Time board EEPROM not programmed! EEPROM read: {}".format(time_eep))
+    eeprom_fail = True
+time.append(time_eep)
 
 #Setting up rx dictionary to hold board data
 rx_info = {}
@@ -194,7 +200,11 @@ for i, name in zip(range(num_channels), channel_names): #NOTE: This might be mor
     rx_info["RX: " + name].append(subprocess.getstatusoutput("cat hold.txt | grep 'Fuse02' | cut --complement -d ':' -f1")[1])
     rx_info["RX: " + name].append(subprocess.getstatusoutput("cat hold.txt | grep 'Fuse03' | cut --complement -d ':' -f1")[1])
     rx_info["RX: " + name].append(subprocess.getstatusoutput("cat hold.txt | grep 'GCC' | cut --complement -d ':' -f1")[1])
-    rx_info["RX: " + name].append(subprocess.getstatusoutput("cat shiptest_out.txt | grep rx/{}/eeprom -A 1 | tail -n 1 | cut -d ':' -f2- | grep -o -E 'SERIAL [A-Z]{{1,2}}'".format(i))[1])
+    rx_eep = subprocess.getstatusoutput("cat shiptest_out.txt | grep rx/{}/eeprom -A 1 | tail -n 1 | cut -d ':' -f2- | grep -o -E 'SERIAL [A-Z]{{1,2}}'".format(i))[1]
+    if len(re.findall("SERIAL [a-zA-Z]{1,2}", rx_eep)) != 1:
+        print("[ERROR]: RX {} EEPROM not programmed! EEPROM read: {}".format(i, rx_eep))
+        eeprom_fail = True
+    rx_info["RX: " + name].append(rx_eep)
 
 #Setting up tx dictionary to hold board data
 tx_info = {}
@@ -210,11 +220,19 @@ for i, name in zip(range(num_channels), channel_names):
     tx_info["TX: " + name].append(subprocess.getstatusoutput("cat hold.txt | grep 'Fuse02' | cut --complement -d ':' -f1")[1])
     tx_info["TX: " + name].append(subprocess.getstatusoutput("cat hold.txt | grep 'Fuse03' | cut --complement -d ':' -f1")[1])
     tx_info["TX: " + name].append(subprocess.getstatusoutput("cat hold.txt | grep 'GCC' | cut --complement -d ':' -f1")[1])
-    tx_info["TX: " + name].append(subprocess.getstatusoutput("cat shiptest_out.txt | grep tx/{}/eeprom -A 1 | tail -n 1 | cut -d ':' -f2- | grep -o -E 'SERIAL [A-Z]{{1,2}}'".format(i))[1])
+    tx_eep = subprocess.getstatusoutput("cat shiptest_out.txt | grep tx/{}/eeprom -A 1 | tail -n 1 | cut -d ':' -f2- | grep -o -E 'SERIAL [A-Z]{{1,2}}'".format(i))[1]
+    if len(re.findall("SERIAL [a-zA-Z]{1,2}", tx_eep)) != 1:
+        print("[ERROR]: TX {} EEPROM not programmed! EEPROM read: {}".format(i, tx_eep))
+        eeprom_fail = True
+    tx_info["TX: " + name].append(tx_eep)
 
 #Removing the temp files from the systems
 os.system("rm hold.txt")
 os.system("rm shiptest_out.txt")
+
+if eeprom_fail:
+    print("[FAILURE]: Not all board EEPROMs are programmed correctly.")
+    sys.exit(1)
 
 #Globals that will be changed later in the code - all -1 currently because they are dependent on the generator code
 center_freq = -1
