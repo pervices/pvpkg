@@ -52,8 +52,8 @@ RUN if [ "$GRC" = "true" ]; then \
 ARG PKG=base
 # Building or downloading UHD based on the PKG flag
 RUN if [ "$PKG" = "internal" ]; then \
-        wget https://raw.githubusercontent.com/pervices/uhd/master/host/cmake/pkg-pv/PKGBUILD && \
-        wget https://raw.githubusercontent.com/pervices/uhd/master/host/cmake/pkg-pv/libuhdpv.install && \
+        wget https://github.com/pervices/uhd/raw/refs/heads/ops/dwil/lib_uring_dependency_update/host/cmake/pkg-pv/PKGBUILD && \
+        wget https://github.com/pervices/uhd/raw/refs/heads/ops/dwil/lib_uring_dependency_update/host/cmake/pkg-pv/libuhdpv.install && \
         sed -i s#master#$UHD_BRANCH#g PKGBUILD && \
         makepkg --noconfirm --syncdeps --rmdeps --clean --needed && sudo pacman -U --noconfirm *.zst ; \
     elif [ "$PKG" = "release" ]; then \
