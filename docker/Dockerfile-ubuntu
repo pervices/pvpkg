@@ -111,7 +111,7 @@ RUN if [ "$PKG" = "internal" ]; then \
 # Finishing up
 WORKDIR /home/$DOCKER_USER
 COPY SimpleShipTest.grc SimpleShipTest.grc
-RUN rm -rf uhd && touch .Xauthority
+# RUN rm -rf uhd && touch .Xauthority
 USER root
 COPY rev-dkr /usr/local/sbin/
 COPY entrypoint /
