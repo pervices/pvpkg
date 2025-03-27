@@ -57,7 +57,7 @@ dump_dir = parent_dir + leaf_dir
 dump_path = os.path.join("./", dump_dir)
 os.makedirs(dump_path,exist_ok=True)
 
-test_plots = dump_dir + iso_time + "-tx_rx_phase_2"
+test_plots = dump_dir + iso_time + "-tx_rx_phase"
 os.makedirs(test_plots, exist_ok = True)
 
 baselineCh_index = 0
@@ -176,8 +176,8 @@ def main():
     targs = test_args.TestArgs(testDesc="TX/RX phase coherency test")
 
     global report
-    report = pdf_report.ClassicShipTestReport("tx_rx_phase_2", targs.serial, targs.report_dir, targs.docker_sha)
-    report.insert_title_page("Low Band TX RX Phase Coherency Test 2")
+    report = pdf_report.ClassicShipTestReport("tx_rx_phase", targs.serial, targs.report_dir, targs.docker_sha)
+    report.insert_title_page("Low Band TX RX Phase Coherency Test")
 
     if(targs.product == 'Vaunt'):
         iterations = gen.lo_band_phaseCoherency()
