@@ -117,6 +117,10 @@ plots_dir = output_dir + "/plots_" + formattedDate
 os.makedirs(output_dir, exist_ok=True)
 os.makedirs(plots_dir, exist_ok=True)
 
+# Set unit's time to match host's time.
+host_time = subprocess.getstatusoutput("date -Ins")[1]
+time_ret = subprocess.getstatusoutput("sshpass -p $PW ssh -ttq dev0@192.168.10.2 -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no \"echo dev0 | sudo -S date -Ins -s $DATE; echo dev0 | sudo -S /sbin/hwclock -w;\"")[0]
+
 #Asking what test to run and how many channels to run
 #NOTE: I think this could be expanded to just choosing which channels on the unit to test
 product = args.product
