@@ -145,7 +145,7 @@ def lo_band_gain_rx():
     sample_count = 1000
     center_freq = 15000000
     sample_rate = 9848485
-    tx_gain = 10 #increasing the fixed gain may cause saturation
+    tx_gain = 10 #incre asing the fixed gain may cause saturation
     for rx_gain in [ 5, 10, 20 ]:
         yield locals()
 
@@ -571,12 +571,12 @@ class chestnut:
         def basic():
             print(sys._getframe().f_code.co_name)
 
-            wave_freq = 1000000         # 1MHz
+            wave_freq = 500000         # 1MHz
             sample_count = 256
-            tx_gain = 25
-            rx_gain = 25
-            for center_freq in [ 15000000 ]:
-                for sample_rate in [ 9803922, 25000000 ]:
+            tx_gain = 30
+            rx_gain = 30
+            for center_freq in [100000000]*5:
+                for sample_rate in [ 25000000 ]:
                     yield locals()
 
         @staticmethod

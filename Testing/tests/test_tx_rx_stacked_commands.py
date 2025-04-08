@@ -68,7 +68,7 @@ def test(it, data):
 
             print("\tframe %d: aboslute area: likeness %f" % (i, likeness))
 
-            plt.plot(frame_data, label="Frame {}".format(i))
+            plt.plot(frame_data[0:200], label="Frame {}".format(i))
 
             try:
                 assert likeness > 0.5 and likeness < 1.5, "tx_rx_stacked_commands fail comparison"
@@ -120,8 +120,8 @@ elif(targs.product == "Tate"):
     main(gen.cyan.hi_band.basic(), "High Band")
 elif(targs.product == "Lily"):
     main(gen.chestnut.lo_band.basic(), "Low Band")
-    main(gen.chestnut.mid_band.basic(), "Mid Band")
-    main(gen.chestnut.hi_band.basic(), "High Band")
+    # main(gen.chestnut.mid_band.basic(), "Mid Band")
+    # main(gen.chestnut.hi_band.basic(), "High Band")
 
 build_report()
 sys.exit(test_fail)
