@@ -610,7 +610,7 @@ class chestnut:
             sample_count = int(round(sample_rate/10000))
             tx_gain = 30
             rx_gain = 30
-            center_freq = 100000000     # 100MHz
+            center_freq = 10000000     # 100MHz
             sample_rate = 25000000
             wave_freq = 500000
             yield locals()
