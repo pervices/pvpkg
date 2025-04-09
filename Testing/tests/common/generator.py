@@ -607,7 +607,7 @@ class chestnut:
         def phaseCoherency():
             print(sys._getframe().f_code.co_name)
             sample_rate = 25000000
-            sample_count = int(round(sample_rate/10000))
+            sample_count = int(round(sample_rate/1000))
             tx_gain = 30
             rx_gain = 30
             center_freq = 10000000     # 100MHz
