@@ -73,12 +73,6 @@ RUN if [ "$PKG" = "internal" ]; then \
               -DCMAKE_INSTALL_PREFIX="/usr" \
               -DPKG_LIB_DIR="/usr/lib/uhd" \
               -DENABLE_CRIMSON_TNG="ON" \
-              -DENABLE_CYAN_4R4T="ON" \
-              -DENABLE_CYAN_8R="ON" \
-              -DENABLE_CYAN_16T="ON" \
-              -DENABLE_CYAN_64T="OFF" \
-              -DENABLE_CYAN_P1HDR16T="ON" \
-              -DENABLE_CYAN_P1HDR32T="ON" \
               -DENABLE_N300="OFF" \
               -DENABLE_E320="OFF" \
               -DENABLE_USRP1="OFF" \
@@ -93,6 +87,9 @@ RUN if [ "$PKG" = "internal" ]; then \
               -DENABLE_EXAMPLES="ON" \
               -DENABLE_UTILS="ON" \
               -DENABLE_DPDK="OFF" \
+              -DENABLE_LIBURING="OFF" \
+              -DENABLE_PYMOD_UTILS="OFF" \
+              -DENABLE_PYTHON_API="ON" \
               -DPYTHON_EXECUTABLE=/usr/bin/python3 \
               .. && \
         make -j$(nproc) && sudo make install ; \
