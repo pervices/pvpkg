@@ -608,8 +608,8 @@ class chestnut:
             print(sys._getframe().f_code.co_name)
             sample_rate = 25000000
             sample_count = int(round(sample_rate/10000))
-            tx_gain = 30
-            rx_gain = 30
+            tx_gain = 10
+            rx_gain = 10
             center_freq = 100000000     # 100MHz
             sample_rate = 25000000
             wave_freq = 500000
