@@ -314,6 +314,7 @@ def main():
 
         # Basic test to check if signal is present on our baseline channel. 
         if wave_freq - (std_ratio * freq_std_thresh) < freq_df.loc['mean'][channel_list[0]] < wave_freq + (std_ratio * freq_std_thresh):
+            frameinfo = getframeinfo(currentframe())
             print("[ERROR][{}][{}]: Signal not detected on Ch{}".format(frameinfo.filename, frameinfo.lineno, channel_list[0]))
 
         # Get test results for min, max, and stddev for freq, ampl, and phase
