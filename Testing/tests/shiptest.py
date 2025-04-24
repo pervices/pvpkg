@@ -121,7 +121,7 @@ os.makedirs(plots_dir, exist_ok=True)
 #NOTE: I think this could be expanded to just choosing which channels on the unit to test
 product = args.product
 try:
-    if (product != 't' and product != 'v' and product != 'l'):
+    if (product != 't' and product != 'v' and product != 'l' and product != 'b'):
         raise(ValueError)
 except:
     sys.exit("Invalid product. Only v (Vaunt), t (Tate), and l (Lily) are supported")
@@ -133,6 +133,8 @@ if(product == 'v'):
 elif(product == 't'):
     max_channels = 8
 elif(product == 'l'):
+    max_channels = 4
+elif(product == 'b'):
     max_channels = 4
 
 try:
@@ -148,6 +150,8 @@ elif(product == 't'):
     generate = gen.ship_test_cyan(num_channels)
 elif(product == 'l'):
     generate = gen.ship_test_chestnut(num_channels)
+elif(product == 'b'):
+    generate = gen.ship_test_cyanbaseband(num_channels)
 
 if(os.system('ping 192.168.10.2 -c 1') != 0):
     # 0 exit code is successful ping - the reboot did not work
@@ -280,7 +284,7 @@ page_count = 1
 graph_max = int(np.ceil(num_channels/4))
 multi = (graph_max > 1)
 #Page total based on the unit your testing
-page_total = ((2*graph_max)+2)*(8*(product == 'V' or product == 'v') + 6*(product == 'T' or product == 't') + 6*(product == 'L' or product == 'l')) + graph_max
+page_total = ((2*graph_max)+2)*(8*(product == 'V' or product == 'v') + 6*(product == 'T' or product == 't') + 6*(product == 'L' or product == 'l')) + 6*(product == 'B' or product == 'b') + graph_max
 
 
 #Adding logo - more efficent to just initialize at beginning
