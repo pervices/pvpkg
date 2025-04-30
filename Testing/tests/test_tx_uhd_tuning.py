@@ -59,10 +59,12 @@ def test(it, data):
         else:
             raise Exception("Length of real data does not match length of imaginary data. Real len: {} Imag len: {}".format(len(real), len(imag)))
 
+        # Find all peaks that that are significant enough that they might be the lo or wave
         peaks, xf, yf = sigproc.fft_peaks(comp, it["sample_rate"])
         tolerance = 0.05  # within 5% of expected frequency
         tone_present = False
         LO_feedthrough_present = False
+        # Check if each of the peaks found was the lo or the wave
         for peak in xf[peaks]:
             if math.isclose(peak, it["wave_freq"], rel_tol=tolerance):
                 tone_present = True
