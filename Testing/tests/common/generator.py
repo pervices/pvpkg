@@ -235,7 +235,7 @@ def tx_rx_rate():
 def rx_uhd_tune():
     print(sys._getframe().f_code.co_name)
     channels = list(range(4))
-    wave_freq = 2000000
+    wave_freq = 1000000
     sample_count = 10000
     tx_gain = 25
     rx_gain = 25
@@ -247,7 +247,7 @@ def rx_uhd_tune():
 def tx_uhd_tune():
     print(sys._getframe().f_code.co_name)
     channels = list(range(4))
-    wave_freq = 2000000
+    wave_freq = 1000000
     sample_count = 10000
     tx_gain = 25
     rx_gain = 25
