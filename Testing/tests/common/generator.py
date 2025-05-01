@@ -456,7 +456,7 @@ class cyan:
             wave_freq = 1000000
             sample_count = 10000
             tx_gain = 0            # keep gains low so strength of tone doesn't drown out LO feedthrough
-            rx_gain = 0
+            rx_gain = 50
             rx_lo = 2300000000 #LO Frequency should be multiple of 100MHz for cyan/chestnut
             sample_rate = 10000000
             for center_freq in [ (rx_lo - 2000000), rx_lo, (rx_lo + 2000000) ]: # 3 cases for dsp nco (pos, zero, neg).
@@ -468,7 +468,7 @@ class cyan:
             channels = list(range(4))
             wave_freq = 1000000
             sample_count = 10000
-            tx_gain = 0            # keep gains low so strength of tone doesn't drown out LO feedthrough
+            tx_gain = 30            # keep gains low so strength of tone doesn't drown out LO feedthrough
             rx_gain = 0
             tx_lo = 2300000000 #LO Frequency should be multiple of 100MHz for cyan/chestnut
             sample_rate = 10000000
@@ -747,7 +747,7 @@ class chestnut:
             wave_freq = 1000000
             sample_count = 10000
             tx_gain = 10            # keep gains low so strength of tone doesn't drown out LO feedthrough
-            rx_gain = 10
+            rx_gain = 50
             rx_lo =  2300000000 #LO Frequency should be multiple of 100MHz for cyan/chestnut
             sample_rate = 10000000
             for center_freq in [ (rx_lo - 2000000), rx_lo, (rx_lo + 2000000) ]: # 3 cases for dsp nco (pos, zero, neg).
@@ -759,7 +759,7 @@ class chestnut:
             channels = list(range(4))
             wave_freq = 1000000
             sample_count = 10000
-            tx_gain = 10            # keep gains low so strength of tone doesn't drown out LO feedthrough
+            tx_gain = 30            # keep gains low so strength of tone doesn't drown out LO feedthrough
             rx_gain = 10
             tx_lo =  2300000000 #LO Frequency should be multiple of 100MHz for cyan/chestnut
             sample_rate = 10000000
