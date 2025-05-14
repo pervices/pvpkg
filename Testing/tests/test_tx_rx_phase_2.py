@@ -45,7 +45,7 @@ phase_mean_thresh = 0.0349066 #rad bound
 phase_std_thresh = 0.002
 
 # Number of test runs per frequency
-num_runs = 100
+num_runs = 50
 
 now = datetime.now() 
 iso_time = now.strftime("%Y%m%d%H%M%S.%f")
