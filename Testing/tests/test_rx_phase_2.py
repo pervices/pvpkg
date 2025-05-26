@@ -286,8 +286,12 @@ def main():
                 freq_delta_matrix[run][channel] = freq[channel] - freq[baselineCh_index]
                 ampl_delta_matrix[run][channel] = ampl[channel] - ampl[baselineCh_index]
                 phase_delta_matrix[run][channel] = phase[channel] - phase[baselineCh_index]
-                if phase_delta_matrix[run][channel] < 0:
-                    phase_delta_matrix[run][channel] += (2*math.pi)
+                # Shift phase difference by 2*pi if the difference in phase is greater than pi
+                # Since phases that are multiples of 2*pi are equivalent
+                while(phase_delta_matrix[run][channel] > math.pi):
+                    phase_delta_matrix[run][channel] = phase_delta_matrix[run][channel] - (2 * math.pi)
+                while(phase_delta_matrix[run][channel] < -math.pi):
+                    phase_delta_matrix[run][channel] = phase_delta_matrix[run][channel] + (2 * math.pi)
                 offset_delta_matrix[run][channel] = offset[channel] - offset[baselineCh_index]
 
         # Organize data into a datatable such that we can manipulate/visualize more easily
