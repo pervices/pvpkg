@@ -273,6 +273,13 @@ def main():
                 best.append(best_fit[0])
                 offset.append((best_fit[1]))
 
+                # Shift phase from this iteration to be close to 0 for later calculation of phase difference
+                # Since it is a repeating function with a period of 2 * pi
+                while(phase[-1] > np.pi):
+                    phase[-1] = phase[-1] - (2 * np.pi)
+                while(phase[-1] < -np.pi):
+                    phase[-1] = phase[-1] + (2 * np.pi)
+
             #Appending to the temp variables
             reals.append(ch_real_data)
             best_fits.append(best)
@@ -286,8 +293,6 @@ def main():
                 freq_delta_matrix[run][channel] = freq[channel] - freq[baselineCh_index]
                 ampl_delta_matrix[run][channel] = ampl[channel] - ampl[baselineCh_index]
                 phase_delta_matrix[run][channel] = phase[channel] - phase[baselineCh_index]
-                if phase_delta_matrix[run][channel] < 0:
-                    phase_delta_matrix[run][channel] += (2*math.pi)
                 offset_delta_matrix[run][channel] = offset[channel] - offset[baselineCh_index]
 
         # Organize data into a datatable such that we can manipulate/visualize more easily
