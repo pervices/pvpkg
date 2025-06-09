@@ -33,13 +33,13 @@ def test(it):
     # Call cpp program to run the benchmark since it is much faster and reliable
     # The ifelse decides whether to pass rx only, tx only, or both args
     if((len(it["rx_channel"])) != 0 and (len(it["tx_channel"]) != 0)):
-        iteration_result = subprocess.run("/usr/lib/uhd/examples/benchmark_rate --rx_rate {} --rx_channels {} --tx_rate={} --tx_channels {}  --overrun-threshold 0 --underrun-threshold 0 --drop-threshold 0 --seq-threshold 0".format(it["rx_rate"], list_to_arg_string(it["rx_channel"]), it["tx_rate"], list_to_arg_string(it["tx_channel"])), shell=True, capture_output=True, text=True)
+        iteration_result = subprocess.run("/usr/lib/uhd/examples/benchmark_rate --rx_rate {} --rx_channels {} --tx_rate={} --tx_channels {}  --overrun-threshold 0 --underrun-threshold 0 --drop-threshold 0 --seq-threshold 0".format(it["rx_rate"], list_to_arg_string(it["rx_channel"]), it["tx_rate"], list_to_arg_string(it["tx_channel"])), shell=True)
     # rx only
     elif(len(it["rx_channel"]) != 0):
-        iteration_result = subprocess.run("/usr/lib/uhd/examples/benchmark_rate --rx_rate={} --rx_channels {}  --overrun-threshold 0 --underrun-threshold 0 --drop-threshold 0 --seq-threshold 0".format(it["rx_rate"], list_to_arg_string(it["rx_channel"])), shell=True, capture_output=True, text=True)
+        iteration_result = subprocess.run("/usr/lib/uhd/examples/benchmark_rate --rx_rate={} --rx_channels {}  --overrun-threshold 0 --underrun-threshold 0 --drop-threshold 0 --seq-threshold 0".format(it["rx_rate"], list_to_arg_string(it["rx_channel"])), shell=True)
     # tx only
     else:
-        iteration_result = subprocess.run("/usr/lib/uhd/examples/benchmark_rate  --tx_rate={} --tx_channels {}  --overrun-threshold 0 --underrun-threshold 0 --drop-threshold 0 --seq-threshold 0".format(it["tx_rate"], list_to_arg_string(it["tx_channel"])), shell=True, capture_output=True, text=True)
+        iteration_result = subprocess.run("/usr/lib/uhd/examples/benchmark_rate  --tx_rate={} --tx_channels {}  --overrun-threshold 0 --underrun-threshold 0 --drop-threshold 0 --seq-threshold 0".format(it["tx_rate"], list_to_arg_string(it["tx_channel"])), shell=True)
 
     # Set test_fail to the return code of the first failed iteration
     if(iteration_result and not test_fail):
