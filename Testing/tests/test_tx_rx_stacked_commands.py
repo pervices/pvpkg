@@ -54,6 +54,8 @@ def test(it, data):
         plt.title("Channel {}".format(targs.channels[ch]))
         frame_results = []
         for i, frame in enumerate(rx_stack):
+            print("frame[0]" + str(frame[0]))
+            print("frame[1]" + str(frame[1]))
             sample_count = frame[1]
             a = int(i * sample_count)
             b = int(a + sample_count)
