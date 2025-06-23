@@ -460,7 +460,7 @@ class cyan:
             tx_gain = 0
             rx_gain = 0
             rx_lo = 2300000000 #LO Frequency should be multiple of 100MHz for cyan/chestnut
-            sample_rate = 50000000
+            sample_rate = 100000000
             for center_freq in [ (rx_lo - 5000000), rx_lo, (rx_lo + 5000000) ]: # 3 cases for dsp nco (pos, zero, neg).
                 yield locals()
 
@@ -756,7 +756,7 @@ class chestnut:
             tx_gain = 10
             rx_gain = 30
             rx_lo =  2300000000 #LO Frequency should be multiple of 100MHz for cyan/chestnut
-            sample_rate = 50000000
+            sample_rate = 100000000
             for center_freq in [ (rx_lo - 5000000), rx_lo, (rx_lo + 5000000) ]: # 3 cases for dsp nco (pos, zero, neg).
                 yield locals()
 
