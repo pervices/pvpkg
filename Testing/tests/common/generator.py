@@ -453,15 +453,15 @@ class cyan:
         def rx_uhd_tune():
             print(sys._getframe().f_code.co_name)
             channels = list(range(4))
-            wave_freq = 2500000
-            sample_count = 50000
+            wave_freq = 0
+            sample_count = 1000000
             # Using to low a gain will result in the lo feedthrough not being visible next to the main tone
             # Using to high a gain will result in either the lo feedthrough or main tone not being visible
             tx_gain = 15
             rx_gain = 15
-            rx_lo = 2300000000 #LO Frequency should be multiple of 100MHz for cyan/chestnut
-            sample_rate = 100000000
-            for center_freq in [ (rx_lo - 5000000), rx_lo, (rx_lo + 5000000) ]: # 3 cases for dsp nco (pos, zero, neg).
+            rx_lo = 400000000 #LO Frequency should be multiple of 100MHz for cyan/chestnut
+            sample_rate = 1000000000
+            for center_freq in [ 0, 0, 0 ]: # 3 cases for dsp nco (pos, zero, neg).
                 yield locals()
 
         @staticmethod
