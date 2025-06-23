@@ -453,7 +453,7 @@ class cyan:
         def rx_uhd_tune():
             print(sys._getframe().f_code.co_name)
             channels = list(range(4))
-            wave_freq = 1000000
+            wave_freq = 0
             sample_count = 10000
             # Using to low a gain will result in the lo feedthrough not being visible next to the main tone
             # Using to high a gain will result in either the lo feedthrough or main tone not being visible
