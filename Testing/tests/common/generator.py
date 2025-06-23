@@ -453,14 +453,14 @@ class cyan:
         def rx_uhd_tune():
             print(sys._getframe().f_code.co_name)
             channels = list(range(4))
-            wave_freq = 1000000
-            sample_count = 10000
+            wave_freq = 5000000
+            sample_count = 50000
             # Using to low a gain will result in the lo feedthrough not being visible next to the main tone
             # Using to high a gain will result in either the lo feedthrough or main tone not being visible
             tx_gain = 0
             rx_gain = 0
             rx_lo = 2300000000 #LO Frequency should be multiple of 100MHz for cyan/chestnut
-            sample_rate = 10000000
+            sample_rate = 50000000
             for center_freq in [ (rx_lo - 2000000), rx_lo, (rx_lo + 2000000) ]: # 3 cases for dsp nco (pos, zero, neg).
                 yield locals()
 
@@ -748,15 +748,15 @@ class chestnut:
         def rx_uhd_tune():
             print(sys._getframe().f_code.co_name)
             channels = list(range(4))
-            wave_freq = 1000000
-            sample_count = 10000
+            wave_freq = 5000000
+            sample_count = 50000
             # Using to low a gain will result in the lo feedthrough not being visible next to the main tone
             # Using to high a gain will result in either the lo feedthrough or main tone not being visible
             # Rx gain is higher so the rx lo gets amplified instead of tx lo since that is what we are measuring
             tx_gain = 10
             rx_gain = 30
             rx_lo =  2300000000 #LO Frequency should be multiple of 100MHz for cyan/chestnut
-            sample_rate = 10000000
+            sample_rate = 50000000
             for center_freq in [ (rx_lo - 2000000), rx_lo, (rx_lo + 2000000) ]: # 3 cases for dsp nco (pos, zero, neg).
                 yield locals()
 
