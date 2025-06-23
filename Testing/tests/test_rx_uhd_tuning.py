@@ -23,8 +23,8 @@ def test(it, data):
     # Create manual tune request for rx, use default tuning for tx (just pass center freq)
     rx_tune_request = uhd.tune_request(it["center_freq"], it["rx_lo"])
 
-    tx_stack = [ (5.0, int(it["sample_count"])) ] # One seconds worth.
-    rx_stack = [ (5.0, int(it["sample_count"]) ) ]
+    tx_stack = [ (5.0, int(2 * it["sample_rate"])) ]
+    rx_stack = [ (5.5, int(it["sample_count"])) ]
 
     try:
         vsnk = engine.manual_tune_run(it["channels"], it["wave_freq"],
@@ -63,13 +63,11 @@ def test(it, data):
         peaks, xf, yf = sigproc.fft_peaks(comp, it["sample_rate"])
         tolerance = 0.05  # within 5% of expected frequency
         tone_present = False
-        LO_feedthrough_present = False
-        # Check if each of the peaks found was the lo or the wave
+        # Check any of the peaks are the expected wave wave
+        # Unlike tx, the rx lo will end up at 0Hz after mixing and therefore not be visible
         for peak in xf[peaks]:
             if math.isclose(peak, it["wave_freq"], rel_tol=tolerance):
                 tone_present = True
-            elif math.isclose(peak, int(rx_dsp), rel_tol=tolerance):        # LO feedthrough artifact will be shifted from 0Hz by nco, so look for it at dsp nco value
-                LO_feedthrough_present = True
 
         plt.figure()
         plt.title("Channel {} Rx FFT".format(ch), fontsize=14)
@@ -86,13 +84,13 @@ def test(it, data):
         images.append(img)
 
         res = ""
-        if not tone_present or not LO_feedthrough_present:
+        if not tone_present:
             test_fail = 1
             res = "fail"
         else:
             res = "pass"
 
-        data.append([str(rx_dsp_sci) , str(rx_lo), str(center_freq), str(wave_freq), str(ch), str(tone_present), str(LO_feedthrough_present),  res])
+        data.append([str(rx_dsp_sci) , str(rx_lo), str(center_freq), str(wave_freq), str(ch), str(tone_present),  res])
 
     report.buffer_put("text_large", title)
     report.buffer_put("table_wide", test_info, "")
@@ -103,7 +101,7 @@ def test(it, data):
     return data
 
 def main(iterations, desc):
-    data  = [["Rx NCO", "Rx LO", "Center Freq", "Wave Freq", "Channel", "Tone Freq Present", "LO Feedthrough Present", "Result"]]
+    data  = [["Rx NCO", "Rx LO", "Center Freq", "Wave Freq", "Channel", "Tone Freq Present", "Result"]]
     for it in iterations:
         test(it, data)
     summary_tables.append([desc, data])
