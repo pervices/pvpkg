@@ -23,8 +23,8 @@ def test(it, data):
     # Create manual tune request for rx, use default tuning for tx (just pass center freq)
     rx_tune_request = uhd.tune_request(it["center_freq"], it["rx_lo"])
 
-    tx_stack = [ (5.0, int(it["sample_count"] + (0.01 * it["sample_rate"]))) ]
-    rx_stack = [ (5.01, int(it["sample_count"])) ]
+    tx_stack = [ (5.0, int(2 * it["sample_rate"])) ]
+    rx_stack = [ (5.5, int(it["sample_count"])) ]
 
     try:
         vsnk = engine.manual_tune_run(it["channels"], it["wave_freq"],
