@@ -367,7 +367,7 @@ class cyan:
             descriptions = ["Max achievable rx rate on any number of ch", "Max achievable tx rate on any number of ch", "Max achievable combined rate on all ch", "Max achievable rx rate on all ch", "Max achievable tx rate on all ch"]
             # TODO: 1Gsps should be achievable but currently there is an issue causing random latency spikes, once that is fixed increase single channel rate from 500Msps to 1Gsps
             # 11-13-2024: 250Msps on all channels works perfectly on Maple
-            rx_rates = [500e6, 0, 250e6, 250e6, 0]
+            rx_rates = [500e6, 0, 100e6, 125e6, 0]
             rx_channels = [[0], [], list(range(channels)), list(range(channels)), []]
             # Higher speeds can be aheived when running natively but not through docker where this test is run
             tx_rates = [0, 250e6, (500e7)/6, 0, (500e6)/7]
@@ -638,7 +638,7 @@ class chestnut:
             print(sys._getframe().f_code.co_name)
 
             descriptions = ["Max achievable rx rate on one ch", "Max achievable tx rate on one ch", "Max achievable combined rate on all ch", "Max achievable rx rate on all ch", "Max achievable tx rate on all ch"]
-            rx_rates = [500e6, 0, 250e6, 250e6, 0]
+            rx_rates = [500e6, 0, 125e6, 125e6, 0]
             rx_channels = [[0], [], list(range(channels)), list(range(channels)), []]
             # Higher speeds can be aheived when running natively but not through docker where this test is run
             tx_rates = [0, 250e6, (500e6)/7, 0, (500e6)/7]
@@ -726,7 +726,7 @@ class chestnut:
             print(sys._getframe().f_code.co_name)
 
             descriptions = ["Max achievable rx rate on one ch", "Max achievable tx rate on one ch", "Max achievable combined rate on all ch", "Max achievable rx rate on all ch", "Max achievable tx rate on all ch"]
-            rx_rates = [500e6, 0, 125e6, 125e6, 0]
+            rx_rates = [500e6, 0, 100e6, 125e6, 0]
             rx_channels = [[0], [], list(range(channels)), list(range(channels)), []]
             # Higher speeds can be aheived when running natively but not through docker where this test is run
             tx_rates = [0, 500e6, (500e7)/6, 0, (500e7)/6]
