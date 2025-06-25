@@ -370,7 +370,7 @@ class cyan:
             rx_rates = [500e6, 0, 250e6, 250e6, 250e6]
             rx_channels = [[0], [], list(range(channels)), list(range(channels)), []]
             # Higher speeds can be aheived when running natively but not through docker where this test is run
-            tx_rates = [0, 500e6, 100e6, 0, 125e6]
+            tx_rates = [0, 500e6, (500e6)/6, 0, 125e6]
             tx_channels = [[], [0], list(range(channels)), [], list(range(channels))]
             assert(len(rx_rates) == len(rx_channels))
             assert(len(rx_rates) == len(tx_rates))
@@ -729,7 +729,7 @@ class chestnut:
             rx_rates = [500e6, 0, 125e6, 125e6, 0]
             rx_channels = [[0], [], list(range(channels)), list(range(channels)), []]
             # Higher speeds can be aheived when running natively but not through docker where this test is run
-            tx_rates = [0, 500e6, 100e6, 0, 100e6]
+            tx_rates = [0, 500e6, (500e6)/6, 0, 100e6]
             tx_channels = [[], [0], list(range(channels)), [], list(range(channels))]
             assert(len(rx_rates) == len(rx_channels))
             assert(len(rx_rates) == len(tx_rates))
