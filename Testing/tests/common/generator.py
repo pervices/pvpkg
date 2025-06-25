@@ -369,7 +369,8 @@ class cyan:
             # 11-13-2024: 250Msps on all channels works perfectly on Maple
             rx_rates = [500e6, 0, 250e6, 250e6, 250e6]
             rx_channels = [[0], [], list(range(channels)), list(range(channels)), []]
-            tx_rates = [0, 500e6, 250e6, 0, 250e6]
+            # Higher speeds can be aheived when running natively but not through docker where this test is run
+            tx_rates = [0, 250e6, 250e6, 0, 250e6]
             tx_channels = [[], [0], list(range(channels)), [], list(range(channels))]
             assert(len(rx_rates) == len(rx_channels))
             assert(len(rx_rates) == len(tx_rates))
@@ -639,7 +640,8 @@ class chestnut:
             descriptions = ["Max achievable rx rate on any number of ch", "Max achievable tx rate on any number of ch", "Max achievable combined rate on all ch", "Max achievable rx rate on all ch", "Max achievable tx rate on all ch"]
             rx_rates = [500e6, 0, 250e6, 250e6, 250e6]
             rx_channels = [[0], [], list(range(channels)), list(range(channels)), []]
-            tx_rates = [0, 500e6, 250e6, 0, 250e6]
+            # Higher speeds can be aheived when running natively but not through docker where this test is run
+            tx_rates = [0, 250e6, 250e6, 0, 250e6]
             tx_channels = [[], [0], list(range(channels)), [], list(range(channels))]
             assert(len(rx_rates) == len(rx_channels))
             assert(len(rx_rates) == len(tx_rates))
