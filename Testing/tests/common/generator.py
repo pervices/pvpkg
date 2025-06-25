@@ -370,7 +370,7 @@ class cyan:
             rx_rates = [500e6, 0, 250e6, 250e6, 250e6]
             rx_channels = [[0], [], list(range(channels)), list(range(channels)), []]
             # Higher speeds can be aheived when running natively but not through docker where this test is run
-            tx_rates = [0, 250e6, 250e6, 0, 250e6]
+            tx_rates = [0, 500e6, 100e6, 0, 125e6]
             tx_channels = [[], [0], list(range(channels)), [], list(range(channels))]
             assert(len(rx_rates) == len(rx_channels))
             assert(len(rx_rates) == len(tx_rates))
@@ -729,7 +729,7 @@ class chestnut:
             # TODO: verify if these rates are achievable on the hosts used by CI
             rx_rates = [500e6, 0, 125e6, 250e6, 0]
             rx_channels = [[0], [], list(range(channels)), list(range(channels)), []]
-            tx_rates = [0, 500e6, 125e6, 0, 250e6]
+            tx_rates = [0, 500e6, 100e6, 0, 125e6]
             tx_channels = [[], [0], list(range(channels)), [], list(range(channels))]
             assert(len(rx_rates) == len(rx_channels))
             assert(len(rx_rates) == len(tx_rates))
