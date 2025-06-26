@@ -11,8 +11,8 @@ PASSED_TESTS=0
 FAILED_TESTS=0
 RETURN=0
 
-SN=$1
-BN=$2
+serial_number=$1
+jenkins_bn=$2
 DOCKER_SHA=$3
 if [ -z $DOCKER_SHA ]; then
 	echo "ERROR: Docker SHA must be specified. Usage: test-only.sh [serial] [jenkins_bn] [ftp_upload] [docker_sha]" && exit 22
@@ -20,15 +20,15 @@ fi
 shift; shift; shift; shift
 TEST_LIST=("$@")
 
-if [ -z $SN ]; then
+if [ -z $serial_number ]; then
 	echo "ERROR: Serial must be specified. Usage: test-only.sh [serial] [jenkins_bn] [ftp_upload] [docker_sha]" && exit 22
 fi
 
-if [[ $SN != "TNG"* && $SN != "CYN"* && $SN != "int" ]]; then
+if [[ $serial_number != "TNG"* && $serial_number != "CYN"* && $serial_number != "int" ]]; then
 	echo "ERROR: Invalid serial number provided. Valid serial numbers are TNG*, CYN*, or int" && exit 22
 fi
 
-if [ -z $BN ]; then
+if [ -z $jenkins_bn ]; then
 	echo "ERROR: Jenkins build number must be specified. Usage: test-only.sh [serial] [jenkins_bn] [ftp_upload] [docker_sha]" && exit 22
 fi
 
@@ -93,7 +93,7 @@ if [ -z $TEST_LIST ]; then
 		echo ":: Executing ${TEST_NAMES[$i]} test" >> log.txt
 		pwd
 
-		python3 -u ${TEST_FILES[$i]}.py -p $PRODUCT -s $SN -o $REPORT_DIR -d $DOCKER_SHA
+		python3 -u ${TEST_FILES[$i]}.py -p $PRODUCT -s $serial_number -o $REPORT_DIR -d $DOCKER_SHA
 
 		rv=$?
 		if [ $rv -eq 0 ]; then
@@ -115,7 +115,7 @@ else
 		echo ":: Executing ${TEST_NAMES[$idx]} test" >> log.txt
 		pwd
 
-		python3 -u ${TEST_FILES[$idx]}.py -p $PRODUCT -s $SN -o $REPORT_DIR -d $DOCKER_SHA
+		python3 -u ${TEST_FILES[$idx]}.py -p $PRODUCT -s $serial_number -o $REPORT_DIR -d $DOCKER_SHA
 
 		rv=$?
 		if [ $rv -eq 0 ]; then
