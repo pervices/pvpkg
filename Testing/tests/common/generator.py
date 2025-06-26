@@ -252,7 +252,7 @@ def tx_rate():
 
     descriptions = ["Max achievable tx rate on any number of ch", "Max achievable tx rate on all ch"]
     tx_rates = [162.5e6, 81.25e6]
-    tx_channels = [[0, 1], [0,1,2,3]]
+    tx_channels = [[0], [0,1,2,3]]
     assert(len(tx_rates) == len(tx_channels))
     for n in range(len(tx_rates)):
         iteration_dict = {
