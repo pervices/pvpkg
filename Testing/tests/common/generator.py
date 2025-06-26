@@ -214,11 +214,11 @@ def tx_trigger():
 def tx_rx_rate():
     print(sys._getframe().f_code.co_name)
 
-    descriptions = ["Max achievable rx rate on any number of ch", "Max achievable tx rate on any number of ch", "Max achievable combined rate on all ch", "Max achievable rx rate on all ch", "Max achievable tx rate on all ch"]
-    rx_rates = [162.5e6, 0, 325e6/6, 81.25e6, 0]
-    rx_channels = [[0, 1], [], [0,1,2,3], [0,1,2,3], []]
-    tx_rates = [0, 162.5e6, 325e6/6, 0, 81.25e6]
-    tx_channels = [[], [0,1], [0,1,2,3], [], [0,1,2,3]]
+    descriptions = ["Max achievable combined rate on all ch"]
+    rx_rates = [325e6/6]
+    rx_channels = [[0,1,2,3]]
+    tx_rates = [325e6/6]
+    tx_channels = [[0,1,2,3]]
     assert(len(rx_rates) == len(rx_channels))
     assert(len(rx_rates) == len(tx_rates))
     assert(len(rx_rates) == len(tx_channels))
@@ -227,6 +227,36 @@ def tx_rx_rate():
             "description" : descriptions[n],
             "rx_rate" : rx_rates[n],
             "rx_channel" : rx_channels[n],
+            "tx_rate" : tx_rates[n],
+            "tx_channel" : tx_channels[n]
+        }
+        yield iteration_dict
+
+def rx_rate():
+    print(sys._getframe().f_code.co_name)
+
+    descriptions = ["Max achievable rx rate on any number of ch", "Max achievable rx rate on all ch"]
+    rx_rates = [162.5e6, 81.25e6]
+    rx_channels = [[0, 1], [0,1,2,3]]
+    assert(len(rx_rates) == len(rx_channels))
+    for n in range(len(rx_rates)):
+        iteration_dict = {
+            "description" : descriptions[n],
+            "rx_rate" : rx_rates[n],
+            "rx_channel" : rx_channels[n]
+        }
+        yield iteration_dict
+
+def tx_rate():
+    print(sys._getframe().f_code.co_name)
+
+    descriptions = ["Max achievable tx rate on any number of ch", "Max achievable tx rate on all ch"]
+    tx_rates = [162.5e6, 81.25e6]
+    tx_channels = [[0, 1], [0,1,2,3]]
+    assert(len(tx_rates) == len(tx_channels))
+    for n in range(len(tx_rates)):
+        iteration_dict = {
+            "description" : descriptions[n],
             "tx_rate" : tx_rates[n],
             "tx_channel" : tx_channels[n]
         }
@@ -364,12 +394,12 @@ class cyan:
         def tx_rx_rate(channels):
             print(sys._getframe().f_code.co_name)
 
-            descriptions = ["Max achievable rx rate on any number of ch", "Max achievable tx rate on any number of ch", "Max achievable combined rate on all ch", "Max achievable rx rate on all ch", "Max achievable tx rate on all ch"]
+            descriptions = ["Max achievable combined rate on all ch"]
             # Higher rates are achievable outside of docker
-            rx_rates = [250e6, 0, 100e6, 125e6, 0]
-            rx_channels = [[0], [], list(range(channels)), list(range(channels)), []]
-            tx_rates = [0, 250e6, (500e6)/8, 0, (500e6)/8]
-            tx_channels = [[], [0], list(range(channels)), [], list(range(channels))]
+            rx_rates = [100e6]
+            rx_channels = [list(range(channels))]
+            tx_rates = [(500e6)/8]
+            tx_channels = [list(range(channels))]
             assert(len(rx_rates) == len(rx_channels))
             assert(len(rx_rates) == len(tx_rates))
             assert(len(rx_rates) == len(tx_channels))
@@ -378,6 +408,40 @@ class cyan:
                     "description" : descriptions[n],
                     "rx_rate" : rx_rates[n],
                     "rx_channel" : rx_channels[n],
+                    "tx_rate" : tx_rates[n],
+                    "tx_channel" : tx_channels[n]
+                }
+                yield iteration_dict
+
+        @staticmethod
+        def rx_rate(channels):
+            print(sys._getframe().f_code.co_name)
+
+            descriptions = ["Max achievable rx rate on any number of ch", "Max achievable rx rate on all ch"]
+            # Higher rates are achievable outside of docker
+            rx_rates = [250e6, 125e6]
+            rx_channels = [[0], list(range(channels))]
+            assert(len(rx_rates) == len(rx_channels))
+            for n in range(len(rx_rates)):
+                iteration_dict = {
+                    "description" : descriptions[n],
+                    "rx_rate" : rx_rates[n],
+                    "rx_channel" : rx_channels[n]
+                }
+                yield iteration_dict
+
+        @staticmethod
+        def tx_rate(channels):
+            print(sys._getframe().f_code.co_name)
+
+            descriptions = ["Max achievable tx rate on any number of ch", "Max achievable tx rate on all ch"]
+            # Higher rates are achievable outside of docker
+            tx_rates = [250e6, (500e6)/8]
+            tx_channels = [[0], list(range(channels))]
+            assert(len(tx_rates) == len(tx_channels))
+            for n in range(len(tx_rates)):
+                iteration_dict = {
+                    "description" : descriptions[n],
                     "tx_rate" : tx_rates[n],
                     "tx_channel" : tx_channels[n]
                 }
@@ -635,12 +699,12 @@ class chestnut:
         def tx_rx_rate(channels):
             print(sys._getframe().f_code.co_name)
 
-            descriptions = ["Max achievable rx rate on one ch", "Max achievable tx rate on one ch", "Max achievable combined rate on all ch", "Max achievable rx rate on all ch", "Max achievable tx rate on all ch"]
+            descriptions = ["Max achievable combined rate on all ch"]
             # Higher rates are achievable outside of docker
-            rx_rates = [250e6, 0, 100e6, 125e6, 0]
-            rx_channels = [[0], [], list(range(channels)), list(range(channels)), []]
-            tx_rates = [0, 250e6, (500e6)/8, 0, (500e6)/8]
-            tx_channels = [[], [0], list(range(channels)), [], list(range(channels))]
+            rx_rates = [100e6]
+            rx_channels = [list(range(channels))]
+            tx_rates = [(500e6)/8]
+            tx_channels = [list(range(channels))]
             assert(len(rx_rates) == len(rx_channels))
             assert(len(rx_rates) == len(tx_rates))
             assert(len(rx_rates) == len(tx_channels))
@@ -649,6 +713,40 @@ class chestnut:
                     "description" : descriptions[n],
                     "rx_rate" : rx_rates[n],
                     "rx_channel" : rx_channels[n],
+                    "tx_rate" : tx_rates[n],
+                    "tx_channel" : tx_channels[n]
+                }
+                yield iteration_dict
+
+        @staticmethod
+        def rx_rate(channels):
+            print(sys._getframe().f_code.co_name)
+
+            descriptions = ["Max achievable rx rate on any number of ch", "Max achievable rx rate on all ch"]
+            # Higher rates are achievable outside of docker
+            rx_rates = [250e6, 125e6]
+            rx_channels = [[0], list(range(channels))]
+            assert(len(rx_rates) == len(rx_channels))
+            for n in range(len(rx_rates)):
+                iteration_dict = {
+                    "description" : descriptions[n],
+                    "rx_rate" : rx_rates[n],
+                    "rx_channel" : rx_channels[n]
+                }
+                yield iteration_dict
+
+        @staticmethod
+        def tx_rate(channels):
+            print(sys._getframe().f_code.co_name)
+
+            descriptions = ["Max achievable tx rate on any number of ch", "Max achievable tx rate on all ch"]
+            # Higher rates are achievable outside of docker
+            tx_rates = [250e6, (500e6)/8]
+            tx_channels = [[0], list(range(channels))]
+            assert(len(tx_rates) == len(tx_channels))
+            for n in range(len(tx_rates)):
+                iteration_dict = {
+                    "description" : descriptions[n],
                     "tx_rate" : tx_rates[n],
                     "tx_channel" : tx_channels[n]
                 }
@@ -717,58 +815,6 @@ class chestnut:
             sample_rate = 10000000      # 10MSps
             tx_gain = 30#increasing the fixed gain may cause saturation
             for rx_gain in [0, 30, 60]:
-                yield locals()
-
-        @staticmethod
-        def tx_rx_rate(channels):
-            print(sys._getframe().f_code.co_name)
-
-            descriptions = ["Max achievable rx rate on one ch", "Max achievable tx rate on one ch", "Max achievable combined rate on all ch", "Max achievable rx rate on all ch", "Max achievable tx rate on all ch"]
-            rx_rates = [250e6, 0, 100e6, 125e6, 0]
-            rx_channels = [[0], [], list(range(channels)), list(range(channels)), []]
-            # Higher speeds can be aheived when running natively but not through docker where this test is run
-            tx_rates = [0, 500e6, (500e6)/6, 0, (500e6)/6]
-            tx_channels = [[], [0], list(range(channels)), [], list(range(channels))]
-            assert(len(rx_rates) == len(rx_channels))
-            assert(len(rx_rates) == len(tx_rates))
-            assert(len(rx_rates) == len(tx_channels))
-            for n in range(len(rx_rates)):
-                iteration_dict = {
-                    "description" : descriptions[n],
-                    "rx_rate" : rx_rates[n],
-                    "rx_channel" : rx_channels[n],
-                    "tx_rate" : tx_rates[n],
-                    "tx_channel" : tx_channels[n]
-                }
-                yield iteration_dict
-
-        @staticmethod
-        def rx_uhd_tune():
-            print(sys._getframe().f_code.co_name)
-            channels = list(range(4))
-            wave_freq = 1000000
-            sample_count = 10000
-            tx_gain = 10
-            rx_gain = 30
-            rx_lo =  2300000000 #LO Frequency should be multiple of 100MHz for cyan/chestnut
-            sample_rate = 10000000
-            for center_freq in [ (rx_lo - 2000000), rx_lo, (rx_lo + 2000000) ]: # 3 cases for dsp nco (pos, zero, neg).
-                yield locals()
-
-        @staticmethod
-        def tx_uhd_tune():
-            print(sys._getframe().f_code.co_name)
-            channels = list(range(4))
-            wave_freq = 1000000
-            sample_count = 10000
-            # Using to low a gain will result in the lo feedthrough not being visible next to the main tone
-            # Using to high a gain will result in either the lo feedthrough or main tone not being visible
-            # Tx gain is higher so the tx lo gets amplified instead of rx lo since that is what we are measuring
-            tx_gain = 30
-            rx_gain = 10
-            tx_lo =  2300000000 #LO Frequency should be multiple of 100MHz for cyan/chestnut
-            sample_rate = 10000000
-            for center_freq in [ (tx_lo - 2000000), tx_lo, (tx_lo + 2000000) ]: # 3 cases for dsp nco (pos, zero, neg).
                 yield locals()
 
     class hi_band:
