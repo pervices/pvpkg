@@ -817,6 +817,31 @@ class chestnut:
             for rx_gain in [0, 30, 60]:
                 yield locals()
 
+        @staticmethod
+        def gain_rx():
+            print(sys._getframe().f_code.co_name)
+
+            wave_freq = 1000000
+            sample_count = 1000
+            center_freq = 2700000000    # 2.7Hz
+            sample_rate = 10000000      # 10MSps
+            tx_gain = 20#increasing the fixed gain may cause saturation
+            for rx_gain in [0, 15, 30]:
+                yield locals()
+
+        @staticmethod
+        def rx_uhd_tune():
+            print(sys._getframe().f_code.co_name)
+            channels = list(range(4))
+            wave_freq = 1000000
+            sample_count = 10000
+            tx_gain = 0
+            rx_gain = 0
+            rx_lo = 2300000000 #LO Frequency should be multiple of 100MHz for cyan/chestnut
+            sample_rate = 10000000
+            for center_freq in [ (rx_lo - 2000000), rx_lo, (rx_lo + 2000000) ]: # 3 cases for dsp nco (pos, zero, neg).
+                yield locals()
+
     class hi_band:
         @staticmethod
         def wave_sweep():
