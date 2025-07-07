@@ -818,18 +818,6 @@ class chestnut:
                 yield locals()
 
         @staticmethod
-        def gain_rx():
-            print(sys._getframe().f_code.co_name)
-
-            wave_freq = 1000000
-            sample_count = 1000
-            center_freq = 2700000000    # 2.7Hz
-            sample_rate = 10000000      # 10MSps
-            tx_gain = 20#increasing the fixed gain may cause saturation
-            for rx_gain in [0, 15, 30]:
-                yield locals()
-
-        @staticmethod
         def rx_uhd_tune():
             print(sys._getframe().f_code.co_name)
             channels = list(range(4))
