@@ -14,6 +14,7 @@ import datetime
 import multiprocessing
 
 def run_tx(csnk, channels, stack, sample_rate, wave_freq):
+    print("run_tx")
 
     """                                       +-----------+
     +---------+   +---------+   +---------+   |           |
@@ -57,6 +58,7 @@ def run_tx(csnk, channels, stack, sample_rate, wave_freq):
 
 
 def run_rx(csrc, channels, stack, sample_rate, _vsnk, timeout_occured):
+    print("run_rx")
 
     """
     +-----------+
@@ -122,6 +124,7 @@ def run_rx(csrc, channels, stack, sample_rate, _vsnk, timeout_occured):
     _vsnk.extend(vsnk)
 
 def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stack, rx_stack):
+    print("T0")
     rx_timeout_occured = Event()
 
     vsnk = [] # Will be extended when using stacked commands.
@@ -149,19 +152,23 @@ def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stac
         rx_thread.start()
 
     # Wait for thread to finish with a timeout
-    tx_thread.join(tx_duration + 10)
+    if(tx_thread != None):
+        tx_thread.join(tx_duration + 10)
     # The data timeout is expected + 10s, make sure the control timeout is longer
-    rx_thread.join(rx_duration + 20)
+    if(rx_thread != None):
+        rx_thread.join(rx_duration + 20)
 
     # Check if thread finished
     # Timeouts here indicate that something was hanging, there
-    if(tx_thread.is_alive()):
-        print("T1")
-        raise Exception ("TX CONTROL TIMED OUT")
+    if(tx_thread != None):
+        if(tx_thread.is_alive()):
+            print("T1")
+            raise Exception ("TX CONTROL TIMED OUT")
 
-    if(rx_thread.is_alive()):
-        print("T2")
-        raise Exception ("RX CONTROL TIMED OUT")
+    if(rx_thread != None):
+        if(rx_thread.is_alive()):
+            print("T2")
+            raise Exception ("RX CONTROL TIMED OUT")
 
     # A timeout here means insufficent data was received
     if rx_timeout_occured.is_set():
