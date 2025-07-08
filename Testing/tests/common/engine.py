@@ -185,9 +185,9 @@ def manual_tune_run(channels, wave_freq, tx_sample_rate, rx_sample_rate, tx_tune
 
     # Prepare thread
     # Expected tx duration = start time of last burst + (length of last burst / sample rate)
-    tx_duration = tx_stack[-1][0] + (tx_stack[-1][1] / sample_rate)
+    tx_duration = tx_stack[-1][0] + (tx_stack[-1][1] / tx_sample_rate)
     tx_thread = threading.Thread(target = run_tx, args = (csnk, channels, tx_stack, tx_sample_rate, wave_freq))
-    rx_duration = rx_stack[-1][0] + (rx_stack[-1][1] / sample_rate)
+    rx_duration = rx_stack[-1][0] + (rx_stack[-1][1] / rx_sample_rate)
     rx_thread = threading.Thread(target = run_rx, args = (csrc, channels, rx_stack, rx_sample_rate, vsnk, rx_timeout_occured))
 
     # Start threads
