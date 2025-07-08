@@ -134,12 +134,14 @@ def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stac
     rx_thread = None
 
     if tx_stack != None:
+        print("S1")
         # Expected tx duration = start time of last burst + (length of last burst / sample rate)
         tx_duration = tx_stack[-1][0] + (stack[-1][1] / sample_rate)
 
         csnk = crimson.get_snk_s(channels, sample_rate, center_freq, tx_gain)
         tx_thread = threading.Thread(target = run_tx, args = (csnk, channels, tx_stack, sample_rate, wave_freq))
     if rx_stack != None:
+        print("R1")
         # Expected rx duration = start time of last burst + (length of last burst / sample rate)
         rx_duration = rx_stack[-1][0] + (stack[-1][1] / sample_rate)
 
@@ -147,8 +149,10 @@ def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stac
         rx_thread = threading.Thread(target = run_rx, args = (csrc, channels, rx_stack, sample_rate, vsnk, rx_timeout_occured))
 
     if(tx_thread != None):
+        print("S2")
         tx_thread.start()
     if(rx_thread != None):
+        print("R2")
         rx_thread.start()
 
     # Wait for thread to finish with a timeout
