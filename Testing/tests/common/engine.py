@@ -174,42 +174,30 @@ def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stac
     return vsnk
 
 def manual_tune_run(channels, wave_freq, tx_sample_rate, rx_sample_rate, tx_tune_request, rx_tune_request, tx_gain, rx_gain, tx_stack, rx_stack):
-    print("T1")
     # Setup
     csnk = crimson.get_snk_s(channels, tx_sample_rate, tx_tune_request, tx_gain)
     csrc = crimson.get_src_c(channels, rx_sample_rate, rx_tune_request, rx_gain)
-
-    print("T5")
 
     rx_timeout_occured = Event()
 
     # Run.
     vsnk = [] # Will be extended when using stacked commands.
-    print("T10")
 
     # Prepare thread
     # Expected tx duration = start time of last burst + (length of last burst / sample rate)
     tx_duration = tx_stack[-1][0] + (tx_stack[-1][1] / sample_rate)
-    print("T11")
     tx_thread = threading.Thread(target = run_tx, args = (csnk, channels, tx_stack, tx_sample_rate, wave_freq))
-    print("T12")
     rx_duration = rx_stack[-1][0] + (rx_stack[-1][1] / sample_rate)
-    print("T13")
     rx_thread = threading.Thread(target = run_rx, args = (csrc, channels, rx_stack, rx_sample_rate, vsnk, rx_timeout_occured))
-    print("T14")
 
     # Start threads
     tx_thread.start()
-    print("T15")
     rx_thread.start()
-    print("T16")
 
     # Wait for thread to finish with a timeout
     tx_thread.join(tx_duration + 10)
-    print("T17")
     # The data timeout is expected + 10s, make sure the control timeout is longer
     rx_thread.join(rx_duration + 20)
-    print("T18")
 
     # Check if thread finished
     # Timeouts here indicate that something was hanging
