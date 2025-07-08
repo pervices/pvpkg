@@ -113,9 +113,7 @@ def run_rx(csrc, channels, stack, sample_rate, _vsnk, timeout_occured):
             timeout_occured.set()
             break
 
-    print("Rx iteration complete")
     flowgraph.stop()
-    print("Rx flowgraph stop command issued")
     flowgraph.wait()
 
     # Cannot return from thread so extend instead.
