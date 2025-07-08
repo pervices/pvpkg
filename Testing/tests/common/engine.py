@@ -14,7 +14,6 @@ import datetime
 import multiprocessing
 
 def run_tx(csnk, channels, stack, sample_rate, wave_freq):
-    print("run_tx")
 
     """                                       +-----------+
     +---------+   +---------+   +---------+   |           |
@@ -58,7 +57,6 @@ def run_tx(csnk, channels, stack, sample_rate, wave_freq):
 
 
 def run_rx(csrc, channels, stack, sample_rate, _vsnk, timeout_occured):
-    print("run_rx")
 
     """
     +-----------+
@@ -124,7 +122,6 @@ def run_rx(csrc, channels, stack, sample_rate, _vsnk, timeout_occured):
     _vsnk.extend(vsnk)
 
 def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stack, rx_stack):
-    print("T0")
     rx_timeout_occured = Event()
 
     vsnk = [] # Will be extended when using stacked commands.
@@ -133,29 +130,24 @@ def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stac
     rx_duration = 0
     rx_thread = None
 
+    # Prepare thread
     if tx_stack != None:
-        print("S1A")
         # Expected tx duration = start time of last burst + (length of last burst / sample rate)
         tx_duration = tx_stack[-1][0] + (tx_stack[-1][1] / sample_rate)
-        print("S1B")
 
         csnk = crimson.get_snk_s(channels, sample_rate, center_freq, tx_gain)
-        print("S1C")
         tx_thread = threading.Thread(target = run_tx, args = (csnk, channels, tx_stack, sample_rate, wave_freq))
-        print("S1D")
     if rx_stack != None:
-        print("R1")
         # Expected rx duration = start time of last burst + (length of last burst / sample rate)
         rx_duration = rx_stack[-1][0] + (rx_stack[-1][1] / sample_rate)
 
         csrc = crimson.get_src_c(channels, sample_rate, center_freq, rx_gain)
         rx_thread = threading.Thread(target = run_rx, args = (csrc, channels, rx_stack, sample_rate, vsnk, rx_timeout_occured))
 
+    # Start threads
     if(tx_thread != None):
-        print("S2")
         tx_thread.start()
     if(rx_thread != None):
-        print("R2")
         rx_thread.start()
 
     # Wait for thread to finish with a timeout
@@ -169,17 +161,14 @@ def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stac
     # Timeouts here indicate that something was hanging, there
     if(tx_thread != None):
         if(tx_thread.is_alive()):
-            print("T1")
             raise Exception ("TX CONTROL TIMED OUT")
 
     if(rx_thread != None):
         if(rx_thread.is_alive()):
-            print("T2")
             raise Exception ("RX CONTROL TIMED OUT")
 
     # A timeout here means insufficent data was received
     if rx_timeout_occured.is_set():
-        print("T3")
         raise Exception ("RX DATA TIMED OUT")
 
     return vsnk
