@@ -134,12 +134,15 @@ def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stac
     rx_thread = None
 
     if tx_stack != None:
-        print("S1")
+        print("S1A")
         # Expected tx duration = start time of last burst + (length of last burst / sample rate)
         tx_duration = tx_stack[-1][0] + (stack[-1][1] / sample_rate)
+        print("S1B")
 
         csnk = crimson.get_snk_s(channels, sample_rate, center_freq, tx_gain)
+        print("S1C")
         tx_thread = threading.Thread(target = run_tx, args = (csnk, channels, tx_stack, sample_rate, wave_freq))
+        print("S1D")
     if rx_stack != None:
         print("R1")
         # Expected rx duration = start time of last burst + (length of last burst / sample rate)
