@@ -823,8 +823,8 @@ class chestnut:
             channels = list(range(4))
             wave_freq = 1000000
             sample_count = 10000
-            tx_gain = 0
-            rx_gain = 0
+            tx_gain = 15
+            rx_gain = 15
             rx_lo = 2300000000 #LO Frequency should be multiple of 100MHz for cyan/chestnut
             sample_rate = 10000000
             for center_freq in [ (rx_lo - 2000000), rx_lo, (rx_lo + 2000000) ]: # 3 cases for dsp nco (pos, zero, neg).
@@ -838,8 +838,8 @@ class chestnut:
             sample_count = 10000
             # Using to low a gain will result in the lo feedthrough not being visible next to the main tone
             # Using to high a gain will result in either the lo feedthrough or main tone not being visible
-            tx_gain = 0
-            rx_gain = 0
+            tx_gain = 15
+            rx_gain = 15
             tx_lo = 2300000000 #LO Frequency should be multiple of 100MHz for cyan/chestnut
             sample_rate = 10000000
             for center_freq in [ (tx_lo - 2000000), tx_lo, (tx_lo + 2000000) ]: # 3 cases for dsp nco (pos, zero, neg).
