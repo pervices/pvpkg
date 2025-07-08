@@ -137,7 +137,7 @@ def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stac
         csnk = crimson.get_snk_s(channels, sample_rate, center_freq, tx_gain)
         tx_thread = threading.Thread(target = run_tx, args = (csnk, channels, tx_stack, sample_rate, wave_freq))
     if rx_stack != None:
-        # Expected tx duration = start time of last burst + (length of last burst / sample rate)
+        # Expected rx duration = start time of last burst + (length of last burst / sample rate)
         rx_duration = rx_stack[-1][0] + (stack[-1][1] / sample_rate)
 
         csrc = crimson.get_src_c(channels, sample_rate, center_freq, rx_gain)
@@ -156,13 +156,16 @@ def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stac
     # Check if thread finished
     # Timeouts here indicate that something was hanging, there
     if(tx_thread.is_alive()):
+        print("T1")
         raise Exception ("TX CONTROL TIMED OUT")
 
     if(rx_thread.is_alive()):
+        print("T2")
         raise Exception ("RX CONTROL TIMED OUT")
 
     # A timeout here means insufficent data was received
     if rx_timeout_occured.is_set():
+        print("T3")
         raise Exception ("RX DATA TIMED OUT")
 
     return vsnk
@@ -176,17 +179,30 @@ def manual_tune_run(channels, wave_freq, tx_sample_rate, rx_sample_rate, tx_tune
 
     # Run.
     vsnk = [] # Will be extended when using stacked commands.
-    threads = [
-        threading.Thread(target = run_tx, args = (csnk, channels, tx_stack, tx_sample_rate, wave_freq)),
-        threading.Thread(target = run_rx, args = (csrc, channels, rx_stack, rx_sample_rate, vsnk, rx_timeout_occured)),
-        ]
 
-    for thread in threads:
-        thread.start()
+    # Prepare thread
+    # Expected tx duration = start time of last burst + (length of last burst / sample rate)
+    tx_duration = tx_stack[-1][0] + (stack[-1][1] / sample_rate)
+    tx_thread = threading.Thread(target = run_tx, args = (csnk, channels, tx_stack, tx_sample_rate, wave_freq))
+    rx_duration = rx_stack[-1][0] + (stack[-1][1] / sample_rate)
+    rx_thread = threading.Thread(target = run_rx, args = (csrc, channels, rx_stack, rx_sample_rate, vsnk, rx_timeout_occured))
 
-    # Stop.
-    for thread in threads:
-        thread.join()
+    # Start threads
+    tx_thread.start()
+    rx_thread.start()
+
+    # Wait for thread to finish with a timeout
+    tx_thread.join(tx_duration + 10)
+    # The data timeout is expected + 10s, make sure the control timeout is longer
+    rx_thread.join(rx_duration + 20)
+
+    # Check if thread finished
+    # Timeouts here indicate that something was hanging, there
+    if(tx_thread.is_alive()):
+        raise Exception ("TX CONTROL TIMED OUT")
+
+    if(rx_thread.is_alive()):
+        raise Exception ("RX CONTROL TIMED OUT")
 
     if rx_timeout_occured.is_set():
         raise Exception ("RX TIMED OUT")
