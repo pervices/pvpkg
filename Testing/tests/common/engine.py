@@ -156,17 +156,20 @@ def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stac
         rx_thread.join(0)#rx_duration + 20)
 
     # Check if thread finished
-    # Timeouts here indicate that something was hanging, there
+    # Timeouts here indicate that something was hanging
     if(tx_thread != None):
         if(tx_thread.is_alive()):
+            print("ERROR: Tx flowgraph timeout")
             raise Exception ("TX CONTROL TIMED OUT")
 
     if(rx_thread != None):
         if(rx_thread.is_alive()):
+            print("ERROR: Rx flowgraph timeout")
             raise Exception ("RX CONTROL TIMED OUT")
 
     # A timeout here means insufficent data was received
     if rx_timeout_occured.is_set():
+        print("ERROR: Timeout while waiting for sufficient rx data")
         raise Exception ("RX DATA TIMED OUT")
 
     return vsnk
@@ -198,14 +201,17 @@ def manual_tune_run(channels, wave_freq, tx_sample_rate, rx_sample_rate, tx_tune
     rx_thread.join(rx_duration + 20)
 
     # Check if thread finished
-    # Timeouts here indicate that something was hanging, there
+    # Timeouts here indicate that something was hanging
     if(tx_thread.is_alive()):
+        print("ERROR: Tx flowgraph timeout")
         raise Exception ("TX CONTROL TIMED OUT")
 
     if(rx_thread.is_alive()):
+        print("ERROR: Rx flowgraph timeout")
         raise Exception ("RX CONTROL TIMED OUT")
 
     if rx_timeout_occured.is_set():
+        print("ERROR: Timeout while waiting for sufficient rx data")
         raise Exception ("RX TIMED OUT")
 
     return vsnk
