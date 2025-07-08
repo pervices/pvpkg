@@ -11,7 +11,6 @@ import time
 import subprocess
 import sys
 import datetime
-import multiprocessing
 
 def run_tx(csnk, channels, stack, sample_rate, wave_freq):
 
@@ -159,17 +158,17 @@ def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stac
     # Timeouts here indicate that something was hanging
     if(tx_thread != None):
         if(tx_thread.is_alive()):
-            print(colored("\033[0;31mERROR: Tx flowgraph timeout\033[00m", "red"))
+            print("\x1b[31mERROR: Tx flowgraph timeout\x1b[0m", "red")
             raise Exception ("TX CONTROL TIMED OUT")
 
     if(rx_thread != None):
         if(rx_thread.is_alive()):
-            print(colored("\033[0;31mERROR: Rx flowgraph timeout\033[00m", "red"))
+            print("\x1b[31mERROR: Rx flowgraph timeout\x1b[0m")
             raise Exception ("RX CONTROL TIMED OUT")
 
     # A timeout here means insufficent data was received
     if rx_timeout_occured.is_set():
-        print(colored("\033[0;31mERROR: Timeout while waiting for sufficient rx data\033[00m", "red"))
+        print("\x1b[31mERROR: Timeout while waiting for sufficient rx data\x1b[0m")
         raise Exception ("RX DATA TIMED OUT")
 
     return vsnk
@@ -203,15 +202,15 @@ def manual_tune_run(channels, wave_freq, tx_sample_rate, rx_sample_rate, tx_tune
     # Check if thread finished
     # Timeouts here indicate that something was hanging
     if(tx_thread.is_alive()):
-        print(colored("\033[0;31mERROR: Tx flowgraph timeout\033[00m", "red"))
+        print("\x1b[31mERROR: Tx flowgraph timeout\x1b[0m")
         raise Exception ("TX CONTROL TIMED OUT")
 
     if(rx_thread.is_alive()):
-        print(colored("\033[0;31mERROR: Rx flowgraph timeout\033[00m", "red"))
+        print("\x1b[31mERROR: Rx flowgraph timeout\x1b[0m")
         raise Exception ("RX CONTROL TIMED OUT")
 
     if rx_timeout_occured.is_set():
-        print(colored("\033[0;31mERROR: Timeout while waiting for sufficient rx data\033[00m", "red"))
+        print("\x1b[31mERROR: Timeout while waiting for sufficient rx data\x1b[0m")
         raise Exception ("RX TIMED OUT")
 
     return vsnk
