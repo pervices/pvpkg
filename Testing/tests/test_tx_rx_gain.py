@@ -9,6 +9,7 @@ import sys
 import os
 
 def main(iterations, title="TX RX Gain Test") -> int:
+    print("\x1b[31mstderr is captured\x1b[0m", file=sys.stderr)
     fail_flag = 0
 
     iteration_areas = []
