@@ -21,9 +21,9 @@ def main(iterations, title="TX RX Gain Test") -> int:
         try:
             vsnk = engine.run(targs.channels, it["wave_freq"], it["sample_rate"], it["center_freq"], it["tx_gain"], it["rx_gain"], tx_stack, rx_stack)
         except Exception as err:
-            report.draw_from_buffer()
-            report.save()
-            sys.exit(1)
+            print("\x1b[31m" + "ERROR while gathering data\n Iteration: " + str(it) + "\nException: " + str(err) + "\x1b[0m")
+            fail_flag = 1
+            continue
 
         
         current_test_only_fail_flag = 0
