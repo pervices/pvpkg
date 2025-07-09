@@ -118,6 +118,8 @@ def run_rx(csrc, channels, stack, sample_rate, _vsnk, timeout_occured):
     # Cannot return from thread so extend instead.
     _vsnk.extend(vsnk)
 
+n = 0
+
 def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stack, rx_stack):
     rx_timeout_occured = Event()
 
@@ -157,7 +159,7 @@ def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stac
     # Check if thread finished
     # Timeouts here indicate that something was hanging
     if(tx_thread != None):
-        if(tx_thread.is_alive()):
+        if(tx_thread.is_alive() or n == 2):
             print("\x1b[31mERROR: Tx flowgraph timeout\x1b[0m", file=sys.stderr)
             raise Exception ("TX CONTROL TIMED OUT")
 
@@ -170,6 +172,8 @@ def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stac
     if rx_timeout_occured.is_set():
         print("\x1b[31mERROR: Timeout while waiting for sufficient rx data\x1b[0m", file=sys.stderr)
         raise Exception ("RX DATA TIMED OUT")
+
+    n = n + 1
 
     return vsnk
 
