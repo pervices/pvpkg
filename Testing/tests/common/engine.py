@@ -5,7 +5,8 @@ from gnuradio import gr
 
 from . import crimson
 import threading
-from threading import Thread, Event
+from threading import Event
+import multiprocessing
 from inspect import currentframe, getframeinfo
 import time
 import subprocess
@@ -133,13 +134,15 @@ def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stac
         tx_duration = tx_stack[-1][0] + (tx_stack[-1][1] / sample_rate)
 
         csnk = crimson.get_snk_s(channels, sample_rate, center_freq, tx_gain)
-        tx_thread = threading.Thread(target = run_tx, args = (csnk, channels, tx_stack, sample_rate, wave_freq))
+        tx_thread = multiprocessing.Process(target = run_tx, args = (csnk, channels, tx_stack, sample_rate, wave_freq))
+        tx_thread.start()
     if rx_stack != None:
         # Expected rx duration = start time of last burst + (length of last burst / sample rate)
         rx_duration = rx_stack[-1][0] + (rx_stack[-1][1] / sample_rate)
 
         csrc = crimson.get_src_c(channels, sample_rate, center_freq, rx_gain)
-        rx_thread = threading.Thread(target = run_rx, args = (csrc, channels, rx_stack, sample_rate, vsnk, rx_timeout_occured))
+        rx_thread = multiprocessing.Process(target = run_rx, args = (csrc, channels, rx_stack, sample_rate, vsnk, rx_timeout_occured))
+        rx_thread.start()
 
     # Start threads
     if(tx_thread != None):
@@ -154,17 +157,63 @@ def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stac
     if(rx_thread != None):
         rx_thread.join(rx_duration + 20)
 
+    tx_thread_timeout = False
+    rx_thread_timeout = False
+
     # Check if thread finished
     # Timeouts here indicate that something was hanging
     if(tx_thread != None):
         if(tx_thread.is_alive()):
             print("\x1b[31mERROR: Tx flowgraph timeout\x1b[0m", file=sys.stderr)
-            raise Exception ("TX CONTROL TIMED OUT")
+            tx_thread_timeout = True
+            # Issue SIGTERM
+            tx_thread.terminate()
 
     if(rx_thread != None):
         if(rx_thread.is_alive()):
             print("\x1b[31mERROR: Rx flowgraph timeout\x1b[0m", file=sys.stderr)
-            raise Exception ("RX CONTROL TIMED OUT")
+            rx_thread_timeout = True
+            # Issue SIGTERM
+            rx_thread.terminate()
+
+            # raise Exception ("RX CONTROL TIMED OUT")
+
+    tx_terminate_failed = False
+    if(tx_thread_timeout):
+        tx_thread.join(30)
+        if(tx_thread.is_alive()):
+            print("\x1b[31mERROR: TX thread failed to stop when issued SIGTERM. Issuing SIGKILL\x1b[0m", file=sys.stderr)
+            tx_terminate_failed = True
+            # Issue SIGKILL
+            tx_thread.kill()
+
+    rx_terminate_failed = False
+    if(rx_thread_timeout):
+        rx_thread.join(30)
+        if(rx_thread.is_alive()):
+            print("\x1b[31mERROR: RX thread failed to stop when issued SIGTERM. Issuing SIGKILL\x1b[0m", file=sys.stderr)
+            rx_terminate_failed = True
+            # Issue SIGKILL
+            rx_thread.kill()
+
+    if(tx_terminate_failed):
+        tx_thread.join(30)
+        if(tx_thread.is_alive()):
+            print("\x1b[31mERROR: TX thread failed to stop when issued SIGKILL\x1b[0m", file=sys.stderr)
+            raise Exception ("TX failed to respond to SIGKILL")
+
+    if(rx_terminate_failed):
+        rx_thread.join(30)
+        if(rx_thread.is_alive()):
+            print("\x1b[31mERROR: RX thread failed to stop when issued SIGKILL\x1b[0m", file=sys.stderr)
+            raise Exception ("RX failed to respond to SIGKILL")
+
+    if(tx_terminate_failed or tx_thread_timeout):
+        raise Exception ("TX CONTROL TIMED OUT")
+    
+    if(rx_terminate_failed or rx_thread_timeout):
+        raise Exception ("RX CONTROL TIMED OUT")
+
 
     # A timeout here means insufficent data was received
     if rx_timeout_occured.is_set():
@@ -186,9 +235,9 @@ def manual_tune_run(channels, wave_freq, tx_sample_rate, rx_sample_rate, tx_tune
     # Prepare thread
     # Expected tx duration = start time of last burst + (length of last burst / sample rate)
     tx_duration = tx_stack[-1][0] + (tx_stack[-1][1] / tx_sample_rate)
-    tx_thread = threading.Thread(target = run_tx, args = (csnk, channels, tx_stack, tx_sample_rate, wave_freq))
+    tx_thread = multiprocessing.Process(target = run_tx, args = (csnk, channels, tx_stack, tx_sample_rate, wave_freq))
     rx_duration = rx_stack[-1][0] + (rx_stack[-1][1] / rx_sample_rate)
-    rx_thread = threading.Thread(target = run_rx, args = (csrc, channels, rx_stack, rx_sample_rate, vsnk, rx_timeout_occured))
+    rx_thread = multiprocessing.Process(target = run_rx, args = (csrc, channels, rx_stack, rx_sample_rate, vsnk, rx_timeout_occured))
 
     # Start threads
     tx_thread.start()
