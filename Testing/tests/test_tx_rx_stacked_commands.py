@@ -15,13 +15,11 @@ report = pdf_report.ClassicShipTestReport("tx_rx_stacked_commands", targs.serial
 test_fail = 0
 summary_tables = []
 attempt_num = 0
-debug_iter = 0
 
 @retry(stop_max_attempt_number = 3)
 def test(it, data):
     global test_fail
     global attempt_num
-    global debug_iter
     attempt_num += 1
     gen.dump(it)
 
@@ -30,7 +28,6 @@ def test(it, data):
     tx_stack = [ (5.0, it["sample_count" ]), (8.0, it["sample_count"]), (11.0, it["sample_count"]), (14.0, it["sample_count"]) ]
     rx_stack = [ (5.0, it["sample_count"]), (8.0, it["sample_count"]), (11.0, it["sample_count"]), (14.0, it["sample_count"]) ]
     try:
-        if debug_iter >= 4: raise Exception("debug exception")
         vsnk = engine.run(targs.channels, it["wave_freq"], it["sample_rate"], it["center_freq"], it["tx_gain"], it["rx_gain"], tx_stack, rx_stack)
     except Exception as err:
         # Retry will not catch sys.exit on 3rd attempt, so print report first
@@ -98,11 +95,9 @@ def test(it, data):
 
 def main(iterations, desc):
     global attempt_num
-    global debug_iter
     data  = [["Centre Freq", "Wave Freq", "Sample Rate", "Channel", "Frame 1/Frame 0","Frame 2/Frame 0", "Frame 3/Frame 0", "Result"]]
     for it in iterations:
         attempt_num = 0
-        debug_iter += 1
         test(it, data)
     summary_tables.append([desc, data])
 
