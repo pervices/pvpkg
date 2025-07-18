@@ -119,7 +119,9 @@ def run_rx(csrc, channels, stack, sample_rate, _vsnk, timeout_occured):
     # Cannot return from thread so extend instead.
     _vsnk.extend(vsnk)
 
-def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stack, rx_stack):
+# Multiprocess is needed for the ability to terminate, but tx and rx must be in the same process as each other
+# run_helper is run as it's own process, which then spawns tx and rx threads
+def run_helper(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stack, rx_stack, data_queue):
     rx_timeout_occured = Event()
 
     vsnk = [] # Will be extended when using stacked commands.
@@ -134,15 +136,13 @@ def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stac
         tx_duration = tx_stack[-1][0] + (tx_stack[-1][1] / sample_rate)
 
         csnk = crimson.get_snk_s(channels, sample_rate, center_freq, tx_gain)
-        tx_thread = multiprocessing.Process(target = run_tx, args = (csnk, channels, tx_stack, sample_rate, wave_freq))
-        tx_thread.start()
+        tx_thread = threading.Thread(target = run_tx, args = (csnk, channels, tx_stack, sample_rate, wave_freq))
     if rx_stack != None:
         # Expected rx duration = start time of last burst + (length of last burst / sample rate)
         rx_duration = rx_stack[-1][0] + (rx_stack[-1][1] / sample_rate)
 
         csrc = crimson.get_src_c(channels, sample_rate, center_freq, rx_gain)
-        rx_thread = multiprocessing.Process(target = run_rx, args = (csrc, channels, rx_stack, sample_rate, vsnk, rx_timeout_occured))
-        rx_thread.start()
+        rx_thread = threading.Thread(target = run_rx, args = (csrc, channels, rx_stack, sample_rate, vsnk, rx_timeout_occured))
 
     # Start threads
     if(tx_thread != None):
@@ -157,70 +157,92 @@ def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stac
     if(rx_thread != None):
         rx_thread.join(rx_duration + 20)
 
-    tx_thread_timeout = False
-    rx_thread_timeout = False
-
     # Check if thread finished
     # Timeouts here indicate that something was hanging
     if(tx_thread != None):
         if(tx_thread.is_alive()):
             print("\x1b[31mERROR: Tx flowgraph timeout\x1b[0m", file=sys.stderr)
-            tx_thread_timeout = True
-            # Issue SIGTERM
-            tx_thread.terminate()
+            raise Exception ("TX CONTROL TIMED OUT")
 
     if(rx_thread != None):
         if(rx_thread.is_alive()):
             print("\x1b[31mERROR: Rx flowgraph timeout\x1b[0m", file=sys.stderr)
-            rx_thread_timeout = True
-            # Issue SIGTERM
-            rx_thread.terminate()
-
-            # raise Exception ("RX CONTROL TIMED OUT")
-
-    tx_terminate_failed = False
-    if(tx_thread_timeout):
-        tx_thread.join(30)
-        if(tx_thread.is_alive()):
-            print("\x1b[31mERROR: TX thread failed to stop when issued SIGTERM. Issuing SIGKILL\x1b[0m", file=sys.stderr)
-            tx_terminate_failed = True
-            # Issue SIGKILL
-            tx_thread.kill()
-
-    rx_terminate_failed = False
-    if(rx_thread_timeout):
-        rx_thread.join(30)
-        if(rx_thread.is_alive()):
-            print("\x1b[31mERROR: RX thread failed to stop when issued SIGTERM. Issuing SIGKILL\x1b[0m", file=sys.stderr)
-            rx_terminate_failed = True
-            # Issue SIGKILL
-            rx_thread.kill()
-
-    if(tx_terminate_failed):
-        tx_thread.join(30)
-        if(tx_thread.is_alive()):
-            print("\x1b[31mERROR: TX thread failed to stop when issued SIGKILL\x1b[0m", file=sys.stderr)
-            raise Exception ("TX failed to respond to SIGKILL")
-
-    if(rx_terminate_failed):
-        rx_thread.join(30)
-        if(rx_thread.is_alive()):
-            print("\x1b[31mERROR: RX thread failed to stop when issued SIGKILL\x1b[0m", file=sys.stderr)
-            raise Exception ("RX failed to respond to SIGKILL")
-
-    if(tx_terminate_failed or tx_thread_timeout):
-        raise Exception ("TX CONTROL TIMED OUT")
-    
-    if(rx_terminate_failed or rx_thread_timeout):
-        raise Exception ("RX CONTROL TIMED OUT")
-
+            raise Exception ("RX CONTROL TIMED OUT")
 
     # A timeout here means insufficent data was received
     if rx_timeout_occured.is_set():
         print("\x1b[31mERROR: Timeout while waiting for sufficient rx data\x1b[0m", file=sys.stderr)
         raise Exception ("RX DATA TIMED OUT")
 
-    return vsnk
+    data_queue.put(vsnk)
+
+def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stack, rx_stack):
+
+    # Queue to store data from run_helper
+    data_queue = multiprocessing.Queue(1)
+
+    # Start process to run tx and rx
+    helper_process = multiprocessing.Process(target = run_rx, args = (csrc, channels, rx_stack, sample_rate, vsnk, rx_timeout_occured, data_queue))
+    helper_process.start()
+
+    tx_duration = 0
+    rx_duration = 0
+
+    # Prepare thread
+    if tx_stack != None:
+        # Expected tx duration = start time of last burst + (length of last burst / sample rate)
+        tx_duration = tx_stack[-1][0] + (tx_stack[-1][1] / sample_rate)
+
+    if rx_stack != None:
+        # Expected rx duration = start time of last burst + (length of last burst / sample rate)
+        rx_duration = rx_stack[-1][0] + (rx_stack[-1][1] / sample_rate)
+
+    time_limit = max(tx_duration + rx_duration) + 30
+    # Wait iteration to run
+    helper_process.join(time_limit)
+
+    bool flowgraph_timeout = False
+    # If the process has finished
+    if(not helper_process.is_alive()):
+        # If the test ran successfully
+        if(helper_process.exitcode == 0):
+            # Return collected data
+            return (data_queue.get())
+        else:
+            # An error (probably rx data timeout) while running the flowgraph
+            print("\x1b[31mERROR: error while running flowgraph\x1b[0m", file=sys.stderr)
+            raise Exception ("flowgraph error")
+    else:
+        print("\x1b[31mERROR: Flowgraph timeout. UHD appears to be hanging forever. Issuing SIGTERM\x1b[0m", file=sys.stderr)
+        flowgraph_timeout = True
+        # Issue SIGTERM
+        helper_process.terminate()
+        # Wait for process to close
+        helper_process.join(30)
+
+    bool flow_sigterm_timeout = False
+    if(helper_process.is_alive()):
+        print("\x1b[31mERROR: Flowgraph still hanging after issuing SIGTERM. Issuing SIGKILL\x1b[0m", file=sys.stderr)
+        helper_process.kill()
+        flow_sigterm_timeout = True
+        # Wait for process to close
+        helper_process.join(30)
+
+    if(helper_process.is_alive()):
+        print("\x1b[31mERROR: Flowgraph still hanging after issuing SIGKILL\x1b[0m", file=sys.stderr)
+        raise Exception ("flowgraph SIGKILL timeout")
+
+    elif(flow_sigterm_timeout):
+        raise Exception ("flowgraph SIGTERM timeout")
+
+    elif(flowgraph_timeout):
+        raise Exception ("flowgraph timeout")
+
+    # Unreachable error message in case of a mistake during the previous elif series
+    else:
+        print("\x1b[31mERROR: No valid data but no flowgraph error detected. This should be unreachable\x1b[0m", file=sys.stderr)
+        raise Exception ("Unexpected error")
+
 
 def manual_tune_run(channels, wave_freq, tx_sample_rate, rx_sample_rate, tx_tune_request, rx_tune_request, tx_gain, rx_gain, tx_stack, rx_stack):
     # Setup
