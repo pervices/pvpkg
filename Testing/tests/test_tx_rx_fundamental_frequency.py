@@ -15,10 +15,14 @@ targs = test_args.TestArgs(testDesc="Tx Rx Fundamental Frequency Test")
 report = pdf_report.ClassicShipTestReport("tx_rx_fundamental_frequency", targs.serial, targs.report_dir, targs.docker_sha)
 test_fail = 0
 summary_tables = []
+max_attempts = 1
+attempt_num = 0
 
 @retry(stop_max_attempt_number = 1)
 def test(it, data):
     global test_fail
+    global attempt_num
+    attempt_num += 1
     gen.dump(it)
 
 
@@ -27,7 +31,8 @@ def test(it, data):
     try:
         vsnk = engine.run(targs.channels, it["wave_freq"], it["sample_rate"], it["center_freq"], it["tx_gain"], it["rx_gain"], tx_stack, rx_stack)
     except Exception as err:
-        build_report()
+        # Retry will not catch sys.exit on final attempt, so print report first
+        if attempt_num >= max_attempts: build_report()
         sys.exit(1)
 
     center_freq = "{:.1e}".format(it["center_freq"])
@@ -80,8 +85,10 @@ def test(it, data):
     return data
 
 def main(iterations, desc):
+    global attempt_num
     data  = [["Centre Freq", "Wave Freq", "Channel", "Result"]]
     for it in iterations:
+        attempt_num = 0
         test(it, data)
     summary_tables.append([desc, data])
 
