@@ -161,9 +161,12 @@ def run_helper(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, 
 
     # Start threads
     if(tx_thread != None):
+        print("B21")
         tx_thread.start()
     if(rx_thread != None):
+        print("B22")
         rx_thread.start()
+    print("B23")
 
     # Wait for thread to finish with a timeout
     if(tx_thread != None):
@@ -171,6 +174,8 @@ def run_helper(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, 
     # The data timeout is expected + 10s, make sure the control timeout is longer
     if(rx_thread != None):
         rx_thread.join(rx_duration + 20)
+
+    print("B40")
 
     # Check if thread finished
     # Timeouts here indicate that something was hanging
@@ -188,6 +193,8 @@ def run_helper(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, 
     if rx_timeout_occured.is_set():
         print("\x1b[31mERROR: Timeout while waiting for sufficient rx data\x1b[0m", file=sys.stderr)
         raise Exception ("RX DATA TIMED OUT")
+
+    print("B60")
 
     data_queue.put(vsnk)
 
