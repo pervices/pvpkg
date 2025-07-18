@@ -199,20 +199,26 @@ def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stac
 
     time_limit = max(tx_duration + rx_duration) + 30
     # Wait iteration to run
+    print("T1")
     helper_process.join(time_limit)
+    print("T2")
 
     flowgraph_timeout = False
     # If the process has finished
     if(not helper_process.is_alive()):
+        print("T3")
         # If the test ran successfully
         if(helper_process.exitcode == 0):
+            print("T4A")
             # Return collected data
             return (data_queue.get())
         else:
+            print("T4B")
             # An error (probably rx data timeout) while running the flowgraph
             print("\x1b[31mERROR: error while running flowgraph\x1b[0m", file=sys.stderr)
             raise Exception ("flowgraph error")
     else:
+        print("T5")
         print("\x1b[31mERROR: Flowgraph timeout. UHD appears to be hanging forever. Issuing SIGTERM\x1b[0m", file=sys.stderr)
         flowgraph_timeout = True
         # Issue SIGTERM
