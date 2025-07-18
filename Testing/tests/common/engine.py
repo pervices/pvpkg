@@ -221,7 +221,7 @@ def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stac
     print("A2")
     helper_process.start()
     print("A3")
-    time.sleep(10)
+    time.sleep(30)
     print("A4")
 
     tx_duration = 0
@@ -232,9 +232,15 @@ def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stac
         # Expected tx duration = start time of last burst + (length of last burst / sample rate)
         tx_duration = tx_stack[-1][0] + (tx_stack[-1][1] / sample_rate)
 
+    time.sleep(1)
+    print("A5")
+
     if rx_stack != None:
         # Expected rx duration = start time of last burst + (length of last burst / sample rate)
         rx_duration = rx_stack[-1][0] + (rx_stack[-1][1] / sample_rate)
+
+    time.sleep(1)
+    print("A6")
 
     time_limit = max(tx_duration + rx_duration) + 30
     # Wait iteration to run
