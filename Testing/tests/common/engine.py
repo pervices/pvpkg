@@ -177,6 +177,7 @@ def run_helper(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, 
     data_queue.put(vsnk)
 
 def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stack, rx_stack):
+    print("T0")
 
     # Queue to store data from run_helper
     data_queue = multiprocessing.Queue(1)
