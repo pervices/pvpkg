@@ -29,7 +29,6 @@ def test(it, data):
     tx_stack = [ (5.0, it["sample_count"]) ] # One seconds worth.
     rx_stack = [ (5.0, int(it["sample_count"]) ) ]
     try:
-        raise Exception("")
         vsnk = engine.run(targs.channels, it["wave_freq"], it["sample_rate"], it["center_freq"], it["tx_gain"], it["rx_gain"], tx_stack, rx_stack)
     except Exception as err:
         # Retry will not catch sys.exit on final attempt, so print report first

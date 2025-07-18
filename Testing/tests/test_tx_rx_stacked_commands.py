@@ -30,7 +30,6 @@ def test(it, data):
     rx_stack = [ (5.0, it["sample_count"]), (8.0, it["sample_count"]), (11.0, it["sample_count"]), (14.0, it["sample_count"]) ]
     try:
         vsnk = engine.run(targs.channels, it["wave_freq"], it["sample_rate"], it["center_freq"], it["tx_gain"], it["rx_gain"], tx_stack, rx_stack)
-        raise Exception("")
     except Exception as err:
         # Retry will not catch sys.exit on final attempt, so print report first
         if attempt_num >= max_attempts: build_report()
