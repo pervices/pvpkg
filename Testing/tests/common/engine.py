@@ -143,6 +143,11 @@ def run_helper(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, 
 
         csnk = crimson.get_snk_s(channels, sample_rate, center_freq, tx_gain)
         print("B6")
+        print(channels)
+        print(tx_stack)
+        print(sample_rate)
+        print(wave_freq)
+        print("B7")
         tx_thread = threading.Thread(target = run_tx, args = (csnk, channels, tx_stack, sample_rate, wave_freq))
 
     print("B10")
@@ -192,6 +197,11 @@ def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stac
     # Queue to store data from run_helper
     data_queue = multiprocessing.Queue(1)
     print("A1")
+        print(channels)
+        print(tx_stack)
+        print(sample_rate)
+        print(wave_freq)
+    print("A1.5")
 
     # Start process to run tx and rx
     helper_process = multiprocessing.Process(target = run_helper, args = (channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stack, rx_stack, data_queue))
