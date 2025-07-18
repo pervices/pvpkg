@@ -137,9 +137,12 @@ def run_helper(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, 
     # Prepare thread
     if tx_stack != None:
         # Expected tx duration = start time of last burst + (length of last burst / sample rate)
+        print("B4")
         tx_duration = tx_stack[-1][0] + (tx_stack[-1][1] / sample_rate)
+        print("B5")
 
         csnk = crimson.get_snk_s(channels, sample_rate, center_freq, tx_gain)
+        print("B6")
         tx_thread = threading.Thread(target = run_tx, args = (csnk, channels, tx_stack, sample_rate, wave_freq))
 
     print("B10")
