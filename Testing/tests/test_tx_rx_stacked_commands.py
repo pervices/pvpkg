@@ -29,10 +29,10 @@ def test(it, data):
     rx_stack = [ (5.0, it["sample_count"]), (8.0, it["sample_count"]), (11.0, it["sample_count"]), (14.0, it["sample_count"]) ]
     try:
         vsnk = engine.run(targs.channels, it["wave_freq"], it["sample_rate"], it["center_freq"], it["tx_gain"], it["rx_gain"], tx_stack, rx_stack)
-        raise Exception("debugging exception")
+        if attempt_num >= 3: raise Exception("debugging exception")
     except Exception as err:
-        # if attempt_num >= 3: build_report()
-        print(attempt_num)
+        # Retry will not catch sys.exit on 3rd attempt, so print report first
+        if attempt_num >= 3: build_report()
         sys.exit(1)
 
     center_freq = "{:.1e}".format(it["center_freq"])
@@ -98,9 +98,8 @@ def main(iterations, desc):
     global attempt_num
     data  = [["Centre Freq", "Wave Freq", "Sample Rate", "Channel", "Frame 1/Frame 0","Frame 2/Frame 0", "Frame 3/Frame 0", "Result"]]
     for it in iterations:
-        attempt_num = 0
+        # attempt_num = 0
         test(it, data)
-        print("After test")
     summary_tables.append([desc, data])
 
 
