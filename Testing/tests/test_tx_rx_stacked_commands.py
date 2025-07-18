@@ -29,8 +29,10 @@ def test(it, data):
     rx_stack = [ (5.0, it["sample_count"]), (8.0, it["sample_count"]), (11.0, it["sample_count"]), (14.0, it["sample_count"]) ]
     try:
         vsnk = engine.run(targs.channels, it["wave_freq"], it["sample_rate"], it["center_freq"], it["tx_gain"], it["rx_gain"], tx_stack, rx_stack)
+        raise Exception("debugging exception")
     except Exception as err:
         # if attempt_num >= 3: build_report()
+        print(attempt_num)
         sys.exit(1)
 
     center_freq = "{:.1e}".format(it["center_freq"])
