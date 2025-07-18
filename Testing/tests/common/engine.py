@@ -122,13 +122,17 @@ def run_rx(csrc, channels, stack, sample_rate, _vsnk, timeout_occured):
 # Multiprocess is needed for the ability to terminate, but tx and rx must be in the same process as each other
 # run_helper is run as it's own process, which then spawns tx and rx threads
 def run_helper(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stack, rx_stack, data_queue):
+    print("B1")
     rx_timeout_occured = Event()
+    print("B2")
 
     vsnk = [] # Will be extended when using stacked commands.
     tx_duration = 0
     tx_thread = None
     rx_duration = 0
     rx_thread = None
+
+    print("B3")
 
     # Prepare thread
     if tx_stack != None:
@@ -137,12 +141,15 @@ def run_helper(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, 
 
         csnk = crimson.get_snk_s(channels, sample_rate, center_freq, tx_gain)
         tx_thread = threading.Thread(target = run_tx, args = (csnk, channels, tx_stack, sample_rate, wave_freq))
+
+    print("B10")
     if rx_stack != None:
         # Expected rx duration = start time of last burst + (length of last burst / sample rate)
         rx_duration = rx_stack[-1][0] + (rx_stack[-1][1] / sample_rate)
 
         csrc = crimson.get_src_c(channels, sample_rate, center_freq, rx_gain)
         rx_thread = threading.Thread(target = run_rx, args = (csrc, channels, rx_stack, sample_rate, vsnk, rx_timeout_occured))
+    print("B20")
 
     # Start threads
     if(tx_thread != None):
