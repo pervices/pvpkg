@@ -201,7 +201,7 @@ def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stac
     # Wait iteration to run
     helper_process.join(time_limit)
 
-    bool flowgraph_timeout = False
+    flowgraph_timeout = False
     # If the process has finished
     if(not helper_process.is_alive()):
         # If the test ran successfully
@@ -220,7 +220,7 @@ def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stac
         # Wait for process to close
         helper_process.join(30)
 
-    bool flow_sigterm_timeout = False
+    flow_sigterm_timeout = False
     if(helper_process.is_alive()):
         print("\x1b[31mERROR: Flowgraph still hanging after issuing SIGTERM. Issuing SIGKILL\x1b[0m", file=sys.stderr)
         helper_process.kill()
