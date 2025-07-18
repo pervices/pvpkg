@@ -14,10 +14,14 @@ targs = test_args.TestArgs(testDesc="Tx Rx Stacked Commands Test")
 report = pdf_report.ClassicShipTestReport("tx_rx_stacked_commands", targs.serial, targs.report_dir, targs.docker_sha)
 test_fail = 0
 summary_tables = []
+max_attempts = 3
+attempt_num = 0
 
-@retry(stop_max_attempt_number = 3)
+@retry(stop_max_attempt_number = max_attempts)
 def test(it, data):
     global test_fail
+    global attempt_num
+    attempt_num += 1
     gen.dump(it)
 
     # Collect.
@@ -27,7 +31,8 @@ def test(it, data):
     try:
         vsnk = engine.run(targs.channels, it["wave_freq"], it["sample_rate"], it["center_freq"], it["tx_gain"], it["rx_gain"], tx_stack, rx_stack)
     except Exception as err:
-        build_report()
+        # Retry will not catch sys.exit on final attempt, so print report first
+        if attempt_num >= max_attempts: build_report()
         sys.exit(1)
 
     center_freq = "{:.1e}".format(it["center_freq"])
@@ -90,8 +95,10 @@ def test(it, data):
 
 
 def main(iterations, desc):
+    global attempt_num
     data  = [["Centre Freq", "Wave Freq", "Sample Rate", "Channel", "Frame 1/Frame 0","Frame 2/Frame 0", "Frame 3/Frame 0", "Result"]]
     for it in iterations:
+        attempt_num = 0
         test(it, data)
     summary_tables.append([desc, data])
 
