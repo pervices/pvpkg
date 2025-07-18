@@ -184,7 +184,7 @@ def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stac
     print("A1")
 
     # Start process to run tx and rx
-    helper_process = multiprocessing.Process(target = run_rx, args = (csrc, channels, rx_stack, sample_rate, vsnk, rx_timeout_occured, data_queue))
+    helper_process = multiprocessing.Process(target = run_helper, args = (csrc, channels, rx_stack, sample_rate, vsnk, rx_timeout_occured, data_queue))
     print("A2")
     helper_process.start()
     print("A3")
