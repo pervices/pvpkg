@@ -215,8 +215,9 @@ def run_helper(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, 
     print("B60")
 
     print_types(vsnk, 0)
+    print("str(type(vsnk.data())): " + str(type(vsnk.data())))
 
-    data_queue.put(vsnk)
+    data_queue.put(vsnk.data())
 
 def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stack, rx_stack):
     print("A0")
