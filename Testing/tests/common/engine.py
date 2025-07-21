@@ -127,7 +127,7 @@ def print_types(item, depth):
     print("type: " + str(type(item)))
     if(isinstance(item, list)):
         for x in item:
-            print_types(item, depth + 1)
+            print_types(x, depth + 1)
 
 
 # Multiprocess is needed for the ability to terminate, but tx and rx must be in the same process as each other
