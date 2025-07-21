@@ -239,7 +239,7 @@ def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stac
         # Expected rx duration = start time of last burst + (length of last burst / sample rate)
         rx_duration = rx_stack[-1][0] + (rx_stack[-1][1] / sample_rate)
 
-    time.sleep(1)
+    time.sleep(40)
     print("A6")
 
     time_limit = max(tx_duration + rx_duration) + 30
