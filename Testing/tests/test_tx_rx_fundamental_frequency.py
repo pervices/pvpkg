@@ -114,4 +114,5 @@ elif(targs.product == "Lily"):
     main(gen.chestnut.hi_band.wave_sweep(), "High Band")
 
 build_report()
+print("E1")
 sys.exit(test_fail)
