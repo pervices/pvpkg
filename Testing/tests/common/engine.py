@@ -219,7 +219,7 @@ def run_helper(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, 
 
     samples = []
     for x in vsnk:
-        x.append(x.data())
+        samples.append(x.data())
 
     data_queue.put(samples)
 
