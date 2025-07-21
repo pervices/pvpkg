@@ -119,6 +119,17 @@ def run_rx(csrc, channels, stack, sample_rate, _vsnk, timeout_occured):
     # Cannot return from thread so extend instead.
     _vsnk.extend(vsnk)
 
+def print_types(item, depth):
+    indentation = ""
+    for n in range(depth):
+        indentation = indentation + "\t"
+
+    print("type: " + str(type(item)))
+    if(isinstance(type(item), list)):
+        for x in item:
+            print_types(item, depth + 1)
+
+
 # Multiprocess is needed for the ability to terminate, but tx and rx must be in the same process as each other
 # run_helper is run as it's own process, which then spawns tx and rx threads
 def run_helper(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stack, rx_stack, data_queue):
@@ -203,9 +214,8 @@ def run_helper(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, 
 
     print("B60")
 
-    print("vsnk type: " + str(type(vsnk)))
-    for x in vsnk:
-        print("x: " + str(type(vsnk)))
+    print_types(vsnk, 0)
+
     data_queue.put(vsnk)
 
 def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stack, rx_stack):
