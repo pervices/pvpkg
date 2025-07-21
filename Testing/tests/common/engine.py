@@ -122,7 +122,7 @@ def run_rx(csrc, channels, stack, sample_rate, _vsnk, timeout_occured):
 # Multiprocess is needed for the ability to terminate, but tx and rx must be in the same process as each other
 # run_helper is run as it's own process, which then spawns tx and rx threads
 def run_helper(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stack, rx_stack, data_queue):
-    rx_stack = None
+    tx_stack = None
     time.sleep(1)
     print("B1")
     rx_timeout_occured = Event()
