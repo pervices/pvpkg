@@ -125,7 +125,7 @@ def print_types(item, depth):
         indentation = indentation + "\t"
 
     print("type: " + str(type(item)))
-    if(isinstance(type(item), list)):
+    if(isinstance(item, list)):
         for x in item:
             print_types(item, depth + 1)
 
