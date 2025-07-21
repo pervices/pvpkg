@@ -137,4 +137,5 @@ else:
     test_fail = 1
 
 build_report()
+print("E1")
 sys.exit(test_fail)
