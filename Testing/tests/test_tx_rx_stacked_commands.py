@@ -37,7 +37,7 @@ def test(it, data):
         if debug_test_num == 5:
             raise Exception("")
 
-        if debug_test_num > 8 and debug_test_num < 10:
+        if debug_test_num > 8 and debug_test_num < 12:
             raise Exception("")
     except Exception as err:
         # Retry will not catch sys.exit on final attempt, so print report first
