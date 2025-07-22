@@ -23,6 +23,7 @@ def test(it, data):
     global test_fail
     global attempt_num
     attempt_num += 1
+    test_dnf = False
     gen.dump(it)
 
 
@@ -32,14 +33,20 @@ def test(it, data):
         vsnk = engine.run(targs.channels, it["wave_freq"], it["sample_rate"], it["center_freq"], it["tx_gain"], it["rx_gain"], tx_stack, rx_stack)
     except Exception as err:
         # Retry will not catch sys.exit on final attempt, so print report first
-        if attempt_num >= max_attempts: build_report()
-        sys.exit(1)
+        test_fail = 1
+        if attempt_num < max_attempts:
+            raise
+        else:
+            test_dnf = True
 
     center_freq = "{:.1e}".format(it["center_freq"])
     wave_freq = "{:.1e}".format(it["wave_freq"])
     title = "Center freq: {}, Wave freq: {}".format(center_freq, wave_freq)
-    test_info = [["Center Frequency (Hz)", "Wave Frequency (Hz)", "Sample Rate (SPS)", "Sample Count", "TX Gain (dB)", "RX Gain (dB)"],
-                        [center_freq, wave_freq, it["sample_rate"], it["sample_count"], it["tx_gain"], it["rx_gain"]]]
+    test_info = [["Center Frequency (Hz)", "Wave Frequency (Hz)", "Sample Rate (SPS)", "Sample Count", "TX Gain (dB)", "RX Gain (dB)", "Attempts"],
+                        [center_freq, wave_freq, it["sample_rate"], it["sample_count"], it["tx_gain"], it["rx_gain"], attempt_num]]
+
+    if attempt_num >= max_attempts and test_dnf:
+        data.append([str(center_freq), str(wave_freq), "DNF", "fail"])
 
     images = []
     for ch, channel in enumerate(vsnk):
@@ -68,13 +75,13 @@ def test(it, data):
         images.append(img)
 
         res = ""
-        if(like_real > 0.95 and like_real < 1.05 and like_imag > 0.95 and like_imag < 1.05):
+        if(like_real > 0.95 and like_real < 1.05 and like_imag > 0.95 and like_imag < 1.05 and not test_dnf):
             res = "pass"
         else:
             res = "fail"
             test_fail = 1
 
-        data.append([str(center_freq), str(wave_freq), str(ch), res])
+        data.append([str(center_freq), str(wave_freq), str(ch), attempt_num, res])
 
     report.buffer_put("text_large", title)
     report.buffer_put("table_wide", test_info, "")
@@ -86,7 +93,7 @@ def test(it, data):
 
 def main(iterations, desc):
     global attempt_num
-    data  = [["Centre Freq", "Wave Freq", "Channel", "Result"]]
+    data  = [["Centre Freq", "Wave Freq", "Channel", "Attempts", "Result"]]
     for it in iterations:
         attempt_num = 0
         test(it, data)

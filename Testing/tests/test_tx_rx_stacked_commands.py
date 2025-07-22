@@ -25,8 +25,8 @@ def test(it, data):
     global debug_test_num
     debug_test_num += 1
     attempt_num += 1
-    gen.dump(it)
     test_dnf = False
+    gen.dump(it)
 
     # Collect.
     # First frame of TX/RX stack is gold standard (sample_count samples in middle of 1 second of TX).
@@ -58,11 +58,11 @@ def test(it, data):
 
     report.buffer_put("text_large", title_line1)
     report.buffer_put("text_large", title_line2)
-    report.buffer_put("table", test_info, "")
+    report.buffer_put("table_large", test_info, "")
     report.buffer_put("text", " ")
     images = []
 
-    if attempt_num >= 3 and test_dnf:
+    if attempt_num >= max_attempts and test_dnf:
         data.append([str(center_freq), str(wave_freq), it["sample_rate"], "DNF", "DNF", "DNF", "DNF", attempt_num, "fail"])
         report.buffer_put("pagebreak")
         return data
@@ -103,7 +103,6 @@ def test(it, data):
         if attempt_num > 1:
             res = "fail"
 
-        
         plt.legend()
         s = report.get_image_io_stream()
         plt.savefig(s, format='png')
@@ -124,7 +123,6 @@ def main(iterations, desc):
         attempt_num = 0
         test(it, data)
     summary_tables.append([desc, data])
-
 
 def add_summary_table(title, data):
     report.insert_text_large("{} Testing Summary".format(title))
