@@ -59,7 +59,7 @@ def test(it, data):
 
     report.buffer_put("text_large", title_line1)
     report.buffer_put("text_large", title_line2)
-    report.buffer_put("table_large", test_info, "")
+    report.buffer_put("table_wide", test_info, "")
     report.buffer_put("text", " ")
     images = []
 
@@ -101,7 +101,7 @@ def test(it, data):
                 test_fail = 1
                 res = "fail"
 
-        if attempt_num > 0:
+        if attempt_num > 1:
             res = "fail"
 
         
@@ -130,7 +130,7 @@ def main(iterations, desc):
 def add_summary_table(title, data):
     report.insert_text_large("{} Testing Summary".format(title))
     report.insert_text("")
-    report.insert_table(data)
+    report.insert_table(data, fontsize=8)
     report.new_page()
 
 def build_report():
