@@ -58,7 +58,7 @@ def test(it, data):
 
     report.buffer_put("text_large", title_line1)
     report.buffer_put("text_large", title_line2)
-    report.buffer_put("table_wide", test_info, "")
+    report.buffer_put("table", test_info, "")
     report.buffer_put("text", " ")
     images = []
 
@@ -129,7 +129,7 @@ def main(iterations, desc):
 def add_summary_table(title, data):
     report.insert_text_large("{} Testing Summary".format(title))
     report.insert_text("")
-    report.insert_table(data, 10, fontsize=8)
+    report.insert_table(data, 20, fontsize=8)
     report.new_page()
 
 def build_report():
