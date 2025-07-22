@@ -23,6 +23,7 @@ def test(it, data):
     global attempt_num
     attempt_num += 1
     gen.dump(it)
+    test_dnf = False
 
     # Collect.
     # First frame of TX/RX stack is gold standard (sample_count samples in middle of 1 second of TX).
@@ -32,21 +33,32 @@ def test(it, data):
         vsnk = engine.run(targs.channels, it["wave_freq"], it["sample_rate"], it["center_freq"], it["tx_gain"], it["rx_gain"], tx_stack, rx_stack)
     except Exception as err:
         # Retry will not catch sys.exit on final attempt, so print report first
-        if attempt_num >= max_attempts: build_report()
-        sys.exit(1)
+        # if attempt_num >= max_attempts: build_report()
+        # sys.exit(1)
+        test_fail = 1
+        if attempt_num < max_attempts: 
+            raise
+        else:
+            test_dnf = True
+            
 
     center_freq = "{:.1e}".format(it["center_freq"])
     wave_freq = "{:.1e}".format(it["wave_freq"])
     title_line1 = "Center freq: {}, Wave freq: {},".format(center_freq, wave_freq)
     title_line2 = "Sample Rate: {}".format(it["sample_rate"])
-    test_info = [["Center Frequency (Hz)", "Wave Frequency (Hz)", "Sample Rate (SPS)", "Sample Count", "TX Gain (dB)", "RX Gain (dB)"],
-                        [center_freq, wave_freq, it["sample_rate"], it["sample_count"], it["tx_gain"], it["rx_gain"]]]
+    test_info = [["Center Frequency (Hz)", "Wave Frequency (Hz)", "Sample Rate (SPS)", "Sample Count", "TX Gain (dB)", "RX Gain (dB)", "Attempts"],
+                        [center_freq, wave_freq, it["sample_rate"], it["sample_count"], it["tx_gain"], it["rx_gain"], attempt_num]]
 
     report.buffer_put("text_large", title_line1)
     report.buffer_put("text_large", title_line2)
     report.buffer_put("table_wide", test_info, "")
     report.buffer_put("text", " ")
     images = []
+
+    if attempt_num >= 3 and test_dnf:
+        data.append([str(center_freq), str(wave_freq), it["sample_rate"], "DNF", "DNF", "DNF", "DNF", attempt_num, "fail"])
+        report.buffer_put("pagebreak")
+        return data
 
     # Process.
     # Stacked commands vsnk channel extensions and must be indexed manually with sample_count.
@@ -87,7 +99,7 @@ def test(it, data):
         plt.close()
         img = report.get_image_from_io_stream(s)
         images.append(img)
-        data.append([str(center_freq), str(wave_freq), it["sample_rate"], str(targs.channels[ch]), frame_results[1], frame_results[2], frame_results[3], res])
+        data.append([str(center_freq), str(wave_freq), it["sample_rate"], str(targs.channels[ch]), frame_results[1], frame_results[2], frame_results[3], attempt_num, res])
 
     report.buffer_put("image_list_dynamic", images, "")
     report.buffer_put("pagebreak")
@@ -96,7 +108,7 @@ def test(it, data):
 
 def main(iterations, desc):
     global attempt_num
-    data  = [["Centre Freq", "Wave Freq", "Sample Rate", "Channel", "Frame 1/Frame 0","Frame 2/Frame 0", "Frame 3/Frame 0", "Result"]]
+    data  = [["Centre Freq", "Wave Freq", "Sample Rate", "Channel", "Frame 1/Frame 0","Frame 2/Frame 0", "Frame 3/Frame 0", "Attempts", "Result"]]
     for it in iterations:
         attempt_num = 0
         test(it, data)
