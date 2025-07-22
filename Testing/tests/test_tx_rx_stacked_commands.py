@@ -14,10 +14,16 @@ targs = test_args.TestArgs(testDesc="Tx Rx Stacked Commands Test")
 report = pdf_report.ClassicShipTestReport("tx_rx_stacked_commands", targs.serial, targs.report_dir, targs.docker_sha)
 test_fail = 0
 summary_tables = []
+max_attempts = 3
+attempt_num = 0
 
-@retry(stop_max_attempt_number = 3)
+@retry(stop_max_attempt_number = max_attempts)
 def test(it, data):
     global test_fail
+    global attempt_num
+    debug_test_num += 1
+    attempt_num += 1
+    test_dnf = False
     gen.dump(it)
 
     # Collect.
@@ -27,26 +33,34 @@ def test(it, data):
     try:
         vsnk = engine.run(targs.channels, it["wave_freq"], it["sample_rate"], it["center_freq"], it["tx_gain"], it["rx_gain"], tx_stack, rx_stack)
     except Exception as err:
-        build_report()
-        sys.exit(1)
-
+        test_fail = 1
+        if attempt_num < max_attempts: 
+            raise
+        else:
+            test_dnf = True
+            
     center_freq = "{:.1e}".format(it["center_freq"])
     wave_freq = "{:.1e}".format(it["wave_freq"])
     title_line1 = "Center freq: {}, Wave freq: {},".format(center_freq, wave_freq)
     title_line2 = "Sample Rate: {}".format(it["sample_rate"])
-    test_info = [["Center Frequency (Hz)", "Wave Frequency (Hz)", "Sample Rate (SPS)", "Sample Count", "TX Gain (dB)", "RX Gain (dB)"],
-                        [center_freq, wave_freq, it["sample_rate"], it["sample_count"], it["tx_gain"], it["rx_gain"]]]
+    test_info = [["Center Frequency (Hz)", "Wave Frequency (Hz)", "Sample Rate (SPS)", "Sample Count", "TX Gain (dB)", "RX Gain (dB)", "Attempts"],
+                        [center_freq, wave_freq, it["sample_rate"], it["sample_count"], it["tx_gain"], it["rx_gain"], attempt_num]]
 
     report.buffer_put("text_large", title_line1)
     report.buffer_put("text_large", title_line2)
-    report.buffer_put("table_wide", test_info, "")
+    report.buffer_put("table_large", test_info, "")
     report.buffer_put("text", " ")
     images = []
+
+    # Since engine.run failed, exit test early with DNF for missing data
+    if attempt_num >= max_attempts and test_dnf:
+        data.append([str(center_freq), str(wave_freq), it["sample_rate"], "DNF", "DNF", "DNF", "DNF", attempt_num, "fail"])
+        report.buffer_put("pagebreak")
+        return data
 
     # Process.
     # Stacked commands vsnk channel extensions and must be indexed manually with sample_count.
     for ch, channel in enumerate(vsnk):
-
         print("channel %d" % targs.channels[ch])
         areas = []
         res = "pass"
@@ -76,13 +90,16 @@ def test(it, data):
                 test_fail = 1
                 res = "fail"
 
+        if attempt_num > 1:
+            res = "fail"
+
         plt.legend()
         s = report.get_image_io_stream()
         plt.savefig(s, format='png')
         plt.close()
         img = report.get_image_from_io_stream(s)
         images.append(img)
-        data.append([str(center_freq), str(wave_freq), it["sample_rate"], str(targs.channels[ch]), frame_results[1], frame_results[2], frame_results[3], res])
+        data.append([str(center_freq), str(wave_freq), it["sample_rate"], str(targs.channels[ch]), frame_results[1], frame_results[2], frame_results[3], attempt_num, res])
 
     report.buffer_put("image_list_dynamic", images, "")
     report.buffer_put("pagebreak")
@@ -90,16 +107,17 @@ def test(it, data):
 
 
 def main(iterations, desc):
-    data  = [["Centre Freq", "Wave Freq", "Sample Rate", "Channel", "Frame 1/Frame 0","Frame 2/Frame 0", "Frame 3/Frame 0", "Result"]]
+    global attempt_num
+    data  = [["Centre Freq", "Wave Freq", "Sample Rate", "Channel", "Frame 1/Frame 0","Frame 2/Frame 0", "Frame 3/Frame 0", "Attempts", "Result"]]
     for it in iterations:
+        attempt_num = 0
         test(it, data)
     summary_tables.append([desc, data])
-
 
 def add_summary_table(title, data):
     report.insert_text_large("{} Testing Summary".format(title))
     report.insert_text("")
-    report.insert_table(data)
+    report.insert_table(data, 20, fontsize=8)
     report.new_page()
 
 def build_report():
