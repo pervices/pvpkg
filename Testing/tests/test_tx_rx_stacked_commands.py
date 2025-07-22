@@ -33,12 +33,12 @@ def test(it, data):
     tx_stack = [ (5.0, it["sample_count" ]), (8.0, it["sample_count"]), (11.0, it["sample_count"]), (14.0, it["sample_count"]) ]
     rx_stack = [ (5.0, it["sample_count"]), (8.0, it["sample_count"]), (11.0, it["sample_count"]), (14.0, it["sample_count"]) ]
     try:
-        vsnk = engine.run(targs.channels, it["wave_freq"], it["sample_rate"], it["center_freq"], it["tx_gain"], it["rx_gain"], tx_stack, rx_stack)
         if debug_test_num == 5:
             raise Exception("")
 
         if debug_test_num > 8 and debug_test_num < 12:
             raise Exception("")
+        vsnk = engine.run(targs.channels, it["wave_freq"], it["sample_rate"], it["center_freq"], it["tx_gain"], it["rx_gain"], tx_stack, rx_stack)
     except Exception as err:
         # Retry will not catch sys.exit on final attempt, so print report first
         # if attempt_num >= max_attempts: build_report()
@@ -49,7 +49,6 @@ def test(it, data):
         else:
             test_dnf = True
             
-
     center_freq = "{:.1e}".format(it["center_freq"])
     wave_freq = "{:.1e}".format(it["wave_freq"])
     title_line1 = "Center freq: {}, Wave freq: {},".format(center_freq, wave_freq)
@@ -130,7 +129,7 @@ def main(iterations, desc):
 def add_summary_table(title, data):
     report.insert_text_large("{} Testing Summary".format(title))
     report.insert_text("")
-    report.insert_table(data, fontsize=8)
+    report.insert_table(data, 10, fontsize=8)
     report.new_page()
 
 def build_report():
