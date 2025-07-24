@@ -37,18 +37,24 @@ class ClassicShipTestReport:
     buffer = []
 
     def __init__(self, doc_title, serial_num = "SERIAL", output_dir = None, docker_sha = None):
+        print("T1")
         self.serial_num = serial_num
+        print("T2")
         self.docker_sha = docker_sha
+        print("T3")
         if output_dir == None:
             output_dir = str(os.getcwd())
         self.output_dir = output_dir
         self.doc_title  = self.formattedDate + "-" + doc_title + "-" + serial_num
         self.file_title = self.doc_title
+        print("T10")
         #NOTE: We later update the doc_title, file_title, and filename with unit_name 
         #      from the unit
         self.filename = self.output_dir + "/" + self.doc_title + ".pdf"
+        print("T11")
 
         self.c = canvas.Canvas(self.file_title, pagesize=letter, lang="en-US")
+        print("T12")
         self.c.setAuthor("Per Vices Corporation")
         self.c.setTitle(self.doc_title)
         self.c.setSubject("Automatic Ship Test Report")
