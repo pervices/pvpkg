@@ -1,10 +1,17 @@
 import os
+print("S1")
 from common import sigproc
+print("S2")
 from common import engine
+print("S3")
 from common import generator as gen
+print("S4")
 from common import pdf_report
+print("S5")
 from common import test_args
+print("S6")
 from retrying import retry
+print("S7")
 import numpy as np
 import matplotlib.pyplot as plt
 import sys
