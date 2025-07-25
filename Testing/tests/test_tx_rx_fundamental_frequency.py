@@ -14,6 +14,10 @@ from retrying import retry
 print("S7")
 import numpy as np
 print("S8")
+import matplotlib
+print("S8.1")
+matplotlib.use('PDF')
+print("S8.5")
 import matplotlib.pyplot as plt
 print("S9")
 import sys
