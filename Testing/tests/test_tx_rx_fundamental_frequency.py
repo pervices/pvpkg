@@ -10,9 +10,11 @@ import matplotlib.pyplot as plt
 import sys
 import time, datetime
 
-
+print("A1")
 targs = test_args.TestArgs(testDesc="Tx Rx Fundamental Frequency Test")
+print("A2")
 report = pdf_report.ClassicShipTestReport("tx_rx_fundamental_frequency", targs.serial, targs.report_dir, targs.docker_sha)
+print("A3")
 test_fail = 0
 summary_tables = []
 max_attempts = 1
