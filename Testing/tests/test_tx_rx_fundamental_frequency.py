@@ -13,8 +13,11 @@ print("S6")
 from retrying import retry
 print("S7")
 import numpy as np
+print("S8")
 import matplotlib.pyplot as plt
+print("S9")
 import sys
+print("S10")
 import time, datetime
 
 print("A1")
