@@ -30,7 +30,7 @@ import argparse
 num_output_waves =1 #depends what plots look like
 begin_cutoff_waves = 1 #0.00000425 #e(-5) - guessed from previous diagrams (but seconds)
 tx_burst = 5.0 #burst should be slightly delayed to ensure all data is being collected
-rx_burst = ((5.125 - 5.0) / 128.0) + 5.0
+rx_burst = ((5.125 - 5.0) / 1024.0) + 5.0
 
 std_ratio = 4  #number std gets multiplied by for checks, normalized to a sample size of 10
                #This value is adjusted later depending on the number of runs.
