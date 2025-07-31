@@ -217,7 +217,7 @@ def main():
             TX: Below, we will be sending oiut samples equiv. to sample_rate after 10 seconds, so this will end at 11 seconds
             RX: Calculate the oversampling rate to find the number of samples to intake that match your ideal (sample count)
             '''
-            tx_stack = [ (tx_burst , sample_rate)]
+            tx_stack = [ (tx_burst , sample_rate * 5)]
             rx_stack = [ (rx_burst, int(it["sample_count"]))]
 
             try:
