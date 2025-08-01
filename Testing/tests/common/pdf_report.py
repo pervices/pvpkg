@@ -459,6 +459,7 @@ class ClassicShipTestReport:
         pvpkg_branch = subprocess.run(["git rev-parse --abbrev-ref HEAD | tr -d '\n' "], shell=True, capture_output=True, text=True).stdout
         fpga_ddr = subprocess.run(["uhd_usrp_info --all | grep DDR | tr -d '\n' "], shell=True, capture_output=True, text=True).stdout
         fpga_time = subprocess.run(["uhd_manual_get --path /mboards/0/cmp_time | grep -Eo [0-9]+-[0-9]+-[0-9]+[[:blank:]][0-9]+:[0-9]+ | sed s/[[:space:]]/-/ | tr -d '\n' "], shell=True, capture_output=True, text=True).stdout
+        fpga_datetime = datetime.datetime.fromisoformat(fpga_time).isoformat("-", "minutes")
 
         os.system('rm shiptest_out.txt')
 
@@ -481,7 +482,7 @@ class ClassicShipTestReport:
         self.insert_text("RTM : " + unit_rtm)
         self.insert_text("Server Version: " + server_ver)
         self.insert_text("FPGA Version: " + fpga_ver)
-        self.insert_text("FPGA Time: " + fpga_time)
+        self.insert_text("FPGA Time: " + fpga_datetime)
         if "crimson" not in unit_name:
             self.insert_text(fpga_ddr)
         self.insert_text("Unit Time: " + unit_time)
