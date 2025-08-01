@@ -458,7 +458,7 @@ class ClassicShipTestReport:
         pvpkg_commit = subprocess.run(["git describe --abbrev=8 --dirty --always --long | tr -d '\n' "], shell=True, capture_output=True, text=True).stdout
         pvpkg_branch = subprocess.run(["git rev-parse --abbrev-ref HEAD | tr -d '\n' "], shell=True, capture_output=True, text=True).stdout
         fpga_ddr = subprocess.run(["uhd_usrp_info --all | grep DDR | tr -d '\n' "], shell=True, capture_output=True, text=True).stdout
-        fpga_time = subprocess.run(["uhd_manual_get --path /mboards/0/cmp_time | grep -Eo [0-9]+-[0-9]+-[0-9]+[[:blank:]][0-9]+:[0-9]+"], shell=True, capture_output=True, text=True).stdout
+        fpga_time = subprocess.run(["uhd_manual_get --path /mboards/0/cmp_time | grep -Eo [0-9]+-[0-9]+-[0-9]+[[:blank:]][0-9]+:[0-9]+ | sed s/[[:space:]]/-/ | tr -d '\n' "], shell=True, capture_output=True, text=True).stdout
 
         os.system('rm shiptest_out.txt')
 
