@@ -3,6 +3,7 @@
 import datetime
 import os
 import subprocess
+import re
 #PDF IMPORTS
 from reportlab.pdfgen import canvas
 from reportlab.lib import colors
@@ -458,6 +459,8 @@ class ClassicShipTestReport:
         pvpkg_commit = subprocess.run(["git describe --abbrev=8 --dirty --always --long | tr -d '\n' "], shell=True, capture_output=True, text=True).stdout
         pvpkg_branch = subprocess.run(["git rev-parse --abbrev-ref HEAD | tr -d '\n' "], shell=True, capture_output=True, text=True).stdout
         fpga_ddr = subprocess.run(["uhd_usrp_info --all | grep DDR | tr -d '\n' "], shell=True, capture_output=True, text=True).stdout
+        cmp_time = subprocess.run(["uhd_manual_get --path /mboards/0/cmp_time | grep -Eo [0-9]+-[0-9]+-[0-9]+[[:blank:]][0-9]+:[0-9]+ | tr -d '\n' "], shell=True, capture_output=True, text=True).stdout
+        cmp_time_parts = list(map(int, re.split('[-|:| ]', cmp_time)))
 
         os.system('rm shiptest_out.txt')
 
@@ -480,6 +483,7 @@ class ClassicShipTestReport:
         self.insert_text("RTM : " + unit_rtm)
         self.insert_text("Server Version: " + server_ver)
         self.insert_text("FPGA Version: " + fpga_ver)
+        self.insert_text("FPGA Time: " + datetime.datetime(*cmp_time_parts).isoformat("-", "minutes"))
         if "crimson" not in unit_name:
             self.insert_text(fpga_ddr)
         self.insert_text("Unit Time: " + unit_time)
