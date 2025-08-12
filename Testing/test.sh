@@ -90,13 +90,13 @@ cd reports
 REPORT_DIR=$(pwd)
 cd $curr
 
-echo ":: Starting Functional Tests" > log.txt
+echo ":: Starting Functional Tests" | tee log.txt
 
 if [ -z $TEST_LIST ]; then
 	NUM_TESTS=${#TEST_FILES[@]}
 	for (( i=0; i<$NUM_TESTS; i++))
 	do
-		echo ":: Executing ${TEST_NAMES[$i]} test" >> log.txt
+		echo ":: Executing ${TEST_NAMES[$i]} test" | tee -a log.txt
 		pwd
 
 		python3 -u ${TEST_FILES[$i]}.py -p $PRODUCT -s $serial_number -o $REPORT_DIR -d $DOCKER_SHA
@@ -104,11 +104,11 @@ if [ -z $TEST_LIST ]; then
 		rv=$?
 		if [ $rv -eq 0 ]; then
 			PASSED_TESTS=$((PASSED_TESTS+1))
-			echo "${TEST_NAMES[$i]} test PASSED" >> log.txt
+			echo "${TEST_NAMES[$i]} test PASSED" | tee -a log.txt
 		else
 			FAILED_TESTS=$((FAILED_TESTS+1))
 			RETURN=$((RETURN+1))
-			echo "${TEST_NAMES[$i]} test FAILED" >> log.txt
+			echo "${TEST_NAMES[$i]} test FAILED" | tee -a log.txt
 		fi
 		echo "" >> log.txt
 	done
@@ -118,7 +118,7 @@ else
 	do
 		idx="${TEST_INDICES[$i]}"
 
-		echo ":: Executing ${TEST_NAMES[$idx]} test" >> log.txt
+		echo ":: Executing ${TEST_NAMES[$idx]} test" | tee -a log.txt
 		pwd
 
 		python3 -u ${TEST_FILES[$idx]}.py -p $PRODUCT -s $serial_number -o $REPORT_DIR -d $DOCKER_SHA
@@ -126,22 +126,19 @@ else
 		rv=$?
 		if [ $rv -eq 0 ]; then
 			PASSED_TESTS=$((PASSED_TESTS+1))
-			echo "${TEST_NAMES[$idx]} test PASSED" >> log.txt
+			echo "${TEST_NAMES[$idx]} test PASSED" | tee -a log.txt
 		else
 			FAILED_TESTS=$((FAILED_TESTS+1))
 			RETURN=$((RETURN+1))
-			echo "${TEST_NAMES[$idx]} test FAILED" >> log.txt
+			echo "${TEST_NAMES[$idx]} test FAILED" | tee -a log.txt
 		fi
-		echo "" >> log.txt
+		echo "" | tee -a log.txt
 	done
 fi
 
 
 echo "=================Functional Test Results================="
 echo "Summary: There are total $NUM_TESTS test(s), $PASSED_TESTS passed, $FAILED_TESTS failed"
-echo "=================begin of log.txt================="
-echo ""
-cat log.txt
-echo "=================end of log.txt================="
+echo "========================================================="
 
 exit $RETURN
