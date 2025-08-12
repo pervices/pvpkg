@@ -172,7 +172,8 @@ def boolToWord(word):
 
 def main():
     # Add generic test arguments
-    global targs 
+    global targs
+    fail_flag = 0
     targs = test_args.TestArgs(testDesc="TX/RX phase coherency test")
 
     global report
@@ -352,7 +353,6 @@ def main():
             phase_res.at['std', ch] = boolToWord(phase_df.loc['std'][ch] < phase_std_thresh)
 
         # Return a failure if any of the tests failed
-        fail_flag = 0
         freq_overall_res = freq_res[channel_list].apply(lambda column: column.str.contains("Pass")).all().all()
         ampl_overall_res = ampl_res[channel_list].apply(lambda column: column.str.contains("Pass")).all().all()
         phase_overall_res = phase_res[channel_list].apply(lambda column: column.str.contains("Pass")).all().all()
