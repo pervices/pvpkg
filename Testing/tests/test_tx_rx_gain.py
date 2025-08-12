@@ -166,7 +166,9 @@ if __name__ == "__main__":
 
         ret = main(gen.hi_band_gain_rx(), "High Band RX Gain Test")
         test_status.append(["High Band RX Gain Test", to_pass_fail(ret)])
-
+    else:
+        print("ERROR: unrecognized product argument", file=sys.stderr)
+        test_status.append(["Recognized product argument", to_pass_fail(1)])
 
     report.insert_text_large("Test Results")
     report.insert_table(test_status, 20)

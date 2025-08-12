@@ -169,8 +169,11 @@ if(targs.product == "Vaunt"):
     main(gen.tx_trigger())
 elif(targs.product == "Lily"):
     main(gen.chestnut.lo_band.tx_trigger())
-else:
+elif(targs.product == "Tate"):
     main(gen.cyan.lo_band.tx_trigger())
+else:
+    print("ERROR: unrecognized product argument", file=sys.stderr)
+    test_fail = 1
 
 build_report()
 sys.exit(test_fail)

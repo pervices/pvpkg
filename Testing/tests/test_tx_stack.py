@@ -21,6 +21,7 @@ def main():
     Hook an oscilloscope up to anyone of the four channels and look
     for a few one second bursts separate by some (human seeable) time interval.
     """
+    global test_fail
 
     if(targs.product == 'Tate'):
         # Cyan NRNT Setup.
@@ -37,8 +38,10 @@ def main():
         channels = np.array([0,1,2,3])
         sample_rate = 100e6
         sample_count = int(sample_rate)
+    else:
+        print("ERROR: unrecognized product argument", file=sys.stderr)
+        test_fail = 1
 
-    global test_fail
 
     # Waveform setup.
     wave_center = 15e6

@@ -130,5 +130,8 @@ elif(targs.product == "Tate"):
     main(gen.cyan.mid_band.tx_uhd_tune(), "")
 elif(targs.product == "Lily"):
     main(gen.chestnut.mid_band.tx_uhd_tune(), "")
+else:
+    print("ERROR: unrecognized product argument", file=sys.stderr)
+    test_fail = 1
 build_report()
 sys.exit(test_fail)

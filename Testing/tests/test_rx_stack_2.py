@@ -14,6 +14,7 @@ import os
 
 def main():
     targs = test_args.TestArgs(testDesc="Rx Sample Count Test 2")
+    test_fail = 0
 
     global report
 
@@ -47,6 +48,10 @@ def main():
 
         # Crimson TNG acts as a source by providing complex float samples.
         csrc = crimson.get_src_c(channels, sample_rate, 15e6, 1.0)
+
+    else:
+        print("ERROR: unrecognized product argument", file=sys.stderr)
+        test_fail = 1
 
 
     test_table = [
@@ -170,7 +175,6 @@ def main():
     report.insert_table(table_data_ch3_array, 20, "Collected channel 3 sample count array")
     report.insert_table(table_data_ch4_array, 20, "Collected channel 4 sample count array")
 
-    test_fail = 0
     #Test 2: Make sure that slots 0..start = 0, and start..end increment by sample count.
     try:
         assert (np.array_equal((ch_1_actual_array),(expect_count_array)))

@@ -12,6 +12,7 @@ import numpy as np
 
 def main():
     targs = test_args.TestArgs(testDesc="Rx Sample Count Test")
+    failed = 0 # flag for marking fails
 
     global report
 
@@ -45,6 +46,10 @@ def main():
 
         # Crimson TNG acts as a source by providing complex float samples.
         csrc = crimson.get_src_c(channels, sample_rate, 15e6, 1.0)
+
+    else:
+        print("ERROR: unrecognized product argument", file=sys.stderr)
+        failed = 1
 
     test_table = [
         ['Channel', 'Expected Sample Count', 'Actual Sample Count', 'Result']
@@ -103,9 +108,6 @@ def main():
     # Cleanup and validate.
     flowgraph.stop()
     flowgraph.wait()
-
-    # flag for marking fails
-    failed = 0
 
     #Test 1: assure length of all Rx samples received are as expected
     for channel in channels:

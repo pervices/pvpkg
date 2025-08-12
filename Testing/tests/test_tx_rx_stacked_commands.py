@@ -139,6 +139,9 @@ elif(targs.product == "Lily"):
     main(gen.chestnut.lo_band.basic(), "Low Band")
     main(gen.chestnut.mid_band.basic(), "Mid Band")
     main(gen.chestnut.hi_band.basic(), "High Band")
+else:
+    print("ERROR: unrecognized product argument", file=sys.stderr)
+    test_fail = 1
 
 build_report()
 sys.exit(test_fail)

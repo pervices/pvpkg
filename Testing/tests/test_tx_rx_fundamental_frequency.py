@@ -129,6 +129,9 @@ elif(targs.product == "Lily"):
     main(gen.chestnut.lo_band.wave_sweep(), "Low Band")
     main(gen.chestnut.mid_band.wave_sweep(), "Mid Band")
     main(gen.chestnut.hi_band.wave_sweep(), "High Band")
+else:
+    print("ERROR: unrecognized product argument", file=sys.stderr)
+    test_fail = 1
 
 build_report()
 sys.exit(test_fail)

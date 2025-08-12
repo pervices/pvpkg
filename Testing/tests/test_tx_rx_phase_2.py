@@ -186,6 +186,9 @@ def main():
         iterations = gen.cyan.lo_band.phaseCoherency()
     elif(targs.product == 'Lily'):
         iterations = gen.chestnut.lo_band.phaseCoherency()
+    else:
+        print("ERROR: unrecognized product argument", file=sys.stderr)
+        fail_flag = 1
 
     channel_list = channel_map[targs.channels].tolist()
     for ch in range(1, len(channel_list)):
