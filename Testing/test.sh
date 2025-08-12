@@ -40,7 +40,13 @@ case $PRODUCT in
 	TEST_FILES=("${V_TEST_FILES[@]}")
 	;;
 *"cyan"*)
-	PRODUCT=t
+	if uhd_manual_get --path /mboards/0/tx/0/fw_version | grep BBTx; then
+		# If the unit uses BBTx boards, we need to run the tests at frequencies less than 5GHz to allow the loopback to work
+		PRODUCT=b
+		echo "Detected Baseband TX boards on Cyan"
+	else
+		PRODUCT=t
+	fi
 	TEST_NAMES=("${T_TEST_NAMES[@]}")
 	TEST_FILES=("${T_TEST_FILES[@]}")
 	;;

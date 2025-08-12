@@ -34,10 +34,12 @@ class TestArgs:
             self.product = "Vaunt"
         elif args.product == 't':
             self.product = "Tate"
+        elif args.product == 'b':
+            self.product = "BasebandTate"
         elif args.product == 'l':
             self.product = "Lily"
         else:
-            print("Value of product argument must either be 'v' for vaunt, 't' for tate, or 'l' for lily")
+            print("Value of product argument must either be 'v' for vaunt, 't'for tate, 'b' for baseband tate, or 'l' for lily")
             sys.exit(1)
 
         self.report_dir = args.output
