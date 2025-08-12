@@ -144,7 +144,7 @@ def test(it):
     results.append(["Stale data", "--", "Starting buffer level > 0", stale_data_res])
     results.append(["Dropped data while priming", "--", "During priming buffer level > buffer level before the previous send", priming_res])
     results.append(["Correct samples per trigger", "--", "During streaming buffer level after each trigger + send is the same", sample_count_res])
-    results.append(["Other errors in program", "--", "No other errors (most likely from tirgger not activating", trigger_res])
+    results.append(["Other errors in program", "--", "No other errors (most likely from trigger not activating)", trigger_res])
 
 
     report.buffer_put("table", results, "Results")
