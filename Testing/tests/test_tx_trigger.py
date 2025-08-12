@@ -169,7 +169,7 @@ if(targs.product == "Vaunt"):
     main(gen.tx_trigger())
 elif(targs.product == "Lily"):
     main(gen.chestnut.lo_band.tx_trigger())
-elif(targs.product == "Tate"):
+elif(targs.product == "Tate" or targs.product == "BasebandTate"):
     main(gen.cyan.lo_band.tx_trigger())
 else:
     print("ERROR: unrecognized product argument", file=sys.stderr)

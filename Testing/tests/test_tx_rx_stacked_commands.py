@@ -135,6 +135,9 @@ elif(targs.product == "Tate"):
     main(gen.cyan.lo_band.basic(), "Low Band")
     main(gen.cyan.mid_band.basic(), "Mid Band")
     main(gen.cyan.hi_band.basic(), "High Band")
+elif(targs.product == "BasebandTate"):
+    main(gen.cyan.lo_band.basic(), "Low Band")
+    main(gen.cyan.mid_band.basic(), "Mid Band")
 elif(targs.product == "Lily"):
     main(gen.chestnut.lo_band.basic(), "Low Band")
     main(gen.chestnut.mid_band.basic(), "Mid Band")

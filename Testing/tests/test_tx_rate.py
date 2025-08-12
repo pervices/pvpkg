@@ -68,7 +68,7 @@ if(targs.product == "Vaunt"):
     main(gen.tx_rate())
 elif(targs.product == "Lily"):
     main(gen.chestnut.lo_band.tx_rate(4))
-elif(targs.product == "Tate"):
+elif(targs.product == "Tate" or targs.product == "BasebandTate"):
     main(gen.cyan.lo_band.tx_rate(4))
 else:
     test_fail = 1

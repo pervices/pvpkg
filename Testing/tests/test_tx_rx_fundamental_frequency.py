@@ -125,6 +125,9 @@ elif(targs.product == "Tate"):
     main(gen.cyan.lo_band.wave_sweep(), "Low Band")
     main(gen.cyan.mid_band.wave_sweep(), "Mid Band")
     main(gen.cyan.hi_band.wave_sweep(), "High Band")
+elif(targs.product == "BasebandTate"):
+    main(gen.cyan.lo_band.wave_sweep(), "Low Band")
+    main(gen.cyan.mid_band.wave_sweep(), "Mid Band")
 elif(targs.product == "Lily"):
     main(gen.chestnut.lo_band.wave_sweep(), "Low Band")
     main(gen.chestnut.mid_band.wave_sweep(), "Mid Band")

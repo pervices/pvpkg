@@ -19,7 +19,7 @@ def main():
     global report
 
     report = pdf_report.ClassicShipTestReport("rx_stack2", targs.serial, targs.report_dir, targs.docker_sha)
-    if(targs.product == 'Tate'):
+    if(targs.product == 'Tate' or targs.product == "BasebandTate"):
         report.insert_title_page("Cyan RX Sample Count Test")
         # Cyan NRNT Setup.
         channels = np.array([0,1,2,3])

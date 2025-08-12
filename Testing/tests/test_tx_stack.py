@@ -23,7 +23,7 @@ def main():
     """
     global test_fail
 
-    if(targs.product == 'Tate'):
+    if(targs.product == 'Tate' or targs.product == "BasebandTate"):
         # Cyan NRNT Setup.
         channels = np.array([0,1,2,3])
         sample_rate = 100e6

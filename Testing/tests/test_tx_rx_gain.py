@@ -126,6 +126,23 @@ if __name__ == "__main__":
 
         ret = main(gen.cyan.hi_band.gain_rx(), "High Band RX Gain Test")
         test_status.append(["High Band RX Gain Test", to_pass_fail(ret)])
+    elif(targs.product == "BasebandTate"):
+        report.insert_title_page("Cyan TX RX Gain Test")
+
+        test_status = [["Test", "Status"]]
+
+        # Change the argument in the following function to select how many channels to test
+        ret = main(gen.cyan.lo_band.gain_tx(), "Low Band TX Gain Test")
+        test_status.append(["Low Band TX Gain Test", to_pass_fail(ret)])
+
+        ret = main(gen.cyan.lo_band.gain_rx(), "Low Band RX Gain Test")
+        test_status.append(["Low Band RX Gain Test", to_pass_fail(ret)])
+
+        ret = main(gen.cyan.mid_band.gain_tx(), "Mid Band TX Gain Test")
+        test_status.append(["Mid Band TX Gain Test", to_pass_fail(ret)])
+
+        ret = main(gen.cyan.mid_band.gain_rx(), "Mid Band RX Gain Test")
+        test_status.append(["Mid Band RX Gain Test", to_pass_fail(ret)])
     elif(targs.product == 'Lily'):
         report.insert_title_page("Chestnut TX RX Gain Test")
 

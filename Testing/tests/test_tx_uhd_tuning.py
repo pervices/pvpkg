@@ -128,6 +128,9 @@ if(targs.product == "Vaunt"):
     main(gen.tx_uhd_tune(), "")
 elif(targs.product == "Tate"):
     main(gen.cyan.mid_band.tx_uhd_tune(), "")
+elif(targs.product == "BasebandTate"):
+    print("Skipping TX UHD Tuning test for BasebandTate. The BBTX board is deliberately designed to not produce an LO, and this test is intended to ensure the LO is at the correct frequency.")
+    sys.exit(0)
 elif(targs.product == "Lily"):
     main(gen.chestnut.mid_band.tx_uhd_tune(), "")
 else:
