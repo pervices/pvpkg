@@ -27,7 +27,7 @@ def main():
         # Cyan acts as a source by providing complex float samples.
         csrc = crimson.get_src_c(channels, sample_rate, 100e6, 1.0)
 
-    if(targs.product == 'Lily'):
+    elif(targs.product == 'Lily'):
         report.insert_title_page("Chestnut RX Sample Count Test")
         # Chestnut Setup.
         channels = np.array([0,1,2,3])
