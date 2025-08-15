@@ -6,7 +6,7 @@ Requires=docker.service
 [Service]
 Restart=always
 Type=notify
-ExecStart=/usr/bin/docker run --rm --name apt-cacher-ng-server --network host pvtesting/ubuntu2404:apt-cacher-ng /usr/sbin/apt-cacher-ng ForeGround=1
+ExecStart=/usr/lib/apt-cacher-server.sh
 ExecStop=/usr/bin/docker exec pvtesting/ubuntu2404:apt-cacher-ng-server stop
 
 [Install]
