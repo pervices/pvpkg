@@ -1,16 +1,13 @@
 [Unit]
 Description=Start apt-cacher-ng server Docker image
-After=network.target
+After=docker.service
+Requires=docker.service
 
 [Service]
+Restart=always
 Type=notify
-ExecStart=docker run \
-    --rm \
-    --privileged \
-    --tty \
-    --network host
-    pvtesting/ubuntu2404:apt-cacher-ng \
-    /usr/sbin/apt-cacher-ng ForeGround=1
+ExecStart=/usr/bin/docker run --rm --name apt-cacher-ng-server --network host pvtesting/ubuntu2404:apt-cacher-ng /usr/sbin/apt-cacher-ng ForeGround=1
+ExecStop=/usr/bin/docker exec pvtesting/ubuntu2404:apt-cacher-ng-server stop
 
 [Install]
 WantedBy=multi-user.target
