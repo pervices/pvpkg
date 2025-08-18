@@ -4,10 +4,7 @@ After=docker.service
 Requires=docker.service
 
 [Service]
-Restart=always
-Type=notify
-ExecStart=/usr/lib/apt-cacher-server.sh
-ExecStop=/usr/bin/docker exec pvtesting/ubuntu2404:apt-cacher-ng-server stop
+ExecStart=/usr/lib/apt-cacher-server.sh %n
 
 [Install]
 WantedBy=multi-user.target

@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 set -Eeuo pipefail
 
 # DIAGNOSTICS
@@ -52,14 +52,19 @@ CONTAINER_NAME=${1:-} # Container named after service
 CONTAINER_IMAGE="pvtesting/ubuntu2404:apt-cacher-ng"
 
 # Create container if it does not exist
-if [[ $(docker container inspect $CONTAINER_NAME) -gt 0 ]]; then
+docker container inspect $CONTAINER_NAME &> /dev/null || rc=$?
+if [[ $rc -gt 0 ]]; then
+    rc=0
     docker run --rm \
-    --detach \
     --name $CONTAINER_NAME \
     --network host \
-   $CONTAINER_IMAGE /usr/sbin/apt-cacher-ng ForeGround=1
+    --volume /var/cache/apt-cacher-ng:/var/cache/apt-cacher-ng \
+   $CONTAINER_IMAGE /usr/sbin/apt-cacher-ng ForeGround=1 \
+   || rc=$?
+   check_rc $rc "docker run"
 else
     docker container start $CONTAINER_NAME || rc=$?
-    docker container attach $CONTAINER_NAME || rc=$?
     check_rc $rc "Starting or attaching to Docker container"
 fi
+
+exit 0
