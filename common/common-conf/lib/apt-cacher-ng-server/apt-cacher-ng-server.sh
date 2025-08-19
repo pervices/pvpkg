@@ -49,7 +49,7 @@ if [ -z $1 ]; then
     exit 1
 fi
 CONTAINER_NAME=${1:-} # Container named after service
-CONTAINER_IMAGE="pvtesting/ubuntu2404:apt-cacher-ng"
+CONTAINER_IMAGE="pvtesting/ubuntu:apt-cacher-ng"
 
 # Create container if it does not exist
 docker container inspect $CONTAINER_NAME &> /dev/null || rc=$?
