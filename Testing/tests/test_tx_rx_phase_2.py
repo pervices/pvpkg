@@ -39,7 +39,7 @@ std_ratio_phase = 8  #number std gets multiplied by for checks, normalized to a 
                      #This value is adjusted later depending on the number of runs.
 
 # Criteria  
-freq_std_thresh = 0.6    
+freq_std_thresh = 0.7    
 ampl_std_thresh = 0.001
 phase_mean_thresh = 0.0349066 #rad bound
 phase_std_thresh = 0.002
