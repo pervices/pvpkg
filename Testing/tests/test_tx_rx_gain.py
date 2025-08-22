@@ -25,7 +25,7 @@ def main(iterations, title="TX RX Gain Test") -> int:
             fail_flag = 1
             continue
 
-        
+
         current_test_only_fail_flag = 0
 
         channel_areas = []
@@ -57,7 +57,6 @@ def main(iterations, title="TX RX Gain Test") -> int:
             img = report.get_image_from_io_stream(s)
             images.append(img)
 
-
         iteration_areas.append(channel_areas)
         print("the areas of {} for gain are: {}".format(targs.channels, iteration_areas))
         # Assert area is increasing per channel.
@@ -65,15 +64,28 @@ def main(iterations, title="TX RX Gain Test") -> int:
         data = [["Center Frequency (Hz)", "Wave Frequency (Hz)", "Sample Rate (SPS)", "Sample Count", "TX Gain (dB)", "RX Gain (dB)"],
                         [it["center_freq"], it["wave_freq"], it["sample_rate"], it["sample_count"], it["tx_gain"], it["rx_gain"]]]
 
+
         report.buffer_put("pagebreak")
         report.buffer_put("text_large", title)
-        report.buffer_put("table_wide", data, "Test Configuration")
+        report.buffer_put("table", data, "Test Configuration")
         report.buffer_put("text", " ")
         report.buffer_put("image_list_dynamic", images, desc)
+
+
         if (current_test_only_fail_flag == 1):
             report.buffer_put("text_large", "This test has failed")
             current_test_only_fail_flag = 0
 
+    channel_data = [["Channel Power Information (dB):","A","B","C","D"],
+                    ["Iteration 1:",
+                    round(iteration_areas[0][0],3),round(iteration_areas[0][1],3), round(iteration_areas[0][2],3),round(iteration_areas[0][3],3)],
+                    ["Iteration 2:",
+                    round(iteration_areas[1][0],3),round(iteration_areas[1][1],3), round(iteration_areas[1][2],3),round(iteration_areas[1][3],3)],
+                    ["Iteration 3:",
+                    round(iteration_areas[2][0],3),round(iteration_areas[2][1],3), round(iteration_areas[2][2],3),round(iteration_areas[2][3],3)]]
+
+    report.buffer_put("pagebreak")
+    report.buffer_put("table_wide", channel_data)
     for a in range(len(iteration_areas[0])):
         for b in range(len(iteration_areas)-1):
             # test for area
