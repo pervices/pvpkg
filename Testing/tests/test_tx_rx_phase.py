@@ -265,7 +265,7 @@ def main():
 
                 ch_real_data.append(trimmed_real)
 
-                best_fit, param = bestFit(x_time, trimmed_real, wave_freq)
+                best_fit, param = bestFit(x_time, trimmed_real, wave_freq-200)
 
                 ampl.append(param[0])
                 freq.append(param[1])
