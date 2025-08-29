@@ -1,6 +1,8 @@
 #!/bin/bash
 
-#This is a script to configure and update the firewall on redhat.
+# This script configures network interfaces and firewall rules for
+# fiber optic connections on Red Hat Enterprise Linux 8.10.
+# It makes persistent changes using NetworkManager's nmcli tool.
 
 #TODO: Ensure this command works safely, with the following
 
@@ -91,43 +93,78 @@ fi
 # Parse arguments
 ##
 
+# Assign the first argument to IFACE_NAME
 IFACE_NAME=$1
-CYAN_PORT=$2
+# Assign the second argument to SDR_PORT
+SDR_PORT=$2
 
 ##
 # Core program arguments
 ##
 
-CMD_IP=ip
+# Define command shortcuts for easier use and debugging.
+CMD_NM=nmcli
 CMD_FW=firewall-cmd
 
 #DEBUG:
-#CMD_IP="echo ip"
+#CMD_NM="echo nmcli"
 #CMD_FW="echo firewall-cmd"
 
+# Main script execution block.
 if [ "$#" -eq 2 ]; then
-    echo -e "\nConfigure interface IP address and MTU."
-            $CMD_IP addr add 10.10.1$CYAN_PORT.10/24 broadcast + dev $IFACE_NAME
-            $CMD_IP link set mtu 9000 dev $IFACE_NAME
+    # --- Network Interface Configuration ---
 
-    # List of port numbers to be opened:
+    # Define the static IP address and gateway based on the provided Cyan port number.
+    # The IP address for the host will be 10.10.1<port>.10/24.
+    # The gateway is assumed to follow the pattern 10.10.1<port>.1.
+    IP_ADDR="10.10.1${SDR_PORT}.10/24"
+    GATEWAY="10.10.1${SDR_PORT}.1"
+
+    echo -e "\nConfiguring interface '$IFACE_NAME' with persistent settings..."
+
+    # Use a single, efficient nmcli command to modify all connection properties.
+    # This makes the configuration persistent across system reboots.
+    $CMD_NM connection modify "$IFACE_NAME" \
+        ipv4.method manual \
+        ipv4.addresses "$IP_ADDR" \
+        ipv4.gateway "$GATEWAY" \
+        802-3-ethernet.mtu 9000 \
+        ethtool.ring-rx 4096 \
+        ethtool.ring-tx 4096 \
+        connection.autoconnect yes # This ensures the connection is activated on boot.
+
+    # Bring the connection up to apply the new configuration immediately.
+    echo -e "Applying new network configuration to '$IFACE_NAME'..."
+    $CMD_NM connection up "$IFACE_NAME"
+
+    # --- Firewall Configuration ---
+
+    # A list of UDP ports that need to be opened in the firewall.
     ports='42836 42837 42838 42839 42840 42841 42842 42843 42809 42810 42811 42812 42799'
-    echo -e "\nOpening firewalld ports:"
-        for port in $ports
-        do
-            $CMD_FW --zone=trusted --permanent --add-port=$port/udp
-        done
+    echo -e "\nOpening required firewall ports..."
 
-    echo -e "\nAdding nics to trusted zones:"
-        #Add adapter to trusted
-        $CMD_FW --zone=trusted --permanent --change-interface=$IFACE_NAME
-        #Add SDR IP address to trusted
-        $CMD_FW --zone=trusted --permanent --add-source=10.10.1$CYAN_PORT.2
-        $CMD_FW --reload
+    # Loop through the list of ports and add a permanent firewall rule for each one.
+    for port in $ports
+    do
+        $CMD_FW --zone=trusted --permanent --add-port=$port/udp
+    done
 
-    echo -e "Finished.\n"
+    echo -e "Assigning interface and source IP to the 'trusted' firewall zone..."
+    # Add the network interface to the 'trusted' zone permanently.
+    $CMD_FW --zone=trusted --permanent --change-interface=$IFACE_NAME
+
+    # Add the corresponding SDR IP address to the 'trusted' zone to allow all traffic from it.
+    # This assumes the device at .2 is a trusted source.
+    $CMD_FW --zone=trusted --permanent --add-source=10.10.1$SDR_PORT.2
+
+    # Reload the firewall to apply all permanent changes immediately.
+    echo "Reloading firewall rules..."
+    $CMD_FW --reload
+
+    echo -e "\nConfiguration for '$IFACE_NAME' is complete.\n"
     exit 0
 else
-    help_detailed;
+    # Fallback to detailed help if argument validation somehow fails.
+    help_detailed
     exit 1
 fi
