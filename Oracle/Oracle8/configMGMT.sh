@@ -13,7 +13,6 @@ if [ "$#" -eq 1 ]; then
 echo -e "Configuring mgmt NIC\n"
 
 	ip addr add 192.168.10.10/24 broadcast + dev $1
-	ip link set mtu 9000 dev $1
 
 echo -e "Opening firewalld ports.\n"
 
