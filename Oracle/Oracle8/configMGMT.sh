@@ -19,6 +19,7 @@ echo -e "Opening firewalld ports.\n"
 echo -e "Adding nics to trusted zones.\n"
 
 firewall-cmd --zone=trusted --change-interface=$1 --permanent
+firewall-cmd --reload
 
 exit 0
 
