@@ -17,15 +17,15 @@ DOCKER_SHA=$3
 if [ -z $DOCKER_SHA ]; then
 	echo "ERROR: Docker SHA must be specified. Usage: test-only.sh [serial] [jenkins_bn] [docker_sha]" && exit 22
 fi
-shift; shift; shift; shift
+shift; shift; shift;
 TEST_LIST=("$@")
 
 if [ -z $serial_number ]; then
 	echo "ERROR: Serial must be specified. Usage: test-only.sh [serial] [jenkins_bn] [docker_sha]" && exit 22
 fi
 
-if [[ $serial_number != "TNG"* && $serial_number != "CYN"* && $serial_number != "int" ]]; then
-	echo "ERROR: Invalid serial number provided. Valid serial numbers are TNG*, CYN*, or int" && exit 22
+if [[ $serial_number != "TNG"* && $serial_number != "CYN"* && $serial_number != "CHES"* && $serial_number != "BLK"* && $serial_number != "int" ]]; then
+	echo "ERROR: Invalid serial number provided. Valid serial numbers are TNG*, CYN*, CHES*, BLK* ,or int" && exit 22
 fi
 
 if [ -z $jenkins_bn ]; then
