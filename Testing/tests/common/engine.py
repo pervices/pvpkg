@@ -258,6 +258,8 @@ def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stac
     helper_process.join(time_limit)
     print("T2")
 
+    sleep(10)
+
     flowgraph_timeout = False
     # If the process has finished
     if(not helper_process.is_alive()):
