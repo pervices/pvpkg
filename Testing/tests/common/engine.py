@@ -192,6 +192,11 @@ def reproduce_timeout():
     thread2 = threading.Thread(target = thread2_run)
 
     if (thread1 != None):
+        thread1.start()
+    if (thread2 != None):
+        thread2.start()
+
+    if (thread1 != None):
         thread1.join(thread1_duration + 10)
     if (thread2 != None):
         thread2.join(thread2_duration + 20)
