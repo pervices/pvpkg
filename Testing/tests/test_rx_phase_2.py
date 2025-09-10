@@ -225,6 +225,8 @@ def main():
             rx_stack = [ (rx_burst, int(it["sample_count"]))]
 
             try:
+                # Force exception
+                raise Exception ("TX CONTROL TIMED OUT")
                 vsnk = engine.run(targs.channels, it["wave_freq"], sample_rate, it["center_freq"], it["tx_gain"], it["rx_gain"], tx_stack, rx_stack)
             except Exception as err:
                 frameinfo = getframeinfo(currentframe())
