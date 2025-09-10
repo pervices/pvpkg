@@ -173,6 +173,39 @@ def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stac
 
     return vsnk
 
+def thread1_run():
+    while True:
+        print("THREAD1")
+        time.sleep(1.0)
+
+def thread2_run():
+    while True:
+        print("THREAD2")
+        time.sleep(1.0)
+
+# Start threads that will always timeout
+def reproduce_timeout():
+    thread1_duration = 0
+    thread2_duration = 0
+
+    thread1 = threading.Thread(target = thread1_run)
+    thread2 = threading.Thread(target = thread2_run)
+
+    if (thread1 != None):
+        thread1.join(thread1_duration + 10)
+    if (thread2 != None):
+        thread2.join(thread2_duration + 20)
+
+    if thread1 != None:
+        if thread1.is_alive():
+            print("\x1b[31mERROR: Forced thread1 timeout\x1b[0m", file=sys.stderr)
+            raise Exception ("FORCED TIMEOUT")
+    
+    if thread2 != None:
+        if thread2.is_alive():
+            print("\x1b[31mERROR: Forced thread2 timeout\x1b[0m", file=sys.stderr)
+            raise Exception ("FORCED TIMEOUT")
+
 def manual_tune_run(channels, wave_freq, tx_sample_rate, rx_sample_rate, tx_tune_request, rx_tune_request, tx_gain, rx_gain, tx_stack, rx_stack):
     # Setup
     csnk = crimson.get_snk_s(channels, tx_sample_rate, tx_tune_request, tx_gain)
