@@ -123,7 +123,7 @@ def run_rx(csrc, channels, stack, sample_rate, _vsnk, timeout_occured):
 # run_helper is run as it's own process, which then spawns tx and rx threads
 def run_helper(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stack, rx_stack, data_queue):
     # tx_stack = None
-    time.sleep(10)
+    time.sleep(1)
     print("B1")
     rx_timeout_occured = Event()
     time.sleep(1.0)
@@ -247,7 +247,7 @@ def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stac
     # time.sleep(40)
     print("A6")
 
-    time_limit = max(tx_duration + rx_duration) + 30
+    time_limit = (tx_duration + rx_duration) + 30
     # Wait iteration to run
     print("T1")
     helper_process.join(time_limit)
