@@ -177,9 +177,11 @@ def run_helper(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, 
 
     # Wait for thread to finish with a timeout
     if(tx_thread != None):
+        print("B30")
         tx_thread.join(tx_duration + 10)
     # The data timeout is expected + 10s, make sure the control timeout is longer
     if(rx_thread != None):
+        print("B31")
         rx_thread.join(rx_duration + 20)
 
     print("B40")
