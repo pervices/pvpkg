@@ -122,11 +122,11 @@ def run_rx(csrc, channels, stack, sample_rate, _vsnk, timeout_occured):
 # Multiprocess is needed for the ability to terminate, but tx and rx must be in the same process as each other
 # run_helper is run as it's own process, which then spawns tx and rx threads
 def run_helper(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stack, rx_stack, data_queue):
-    tx_stack = None
+    # tx_stack = None
     time.sleep(1)
     print("B1")
     rx_timeout_occured = Event()
-    time.sleep(1)
+    time.sleep(1.0)
     print("B2")
 
     vsnk = [] # Will be extended when using stacked commands.
@@ -135,7 +135,7 @@ def run_helper(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, 
     rx_duration = 0
     rx_thread = None
 
-    time.sleep(1)
+    time.sleep(1.0)
     print("B3")
 
     # Prepare thread
@@ -237,7 +237,7 @@ def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stac
         # Expected tx duration = start time of last burst + (length of last burst / sample rate)
         tx_duration = tx_stack[-1][0] + (tx_stack[-1][1] / sample_rate)
 
-    time.sleep(1)
+    # time.sleep(1)
     print("A5")
 
     if rx_stack != None:
