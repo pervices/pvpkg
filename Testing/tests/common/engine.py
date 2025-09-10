@@ -255,10 +255,11 @@ def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stac
     time_limit = (tx_duration + rx_duration) + 30
     # Wait iteration to run
     print("T1")
-    helper_process.join(time_limit)
+    samples = (data_queue.get(timeout=time_limit))
+    # helper_process.join(time_limit)
     print("T2")
 
-    sleep(10)
+    time.sleep(10)
 
     flowgraph_timeout = False
     # If the process has finished
@@ -268,7 +269,7 @@ def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stac
         if(helper_process.exitcode == 0):
             print("T4A")
             # Return collected data
-            return (data_queue.get())
+            return samples
         else:
             print("T4B")
             # An error (probably rx data timeout) while running the flowgraph
