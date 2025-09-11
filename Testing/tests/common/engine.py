@@ -205,11 +205,13 @@ def run_helper(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, 
 
     print("B60")
 
-    samples = []
-    for x in vsnk:
-        print(x)
-        samples.append(x)
+    # samples = []
+    # for x in vsnk:
+    #     print(x)
+    #     samples.append(x.data())
 
+    samples = [x.data() for x in vsnk]
+    print(samples)
     data_queue.put(samples)
 
     print("Returning from run_helper function")
