@@ -259,6 +259,10 @@ def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stac
     print("T1")
     samples = (data_queue.get(timeout=time_limit))
     vsnk = [blocks.vector_sink_c() for ch in samples]
+
+    for ch, channel in enumerate(vsnk): 
+        print(ch)
+        print(channel)
     # helper_process.join(time_limit)
     print("T2")
 
@@ -272,7 +276,7 @@ def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stac
         if(helper_process.exitcode == 0):
             print("T4A")
             # Return collected data
-            return samples
+            return vsnk
         else:
             print("T4B")
             # An error (probably rx data timeout) while running the flowgraph
