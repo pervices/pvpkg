@@ -210,8 +210,8 @@ def run_helper(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, 
     #     print(x)
     #     samples.append(x.data())
 
-    samples = [x.data() for x in vsnk]
-    data_queue.put(samples)
+    # samples = [x.data() for x in vsnk]
+    # data_queue.put(samples)
 
     print("Returning from run_helper function")
     _vsnk.extend(vsnk)
@@ -219,7 +219,7 @@ def run_helper(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, 
 def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stack, rx_stack):
     print("A0")
 
-    vsnk = Array(blocks.vector_sink_c)
+    vsnk = Array(blocks.vector_sink_c, 4)
 
     # Queue to store data from run_helper
     data_queue = multiprocessing.Queue(1)
