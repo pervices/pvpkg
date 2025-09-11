@@ -121,7 +121,7 @@ def run_rx(csrc, channels, stack, sample_rate, _vsnk, timeout_occured):
 
 # Multiprocess is needed for the ability to terminate, but tx and rx must be in the same process as each other
 # run_helper is run as it's own process, which then spawns tx and rx threads
-def run_helper(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stack, rx_stack, data_queue):
+def run_helper(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stack, rx_stack, data_queue, _vsnk):
     # tx_stack = None
     time.sleep(1)
     print("B1")
@@ -165,7 +165,7 @@ def run_helper(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, 
         csrc = crimson.get_src_c(channels, sample_rate, center_freq, rx_gain)
         rx_thread = threading.Thread(target = run_rx, args = (csrc, channels, rx_stack, sample_rate, vsnk, rx_timeout_occured))
     print("B20")
-
+  
     # Start threads
     if(tx_thread != None):
         print("B21")
@@ -214,10 +214,12 @@ def run_helper(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, 
     data_queue.put(samples)
 
     print("Returning from run_helper function")
-    return 0
+    _vsnk.extend(vsnk)
 
 def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stack, rx_stack):
     print("A0")
+
+    vsnk = Array(blocks.vector_sink_c)
 
     # Queue to store data from run_helper
     data_queue = multiprocessing.Queue(1)
@@ -229,7 +231,7 @@ def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stac
     print("A1.5")
 
     # Start process to run tx and rx
-    helper_process = multiprocessing.Process(target = run_helper, args = (channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stack, rx_stack, data_queue))
+    helper_process = multiprocessing.Process(target = run_helper, args = (channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stack, rx_stack, data_queue, vsnk))
     print("A2")
     helper_process.start()
     print("A3")
@@ -259,7 +261,7 @@ def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stac
     print("T1")
     samples = (data_queue.get(timeout=time_limit))
     vsnk = [blocks.vector_sink_c() for ch in samples]
-
+    blocks.vector_source_c()
     for ch, channel in enumerate(vsnk): 
         print(ch)
         print(channel)
