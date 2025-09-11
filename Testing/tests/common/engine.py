@@ -211,7 +211,6 @@ def run_helper(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, 
     #     samples.append(x.data())
 
     samples = [x.data() for x in vsnk]
-    print(samples)
     data_queue.put(samples)
 
     print("Returning from run_helper function")
@@ -259,6 +258,7 @@ def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stac
     # Wait iteration to run
     print("T1")
     samples = (data_queue.get(timeout=time_limit))
+    vsnk = [blocks.vector_sink_c() for ch in samples]
     # helper_process.join(time_limit)
     print("T2")
 
