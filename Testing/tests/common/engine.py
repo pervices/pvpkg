@@ -7,6 +7,7 @@ from . import crimson
 import threading
 from threading import Event
 import multiprocessing
+from multiprocessing import Manager
 from inspect import currentframe, getframeinfo
 import time
 import subprocess
@@ -214,12 +215,12 @@ def run_helper(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, 
     # data_queue.put(samples)
 
     print("Returning from run_helper function")
-    _vsnk.extend(vsnk)
 
 def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stack, rx_stack):
     print("A0")
 
-    vsnk = Array(blocks.vector_sink_c, 4)
+    manager = Manager()
+    vsnk = manager.list()
 
     # Queue to store data from run_helper
     data_queue = multiprocessing.Queue(1)
@@ -259,13 +260,12 @@ def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stac
     time_limit = (tx_duration + rx_duration) + 30
     # Wait iteration to run
     print("T1")
-    samples = (data_queue.get(timeout=time_limit))
-    vsnk = [blocks.vector_sink_c() for ch in samples]
-    blocks.vector_source_c()
+    # samples = (data_queue.get(timeout=time_limit))
+    
+    helper_process.join(time_limit)
     for ch, channel in enumerate(vsnk): 
         print(ch)
         print(channel)
-    # helper_process.join(time_limit)
     print("T2")
 
     time.sleep(10)
