@@ -6,7 +6,7 @@ rx_burst = 5.25
 
 def main():
     iterations = gen.lo_band_phaseCoherency()
-    channel_list = [i for i in range(i)]
+    channel_list = [i for i in range(4)]
     
     for it in iterations:
         gen.dump(it)
@@ -15,3 +15,6 @@ def main():
         rx_stack = [ (rx_burst, int(it["sample_count"]))]
 
         vsnk = engine.run(channel_list, it["wave_freq"], sample_rate, it["center_freq"], it["tx_gain"], it["rx_gain"], tx_stack, rx_stack)
+
+if __name__ == '__main__':
+    main()
