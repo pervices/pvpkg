@@ -225,7 +225,9 @@ def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stac
     print("A0")
 
     CustomManager.register('VectorSink', blocks.vector_sink_c)
+    CustomManager.register('list', list)
     manager = CustomManager()
+    manager.start()
     vsnk = manager.list([manager.VectorSink() for ch in channels])
 
     # Queue to store data from run_helper
