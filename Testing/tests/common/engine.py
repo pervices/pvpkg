@@ -243,7 +243,6 @@ def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stac
     manager.start()
     vsnk_wrapper = manager.VectorSinkWrapper(len(channels))
     # vsnk = manager.list([manager.VectorSink() for ch in channels])
-    blocks_module = manager.Blocks()
 
     # Queue to store data from run_helper
     data_queue = multiprocessing.Queue(1)
