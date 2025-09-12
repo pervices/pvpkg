@@ -119,7 +119,7 @@ def run_rx(csrc, channels, stack, sample_rate, _vsnk, timeout_occured):
     flowgraph.wait()
 
     # Cannot return from thread so extend instead.
-    for ch in vsnk:
+    for ch, channel in enumerate(vsnk):
         _vsnk[ch] = vsnk[ch]
     # _vsnk.extend(vsnk)
 
