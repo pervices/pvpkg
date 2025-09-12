@@ -76,7 +76,7 @@ def run_rx(csrc, channels, stack, sample_rate, _vsnk, timeout_occured):
     """
 
     # Connect.
-    vsnk = [blocks.vector_sink_c() for ch in channels]
+    # vsnk = [blocks.vector_sink_c() for ch in channels]
 
 
     flowgraph = gr.top_block()
@@ -121,7 +121,7 @@ def run_rx(csrc, channels, stack, sample_rate, _vsnk, timeout_occured):
     # Cannot return from thread so extend instead.
     # for ch, channel in enumerate(vsnk):
     #     _vsnk[ch] = vsnk[ch]
-    _vsnk.extend(vsnk)
+    # _vsnk.extend(vsnk)
 
 # Multiprocess is needed for the ability to terminate, but tx and rx must be in the same process as each other
 # run_helper is run as it's own process, which then spawns tx and rx threads
@@ -167,7 +167,7 @@ def run_helper(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, 
         rx_duration = rx_stack[-1][0] + (rx_stack[-1][1] / sample_rate)
 
         csrc = crimson.get_src_c(channels, sample_rate, center_freq, rx_gain)
-        rx_thread = threading.Thread(target = run_rx, args = (csrc, channels, rx_stack, sample_rate, vsnk, rx_timeout_occured))
+        rx_thread = threading.Thread(target = run_rx, args = (csrc, channels, rx_stack, sample_rate, vsnk_wrapper.get_sinks(), rx_timeout_occured))
     print("B20")
   
     # Start threads
