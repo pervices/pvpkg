@@ -58,7 +58,7 @@ def run_tx(csnk, channels, stack, sample_rate, wave_freq):
             hed.reset()
 
 
-def run_rx(csrc, channels, stack, sample_rate, vsnk, timeout_occured):
+def run_rx(csrc, channels, stack, sample_rate, _vsnk, timeout_occured):
 
     """
     +-----------+
@@ -76,7 +76,7 @@ def run_rx(csrc, channels, stack, sample_rate, vsnk, timeout_occured):
     """
 
     # Connect.
-    # vsnk = [blocks.vector_sink_c() for ch in channels]
+    vsnk = [blocks.vector_sink_c() for ch in channels]
 
 
     flowgraph = gr.top_block()
@@ -119,7 +119,7 @@ def run_rx(csrc, channels, stack, sample_rate, vsnk, timeout_occured):
     flowgraph.wait()
 
     # Cannot return from thread so extend instead.
-    # _vsnk.extend(vsnk)
+    _vsnk.extend(vsnk)
 
 # Multiprocess is needed for the ability to terminate, but tx and rx must be in the same process as each other
 # run_helper is run as it's own process, which then spawns tx and rx threads
