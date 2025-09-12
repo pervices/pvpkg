@@ -8,7 +8,7 @@ import threading
 from threading import Event
 import multiprocessing
 from multiprocessing import Manager
-from multiprocessing.managers import BaseManager
+from multiprocessing.managers import BaseManager, ListProxy
 from inspect import currentframe, getframeinfo
 import time
 import subprocess
@@ -225,7 +225,7 @@ def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stac
     print("A0")
 
     CustomManager.register('VectorSink', blocks.vector_sink_c)
-    CustomManager.register('list', list)
+    CustomManager.register('list', list, ListProxy)
     manager = CustomManager()
     manager.start()
     vsnk = manager.list([manager.VectorSink() for ch in channels])
