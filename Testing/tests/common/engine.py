@@ -213,6 +213,9 @@ def run_helper(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, 
 
     for i, v  in enumerate(vsnk):
         # vsnk_wrapper.vector_sinks[v] = vsnk[v]
+        print(v)
+        print(vsnk_wrapper.get_sinks()[i])
+        print("Using set_sink...")
         vsnk_wrapper.set_sink(i, v)
 
 
@@ -228,14 +231,17 @@ def run_helper(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, 
     print("Returning from run_helper function")
 
 class VectorSinkWrapper:
-    def __init__(self, num_channels):
-        self.vector_sinks = list([blocks.vector_sink_c for ch in range(num_channels)])
+    def __init__(self):
+        self.vector_sinks = list()
 
     def get_sinks(self):
         return self.vector_sinks
 
     def set_sink(self, index, data):
         self.vector_sinks[index] = data
+
+    def append_sink(self, sink):
+        self.vector_sinks.append(sink)
     
 class CustomManager(BaseManager):
     pass
@@ -244,13 +250,17 @@ def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stac
     print("A0")
 
     CustomManager.register('VectorSinkWrapper', VectorSinkWrapper)
-    # CustomManager.register('VectorSink', blocks.vector_sink_c)
+    CustomManager.register('VectorSink', blocks.vector_sink_c)
     # CustomManager.register('list', list, ListProxy)
     manager = CustomManager()
     manager.start()
-    vsnk_wrapper = manager.VectorSinkWrapper(len(channels))
+    vsnk_wrapper = manager.VectorSinkWrapper()
+    for ch in channels:
+        vsnk_wrapper.append_sink(manager.VectorSink())
+    print(vsnk_wrapper)
+    print(vsnk_wrapper.get_sinks())
     # vsnk = manager.list([manager.VectorSink() for ch in channels])
-
+ 
     # Queue to store data from run_helper
     data_queue = multiprocessing.Queue(1)
     print("A1")
