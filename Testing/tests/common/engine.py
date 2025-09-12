@@ -58,7 +58,7 @@ def run_tx(csnk, channels, stack, sample_rate, wave_freq):
             hed.reset()
 
 
-def run_rx(csrc, channels, stack, sample_rate, _vsnk, timeout_occured):
+def run_rx(csrc, channels, stack, sample_rate, _vsnk, timeout_occured, blocks_module):
 
     """
     +-----------+
@@ -76,7 +76,7 @@ def run_rx(csrc, channels, stack, sample_rate, _vsnk, timeout_occured):
     """
 
     # Connect.
-    vsnk = [blocks.vector_sink_c() for ch in channels]
+    vsnk = [blocks_module.vector_sink_c() for ch in channels]
 
 
     flowgraph = gr.top_block()
@@ -125,7 +125,7 @@ def run_rx(csrc, channels, stack, sample_rate, _vsnk, timeout_occured):
 
 # Multiprocess is needed for the ability to terminate, but tx and rx must be in the same process as each other
 # run_helper is run as it's own process, which then spawns tx and rx threads
-def run_helper(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stack, rx_stack, data_queue, _vsnk):
+def run_helper(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stack, rx_stack, data_queue, _vsnk, blocks_module):
     # tx_stack = None
     time.sleep(1)
     print("B1")
@@ -167,7 +167,7 @@ def run_helper(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, 
         rx_duration = rx_stack[-1][0] + (rx_stack[-1][1] / sample_rate)
 
         csrc = crimson.get_src_c(channels, sample_rate, center_freq, rx_gain)
-        rx_thread = threading.Thread(target = run_rx, args = (csrc, channels, rx_stack, sample_rate, vsnk, rx_timeout_occured))
+        rx_thread = threading.Thread(target = run_rx, args = (csrc, channels, rx_stack, sample_rate, vsnk, rx_timeout_occured, blocks_module))
     print("B20")
   
     # Start threads
@@ -225,18 +225,22 @@ def run_helper(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, 
 
     print("Returning from run_helper function")
 
+def get_blocks_module():
+    return blocks
+
 class CustomManager(BaseManager):
     pass
-
 
 def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stack, rx_stack):
     print("A0")
 
     CustomManager.register('VectorSink', blocks.vector_sink_c)
     CustomManager.register('list', list, ListProxy)
+    CustomManager.register('Blocks', get_blocks_module)
     manager = CustomManager()
     manager.start()
     vsnk = manager.list([manager.VectorSink() for ch in channels])
+    blocks_module = manager.Blocks()
 
     # Queue to store data from run_helper
     data_queue = multiprocessing.Queue(1)
@@ -248,7 +252,7 @@ def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stac
     print("A1.5")
 
     # Start process to run tx and rx
-    helper_process = multiprocessing.Process(target = run_helper, args = (channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stack, rx_stack, data_queue, vsnk))
+    helper_process = multiprocessing.Process(target = run_helper, args = (channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stack, rx_stack, data_queue, vsnk, blocks_module))
     print("A2")
     helper_process.start()
     print("A3")
