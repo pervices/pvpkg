@@ -211,8 +211,9 @@ def run_helper(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, 
 
     print(vsnk)
 
-    for v, _ in enumerate(vsnk):
-        vsnk_wrapper.vector_sinks[v] = vsnk[v]
+    for i, v  in enumerate(vsnk):
+        # vsnk_wrapper.vector_sinks[v] = vsnk[v]
+        vsnk_wrapper.set_sink(i, v)
 
 
 
@@ -230,6 +231,12 @@ class VectorSinkWrapper:
     def __init__(self, num_channels):
         self.vector_sinks = list([blocks.vector_sink_c for ch in range(num_channels)])
 
+    def get_sinks(self):
+        return self.vector_sinks
+
+    def set_sink(self, index, data):
+        self.vector_sinks[index] = data
+    
 class CustomManager(BaseManager):
     pass
 
