@@ -227,6 +227,7 @@ def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stac
     print("A0")
 
     CustomManager.register('VectorSink', blocks.vector_sink_c)
+    CustomManager.register('Block', gr.basic_block)
     CustomManager.register('list', list, ListProxy)
     manager = CustomManager()
     manager.start()
