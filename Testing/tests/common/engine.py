@@ -76,7 +76,7 @@ def run_rx(csrc, channels, stack, sample_rate, _vsnk, timeout_occured):
     """
 
     # Connect.
-    vsnk = [_vsnk[ch] for ch in channels]
+    vsnk = [blocks.vector_sink_c() for ch in channels]
 
 
     flowgraph = gr.top_block()
@@ -119,13 +119,13 @@ def run_rx(csrc, channels, stack, sample_rate, _vsnk, timeout_occured):
     flowgraph.wait()
 
     # Cannot return from thread so extend instead.
-    for ch, channel in enumerate(vsnk):
-        _vsnk[ch] = vsnk[ch]
-    # _vsnk.extend(vsnk)
+    # for ch, channel in enumerate(vsnk):
+    #     _vsnk[ch] = vsnk[ch]
+    _vsnk.extend(vsnk)
 
 # Multiprocess is needed for the ability to terminate, but tx and rx must be in the same process as each other
 # run_helper is run as it's own process, which then spawns tx and rx threads
-def run_helper(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stack, rx_stack, data_queue, vsnk):
+def run_helper(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stack, rx_stack, data_queue, _vsnk):
     # tx_stack = None
     time.sleep(1)
     print("B1")
@@ -133,7 +133,7 @@ def run_helper(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, 
     time.sleep(1.0)
     print("B2")
 
-    # vsnk = [] # Will be extended when using stacked commands.
+    vsnk = [] # Will be extended when using stacked commands.
     tx_duration = 0
     tx_thread = None
     rx_duration = 0
@@ -209,6 +209,12 @@ def run_helper(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, 
 
     print("B60")
 
+    print(vsnk)
+
+    for v, _ in enumerate(vsnk):
+        _vsnk[v] = vsnk[v]
+
+
     # samples = []
     # for x in vsnk:
     #     print(x)
@@ -227,7 +233,6 @@ def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stac
     print("A0")
 
     CustomManager.register('VectorSink', blocks.vector_sink_c)
-    CustomManager.register('Block', gr.basic_block)
     CustomManager.register('list', list, ListProxy)
     manager = CustomManager()
     manager.start()
