@@ -8,7 +8,7 @@ import threading
 from threading import Event
 import multiprocessing
 from multiprocessing import Manager
-from multiprocessing.managers import BaseManager, ListProxy
+from multiprocessing.managers import BaseManager, ListProxy, SharedMemoryManager
 from inspect import currentframe, getframeinfo
 import time
 import subprocess
@@ -76,8 +76,8 @@ def run_rx(csrc, channels, stack, sample_rate, _vsnk, timeout_occured):
     """
 
     # Connect.
-    # vsnk = [blocks.vector_sink_c() for ch in channels]
-
+    vsnk = [blocks.vector_sink_c() for ch in channels]
+    
 
     flowgraph = gr.top_block()
     for channel_index in range(len(channels)):
@@ -121,11 +121,11 @@ def run_rx(csrc, channels, stack, sample_rate, _vsnk, timeout_occured):
     # Cannot return from thread so extend instead.
     # for ch, channel in enumerate(vsnk):
     #     _vsnk[ch] = vsnk[ch]
-    # _vsnk.extend(vsnk)
+    _vsnk.extend(vsnk)
 
 # Multiprocess is needed for the ability to terminate, but tx and rx must be in the same process as each other
 # run_helper is run as it's own process, which then spawns tx and rx threads
-def run_helper(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stack, rx_stack, data_queue, vsnk_wrapper):
+def run_helper(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stack, rx_stack, data_queue):
     # tx_stack = None
     time.sleep(1)
     print("B1")
@@ -133,8 +133,7 @@ def run_helper(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, 
     time.sleep(1.0)
     print("B2")
 
-    # vsnk = [] # Will be extended when using stacked commands.
-    vsnk = vsnk_wrapper.get_sinks()
+    vsnk = [] # Will be extended when using stacked commands.
     tx_duration = 0
     tx_thread = None
     rx_duration = 0
@@ -210,24 +209,13 @@ def run_helper(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, 
 
     print("B60")
 
-    print(vsnk)
-
-    for i, v  in enumerate(vsnk):
-        # vsnk_wrapper.vector_sinks[v] = vsnk[v]
-        print(v)
-        print(vsnk_wrapper.get_sinks()[i])
-        print("Using set_sink...")
-        vsnk_wrapper.set_sink(i, v)
-
-
-
     # samples = []
     # for x in vsnk:
     #     print(x)
     #     samples.append(x.data())
 
-    # samples = [x.data() for x in vsnk]
-    # data_queue.put(samples)
+    samples = [x.data() for x in vsnk]
+    data_queue.put(samples)
 
     print("Returning from run_helper function")
 
@@ -250,16 +238,18 @@ class CustomManager(BaseManager):
 def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stack, rx_stack):
     print("A0")
 
-    CustomManager.register('VectorSinkWrapper', VectorSinkWrapper)
-    CustomManager.register('VectorSink', blocks.vector_sink_c)
-    # CustomManager.register('list', list, ListProxy)
-    manager = CustomManager()
-    manager.start()
-    vsnk_wrapper = manager.VectorSinkWrapper()
-    for ch in channels:
-        vsnk_wrapper.append_sink(manager.VectorSink())
-    print(vsnk_wrapper)
-    print(vsnk_wrapper.get_sinks())
+    # CustomManager.register('VectorSinkWrapper', VectorSinkWrapper)
+    # CustomManager.register('VectorSink', blocks.vector_sink_c)
+    # # CustomManager.register('list', list, ListProxy)
+    # manager = CustomManager()
+    # manager.start()
+    # vsnk_wrapper = manager.VectorSinkWrapper()
+    
+
+    # for ch in channels:
+    #     vsnk_wrapper.append_sink(manager.VectorpSink())
+    # print(vsnk_wrapper)
+    # print(vsnk_wrapper.get_sinks())
     # vsnk = manager.list([manager.VectorSink() for ch in channels])
  
     # Queue to store data from run_helper
@@ -270,9 +260,9 @@ def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stac
     print(str(sample_rate))
     print(str(wave_freq))
     print("A1.5")
-
+    
     # Start process to run tx and rx
-    helper_process = multiprocessing.Process(target = run_helper, args = (channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stack, rx_stack, data_queue, vsnk_wrapper))
+    helper_process = multiprocessing.Process(target = run_helper, args = (channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stack, rx_stack, data_queue))
     print("A2")
     helper_process.start()
     print("A3")
@@ -300,12 +290,12 @@ def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stac
     time_limit = (tx_duration + rx_duration) + 30
     # Wait iteration to run
     print("T1")
-    # samples = (data_queue.get(timeout=time_limit))
+    samples = (data_queue.get(timeout=time_limit))
+    vsnk = [blocks.vector_source_c(s, False) for s in samples]
+
     
-    helper_process.join(time_limit)
-    for ch, channel in enumerate(vsnk): 
-        print(ch)
-        print(channel)
+    # helper_process.join(time_limit)
+
     print("T2")
 
     time.sleep(10)
