@@ -75,7 +75,7 @@ def main(iterations, title="TX RX Long-term Streaming Rate Test") -> int:
         if ("CH" not in line):
             continue
         ch_name = line.split("CH ",1)[1][0]
-        over_underflow_count.append([ch_name, re.findall('\d+', line)[0], re.findall('\d+', line)[1]])
+        over_underflow_count.append([ch_name, re.findall('\\d+', line)[0], re.findall('\\d+', line)[1]])
            
     report.buffer_put("table", over_underflow_count, "Results")
     report.buffer_put("text", " ")
