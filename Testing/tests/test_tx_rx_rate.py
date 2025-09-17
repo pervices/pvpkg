@@ -3,6 +3,7 @@ from common import pdf_report
 from common import generator as gen
 from common import test_args
 import sys
+import time
 
 
 targs = test_args.TestArgs(testDesc="Tx and Rx Rate Test")
@@ -33,6 +34,7 @@ def test(it):
     # Call cpp program to run the benchmark since it is much faster and reliable
     # The ifelse decides whether to pass rx only, tx only, or both args
     if((len(it["rx_channel"])) != 0 and (len(it["tx_channel"]) != 0)):
+        time.sleep(60) # give network card on host some time to cool down between runs
         iteration_result = os.system("/usr/lib/uhd/examples/benchmark_rate --priority high --rx_rate {} --rx_channels {} --tx_rate={} --tx_channels {}  --overrun-threshold 0 --underrun-threshold 0 --drop-threshold 0 --seq-threshold 0".format(it["rx_rate"], list_to_arg_string(it["rx_channel"]), it["tx_rate"], list_to_arg_string(it["tx_channel"])))
     # rx only
     elif(len(it["rx_channel"]) != 0):
