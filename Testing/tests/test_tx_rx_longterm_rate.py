@@ -124,4 +124,5 @@ def main(iterations, title="TX RX Long-term Streaming Rate Test") -> int:
 
 
 for it in generator.tx_rx_longterm_rate():
+    time.sleep(60) # give network card on host some time to cool down between runs
     main(it)
