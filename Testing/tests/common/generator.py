@@ -303,8 +303,8 @@ def tx_uhd_tune():
 def tx_rx_longterm_rate():
     print(sys._getframe().f_code.co_name)
     channels = list(range(4))
-    sample_rate = 325e6/10          # 32.5 Msps
-    duration = 90                   # 90 sec
+    sample_rate = 325e6/4          # 81.25 Msps
+    duration = 600                   # 10 mins
     yield locals()
 
 def dump(iteration):
