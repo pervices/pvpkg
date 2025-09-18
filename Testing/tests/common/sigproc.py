@@ -111,23 +111,6 @@ def fft_peaks(wave, sample_rate):
 
     return peaks, xf, yf
 
-def fft_troughs(wave, sample_rate):
-
-    N = len(wave)
-    T = 1.0 / sample_rate
-    yf = np.abs(scipy.fftpack.fft(wave))
-    xf = scipy.fftpack.fftfreq(N, T)
-
-    # Need to reorder frequency array such that the array goes from negative bound to positive bound (default is 0->pos, then jumps to neg->0).
-    # If we don't, there is a discontinuity as we cross 0Hz and we are unable to detect peaks here.
-    transfnc = xf.argsort()
-    xf = xf[transfnc]
-    yf = yf[transfnc]
-
-    troughs, _ = signal.find_peaks(-yf, height=(np.max(yf)/100), distance=100)
-
-    return troughs, xf, yf
-
 def absolute_area(complex_wave):
 
     return abs(np.trapz(np.absolute(complex_wave)))

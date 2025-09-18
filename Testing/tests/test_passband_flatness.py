@@ -20,15 +20,18 @@ plot_points_xf = []
 plot_points_yf = []
 plot_points_peaks = []
 images = []
+test_sum = []
 def test(it, data):
     global test_fail
     gen.dump(it)
-
+    test_info = []
 
     tx_stack = [ (10.0, it["sample_count" ]) ] # One seconds worth.
     rx_stack = [ (10.0, it["sample_count"]) ]
     vsnk = engine.run(it["channels"], it["wave_freq"], it["sample_rate"], it["center_freq"], it["tx_gain"], it["rx_gain"], tx_stack, rx_stack)
     error_detected = 0
+    if it["wave_freq"] not in test_info:
+        test_info.append(it["wave_freq"])
     # Process.
     reals = []
     imags = []
@@ -39,7 +42,7 @@ def test(it, data):
     for ch, channel in enumerate(vsnk):
         real = [datum.real for datum in channel.data()]
         imag = [datum.imag for datum in channel.data()]
-        comp = np.array([0,0,0,0])
+        comp = np.array([])
         if len(real) == len(imag):
             for idx, point in enumerate(real):
                 comp = np.append(comp, complex(point, imag[idx]))
@@ -60,10 +63,15 @@ def test(it, data):
     plot_points_yf.append(yfp)
     plot_points_peaks.append(peaksp)
     channel_peak.append(largest_peaks)
+    test_sum.extend(test_info)
     return data
 
 def main(iterations, desc):
     data  = [["Center Freq", "Wave Freq", "Channel", "Result"]]
+    channel_peak.clear()
+    plot_points_xf.clear()
+    plot_points_yf.clear()
+    test_sum.clear()
     for it in iterations:
         test(it, data)
 
@@ -72,48 +80,46 @@ def main(iterations, desc):
 
     for ch in list(range(4)):
         channel_test = []
-        channel_test.append(channel_peak[0][ch])
-        channel_test.append(channel_peak[1][ch])
-        channel_test.append(channel_peak[2][ch])
-        channel_max = np.max(channel_test)
-        channel_min = np.min(channel_test)
-        if np.abs(channel_max - channel_min) <= 4 :
-            passband_flat.append("Pass")
-        else:
-            passband_flat.append("Fail")
+
         plt.figure()
         plt.title("Channel {} Rx FFT".format(ch), fontsize=14)
         plt.xlabel("Frequency (Hz)", fontsize=12)
         plt.ylabel("Magnitude", fontsize=12)
-        plt.plot(plot_points_xf[0][ch], plot_points_yf[0][ch], label="FFT")
-        plt.plot(plot_points_xf[1][ch], plot_points_yf[1][ch], label="FFT")
-        plt.plot(plot_points_xf[2][ch], plot_points_yf[2][ch], label="FFT")
-        plt.plot(plot_points_xf[0][ch][plot_points_peaks[0][ch]], plot_points_yf[0][ch][plot_points_peaks[0][ch]],color='red' ,"x", label="Detected peaks")
-        plt.plot(plot_points_xf[1][ch][plot_points_peaks[1][ch]], plot_points_yf[1][ch][plot_points_peaks[1][ch]],color='red',"x", label="Detected peaks")
-        plt.plot(plot_points_xf[2][ch][plot_points_peaks[2][ch]], plot_points_yf[2][ch][plot_points_peaks[2][ch]],color='red',"x", label="Detected peaks")
-        plt.legend()
+        for it in list(range(len(plot_points_xf))):
+            channel_test.append(channel_peak[it][ch])
+            plt.plot(plot_points_xf[it][ch], plot_points_yf[it][ch])
+        # channel_test.append(channel_peak[1][ch])
+        # channel_test.append(channel_peak[2][ch])
+        # plt.plot(plot_points_xf[1][ch], plot_points_yf[1][ch])
+        # plt.plot(plot_points_xf[2][ch], plot_points_yf[2][ch])
 
         s = report.get_image_io_stream()
         plt.savefig(s, format='png')
         plt.close()
         img = report.get_image_from_io_stream(s)
         images.append(img)
-    test_info = [["Channel Peak Information (dB):","A","B","C","D"],
-                ["Iteration 1:",
-                round(channel_peak[0][0],3),round(channel_peak[0][1],3), round(channel_peak[0][2],3),round(channel_peak[0][3],3)],
-                ["Iteration 2:",
-                round(channel_peak[1][0],3),round(channel_peak[1][1],3), round(channel_peak[1][2],3),round(channel_peak[1][3],3)],
-                ["Iteration 3:",
-                round(channel_peak[2][0],3),round(channel_peak[2][1],3), round(channel_peak[2][2],3),round(channel_peak[2][3],3)],
-                ["Passband Flatness Pass",
-                passband_flat[0],passband_flat[1],passband_flat[2],passband_flat[3]]]
 
-    title = "Passband Flatness Test"
+        channel_max = np.max(channel_test)
+        channel_min = np.min(channel_test)
+        if np.abs(channel_max - channel_min) <= 4 :
+            passband_flat.append("Pass")
+        else:
+            passband_flat.append("Fail")
+    test_info = [["Channel Peak Information (dB):","A","B","C","D", "Wave Frequency (Hz)"]]
+    for it in list(range(len(plot_points_xf))):
+        test_info.append(["Iteration {}:".format(it),
+                round(channel_peak[it][0],3),round(channel_peak[it][1],3), round(channel_peak[it][2],3),round(channel_peak[it][3],3), test_sum[it]])
+
+    test_info.append(["Passband Flatness Pass",passband_flat[0],passband_flat[1],passband_flat[2],passband_flat[3], "N/A"])
+
+    title = "Passband Flatness Test : {}".format(desc)
     report.buffer_put("text_large", title)
-    report.buffer_put("table_wide", test_info, "")
     report.buffer_put("text", " ")
     report.buffer_put("image_quad", images, "")
     report.buffer_put("pagebreak")
+    report.buffer_put("table_wide", test_info, "")
+    report.buffer_put("pagebreak")
+
 
 def build_report():
     report.insert_title_page("UHD Passband Flatness Test")
@@ -124,7 +130,16 @@ def build_report():
 
 ## SCRIPT LOGIC ##
 if(targs.product == "Vaunt"):
-    main(gen.lo_band_wave_sweep(), "Low Band")
+    main(gen.lo_band_passband_flatness_test(), "Low Band")
+    main(gen.hi_band_passband_flatness_test(), "High Band")
+elif(targs.product == "Tate"):
+    main(gen.cyan.lo_band.passband_flatness_test(), "Low Band")
+    main(gen.chestnut.mid_band.passband_flatness_test(), "Mid Band")
+    main(gen.cyan.hi_band.passband_flatness_test(), "High Band")
+elif(targs.product == "Lily"):
+    main(gen.chestnut.lo_band.passband_flatness_test(), "Low Band")
+    main(gen.chestnut.mid_band.passband_flatness_test(), "Mid Band")
+    main(gen.chestnut.hi_band.passband_flatness_test(), "High Band")
 else:
     print("ERROR: unrecognized product argument", file=sys.stderr)
     test_fail = 1

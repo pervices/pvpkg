@@ -61,6 +61,31 @@ def ship_test_chestnut(channels):
     for tx_gain, rx_gain, center_freq in zip(tx_gains, rx_gains, center_freqs):
         yield locals()
 
+def lo_band_passband_flatness_test():
+
+    print(sys._getframe().f_code.co_name)
+
+    channels = list(range(4))
+    sample_count = int(round(25000000/10000))
+    tx_gain = 25
+    rx_gain = 25
+    center_freq = 10000000
+    sample_rate = 9803922
+    for wave_freq in list(range(-int(0.4*sample_rate),int(0.4*sample_rate),int(sample_rate/24))):
+        yield locals()
+
+def hi_band_passband_flatness_test():
+
+    print(sys._getframe().f_code.co_name)
+
+    channels = list(range(4))
+    sample_count = int(round(25000000/10000))
+    tx_gain = 25
+    rx_gain = 25
+    center_freq = 1000000000
+    sample_rate = 9803922
+    for wave_freq in list(range(-int(0.4*sample_rate),int(0.4*sample_rate),int(sample_rate/24))):
+        yield locals()
 
 #UHD_version
 import os
@@ -307,6 +332,19 @@ def dump(iteration):
 class cyan:
     class lo_band:
         @staticmethod
+        def passband_flatness_test():
+            print(sys._getframe().f_code.co_name)
+
+            channels = list(range(4))
+            sample_count = int(round(25000000/10000))
+            tx_gain = 25
+            rx_gain = 25
+            center_freq = 10000000
+            sample_rate = 9803922
+            for wave_freq in list(range(-int(0.4*sample_rate),int(0.4*sample_rate),int(sample_rate/24))):
+                yield locals()
+
+        @staticmethod
         def wave_sweep():
             print(sys._getframe().f_code.co_name)
 
@@ -464,6 +502,18 @@ class cyan:
 
     class mid_band:
         @staticmethod
+        def passband_flatness_test():
+            print(sys._getframe().f_code.co_name)
+
+            sample_count = int(round(25000000/10000))
+            tx_gain = 40
+            rx_gain = 40
+            center_freq = 1000000000    # 1GHz
+            sample_rate = 14705882
+            for wave_freq in list(range(-int(0.4*sample_rate),int(0.4*sample_rate),int(sample_rate/24))):
+                yield locals()
+
+        @staticmethod
         def wave_sweep():
             print(sys._getframe().f_code.co_name)
 
@@ -557,6 +607,18 @@ class cyan:
 
     class hi_band:
         @staticmethod
+        def passband_flatness_test():
+            print(sys._getframe().f_code.co_name)
+
+            sample_count = int(round(25000000/10000))
+            tx_gain = 50
+            rx_gain = 50
+            center_freq = 15000000000   # 15GHz
+            sample_rate = 25000000      # 25Msps
+            for wave_freq in list(range(-int(0.4*sample_rate),int(0.4*sample_rate),int(sample_rate/24))):
+                yield locals()
+
+        @staticmethod
         def wave_sweep():
             print(sys._getframe().f_code.co_name)
 
@@ -622,6 +684,19 @@ class cyan:
 
 class chestnut:
     class lo_band:
+        @staticmethod
+        def passband_flatness_test():
+            print(sys._getframe().f_code.co_name)
+
+            channels = list(range(4))
+            sample_count = int(round(25000000/10000))
+            tx_gain = 25
+            rx_gain = 25
+            center_freq = 10000000
+            sample_rate = 9803922
+            for wave_freq in list(range(-int(0.4*sample_rate),int(0.4*sample_rate),int(sample_rate/24))):
+                yield locals()
+
         @staticmethod
         def wave_sweep():
             print(sys._getframe().f_code.co_name)
@@ -770,6 +845,18 @@ class chestnut:
 
     class mid_band:
         @staticmethod
+        def passband_flatness_test():
+            print(sys._getframe().f_code.co_name)
+
+            sample_count = int(round(25000000/10000))
+            tx_gain = 40
+            rx_gain = 40
+            center_freq = 1000000000    # 1GHz
+            sample_rate = 14705882
+            for wave_freq in list(range(-int(0.4*sample_rate),int(0.4*sample_rate),int(sample_rate/24))):
+                yield locals()
+
+        @staticmethod
         def wave_sweep():
             print(sys._getframe().f_code.co_name)
 
@@ -862,6 +949,18 @@ class chestnut:
                 yield locals()
 
     class hi_band:
+        @staticmethod
+        def passband_flatness_test():
+            print(sys._getframe().f_code.co_name)
+
+            sample_count = int(round(25000000/10000))
+            tx_gain = 50
+            rx_gain = 50
+            center_freq = 15000000000   # 15GHz
+            sample_rate = 25000000      # 25Msps
+            for wave_freq in list(range(-int(0.4*sample_rate),int(0.4*sample_rate),int(sample_rate/24))):
+                yield locals()
+
         @staticmethod
         def wave_sweep():
             print(sys._getframe().f_code.co_name)
