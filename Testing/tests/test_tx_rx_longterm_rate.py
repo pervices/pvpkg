@@ -33,23 +33,10 @@ def main(iterations, title="TX RX Long-term Streaming Rate Test") -> int:
         str(iterations["channels"])[1:-1].replace(" ", ""),
         iterations["duration"],
     )
-        
-    test_info = [
-        [
-            "Sampling Rate",
-            "Duration",
-         ],
-        [
-            iterations["sample_rate"],
-            iterations["duration"],
-            ]
-        ]
 
     report.buffer_put("text_large", "Test Summary")
     report.buffer_put("text", " ")
-    report.buffer_put("table", test_info, "Parameters")
-    report.buffer_put("text", " ")
-    
+        
     print("Running command: " + command)
     
     try: 
@@ -69,6 +56,27 @@ def main(iterations, title="TX RX Long-term Streaming Rate Test") -> int:
     # result = result.split("Done!\n", 1)[1]
     print("Results:" + result)
 
+    actual_receive_rate = result.split("Testing receive rate ")[1].split("on")[0]
+    actual_transmit_rate = result.split("Testing transmit rate ")[1].split("on")[0]
+
+    test_info = [
+    [
+        "Target Sampling Rate",
+        "Actual Receive Rate",
+        "Actual Transmit Rate",
+        "Duration",
+        ],
+    [
+        str(iterations["sample_rate"] / 1000000) + " Msps",
+        actual_receive_rate,
+        actual_transmit_rate,
+        str(iterations["duration"]) + " second(s)",
+        ]
+    ]
+
+    report.buffer_put("table", test_info, "Parameters")
+    report.buffer_put("text", " ")
+
     over_underflow_count = [["Channel", "Overflow", "Underflow"]]
     individual_lines = result.split("\n")
     for line in individual_lines: 
@@ -78,6 +86,21 @@ def main(iterations, title="TX RX Long-term Streaming Rate Test") -> int:
         over_underflow_count.append([ch_name, re.findall('\\d+', line)[0], re.findall('\\d+', line)[1]])
            
     report.buffer_put("table", over_underflow_count, "Results")
+    report.buffer_put("text", " ")
+
+    benchmark_rate_summary = [["Item", "Count"]]
+    # Get the potion of benchmark rate summary text
+    benchmark_rate_text = result.split("Benchmark rate summary:")
+    benchmark_rate_text = benchmark_rate_text[1].split("Done!")[0]
+    for line in benchmark_rate_text.split("\n"):
+        stripped_line = line.strip()
+        if stripped_line != '':
+            splitted_line = stripped_line.split(':')
+            for i, cell in enumerate(splitted_line):
+                splitted_line[i] = cell.strip()
+            benchmark_rate_summary.append(splitted_line)
+
+    report.buffer_put("table", benchmark_rate_summary, "Benchmark Rate Summary")
     report.buffer_put("text", " ")
     
     for row in over_underflow_count[1:]:
