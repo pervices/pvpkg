@@ -71,7 +71,7 @@ def lo_band_passband_flatness_test():
     rx_gain = 25
     center_freq = 10000000
     sample_rate = 9803922
-    for wave_freq in list(range(-int(0.4*sample_rate),int(0.4*sample_rate),int(sample_rate/25))):
+    for wave_freq in list(range(-int(round(0.4*sample_rate)),int((round(0.4*sample_rate))),int(round(sample_rate/28.75)))):
         yield locals()
 
 def hi_band_passband_flatness_test():
@@ -84,7 +84,7 @@ def hi_band_passband_flatness_test():
     rx_gain = 25
     center_freq = 1000000000
     sample_rate = 9803922
-    for wave_freq in list(range(-int(0.4*sample_rate),int(0.4*sample_rate),int(sample_rate/25))):
+    for wave_freq in list(range(-int(round(0.4*sample_rate)),int(round(0.4*sample_rate)),int(round(sample_rate/28.75)))):
         yield locals()
 
 #UHD_version
@@ -341,7 +341,7 @@ class cyan:
             rx_gain = 25
             center_freq = 10000000
             sample_rate = 9803922
-            for wave_freq in list(range(-int(0.4*sample_rate),int(0.4*sample_rate),int(sample_rate/25))):
+            for wave_freq in list(range(-int(round(0.4*sample_rate)),int(round(0.4*sample_rate)),int(round(sample_rate/28.75)))):
                 yield locals()
 
         @staticmethod
@@ -510,7 +510,7 @@ class cyan:
             rx_gain = 40
             center_freq = 1000000000    # 1GHz
             sample_rate = 14705882
-            for wave_freq in list(range(-int(0.4*sample_rate),int(0.4*sample_rate),int(sample_rate/25))):
+            for wave_freq in list(range(-int(round(0.4*sample_rate)),int(round(0.4*sample_rate)),int(round(sample_rate/28.75)))):
                 yield locals()
 
         @staticmethod
@@ -615,7 +615,7 @@ class cyan:
             rx_gain = 50
             center_freq = 15000000000   # 15GHz
             sample_rate = 25000000      # 25Msps
-            for wave_freq in list(range(-int(0.4*sample_rate),int(0.4*sample_rate),int(sample_rate/25))):
+            for wave_freq in list(range(-int(round(0.4*sample_rate)),int(round(0.4*sample_rate)),int(round(sample_rate/28.75)))):
                 yield locals()
 
         @staticmethod
@@ -694,7 +694,7 @@ class chestnut:
             rx_gain = 25
             center_freq = 10000000
             sample_rate = 9803922
-            for wave_freq in list(range(-int(0.4*sample_rate),int(0.4*sample_rate),int(sample_rate/25))):
+            for wave_freq in list(range(-int(round(0.4*sample_rate)),int(round(0.4*sample_rate)),int(round(sample_rate/28.75)))):
                 yield locals()
 
         @staticmethod
@@ -853,7 +853,7 @@ class chestnut:
             rx_gain = 40
             center_freq = 1000000000    # 1GHz
             sample_rate = 14705882
-            for wave_freq in list(range(-int(0.4*sample_rate),int(0.4*sample_rate),int(sample_rate/25))):
+            for wave_freq in list(range(-int(round(0.4*sample_rate)),int(round(0.4*sample_rate)),int(round(sample_rate/28.75)))):
                 yield locals()
 
         @staticmethod
@@ -958,7 +958,7 @@ class chestnut:
             rx_gain = 50
             center_freq = 15000000000   # 15GHz
             sample_rate = 25000000      # 25Msps
-            for wave_freq in list(range(-int(0.4*sample_rate),int(0.4*sample_rate),int(sample_rate/25))):
+            for wave_freq in list(range(-int(round(0.4*sample_rate)),int(round(0.4*sample_rate)),int(round(sample_rate/28.75)))):
                 yield locals()
 
         @staticmethod

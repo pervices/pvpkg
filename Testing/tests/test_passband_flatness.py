@@ -101,14 +101,14 @@ def main(iterations, desc):
 
         channel_max = np.max(channel_test)
         channel_min = np.min(channel_test)
-        if np.abs(channel_max - channel_min) <= 4 :
+        if np.abs(20*np.log10((channel_max/channel_min))) <= 4 :
             passband_flat.append("Pass")
         else:
             passband_flat.append("Fail")
     test_info = [["Channel Peak Information (dB):","A","B","C","D", "Wave Frequency (Hz)"]]
     for it in list(range(len(plot_points_xf))):
         test_info.append(["Iteration {}:".format(it),
-                round(channel_peak[it][0],3),round(channel_peak[it][1],3), round(channel_peak[it][2],3),round(channel_peak[it][3],3), test_sum[it]])
+                round(20*np.log10(channel_peak[it][0]),3),round(20*np.log10(channel_peak[it][1]),3),round(20*np.log10(channel_peak[it][2]),3),round(20*np.log10(channel_peak[it][3]),3), test_sum[it]])
 
     test_info.append(["Passband Flatness Pass",passband_flat[0],passband_flat[1],passband_flat[2],passband_flat[3], "N/A"])
 
