@@ -133,7 +133,10 @@ def run_helper(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, 
     time.sleep(1.0)
     print("B2")
 
-    vsnk = [] # Will be extended when using stacked commands.
+    shared_mem = shared_memory.SharedMemory(shared_mem_name)
+    vsnk = shared_mem.buf
+    print(len(vsnk))
+    # vsnk = [] # Will be extended when using stacked commands.
     tx_duration = 0
     tx_thread = None
     rx_duration = 0
@@ -213,10 +216,6 @@ def run_helper(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, 
     # for x in vsnk:
     #     print(x)
     #     samples.append(x.data())
-
-    shared_mem = shared_memory.SharedMemory(shared_mem_name)
-    for i, v in enumerate(vsnk):
-        shared_mem.buf[i] = v
     
     print(vsnk)
     print(shared_mem.buf)
@@ -290,7 +289,9 @@ def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stac
     # Wait iteration to run
     print("T1")
     samples = (data_queue.get(timeout=time_limit))
-    vsnk = [blocks.vector_source_c(s, False) for s in samples]
+    shared_mem.close()
+    shared_mem.unlink()
+    # vsnk = [blocks.vector_source_c(s, False) for s in samples]
     
 
     
