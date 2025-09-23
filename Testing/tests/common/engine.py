@@ -119,9 +119,9 @@ def run_rx(csrc, channels, stack, sample_rate, _vsnk, timeout_occured):
     flowgraph.wait()
 
     # Cannot return from thread so extend instead.
-    # for ch, channel in enumerate(vsnk):
-    #     _vsnk[ch] = vsnk[ch]
-    _vsnk.extend(vsnk)
+    for ch, channel in enumerate(vsnk):
+        _vsnk[ch] = vsnk[ch]
+    # _vsnk.extend(vsnk)
 
 # Multiprocess is needed for the ability to terminate, but tx and rx must be in the same process as each other
 # run_helper is run as it's own process, which then spawns tx and rx threads
@@ -132,10 +132,9 @@ def run_helper(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, 
     rx_timeout_occured = Event()
     time.sleep(1.0)
     print("B2")
-
-    shared_mem = shared_memory.SharedMemory(shared_mem_name)
+    shared_mem = shared_memory.SharedMemory(name=shared_mem_name)
     vsnk = shared_mem.buf
-    print(len(vsnk))
+
     # vsnk = [] # Will be extended when using stacked commands.
     tx_duration = 0
     tx_thread = None
@@ -241,6 +240,9 @@ def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stac
     vsnk = [blocks.vector_sink_c() for ch in channels]
     
     shared_mem = shared_memory.SharedMemory(create=True, size=sys.getsizeof(vsnk))
+    buffer = shared_mem.buf
+    buffer[:4] = vsnk
+    print(buffer)
     print(shared_mem.name)
     
 
@@ -288,7 +290,9 @@ def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stac
     time_limit = (tx_duration + rx_duration) + 30
     # Wait iteration to run
     print("T1")
-    samples = (data_queue.get(timeout=time_limit))
+    # samples = (data_queue.get(timeout=time_limit))
+    helper_process.join(time_limit)
+    print(shared_mem.buf[0].data())
     shared_mem.close()
     shared_mem.unlink()
     # vsnk = [blocks.vector_source_c(s, False) for s in samples]
