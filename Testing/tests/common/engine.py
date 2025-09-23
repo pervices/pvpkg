@@ -7,7 +7,7 @@ from . import crimson
 import threading
 from threading import Event
 import multiprocessing
-from multiprocessing import Manager
+from multiprocessing import Manager, shared_memory
 from multiprocessing.managers import BaseManager, ListProxy, SharedMemoryManager
 from inspect import currentframe, getframeinfo
 import time
@@ -125,7 +125,7 @@ def run_rx(csrc, channels, stack, sample_rate, _vsnk, timeout_occured):
 
 # Multiprocess is needed for the ability to terminate, but tx and rx must be in the same process as each other
 # run_helper is run as it's own process, which then spawns tx and rx threads
-def run_helper(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stack, rx_stack, data_queue):
+def run_helper(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stack, rx_stack, data_queue, shared_mem_name):
     # tx_stack = None
     time.sleep(1)
     print("B1")
@@ -214,23 +214,18 @@ def run_helper(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, 
     #     print(x)
     #     samples.append(x.data())
 
-    samples = [x.data() for x in vsnk]
-    data_queue.put(samples)
+    shared_mem = shared_memory.SharedMemory(shared_mem_name)
+    for i, v in enumerate(vsnk):
+        shared_mem.buf[i] = v
+    
+    print(vsnk)
+    print(shared_mem.buf)
+    shared_mem.close()
+    # samples = [x.data() for x in vsnk]
+    # data_queue.put(samples)
 
     print("Returning from run_helper function")
 
-class VectorSinkWrapper:
-    def __init__(self):
-        self.vector_sinks = list()
-
-    def get_sinks(self):
-        return self.vector_sinks
-
-    def set_sink(self, index, data):
-        self.vector_sinks[index] = data
-
-    def append_sink(self, sink):
-        self.vector_sinks.append(sink)
     
 class CustomManager(BaseManager):
     pass
@@ -244,6 +239,10 @@ def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stac
     # manager = CustomManager()
     # manager.start()
     # vsnk_wrapper = manager.VectorSinkWrapper()
+    vsnk = [blocks.vector_sink_c() for ch in channels]
+    
+    shared_mem = shared_memory.SharedMemory(create=True, size=sys.getsizeof(vsnk))
+    print(shared_mem.name)
     
 
     # for ch in channels:
@@ -262,7 +261,7 @@ def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stac
     print("A1.5")
     
     # Start process to run tx and rx
-    helper_process = multiprocessing.Process(target = run_helper, args = (channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stack, rx_stack, data_queue))
+    helper_process = multiprocessing.Process(target = run_helper, args = (channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stack, rx_stack, data_queue, shared_mem.name))
     print("A2")
     helper_process.start()
     print("A3")
@@ -292,6 +291,7 @@ def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stac
     print("T1")
     samples = (data_queue.get(timeout=time_limit))
     vsnk = [blocks.vector_source_c(s, False) for s in samples]
+    
 
     
     # helper_process.join(time_limit)
@@ -322,6 +322,7 @@ def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stac
         helper_process.terminate()
         # Wait for process to close
         helper_process.join(30)
+        
 
     flow_sigterm_timeout = False
     if(helper_process.is_alive()):

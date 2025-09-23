@@ -16,5 +16,7 @@ def main():
 
         vsnk = engine.run(channel_list, it["wave_freq"], sample_rate, it["center_freq"], it["tx_gain"], it["rx_gain"], tx_stack, rx_stack)
 
+        for v in vsnk:
+            print(v)
 if __name__ == '__main__':
     main()
