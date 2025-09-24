@@ -128,7 +128,9 @@ def run_rx(csrc, channels, stack, sample_rate, _vsnk, timeout_occured):
     flowgraph.wait()
 
     # Cannot return from thread so extend instead.
-    _vsnk.extend(vsnk)
+    for snk in vsnk:
+        _vsnk.append(CustomSink(snk.data()))
+    # _vsnk.extend(vsnk)
     print("Done rx thread")
 
 # Multiprocess is needed for the ability to terminate, but tx and rx must be in the same process as each other
@@ -207,7 +209,7 @@ def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stac
     manager.start()
     # Queue to store data from run_helper
     # data_queue = multiprocessing.Queue(1)
-    vsnk = manager.list([manager.CustomSink() for _ in channels])
+    vsnk = manager.list()
     # Start process to run tx and rx
     helper_process = multiprocessing.Process(target = run_helper, args = (channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stack, rx_stack, vsnk))
     helper_process.start()
