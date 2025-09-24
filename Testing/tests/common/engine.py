@@ -144,7 +144,7 @@ def run_rx(csrc, channels, stack, sample_rate, _vsnk, timeout_occured):
 
 # Multiprocess is needed for the ability to terminate, but tx and rx must be in the same process as each other
 # run_helper is run as it's own process, which then spawns tx and rx threads
-def run_helper(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stack, rx_stack):
+def run_helper(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stack, rx_stack, sink_arr):
     rx_timeout_occured = Event()
 
     vsnk = [] # Will be extended when using stacked commands.
@@ -198,32 +198,18 @@ def run_helper(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, 
         print("\x1b[31mERROR: Timeout while waiting for sufficient rx data\x1b[0m", file=sys.stderr)
         raise Exception ("RX DATA TIMED OUT")
 
-    # for i, snk in enumerate(vsnk):
-    #     snk_mem = shared_memory.SharedMemory(name=names[i])
-    #     samples = np.ndarray((len(snk.data()),), dtype=complex, buffer=snk_mem.buf)
-    #     samples[:] = snk.data()
-        # _vsnk[i].set_data(snk.data())
+    for i, snk in enumerate(vsnk):
+        sink_arr[i].set_data(snk.data())
 
-    # samples = []
-    # for x in vsnk:
-    #     samples.append(CustomSink(x.data()))
-
-    # data_queue.put(samples)
-
-
-class CustomManager(BaseManager):
-    pass
 
 def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stack, rx_stack):
     # To measure performance
     start_time = time.time()
 
-
-    # vsnk=[CustomSink(rx_stack) for _ in channels]
-    # names=[sink.shared_memory.name for sink in vsnk]
+    vsnk=[CustomSink(rx_stack) for _ in channels]
 
     # Start process to run tx and rx
-    helper_process = multiprocessing.Process(target = run_helper, args = (channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stack, rx_stack))
+    helper_process = multiprocessing.Process(target = run_helper, args = (channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stack, rx_stack, vsnk))
     helper_process.start()
 
     tx_duration = 0
@@ -250,7 +236,7 @@ def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stac
             end_time=time.time()
             print("[DEBUG] Time for engine run: ", (end_time-start_time))
             # Return collected data
-            return []
+            return vsnk
         else:
             # An error (probably rx data timeout) while running the flowgraph
             print("\x1b[31mERROR: error while running flowgraph\x1b[0m", file=sys.stderr)
