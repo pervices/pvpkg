@@ -24,6 +24,9 @@ class CustomSink():
     def data(self):
         return self.samples
 
+    def set_data(self, data):
+        self.samples = data
+
 def run_tx(csnk, channels, stack, sample_rate, wave_freq):
 
     """                                       +-----------+
@@ -129,7 +132,7 @@ def run_rx(csrc, channels, stack, sample_rate, _vsnk, timeout_occured):
 
     # Cannot return from thread so extend instead.
     for i, snk in enumerate(vsnk):
-        _vsnk[i] = (CustomSink(snk.data()))
+        _vsnk[i].set_data(snk.data())
     # _vsnk.extend(vsnk)
     print("Done rx thread")
 
@@ -207,7 +210,8 @@ def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stac
     start_time = time.time()
 
     shared_mem = shared_memory.SharedMemory(create=True, size=sys.getsizeof(list(range(len(channels)))))
-
+    vsnk=shared_mem.buf
+    vsnk[:] = [CustomSink([]) for _ in channels]
     # Queue to store data from run_helper
     # data_queue = multiprocessing.Queue(1)
     # Start process to run tx and rx
@@ -229,8 +233,9 @@ def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stac
     time_limit = (tx_duration + rx_duration) + 30
     # samples = data_queue.get(timeout=time_limit)
     helper_process.join(time_limit)
-    vsnk=shared_mem.buf
     print(vsnk)
+    shared_mem.close()
+    shared_mem.unlink()
 
     flowgraph_timeout = False
     # If the process has finished
