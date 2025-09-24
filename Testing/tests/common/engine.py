@@ -3,6 +3,7 @@ from gnuradio import blocks
 from gnuradio import uhd
 from gnuradio import gr
 import gnuradio
+import numpy as np
 
 from . import crimson
 import threading
@@ -18,14 +19,21 @@ import datetime
 
 # STORE SAMPLES INTO PICKLEABLE CLASS
 class CustomSink():
-    def __init__(self, samples):
-        self.samples = samples
+    def __init__(self, stack):
+        sample_count = sum([frame[1] for frame in stack])
+        # Manage shared memory from within class
+        self.shared_memory = shared_memory.SharedMemory(create=True, size=(sample_count * sys.getsizeof(complex())))
+        self.samples=np.ndarray((sample_count,), dtype=complex, buffer=self.shared_memory.buf)
+    
+    def __del__(self):
+        self.shared_memory.close()
+        self.shared_memory.unlink()
         
     def data(self):
         return self.samples
 
     def set_data(self, data):
-        self.samples = data
+        self.samples[:] = data
 
 def run_tx(csnk, channels, stack, sample_rate, wave_freq):
 
@@ -138,12 +146,10 @@ def run_rx(csrc, channels, stack, sample_rate, _vsnk, timeout_occured):
 
 # Multiprocess is needed for the ability to terminate, but tx and rx must be in the same process as each other
 # run_helper is run as it's own process, which then spawns tx and rx threads
-def run_helper(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stack, rx_stack, mem_name):
+def run_helper(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stack, rx_stack, vsnk):
     rx_timeout_occured = Event()
 
-    # vsnk = [] # Will be extended when using stacked commands.
-    shm = shared_memory.SharedMemory(mem_name)
-    vsnk = shm.buf
+    vsnk = [] # Will be extended when using stacked commands.
     tx_duration = 0
     tx_thread = None
     rx_duration = 0
@@ -194,7 +200,6 @@ def run_helper(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, 
         print("\x1b[31mERROR: Timeout while waiting for sufficient rx data\x1b[0m", file=sys.stderr)
         raise Exception ("RX DATA TIMED OUT")
 
-    shm.close()
     # samples = []
     # for x in vsnk:
     #     samples.append(CustomSink(x.data()))
@@ -209,13 +214,13 @@ def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stac
     # To measure performance
     start_time = time.time()
 
-    shared_mem = shared_memory.SharedMemory(create=True, size=sys.getsizeof(list(range(len(channels)))))
-    vsnk=shared_mem.buf
-    vsnk[:] = [CustomSink([]) for _ in channels]
+    # Get total sample count so ShareableList can be created
+    vsnk=[CustomSink(rx_stack) for _ in channels]
+
     # Queue to store data from run_helper
     # data_queue = multiprocessing.Queue(1)
     # Start process to run tx and rx
-    helper_process = multiprocessing.Process(target = run_helper, args = (channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stack, rx_stack, shared_mem.name))
+    helper_process = multiprocessing.Process(target = run_helper, args = (channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stack, rx_stack, vsnk))
     helper_process.start()
 
     tx_duration = 0
@@ -234,8 +239,6 @@ def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stac
     # samples = data_queue.get(timeout=time_limit)
     helper_process.join(time_limit)
     print(vsnk)
-    shared_mem.close()
-    shared_mem.unlink()
 
     flowgraph_timeout = False
     # If the process has finished
