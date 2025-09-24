@@ -128,19 +128,12 @@ def run_rx(csrc, channels, stack, sample_rate, _vsnk, timeout_occured):
     flowgraph.wait()
 
     # Cannot return from thread so extend instead.
-    # for ch, channel in enumerate(vsnk):
-    #     _vsnk[ch] = vsnk[ch]
     _vsnk.extend(vsnk)
 
 # Multiprocess is needed for the ability to terminate, but tx and rx must be in the same process as each other
 # run_helper is run as it's own process, which then spawns tx and rx threads
 def run_helper(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stack, rx_stack, data_queue):
-    # tx_stack = None
-    time.sleep(1)
-    print("B1")
     rx_timeout_occured = Event()
-    time.sleep(1.0)
-    print("B2")
 
     vsnk = [] # Will be extended when using stacked commands.
     tx_duration = 0
@@ -148,56 +141,33 @@ def run_helper(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, 
     rx_duration = 0
     rx_thread = None
 
-    time.sleep(1.0)
-    print("B3")
-
     # Prepare thread
     if tx_stack != None:
         # Expected tx duration = start time of last burst + (length of last burst / sample rate)
-        time.sleep(1)
-        print("B4")
         tx_duration = tx_stack[-1][0] + (tx_stack[-1][1] / sample_rate)
-        time.sleep(1)
-        print("B5")
 
         csnk = crimson.get_snk_s(channels, sample_rate, center_freq, tx_gain)
-        time.sleep(1)
-        print("B6")
-        print(str(channels))
-        print(str(tx_stack))
-        print(str(sample_rate))
-        print(str(wave_freq))
-        print("B7")
         tx_thread = threading.Thread(target = run_tx, args = (csnk, channels, tx_stack, sample_rate, wave_freq))
 
-    print("B10")
     if rx_stack != None:
         # Expected rx duration = start time of last burst + (length of last burst / sample rate)
         rx_duration = rx_stack[-1][0] + (rx_stack[-1][1] / sample_rate)
 
         csrc = crimson.get_src_c(channels, sample_rate, center_freq, rx_gain)
         rx_thread = threading.Thread(target = run_rx, args = (csrc, channels, rx_stack, sample_rate, vsnk, rx_timeout_occured))
-    print("B20")
   
     # Start threads
     if(tx_thread != None):
-        print("B21")
         tx_thread.start()
     if(rx_thread != None):
-        print("B22")
         rx_thread.start()
-    print("B23")
 
     # Wait for thread to finish with a timeout
     if(tx_thread != None):
-        print("B30")
         tx_thread.join(tx_duration + 10)
     # The data timeout is expected + 10s, make sure the control timeout is longer
     if(rx_thread != None):
-        print("B31")
         rx_thread.join(rx_duration + 20)
-
-    print("B40")
 
     # Check if thread finished
     # Timeouts here indicate that something was hanging
@@ -216,49 +186,26 @@ def run_helper(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, 
         print("\x1b[31mERROR: Timeout while waiting for sufficient rx data\x1b[0m", file=sys.stderr)
         raise Exception ("RX DATA TIMED OUT")
 
-    print("B60")
-
     samples = []
     for x in vsnk:
         samples.append(CustomSink(x.data()))
 
     data_queue.put(samples)
 
-    print("Returning from run_helper function")
 
 class CustomManager(BaseManager):
     pass
 
 def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stack, rx_stack):
-    print("A0")
+    # To measure performance
+    start_time = time.time()
 
-    # manager = CustomManager()
-    # manager.start()
-    # vsnk_wrapper = manager.VectorSinkWrapper()
-    # vsnk = [blocks.vector_sink_c() for ch in channels]
-    
-    # for ch in channels:
-    #     vsnk_wrapper.append_sink(manager.VectorpSink())
-    # print(vsnk_wrapper)
-    # print(vsnk_wrapper.get_sinks())
-    # vsnk = manager.list([manager.VectorSink() for ch in channels])
- 
     # Queue to store data from run_helper
     data_queue = multiprocessing.Queue(1)
-    print("A1")
-    print(str(channels))
-    print(str(tx_stack))
-    print(str(sample_rate))
-    print(str(wave_freq))
-    print("A1.5")
     
     # Start process to run tx and rx
     helper_process = multiprocessing.Process(target = run_helper, args = (channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stack, rx_stack, data_queue))
-    print("A2")
     helper_process.start()
-    print("A3")
-    # time.sleep(30)
-    print("A4")
 
     tx_duration = 0
     rx_duration = 0
@@ -268,47 +215,28 @@ def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stac
         # Expected tx duration = start time of last burst + (length of last burst / sample rate)
         tx_duration = tx_stack[-1][0] + (tx_stack[-1][1] / sample_rate)
 
-    # time.sleep(1)
-    print("A5")
-
     if rx_stack != None:
         # Expected rx duration = start time of last burst + (length of last burst / sample rate)
         rx_duration = rx_stack[-1][0] + (rx_stack[-1][1] / sample_rate)
 
-    # time.sleep(40)
-    print("A6")
-
     time_limit = (tx_duration + rx_duration) + 30
-    # Wait iteration to run
-    print("T1")
     samples = data_queue.get(timeout=time_limit)
     # helper_process.join(time_limit)
-    # vsnk = [blocks.vector_source_c(s, False) for s in samples]
-    
-
-    
-    # helper_process.join(time_limit)
-
-    print("T2")
-
-    time.sleep(10)
 
     flowgraph_timeout = False
     # If the process has finished
     if(not helper_process.is_alive()):
-        print("T3")
         # If the test ran successfully
         if(helper_process.exitcode == 0):
-            print("T4A")
+            end_time=time.time()
+            print("[DEBUG] Time for engine run: ", (end_time-start_time))
             # Return collected data
             return samples
         else:
-            print("T4B")
             # An error (probably rx data timeout) while running the flowgraph
             print("\x1b[31mERROR: error while running flowgraph\x1b[0m", file=sys.stderr)
             raise Exception ("flowgraph error")
     else:
-        print("T5")
         print("\x1b[31mERROR: Flowgraph timeout. UHD appears to be hanging forever. Issuing SIGTERM\x1b[0m", file=sys.stderr)
         flowgraph_timeout = True
         # Issue SIGTERM
