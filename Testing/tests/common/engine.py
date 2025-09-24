@@ -17,8 +17,8 @@ import subprocess
 import sys
 import datetime
 
-# STORE SAMPLES INTO PICKLEABLE CLASS
-class CustomSink():
+# 
+class CustomSink:
     def __init__(self, stack):
         sample_count = sum([frame[1] for frame in stack])
         # Manage shared memory from within class
@@ -143,11 +143,10 @@ def run_rx(csrc, channels, stack, sample_rate, _vsnk, timeout_occured):
     # for i, snk in enumerate(vsnk):
     #     _vsnk[i].set_data(snk.data())
     _vsnk.extend(vsnk)
-    print("Done rx thread")
 
 # Multiprocess is needed for the ability to terminate, but tx and rx must be in the same process as each other
 # run_helper is run as it's own process, which then spawns tx and rx threads
-def run_helper(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stack, rx_stack, _vsnk):
+def run_helper(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stack, rx_stack, names):
     rx_timeout_occured = Event()
 
     vsnk = [] # Will be extended when using stacked commands.
@@ -202,7 +201,10 @@ def run_helper(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, 
         raise Exception ("RX DATA TIMED OUT")
 
     for i, snk in enumerate(vsnk):
-        _vsnk[i].set_data(snk.data())
+        snk_mem = shared_memory.SharedMemory(name=names[i])
+        samples = np.ndarray((len(snk.data()),), dtype=complex, buffer=snk_mem.buf)
+        samples[:] = snk.data()
+        # _vsnk[i].set_data(snk.data())
 
     # samples = []
     # for x in vsnk:
@@ -218,13 +220,12 @@ def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stac
     # To measure performance
     start_time = time.time()
 
-    # Get total sample count so ShareableList can be created
-    vsnk=[CustomSink(rx_stack) for _ in channels]
 
-    # Queue to store data from run_helper
-    # data_queue = multiprocessing.Queue(1)
+    vsnk=[CustomSink(rx_stack) for _ in channels]
+    names=[sink.shared_memory.name for sink in vsnk]
+
     # Start process to run tx and rx
-    helper_process = multiprocessing.Process(target = run_helper, args = (channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stack, rx_stack, vsnk))
+    helper_process = multiprocessing.Process(target = run_helper, args = (channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stack, rx_stack, names))
     helper_process.start()
 
     tx_duration = 0
