@@ -142,7 +142,12 @@ def run_rx(csrc, channels, stack, sample_rate, _vsnk, timeout_occured):
     # Cannot return from thread so extend instead.
     # for i, snk in enumerate(vsnk):
     #     _vsnk[i].set_data(snk.data())
-    _vsnk.extend(vsnk)
+
+    for i, snk in enumerate(vsnk):
+        snk_mem = shared_memory.SharedMemory(name=names[i])
+        samples = np.ndarray((len(snk.data()),), dtype=complex, buffer=snk_mem.buf)
+        samples[:] = snk.data()
+    # _vsnk.extend(vsnk)
 
 # Multiprocess is needed for the ability to terminate, but tx and rx must be in the same process as each other
 # run_helper is run as it's own process, which then spawns tx and rx threads
@@ -200,10 +205,10 @@ def run_helper(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, 
         print("\x1b[31mERROR: Timeout while waiting for sufficient rx data\x1b[0m", file=sys.stderr)
         raise Exception ("RX DATA TIMED OUT")
 
-    for i, snk in enumerate(vsnk):
-        snk_mem = shared_memory.SharedMemory(name=names[i])
-        samples = np.ndarray((len(snk.data()),), dtype=complex, buffer=snk_mem.buf)
-        samples[:] = snk.data()
+    # for i, snk in enumerate(vsnk):
+    #     snk_mem = shared_memory.SharedMemory(name=names[i])
+    #     samples = np.ndarray((len(snk.data()),), dtype=complex, buffer=snk_mem.buf)
+    #     samples[:] = snk.data()
         # _vsnk[i].set_data(snk.data())
 
     # samples = []

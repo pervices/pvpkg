@@ -23,10 +23,7 @@ def get_snk_s(channels, sample_rate, center_freq, gain):
 
 def get_src_c(channels, sample_rate, center_freq, gain):
 
-    print("C1")
     src = uhd.usrp_source("crimson", uhd.stream_args(cpu_format="fc32", otw_format="sc16", channels=channels), False)
-    print("C2")
     calibrate(src, channels, sample_rate, center_freq, gain)
-    print("C3")
     return src
 
