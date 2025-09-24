@@ -129,13 +129,14 @@ def run_rx(csrc, channels, stack, sample_rate, _vsnk, timeout_occured):
 
     # Cannot return from thread so extend instead.
     _vsnk.extend(vsnk)
+    print("Done rx thread")
 
 # Multiprocess is needed for the ability to terminate, but tx and rx must be in the same process as each other
 # run_helper is run as it's own process, which then spawns tx and rx threads
-def run_helper(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stack, rx_stack, data_queue):
+def run_helper(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stack, rx_stack, vsnk):
     rx_timeout_occured = Event()
 
-    vsnk = [] # Will be extended when using stacked commands.
+    # vsnk = [] # Will be extended when using stacked commands.
     tx_duration = 0
     tx_thread = None
     rx_duration = 0
@@ -186,11 +187,11 @@ def run_helper(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, 
         print("\x1b[31mERROR: Timeout while waiting for sufficient rx data\x1b[0m", file=sys.stderr)
         raise Exception ("RX DATA TIMED OUT")
 
-    samples = []
-    for x in vsnk:
-        samples.append(CustomSink(x.data()))
+    # samples = []
+    # for x in vsnk:
+    #     samples.append(CustomSink(x.data()))
 
-    data_queue.put(samples)
+    # data_queue.put(samples)
 
 
 class CustomManager(BaseManager):
@@ -199,12 +200,16 @@ class CustomManager(BaseManager):
 def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stack, rx_stack):
     # To measure performance
     start_time = time.time()
+    CustomManager.register("CustomSink", CustomSink)
+    CustomManager.register("list", list, ListProxy)
 
+    manager = CustomManager()
+    manager.start()
     # Queue to store data from run_helper
-    data_queue = multiprocessing.Queue(1)
-    
+    # data_queue = multiprocessing.Queue(1)
+    vsnk = manager.list([manager.CustomSink() for _ in channels])
     # Start process to run tx and rx
-    helper_process = multiprocessing.Process(target = run_helper, args = (channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stack, rx_stack, data_queue))
+    helper_process = multiprocessing.Process(target = run_helper, args = (channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stack, rx_stack, vsnk))
     helper_process.start()
 
     tx_duration = 0
@@ -220,8 +225,10 @@ def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stac
         rx_duration = rx_stack[-1][0] + (rx_stack[-1][1] / sample_rate)
 
     time_limit = (tx_duration + rx_duration) + 30
-    samples = data_queue.get(timeout=time_limit)
-    # helper_process.join(time_limit)
+    # samples = data_queue.get(timeout=time_limit)
+    helper_process.join(time_limit)
+    print(vsnk)
+    print(vsnk[0].data())
 
     flowgraph_timeout = False
     # If the process has finished
@@ -231,7 +238,7 @@ def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stac
             end_time=time.time()
             print("[DEBUG] Time for engine run: ", (end_time-start_time))
             # Return collected data
-            return samples
+            return vsnk
         else:
             # An error (probably rx data timeout) while running the flowgraph
             print("\x1b[31mERROR: error while running flowgraph\x1b[0m", file=sys.stderr)
