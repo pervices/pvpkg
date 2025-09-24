@@ -28,6 +28,7 @@ class CustomSink():
     def __del__(self):
         self.shared_memory.close()
         self.shared_memory.unlink()
+        print("Closed and unlinked memory")
         
     def data(self):
         return self.samples
@@ -139,14 +140,14 @@ def run_rx(csrc, channels, stack, sample_rate, _vsnk, timeout_occured):
     flowgraph.wait()
 
     # Cannot return from thread so extend instead.
-    for i, snk in enumerate(vsnk):
-        _vsnk[i].set_data(snk.data())
-    # _vsnk.extend(vsnk)
+    # for i, snk in enumerate(vsnk):
+    #     _vsnk[i].set_data(snk.data())
+    _vsnk.extend(vsnk)
     print("Done rx thread")
 
 # Multiprocess is needed for the ability to terminate, but tx and rx must be in the same process as each other
 # run_helper is run as it's own process, which then spawns tx and rx threads
-def run_helper(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stack, rx_stack, vsnk):
+def run_helper(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stack, rx_stack, _vsnk):
     rx_timeout_occured = Event()
 
     vsnk = [] # Will be extended when using stacked commands.
@@ -200,6 +201,9 @@ def run_helper(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, 
         print("\x1b[31mERROR: Timeout while waiting for sufficient rx data\x1b[0m", file=sys.stderr)
         raise Exception ("RX DATA TIMED OUT")
 
+    for i, snk in enumerate(vsnk):
+        _vsnk[i].set_data(snk.data())
+
     # samples = []
     # for x in vsnk:
     #     samples.append(CustomSink(x.data()))
@@ -238,7 +242,6 @@ def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stac
     time_limit = (tx_duration + rx_duration) + 30
     # samples = data_queue.get(timeout=time_limit)
     helper_process.join(time_limit)
-    print(vsnk)
 
     flowgraph_timeout = False
     # If the process has finished
