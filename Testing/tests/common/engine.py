@@ -2,15 +2,12 @@ from gnuradio import analog
 from gnuradio import blocks
 from gnuradio import uhd
 from gnuradio import gr
-import gnuradio
 import numpy as np
 
 from . import crimson
 import threading
 from threading import Event
-import multiprocessing
-from multiprocessing import Manager, shared_memory
-from multiprocessing.managers import BaseManager, ListProxy, SharedMemoryManager
+from multiprocessing import Process, shared_memory
 from inspect import currentframe, getframeinfo
 import time
 import subprocess
@@ -209,7 +206,7 @@ def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stac
     vsnk=[CustomSink(rx_stack) for _ in channels]
 
     # Start process to run tx and rx
-    helper_process = multiprocessing.Process(target = run_helper, args = (channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stack, rx_stack, vsnk))
+    helper_process = Process(target = run_helper, args = (channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stack, rx_stack, vsnk))
     helper_process.start()
 
     tx_duration = 0
@@ -287,9 +284,9 @@ def manual_tune_run(channels, wave_freq, tx_sample_rate, rx_sample_rate, tx_tune
     # Prepare thread
     # Expected tx duration = start time of last burst + (length of last burst / sample rate)
     tx_duration = tx_stack[-1][0] + (tx_stack[-1][1] / tx_sample_rate)
-    tx_thread = multiprocessing.Process(target = run_tx, args = (csnk, channels, tx_stack, tx_sample_rate, wave_freq))
+    tx_thread = Process(target = run_tx, args = (csnk, channels, tx_stack, tx_sample_rate, wave_freq))
     rx_duration = rx_stack[-1][0] + (rx_stack[-1][1] / rx_sample_rate)
-    rx_thread = multiprocessing.Process(target = run_rx, args = (csrc, channels, rx_stack, rx_sample_rate, vsnk, rx_timeout_occured))
+    rx_thread = Process(target = run_rx, args = (csrc, channels, rx_stack, rx_sample_rate, vsnk, rx_timeout_occured))
 
     # Start threads
     tx_thread.start()
