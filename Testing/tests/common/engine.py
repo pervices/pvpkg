@@ -188,7 +188,8 @@ def run_helper(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, 
 
     if rx_stack != None:
         for i, snk in enumerate(vsnk):
-            sink_arr[i].set_data(snk.data())
+            print('aaa')
+            # sink_arr[i].set_data(snk.data())
 
 
 def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stack, rx_stack):
@@ -206,7 +207,7 @@ def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stac
 
     if rx_stack != None:
         # Expected rx duration = start time of last burst + (length of last burst / sample rate)
-        vsnk=[CustomSink(rx_stack) for _ in channels]
+        # vsnk=[CustomSink(rx_stack) for _ in channels]
         rx_duration = rx_stack[-1][0] + (rx_stack[-1][1] / sample_rate)
 
     # Start process to run tx and rx
