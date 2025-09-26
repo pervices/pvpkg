@@ -1,5 +1,6 @@
 from common import engine
 from common import generator as gen
+import cProfile
 
 tx_burst = 5.0 #burst should be slightly delayed to ensure all data is being collected
 rx_burst = 5.25
@@ -14,7 +15,10 @@ def main():
         tx_stack = [ (tx_burst , sample_rate)]
         rx_stack = [ (rx_burst, int(it["sample_count"]))]
 
-        vsnk = engine.run(channel_list, it["wave_freq"], sample_rate, it["center_freq"], it["tx_gain"], it["rx_gain"], tx_stack, rx_stack)
+        profile_cmd = """engine.run(channel_list, it["wave_freq"], sample_rate, it["center_freq"], it["tx_gain"], it["rx_gain"], tx_stack, rx_stack)"""
+        cProfile.runctx(profile_cmd, globals=globals(), locals=locals(), sort='cumtime')
+
+        # vsnk = engine.run(channel_list, it["wave_freq"], sample_rate, it["center_freq"], it["tx_gain"], it["rx_gain"], tx_stack, rx_stack)
 
         for v in vsnk:
             print(v.data())

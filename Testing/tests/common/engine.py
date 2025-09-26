@@ -6,8 +6,7 @@ import numpy as np
 
 from . import crimson
 import threading
-from threading import Event
-from multiprocessing import Process, shared_memory
+import multiprocessing
 from inspect import currentframe, getframeinfo
 import time
 import subprocess
@@ -19,7 +18,7 @@ class CustomSink:
     def __init__(self, stack):
         sample_count = sum([frame[1] for frame in stack])
         # Manage shared memory from within class
-        self.shared_memory = shared_memory.SharedMemory(create=True, size=(sample_count * sys.getsizeof(complex())))
+        self.shared_memory = multiprocessing.shared_memory.SharedMemory(create=True, size=(sample_count * sys.getsizeof(complex())))
         self.samples=np.ndarray((sample_count,), dtype=complex, buffer=self.shared_memory.buf)
     
     def __del__(self):
@@ -142,7 +141,7 @@ def run_rx(csrc, channels, stack, sample_rate, _vsnk, timeout_occured):
 # Multiprocess is needed for the ability to terminate, but tx and rx must be in the same process as each other
 # run_helper is run as it's own process, which then spawns tx and rx threads
 def run_helper(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stack, rx_stack, sink_arr):
-    rx_timeout_occured = Event()
+    rx_timeout_occured = threading.Event()
 
     vsnk = [] # Will be extended when using stacked commands.
     tx_duration = 0
@@ -206,7 +205,7 @@ def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stac
     vsnk=[CustomSink(rx_stack) for _ in channels]
 
     # Start process to run tx and rx
-    helper_process = Process(target = run_helper, args = (channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stack, rx_stack, vsnk))
+    helper_process = multiprocessing.Process(target = run_helper, args = (channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stack, rx_stack, vsnk))
     helper_process.start()
 
     tx_duration = 0
@@ -276,7 +275,7 @@ def manual_tune_run(channels, wave_freq, tx_sample_rate, rx_sample_rate, tx_tune
     csnk = crimson.get_snk_s(channels, tx_sample_rate, tx_tune_request, tx_gain)
     csrc = crimson.get_src_c(channels, rx_sample_rate, rx_tune_request, rx_gain)
 
-    rx_timeout_occured = Event()
+    rx_timeout_occured = threading.Event()
 
     # Run.
     vsnk = [] # Will be extended when using stacked commands.
@@ -284,9 +283,9 @@ def manual_tune_run(channels, wave_freq, tx_sample_rate, rx_sample_rate, tx_tune
     # Prepare thread
     # Expected tx duration = start time of last burst + (length of last burst / sample rate)
     tx_duration = tx_stack[-1][0] + (tx_stack[-1][1] / tx_sample_rate)
-    tx_thread = Process(target = run_tx, args = (csnk, channels, tx_stack, tx_sample_rate, wave_freq))
+    tx_thread = multiprocessing.Process(target = run_tx, args = (csnk, channels, tx_stack, tx_sample_rate, wave_freq))
     rx_duration = rx_stack[-1][0] + (rx_stack[-1][1] / rx_sample_rate)
-    rx_thread = Process(target = run_rx, args = (csrc, channels, rx_stack, rx_sample_rate, vsnk, rx_timeout_occured))
+    rx_thread = multiprocessing.Process(target = run_rx, args = (csrc, channels, rx_stack, rx_sample_rate, vsnk, rx_timeout_occured))
 
     # Start threads
     tx_thread.start()
