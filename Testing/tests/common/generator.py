@@ -73,6 +73,16 @@ stream = os.popen('uhd_usrp_info -v')
 crimson_output = stream.read()
 #print(crimson_output)
 
+def lo_band_passband_flatness_test():
+    print(sys._getframe().f_code.co_name)
+    channels = list(range(4))
+    sample_count = int(9803922/10000)
+    tx_gain = 25
+    rx_gain = 25
+    center_freq = 15000000
+    sample_rate = 9803922
+    for wave_freq in list(range(-int(0.45*sample_rate),int(0.45*sample_rate),int(0.9*sample_rate/24))):
+        yield locals()
 
 def hi_band_wave_sweep():
 
@@ -313,6 +323,18 @@ def dump(iteration):
 
 class cyan:
     class lo_band:
+        @staticmethod
+        def passband_flatness_test():
+            print(sys._getframe().f_code.co_name)
+            channels = list(range(4))
+            sample_count = int(round(25000000/10000))
+            tx_gain = 25
+            rx_gain = 25
+            center_freq = 10000000
+            sample_rate = 9803922
+            for wave_freq in list(range(-int(0.45*sample_rate),int(0.45*sample_rate),int(0.9*sample_rate/24))):
+                yield locals()
+
         @staticmethod
         def wave_sweep():
             print(sys._getframe().f_code.co_name)
@@ -629,6 +651,18 @@ class cyan:
 
 class chestnut:
     class lo_band:
+        @staticmethod
+        def passband_flatness_test():
+            print(sys._getframe().f_code.co_name)
+            channels = list(range(4))
+            sample_count = int(round(25000000/10000))
+            tx_gain = 25
+            rx_gain = 25
+            center_freq = 10000000
+            sample_rate = 9803922
+            for wave_freq in list(range(-int(0.45*sample_rate),int(0.45*sample_rate),int(0.9*sample_rate/24))):
+                yield locals()
+
         @staticmethod
         def wave_sweep():
             print(sys._getframe().f_code.co_name)
