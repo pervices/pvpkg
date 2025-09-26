@@ -7,6 +7,7 @@ import numpy as np
 from . import crimson
 import threading
 import multiprocessing
+from multiprocessing import shared_memory
 from inspect import currentframe, getframeinfo
 import time
 import subprocess
@@ -18,7 +19,7 @@ class CustomSink:
     def __init__(self, stack):
         sample_count = sum([frame[1] for frame in stack])
         # Manage shared memory from within class
-        self.shared_memory = multiprocessing.shared_memory.SharedMemory(create=True, size=(sample_count * sys.getsizeof(complex())))
+        self.shared_memory = shared_memory.SharedMemory(create=True, size=(sample_count * sys.getsizeof(complex())))
         self.samples=np.ndarray((sample_count,), dtype=complex, buffer=self.shared_memory.buf)
     
     def __del__(self):
@@ -95,7 +96,6 @@ def run_rx(csrc, channels, stack, sample_rate, _vsnk, timeout_occured):
     # Connect.
     vsnk = [blocks.vector_sink_c() for ch in channels]
     
-
     flowgraph = gr.top_block()
     for channel_index in range(len(channels)):
         flowgraph.connect((csrc, channel_index), vsnk[channel_index])
@@ -140,27 +140,19 @@ def run_rx(csrc, channels, stack, sample_rate, _vsnk, timeout_occured):
 
 # Multiprocess is needed for the ability to terminate, but tx and rx must be in the same process as each other
 # run_helper is run as it's own process, which then spawns tx and rx threads
-def run_helper(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stack, rx_stack, sink_arr):
+def run_helper(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stack, rx_stack, sink_arr, tx_duration, rx_duration):
     rx_timeout_occured = threading.Event()
 
     vsnk = [] # Will be extended when using stacked commands.
-    tx_duration = 0
     tx_thread = None
-    rx_duration = 0
     rx_thread = None
 
     # Prepare thread
     if tx_stack != None:
-        # Expected tx duration = start time of last burst + (length of last burst / sample rate)
-        tx_duration = tx_stack[-1][0] + (tx_stack[-1][1] / sample_rate)
-
         csnk = crimson.get_snk_s(channels, sample_rate, center_freq, tx_gain)
         tx_thread = threading.Thread(target = run_tx, args = (csnk, channels, tx_stack, sample_rate, wave_freq))
 
     if rx_stack != None:
-        # Expected rx duration = start time of last burst + (length of last burst / sample rate)
-        rx_duration = rx_stack[-1][0] + (rx_stack[-1][1] / sample_rate)
-
         csrc = crimson.get_src_c(channels, sample_rate, center_freq, rx_gain)
         rx_thread = threading.Thread(target = run_rx, args = (csrc, channels, rx_stack, sample_rate, vsnk, rx_timeout_occured))
   
@@ -194,20 +186,16 @@ def run_helper(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, 
         print("\x1b[31mERROR: Timeout while waiting for sufficient rx data\x1b[0m", file=sys.stderr)
         raise Exception ("RX DATA TIMED OUT")
 
-    for i, snk in enumerate(vsnk):
-        sink_arr[i].set_data(snk.data())
+    if rx_stack != None:
+        for i, snk in enumerate(vsnk):
+            sink_arr[i].set_data(snk.data())
 
 
 def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stack, rx_stack):
     # To measure performance
     start_time = time.time()
 
-    vsnk=[CustomSink(rx_stack) for _ in channels]
-
-    # Start process to run tx and rx
-    helper_process = multiprocessing.Process(target = run_helper, args = (channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stack, rx_stack, vsnk))
-    helper_process.start()
-
+    vsnk = []
     tx_duration = 0
     rx_duration = 0
 
@@ -218,9 +206,14 @@ def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stac
 
     if rx_stack != None:
         # Expected rx duration = start time of last burst + (length of last burst / sample rate)
+        vsnk=[CustomSink(rx_stack) for _ in channels]
         rx_duration = rx_stack[-1][0] + (rx_stack[-1][1] / sample_rate)
 
-    time_limit = (tx_duration + rx_duration) + 30
+    # Start process to run tx and rx
+    helper_process = multiprocessing.Process(target = run_helper, args = (channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stack, rx_stack, vsnk, tx_duration, rx_duration))
+    helper_process.start()
+
+    time_limit = max(tx_duration, rx_duration) + 30
     # samples = data_queue.get(timeout=time_limit)
     helper_process.join(time_limit)
 
