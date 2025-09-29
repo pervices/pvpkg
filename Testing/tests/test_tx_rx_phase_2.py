@@ -196,6 +196,9 @@ def main():
 
     summary_table = [["Center Freq", "Wave Freq", "Freq Result", "Ampl Result", "Phase Result"]]
 
+    # DEBUG TIME DIFF
+    time_diff_arr = []
+
     for it in iterations:
         gen.dump(it) 
 
@@ -225,7 +228,12 @@ def main():
             rx_stack = [ (rx_burst, int(it["sample_count"]))]
 
             try:
+                start_time = time.clock_gettime(time.CLOCK_MONOTONIC)
                 vsnk = engine.run(targs.channels, it["wave_freq"], sample_rate, it["center_freq"], it["tx_gain"], it["rx_gain"], tx_stack, rx_stack)
+                end_time = time.clock_gettime(time.CLOCK_MONOTONIC)
+                time_diff = (end_time-start_time)
+                time_diff_arr.append(time_diff)
+                print("[DEBUG] Time for engine run: ", time_diff)
             except Exception as err:
                 frameinfo = getframeinfo(currentframe())
                 print("[ERROR][{}][{}]: Exception occured while streaming:\n {}".format(frameinfo.filename, frameinfo.lineno, err))
@@ -406,6 +414,12 @@ def main():
         report.buffer_put("text", " ")
         report.buffer_put("table_wide", [tuple(' ') + tuple(offset_df.columns.tolist())] + offset_df.to_records(index=True).tolist(), "Offset Data:")
         report.buffer_put("pagebreak")
+    
+    # DEBUG PRINT
+    print("VSNK ENGINE RUN TIMES:")
+    print("  Min: ", min(time_diff_arr))
+    print("  Max: ", max(time_diff_arr))
+    print("  Avg: ", sum(time_diff_arr)/len(time_diff_arr))
     
     # Add overall summary table
     report.insert_text_large("Test Overview:")
