@@ -188,7 +188,7 @@ def run_helper(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, 
 
     if rx_stack != None:
         for i, snk in enumerate(vsnk):
-            print('aaa')
+            print("aaa")
             # sink_arr[i].set_data(snk.data())
 
 
@@ -215,7 +215,6 @@ def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stac
     helper_process.start()
 
     time_limit = max(tx_duration, rx_duration) + 30
-    # samples = data_queue.get(timeout=time_limit)
     helper_process.join(time_limit)
 
     flowgraph_timeout = False
