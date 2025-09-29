@@ -23,7 +23,6 @@ def main():
         vsnk = engine.run(channel_list, it["wave_freq"], sample_rate, it["center_freq"], it["tx_gain"], it["rx_gain"], tx_stack, rx_stack)
         end_time = time.clock_gettime(time.CLOCK_MONOTONIC)
         print("[DEBUG] Time for engine run: ", (end_time-start_time))
-        for v in vsnk:
-            print(v.data())
+        
 if __name__ == '__main__':
     main()

@@ -188,14 +188,10 @@ def run_helper(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, 
 
     if rx_stack != None:
         for i, snk in enumerate(vsnk):
-            print("aaa")
-            # sink_arr[i].set_data(snk.data())
+            sink_arr[i].set_data(snk.data())
 
 
 def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stack, rx_stack):
-    # To measure performance
-    start_time = time.clock_gettime(time.CLOCK_MONOTONIC)
-
     vsnk = []
     tx_duration = 0
     rx_duration = 0
@@ -222,8 +218,6 @@ def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stac
     if(not helper_process.is_alive()):
         # If the test ran successfully
         if(helper_process.exitcode == 0):
-            end_time=time.clock_gettime(time.CLOCK_MONOTONIC)
-            print("[DEBUG] Time for engine run: ", (end_time-start_time))
             # Return collected data
             return vsnk
         else:
