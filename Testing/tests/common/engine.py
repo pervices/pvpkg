@@ -119,7 +119,6 @@ def run_rx(csrc, channels, stack, sample_rate, _vsnk, timeout_occured):
     _vsnk.extend(vsnk)
 
 def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stack, rx_stack):
-    start_time=time.time()
     rx_timeout_occured = Event()
 
     vsnk = [] # Will be extended when using stacked commands.
@@ -171,9 +170,7 @@ def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stac
     if rx_timeout_occured.is_set():
         print("\x1b[31mERROR: Timeout while waiting for sufficient rx data\x1b[0m", file=sys.stderr)
         raise Exception ("RX DATA TIMED OUT")
-    
-    end_time=time.time()
-    print("[DEBUG] Time for engine run: ", (end_time-start_time))
+
     return vsnk
 
 def manual_tune_run(channels, wave_freq, tx_sample_rate, rx_sample_rate, tx_tune_request, rx_tune_request, tx_gain, rx_gain, tx_stack, rx_stack):
