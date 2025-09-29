@@ -14,18 +14,19 @@ import subprocess
 import sys
 import datetime
 
-# 
-class CustomSink:
+# Manage shared memory for vsnk samples in multiproc.-friendly way
+class SharedSink:
     def __init__(self, stack):
+        # The shared memory size is not dynamic, so must be calculated based on the amount of samples
         sample_count = sum([frame[1] for frame in stack])
-        # Manage shared memory from within class
+        # Manage shared memory for the samples from within class
         self.shared_memory = shared_memory.SharedMemory(create=True, size=(sample_count * sys.getsizeof(complex())))
         self.samples=np.ndarray((sample_count,), dtype=complex, buffer=self.shared_memory.buf)
     
+    # Shared memory must be freed when the program is done with the object
     def __del__(self):
         self.shared_memory.close()
         self.shared_memory.unlink()
-        print("Closed and unlinked memory")
         
     def data(self):
         return self.samples
@@ -187,6 +188,7 @@ def run_helper(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, 
         raise Exception ("RX DATA TIMED OUT")
 
     if rx_stack != None:
+        # Copy samples for each channel into shared memory from SharedSink object
         for i, snk in enumerate(vsnk):
             sink_arr[i].set_data(snk.data())
 
@@ -196,20 +198,22 @@ def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stac
     tx_duration = 0
     rx_duration = 0
 
-    # Prepare thread
+    # Calculate expected duration times of threads
     if tx_stack != None:
         # Expected tx duration = start time of last burst + (length of last burst / sample rate)
         tx_duration = tx_stack[-1][0] + (tx_stack[-1][1] / sample_rate)
 
     if rx_stack != None:
+        # Create SharedSink object for each channel to hold all the samples in shared memory between processes
+        vsnk=[SharedSink(rx_stack) for _ in channels]
         # Expected rx duration = start time of last burst + (length of last burst / sample rate)
-        vsnk=[CustomSink(rx_stack) for _ in channels]
         rx_duration = rx_stack[-1][0] + (rx_stack[-1][1] / sample_rate)
 
     # Start process to run tx and rx
     helper_process = multiprocessing.Process(target = run_helper, args = (channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stack, rx_stack, vsnk, tx_duration, rx_duration))
     helper_process.start()
 
+    # Wait for helper process to finish or timeout
     time_limit = max(tx_duration, rx_duration) + 30
     helper_process.join(time_limit)
 
@@ -257,10 +261,19 @@ def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stac
         raise Exception ("Unexpected error")
 
 
+def manual_tune_run_helper(csnk, csrc):
+    print(csnk)
+    print(csrc)
+
+
 def manual_tune_run(channels, wave_freq, tx_sample_rate, rx_sample_rate, tx_tune_request, rx_tune_request, tx_gain, rx_gain, tx_stack, rx_stack):
     # Setup
     csnk = crimson.get_snk_s(channels, tx_sample_rate, tx_tune_request, tx_gain)
     csrc = crimson.get_src_c(channels, rx_sample_rate, rx_tune_request, rx_gain)
+
+    helper_process = multiprocessing.Process(target = manual_tune_run_helper, args=(csnk, csrc))
+    helper_process.start()
+    helper_process.join(10)
 
     rx_timeout_occured = threading.Event()
 
