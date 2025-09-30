@@ -84,6 +84,17 @@ def lo_band_passband_flatness_test():
     for wave_freq in list(range(-int(0.45*sample_rate),int(0.45*sample_rate),int(0.9*sample_rate/24))):
         yield locals()
 
+def lo_band_buffer_exhaust_test():
+    print(sys._getframe().f_code.co_name)
+    channels = list(range(4))
+    sample_count = int(9803922/1000 + 74000)
+    tx_gain = 25
+    rx_gain = 25
+    center_freq = 15000000
+    sample_rate = 9803922
+    for wave_freq in [ 1000000 ]:
+        yield locals()
+
 def hi_band_wave_sweep():
 
     print(sys._getframe().f_code.co_name)
@@ -333,6 +344,18 @@ class cyan:
             center_freq = 10000000
             sample_rate = 9803922
             for wave_freq in list(range(-int(0.45*sample_rate),int(0.45*sample_rate),int(0.9*sample_rate/24))):
+                yield locals()
+
+        @staticmethod
+        def buffer_exhaust_test():
+            print(sys._getframe().f_code.co_name)
+            channels = list(range(4))
+            sample_count = int(round(25000000/1000))
+            tx_gain = 40
+            rx_gain = 40
+            center_freq = 10000000      # 10MHz
+            sample_rate = 25000000      # 25MSps
+            for wave_freq in [ 1000000 ]:
                 yield locals()
 
         @staticmethod
@@ -589,7 +612,7 @@ class cyan:
         def wave_sweep():
             print(sys._getframe().f_code.co_name)
 
-            sample_count = int(round(25000000/10000))
+            sample_count = int(round(25000000))
             tx_gain = 50
             rx_gain = 50
             center_freq = 15000000000   # 15GHz
@@ -661,6 +684,18 @@ class chestnut:
             center_freq = 10000000
             sample_rate = 9803922
             for wave_freq in list(range(-int(0.45*sample_rate),int(0.45*sample_rate),int(0.9*sample_rate/24))):
+                yield locals()
+
+        @staticmethod
+        def buffer_exhaust_test():
+            print(sys._getframe().f_code.co_name)
+            channels = list(range(4))
+            sample_count = int(round(25000000))
+            tx_gain = 40
+            rx_gain = 40
+            center_freq = 10000000      # 10MHz
+            sample_rate = 14705882      # 25MSps
+            for wave_freq in [ 1000000 ]:
                 yield locals()
 
         @staticmethod
