@@ -350,7 +350,7 @@ class cyan:
         def buffer_exhaust_test():
             print(sys._getframe().f_code.co_name)
             channels = list(range(4))
-            sample_count = int(round(25000000)
+            sample_count = int(round(25000000))
             tx_gain = 40
             rx_gain = 40
             center_freq = 10000000      # 10MHz
