@@ -121,6 +121,7 @@ def run_rx(csrc, channels, stack, sample_rate, _vsnk, timeout_occured):
     print(timeout_time)
 
     print("total sample count is:", total_sample_count)
+    print(len(vsnk[0].data()))
     while len(vsnk[0].data()) < total_sample_count:
         time.sleep(0.1)
         if (time.clock_gettime(time.CLOCK_MONOTONIC) > timeout_time):
