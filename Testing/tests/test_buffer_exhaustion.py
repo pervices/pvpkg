@@ -43,8 +43,8 @@ def test(it, data):
     images = []
 
     for ch, channel in enumerate(vsnk):
-        real = [datum.real for datum in channel.data()]
-        imag = [datum.imag for datum in channel.data()]
+        real = [datum.real for datum in channel.data()[buffer_shift:]]
+        imag = [datum.imag for datum in channel.data()[buffer_shift:]]
 
         fund_real = sigproc.fundamental(real, it["sample_rate"])
         fund_imag = sigproc.fundamental(imag, it["sample_rate"])
