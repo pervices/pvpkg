@@ -153,6 +153,7 @@ def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stac
     # The data timeout is expected + 10s, make sure the control timeout is longer
     if(rx_thread != None):
         rx_thread.join(rx_duration + 20)
+        print("timeup")
 
     # Check if thread finished
     # Timeouts here indicate that something was hanging
