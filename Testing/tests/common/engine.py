@@ -124,6 +124,7 @@ def run_rx(csrc, channels, stack, sample_rate, _vsnk, timeout_occured):
     print(len(vsnk[0].data()))
     while len(vsnk[0].data()) < total_sample_count:
         time.sleep(0.1)
+        print(len(vsnk[0].data()))
         print(time.clock_gettime(time.CLOCK_MONOTONIC))
         if (time.clock_gettime(time.CLOCK_MONOTONIC) > timeout_time):
             frameinfo = getframeinfo(currentframe())
