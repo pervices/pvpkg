@@ -118,6 +118,7 @@ def run_rx(csrc, channels, stack, sample_rate, _vsnk, timeout_occured):
 
     expected_duration = stack[0][0] + (stack[0][1]/sample_rate) #stack[0][0] is start and stack[0][1] is the sample count
     timeout_time = time.clock_gettime(time.CLOCK_MONOTONIC) + expected_duration + 10
+    print(timeout_time)
 
     #print("total sample count is:", total_sample_count)
     while len(vsnk[0].data()) < total_sample_count:
@@ -130,6 +131,7 @@ def run_rx(csrc, channels, stack, sample_rate, _vsnk, timeout_occured):
             iso_time = date.strftime("%Y%m%dT%H%M%S.%fZ")
             errmsg = "[ERROR][{}:{}] - UHD failed to provide expected number of samples before RX timeout - HOSTNAME:{} - TIME:{} - UPTIME:{} - SAMPS RECEIVED:{} - SAMPS EXPECTED:{}".format(frameinfo.filename, frameinfo.lineno, hostname, iso_time, uptime, str(len(vsnk[0].data())), str(total_sample_count))
             print(errmsg)
+            print("fail here")
             timeout_occured.set()
             break
 
