@@ -107,10 +107,10 @@ if(targs.product == "Vaunt"):
     buffer_shift = 74000
     main(gen.lo_band_buffer_exhaust_test(), "Low Band")
 elif(targs.product == "Tate" or targs.product == "BasebandTate"):
-    buffer_shift = 74000
+    buffer_shift = 4700000
     main(gen.cyan.lo_band.buffer_exhaust_test(), "Low Band")
 elif(targs.product == "Lily"):
-    buffer_shift = 74000
+    buffer_shift = 4700000
     main(gen.chestnut.lo_band.buffer_exhaust_test(), "Low Band")
 else:
     print("ERROR: unrecognized product argument", file=sys.stderr)
