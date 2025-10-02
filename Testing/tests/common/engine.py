@@ -90,7 +90,7 @@ def run_rx(csrc, channels, stack, sample_rate, _vsnk, timeout_occured):
         #print(frame[0])
         cmd.time_spec = uhd.time_spec(frame[0]) #frame[0]=rx_stack[ 10.005, ] in fund_freq
         csrc.issue_stream_cmd(cmd)
-        #print("rx stack time is:", cmd.time_spec)
+        print("rx stack time is:", cmd.time_spec)
 
     # Wait for completion.
     total_sample_count = sum([frame[1] for frame in stack])
