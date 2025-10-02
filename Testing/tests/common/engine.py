@@ -2,15 +2,37 @@ from gnuradio import analog
 from gnuradio import blocks
 from gnuradio import uhd
 from gnuradio import gr
+import numpy as np
 
 from . import crimson
 import threading
-from threading import Thread, Event
+import multiprocessing
+from multiprocessing import shared_memory
 from inspect import currentframe, getframeinfo
 import time
 import subprocess
 import sys
 import datetime
+
+# Manage shared memory for vsnk samples in multiproc.-friendly way
+class SharedSink:
+    def __init__(self, stack):
+        # The shared memory size is not dynamic, so must be calculated based on the amount of samples
+        sample_count = sum([frame[1] for frame in stack])
+        # Manage shared memory for the samples from within class
+        self.shared_memory = shared_memory.SharedMemory(create=True, size=(sample_count * sys.getsizeof(complex())))
+        self.samples=np.ndarray((sample_count,), dtype=complex, buffer=self.shared_memory.buf)
+
+    # Shared memory must be freed when the program is done with the object
+    def __del__(self):
+        self.shared_memory.close()
+        self.shared_memory.unlink()
+
+    def data(self):
+        return self.samples
+
+    def set_data(self, data):
+        self.samples[:] = data
 
 def run_tx(csnk, channels, stack, sample_rate, wave_freq):
 
@@ -75,7 +97,6 @@ def run_rx(csrc, channels, stack, sample_rate, _vsnk, timeout_occured):
     # Connect.
     vsnk = [blocks.vector_sink_c() for ch in channels]
 
-
     flowgraph = gr.top_block()
     for channel_index in range(len(channels)):
         flowgraph.connect((csrc, channel_index), vsnk[channel_index])
@@ -119,29 +140,25 @@ def run_rx(csrc, channels, stack, sample_rate, _vsnk, timeout_occured):
     _vsnk.extend(vsnk)
     print("timeup")
 
-def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stack, rx_stack):
-    rx_timeout_occured = Event()
+
+# Multiprocess is needed for the ability to terminate, but tx and rx must be in the same process as each other
+# run_helper is run as it's own process, which then spawns tx and rx threads
+def run_helper(channels, wave_freq, tx_gain, rx_gain, tx_stack, rx_stack, tx_duration, rx_duration, tx_sample_rate, rx_sample_rate, tx_center_freq, rx_center_freq, sink_arr):
+    rx_timeout_occured = threading.Event()
 
     vsnk = [] # Will be extended when using stacked commands.
-    tx_duration = 0
     tx_thread = None
-    rx_duration = 0
     rx_thread = None
 
     # Prepare thread
     if tx_stack != None:
-        # Expected tx duration = start time of last burst + (length of last burst / sample rate)
-        tx_duration = tx_stack[-1][0] + (tx_stack[-1][1] / sample_rate)
+        csnk = crimson.get_snk_s(channels, tx_sample_rate, tx_center_freq, tx_gain)
+        tx_thread = threading.Thread(target = run_tx, args = (csnk, channels, tx_stack, tx_sample_rate, wave_freq))
 
-        csnk = crimson.get_snk_s(channels, sample_rate, center_freq, tx_gain)
-        tx_thread = threading.Thread(target = run_tx, args = (csnk, channels, tx_stack, sample_rate, wave_freq))
     if rx_stack != None:
-        # Expected rx duration = start time of last burst + (length of last burst / sample rate)
-        rx_duration = rx_stack[-1][0] + (rx_stack[-1][1] / sample_rate)
-
-        csrc = crimson.get_src_c(channels, sample_rate, center_freq, rx_gain)
-        rx_thread = threading.Thread(target = run_rx, args = (csrc, channels, rx_stack, sample_rate, vsnk, rx_timeout_occured))
-
+        csrc = crimson.get_src_c(channels, rx_sample_rate, rx_center_freq, rx_gain)
+        rx_thread = threading.Thread(target = run_rx, args = (csrc, channels, rx_stack, rx_sample_rate, vsnk, rx_timeout_occured))
+  
     # Start threads
     if(tx_thread != None):
         tx_thread.start()
@@ -172,46 +189,162 @@ def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stac
         print("\x1b[31mERROR: Timeout while waiting for sufficient rx data\x1b[0m", file=sys.stderr)
         raise Exception ("RX DATA TIMED OUT")
 
-    return vsnk
+    if rx_stack != None:
+        # Copy samples for each channel into shared memory from SharedSink object
+        for i, snk in enumerate(vsnk):
+            sink_arr[i].set_data(snk.data())
+
+
+def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stack, rx_stack):
+    vsnk = []
+    tx_duration = 0
+    rx_duration = 0
+
+    # Calculate expected duration times of threads
+    if tx_stack != None:
+        # Expected tx duration = start time of last burst + (length of last burst / sample rate)
+        tx_duration = tx_stack[-1][0] + (tx_stack[-1][1] / sample_rate)
+
+    if rx_stack != None:
+        # Create SharedSink object for each channel to hold all the samples in shared memory between processes
+        vsnk=[SharedSink(rx_stack) for _ in channels]
+        # Expected rx duration = start time of last burst + (length of last burst / sample rate)
+        rx_duration = rx_stack[-1][0] + (rx_stack[-1][1] / sample_rate)
+
+    # Start process to run tx and rx
+    helper_process = multiprocessing.Process(target = run_helper, kwargs = { 
+        "channels": channels,
+        "wave_freq": wave_freq,
+        "tx_gain": tx_gain,
+        "rx_gain": rx_gain,
+        "tx_stack": tx_stack,
+        "rx_stack": rx_stack,
+        "tx_duration": tx_duration,
+        "rx_duration": rx_duration,
+        "tx_sample_rate": sample_rate,
+        "rx_sample_rate": sample_rate,
+        "tx_center_freq": center_freq,
+        "rx_center_freq": center_freq,
+        "sink_arr": vsnk,
+    })
+    helper_process.start()
+
+    # Wait for helper process to finish or timeout
+    time_limit = max(tx_duration, rx_duration) + 30
+    helper_process.join(time_limit)
+
+    flowgraph_timeout = False
+    # If the process has finished
+    if(not helper_process.is_alive()):
+        # If the test ran successfully
+        if(helper_process.exitcode == 0):
+            # Return collected data
+            return vsnk
+        else:
+            # An error (probably rx data timeout) while running the flowgraph
+            print("\x1b[31mERROR: error while running flowgraph\x1b[0m", file=sys.stderr)
+            raise Exception ("flowgraph error")
+    else:
+        print("\x1b[31mERROR: Flowgraph timeout. UHD appears to be hanging forever. Issuing SIGTERM\x1b[0m", file=sys.stderr)
+        flowgraph_timeout = True
+        # Issue SIGTERM
+        helper_process.terminate()
+        # Wait for process to close
+        helper_process.join(30)
+        
+    flow_sigterm_timeout = False
+    if(helper_process.is_alive()):
+        print("\x1b[31mERROR: Flowgraph still hanging after issuing SIGTERM. Issuing SIGKILL\x1b[0m", file=sys.stderr)
+        helper_process.kill()
+        flow_sigterm_timeout = True
+        # Wait for process to close
+        helper_process.join(30)
+
+    if(helper_process.is_alive()):
+        print("\x1b[31mERROR: Flowgraph still hanging after issuing SIGKILL\x1b[0m", file=sys.stderr)
+        raise Exception ("flowgraph SIGKILL timeout")
+
+    elif(flow_sigterm_timeout):
+        raise Exception ("flowgraph SIGTERM timeout")
+
+    elif(flowgraph_timeout):
+        raise Exception ("flowgraph timeout")
+
+    # Unreachable error message in case of a mistake during the previous elif series
+    else:
+        print("\x1b[31mERROR: No valid data but no flowgraph error detected. This should be unreachable\x1b[0m", file=sys.stderr)
+        raise Exception ("Unexpected error")
+
 
 def manual_tune_run(channels, wave_freq, tx_sample_rate, rx_sample_rate, tx_tune_request, rx_tune_request, tx_gain, rx_gain, tx_stack, rx_stack):
-    # Setup
-    csnk = crimson.get_snk_s(channels, tx_sample_rate, tx_tune_request, tx_gain)
-    csrc = crimson.get_src_c(channels, rx_sample_rate, rx_tune_request, rx_gain)
-
-    rx_timeout_occured = Event()
-
-    # Run.
-    vsnk = [] # Will be extended when using stacked commands.
-
-    # Prepare thread
+    # Create SharedSink object for each channel to hold all the samples in shared memory between processes
+    vsnk=[SharedSink(rx_stack) for _ in channels]
     # Expected tx duration = start time of last burst + (length of last burst / sample rate)
     tx_duration = tx_stack[-1][0] + (tx_stack[-1][1] / tx_sample_rate)
-    tx_thread = threading.Thread(target = run_tx, args = (csnk, channels, tx_stack, tx_sample_rate, wave_freq))
     rx_duration = rx_stack[-1][0] + (rx_stack[-1][1] / rx_sample_rate)
-    rx_thread = threading.Thread(target = run_rx, args = (csrc, channels, rx_stack, rx_sample_rate, vsnk, rx_timeout_occured))
 
-    # Start threads
-    tx_thread.start()
-    rx_thread.start()
+    # Start helper process to manage tx/rx threads
+    helper_process = multiprocessing.Process(target = run_helper, kwargs = { 
+        "channels": channels,
+        "wave_freq": wave_freq,
+        "tx_gain": tx_gain,
+        "rx_gain": rx_gain,
+        "tx_stack": tx_stack,
+        "rx_stack": rx_stack,
+        "tx_duration": tx_duration,
+        "rx_duration": rx_duration,
+        "tx_sample_rate": tx_sample_rate,
+        "rx_sample_rate": rx_sample_rate,
+        "tx_center_freq": tx_tune_request,
+        "rx_center_freq": rx_tune_request,
+        "sink_arr": vsnk,
+    })
+    helper_process.start()
 
-    # Wait for thread to finish with a timeout
-    tx_thread.join(tx_duration + 10)
-    # The data timeout is expected + 10s, make sure the control timeout is longer
-    rx_thread.join(rx_duration + 20)
+    # Wait for helper process to finish or timeout
+    time_limit = max(tx_duration, rx_duration) + 30
+    helper_process.join(time_limit)
 
-    # Check if thread finished
-    # Timeouts here indicate that something was hanging
-    if(tx_thread.is_alive()):
-        print("\x1b[31mERROR: Tx flowgraph timeout\x1b[0m", file=sys.stderr)
-        raise Exception ("TX CONTROL TIMED OUT")
+    flowgraph_timeout = False
+    # If the process has finished
+    if(not helper_process.is_alive()):
+        # If the test ran successfully
+        if(helper_process.exitcode == 0):
+            # Return collected data
+            return vsnk
+        else:
+            # An error (probably rx data timeout) while running the flowgraph
+            print("\x1b[31mERROR: error while running flowgraph\x1b[0m", file=sys.stderr)
+            raise Exception ("flowgraph error")
+    else:
+        print("\x1b[31mERROR: Flowgraph timeout. UHD appears to be hanging forever. Issuing SIGTERM\x1b[0m", file=sys.stderr)
+        flowgraph_timeout = True
+        # Issue SIGTERM
+        helper_process.terminate()
+        # Wait for process to close
+        helper_process.join(30)
+        
+    flow_sigterm_timeout = False
+    if(helper_process.is_alive()):
+        print("\x1b[31mERROR: Flowgraph still hanging after issuing SIGTERM. Issuing SIGKILL\x1b[0m", file=sys.stderr)
+        helper_process.kill()
+        flow_sigterm_timeout = True
+        # Wait for process to close
+        helper_process.join(30)
 
-    if(rx_thread.is_alive()):
-        print("\x1b[31mERROR: Rx flowgraph timeout\x1b[0m", file=sys.stderr)
-        raise Exception ("RX CONTROL TIMED OUT")
+    if(helper_process.is_alive()):
+        print("\x1b[31mERROR: Flowgraph still hanging after issuing SIGKILL\x1b[0m", file=sys.stderr)
+        raise Exception ("flowgraph SIGKILL timeout")
 
-    if rx_timeout_occured.is_set():
-        print("\x1b[31mERROR: Timeout while waiting for sufficient rx data\x1b[0m", file=sys.stderr)
-        raise Exception ("RX TIMED OUT")
+    elif(flow_sigterm_timeout):
+        raise Exception ("flowgraph SIGTERM timeout")
 
-    return vsnk
+    elif(flowgraph_timeout):
+        raise Exception ("flowgraph timeout")
+
+    # Unreachable error message in case of a mistake during the previous elif series
+    else:
+        print("\x1b[31mERROR: No valid data but no flowgraph error detected. This should be unreachable\x1b[0m", file=sys.stderr)
+        raise Exception ("Unexpected error")
+
+
