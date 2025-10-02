@@ -96,7 +96,10 @@ def test(it, data):
 
 def main(iterations, desc):
     data  = [["Centre Freq", "Wave Freq", "Channel", "Result"]]
+    global attempt_num
+
     for it in iterations:
+        attempt_num = 0
         test(it, data)
     summary_tables.append([desc, data])
 
