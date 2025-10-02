@@ -131,7 +131,6 @@ def run_rx(csrc, channels, stack, sample_rate, _vsnk, timeout_occured):
             iso_time = date.strftime("%Y%m%dT%H%M%S.%fZ")
             errmsg = "[ERROR][{}:{}] - UHD failed to provide expected number of samples before RX timeout - HOSTNAME:{} - TIME:{} - UPTIME:{} - SAMPS RECEIVED:{} - SAMPS EXPECTED:{}".format(frameinfo.filename, frameinfo.lineno, hostname, iso_time, uptime, str(len(vsnk[0].data())), str(total_sample_count))
             print(errmsg)
-            print("fail here")
             timeout_occured.set()
             break
 
@@ -196,7 +195,6 @@ def run_helper(channels, wave_freq, tx_gain, rx_gain, tx_stack, rx_stack, tx_dur
         for i, snk in enumerate(vsnk):
             sink_arr[i].set_data(snk.data())
 
-
 def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stack, rx_stack):
     vsnk = []
     tx_duration = 0
@@ -234,7 +232,7 @@ def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stac
     # Wait for helper process to finish or timeout
     time_limit = max(tx_duration, rx_duration) + 30
     helper_process.join(time_limit)
-
+    print(helper_process.exitcode)
     flowgraph_timeout = False
     # If the process has finished
     if(not helper_process.is_alive()):
