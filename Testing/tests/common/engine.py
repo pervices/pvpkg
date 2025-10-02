@@ -176,14 +176,17 @@ def run_helper(channels, wave_freq, tx_gain, rx_gain, tx_stack, rx_stack, tx_dur
     if(rx_thread != None):
         rx_thread.join(rx_duration + 20)
 
+
     # Check if thread finished
     # Timeouts here indicate that something was hanging
     if(tx_thread != None):
+        print(tx_thread.is_alive())
         if(tx_thread.is_alive()):
             print("\x1b[31mERROR: Tx flowgraph timeout\x1b[0m")
             raise Exception ("TX CONTROL TIMED OUT")
 
     if(rx_thread != None):
+        print(rx_thread.is_alive())
         if(rx_thread.is_alive()):
             print("\x1b[31mERROR: Rx flowgraph timeout\x1b[0m")
             raise Exception ("RX CONTROL TIMED OUT")
