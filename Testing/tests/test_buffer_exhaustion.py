@@ -16,10 +16,7 @@ report = pdf_report.ClassicShipTestReport("buffer_exhaustion", targs.serial, tar
 test_fail = 0
 summary_tables = []
 buffer_shift = 0
-max_attempts = 1
-attempt_num = 0
 
-@retry(stop_max_attempt_number = 1)
 def test(it, data):
     global test_fail
     test_dnf = False
@@ -34,10 +31,7 @@ def test(it, data):
         vsnk = engine.run(targs.channels, it["wave_freq"], it["sample_rate"], it["center_freq"], it["tx_gain"], it["rx_gain"], tx_stack, rx_stack)
     except Exception as err:
         test_fail = 1
-        if attempt_num < max_attempts:
-            raise
-        else:
-            test_dnf = True
+        test_dnf = True
 
     center_freq = "{:.1e}".format(it["center_freq"])
     wave_freq = "{:.1e}".format(it["wave_freq"])
@@ -50,7 +44,7 @@ def test(it, data):
     report.buffer_put("text", " ")
     images = []
 
-    if attempt_num >= max_attempts and test_dnf:
+    if test_dnf:
         data.append([str(center_freq), str(wave_freq), "DNF", "fail"])
         report.buffer_put("pagebreak")
         return data
@@ -96,10 +90,8 @@ def test(it, data):
 
 def main(iterations, desc):
     data  = [["Centre Freq", "Wave Freq", "Channel", "Result"]]
-    global attempt_num
 
     for it in iterations:
-        attempt_num = 0
         test(it, data)
     summary_tables.append([desc, data])
 
