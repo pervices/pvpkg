@@ -402,8 +402,8 @@ class cyan:
             sample_rate = 25000000
             # Use 5000 samples to have a more accurate frequency estimate
             sample_count = int(round(sample_rate/10000*2))
-            tx_gain = 30
-            rx_gain = 10
+            tx_gain = 20
+            rx_gain = 28
             center_freq = 100000000     # 100MHz
             wave_freq = 500000
             yield locals()
