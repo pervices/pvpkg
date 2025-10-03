@@ -241,7 +241,7 @@ def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stac
     time_limit = max(tx_duration, rx_duration) + 30
     print("time limit is : {}".format(time_limit))
     helper_process.join(time_limit)
-    print("this is the exitcode for process: {}, process is alive? {}".format(helper_process.exitcode, helper_process.is_alive())
+    print("this is the exitcode for process: {}, process is alive? {}".format(helper_process.exitcode, helper_process.is_alive()))
     flowgraph_timeout = False
     # If the process has finished
     if(not helper_process.is_alive()):
