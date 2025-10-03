@@ -200,7 +200,7 @@ def run_helper(channels, wave_freq, tx_gain, rx_gain, tx_stack, rx_stack, tx_dur
     if rx_stack != None:
         print(rx_stack)
         # Copy samples for each channel into shared memory from SharedSink object
-        print("length of vsnk {}".format(len(vsnk)))
+        print("length of vsnk {}".format(len(vsnk[0].data())))
         for i, snk in enumerate(vsnk):
             sink_arr[i].set_data(snk.data())
             print("iteration: {}".format(i))
@@ -240,7 +240,7 @@ def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stac
     helper_process.start()
 
     # Wait for helper process to finish or timeout
-    time_limit = max(tx_duration, rx_duration) + 30
+    time_limit = max(tx_duration, rx_duration) + 50
     print("time limit is : {}".format(time_limit))
     helper_process.join(time_limit)
     print("this is the exitcode for process: {}, process is alive? {}".format(helper_process.exitcode, helper_process.is_alive()))
