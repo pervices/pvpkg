@@ -192,10 +192,11 @@ def run_helper(channels, wave_freq, tx_gain, rx_gain, tx_stack, rx_stack, tx_dur
             raise Exception ("RX CONTROL TIMED OUT")
 
     # A timeout here means insufficent data was received
+    print(rx_timeout_occured)
     if rx_timeout_occured.is_set():
         print("\x1b[31mERROR: Timeout while waiting for sufficient rx data\x1b[0m")
         raise Exception ("RX DATA TIMED OUT")
-
+    print(rx_stack)
     if rx_stack != None:
         # Copy samples for each channel into shared memory from SharedSink object
         for i, snk in enumerate(vsnk):
