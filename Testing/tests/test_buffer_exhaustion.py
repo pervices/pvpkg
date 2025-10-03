@@ -21,8 +21,6 @@ def test(it, data):
     global test_fail
     test_dnf = False
     gen.dump(it)
-    global attempt_num
-    attempt_num += 1
 
 
     tx_stack = [ (5.0, it["sample_count"]) ] # One seconds worth.
