@@ -201,6 +201,7 @@ def run_helper(channels, wave_freq, tx_gain, rx_gain, tx_stack, rx_stack, tx_dur
         # Copy samples for each channel into shared memory from SharedSink object
         for i, snk in enumerate(vsnk):
             sink_arr[i].set_data(snk.data())
+            print(sink_arr[i])
 
 def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stack, rx_stack):
     vsnk = []
