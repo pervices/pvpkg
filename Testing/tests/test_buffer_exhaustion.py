@@ -31,7 +31,7 @@ def test(it, data):
     tx_stack = [ (5.0, it["sample_count"]) ] # One seconds worth.
     rx_stack = [ (5.0, int(it["sample_count"]) ) ]
     try:
-        vsnk = engine.run(targs.channels, it["wave_freq"], it["sample_rate"], it["center_freq"], it["tx_gain"], it["rx_gain"], tx_stack[buffer_shift:], rx_stack[buffer_shift:])
+        vsnk = engine.run(targs.channels, it["wave_freq"], it["sample_rate"], it["center_freq"], it["tx_gain"], it["rx_gain"], tx_stack, rx_stack)
     except Exception as err:
         test_fail = 1
         if attempt_num < max_attempts:

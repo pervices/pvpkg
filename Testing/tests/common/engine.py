@@ -72,7 +72,7 @@ def run_tx(csnk, channels, stack, sample_rate, wave_freq):
         # Run.
         csnk.set_start_time(uhd.time_spec(frame[0])) #frame[0]= tx_stack[10, ] in fund_freq test
         flowgraph.run()
-        #print("tx time spec is:", uhd.time_spec(frame[0]))
+        print("tx time spec is:", uhd.time_spec(frame[0]))
         for hed in heds:
             hed.reset()
 
@@ -116,7 +116,7 @@ def run_rx(csrc, channels, stack, sample_rate, _vsnk, timeout_occured):
     # Wait for completion.
     total_sample_count = sum([frame[1] for frame in stack])
 
-    expected_duration = stack[0][0] + (stack[0][1]/sample_rate) #stack[0][0] is start and stack[0][1] is the sample count
+    expected_duration = stack[-1][0] + (stack[-1][1]/sample_rate) #stack[0][0] is start and stack[0][1] is the sample count
     timeout_time = time.clock_gettime(time.CLOCK_MONOTONIC) + expected_duration + 10
     print(timeout_time)
 
@@ -239,6 +239,7 @@ def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stac
 
     # Wait for helper process to finish or timeout
     time_limit = max(tx_duration, rx_duration) + 30
+    print("time limit is : {}".format(time_limit))
     helper_process.join(time_limit)
     print(helper_process.exitcode)
     flowgraph_timeout = False
