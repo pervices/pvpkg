@@ -24,7 +24,7 @@ def test(it, data):
 
 
     tx_stack = [ (5.0, it["sample_count"]) ] # One seconds worth.
-    rx_stack = [ (5.0 + (buffer_shift/sample_rate), int(it["sample_count"]-buffer_shift) ) ]
+    rx_stack = [ (5.0 + (buffer_shift/int(it["sample_rate"]), int(it["sample_count"]-buffer_shift) ) ]
     try:
         vsnk = engine.run(targs.channels, it["wave_freq"], it["sample_rate"], it["center_freq"], it["tx_gain"], it["rx_gain"], tx_stack, rx_stack)
     except Exception as err:
