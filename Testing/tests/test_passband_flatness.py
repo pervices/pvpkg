@@ -69,6 +69,7 @@ def main(iterations, desc):
     for it in iterations:
         test(it, data)
 
+    global test_fail
     passband_flat = []
     test_info_channel_diff = []
 
@@ -101,7 +102,7 @@ def main(iterations, desc):
             passband_flat.append("Pass")
         else:
             print("INFO: Channel {} failed passband test with a difference of {}".format(ch, channel_diff), file=sys.stderr)
-            test_fail = 10+ch #Set fail value to 10 + the channel that fails for easy debugging of error code
+            test_fail = 10 + int(ch) #Set fail value to 10 + the channel that fails for easy debugging of error code
             passband_flat.append("Fail")
 
     test_info = [["Channel Peak Information (dB):","A","B","C","D", "Wave Frequency (Hz)"]]
