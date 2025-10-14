@@ -30,7 +30,7 @@ import argparse
 num_output_waves =1 #depends what plots look like
 begin_cutoff_waves = 1 #0.00000425 #e(-5) - guessed from previous diagrams (but seconds)
 tx_burst = 5.0 #burst should be slightly delayed to ensure all data is being collected
-rx_burst = 5.01
+rx_burst = 5.0
 
 std_ratio = 4  #number std gets multiplied by for checks, normalized to a sample size of 10
                #This value is adjusted later depending on the number of runs.
@@ -126,7 +126,7 @@ def makePlots(x_time, real_data, best_fit_data, offset_data, wave_freq, sample_r
         row = 0
         for ch in range(len(targs.channels)):
             subplot_row = int(ch / 2)
-            subPlot(x_time[0:plotted_samples], real_data[run][ch][0:plotted_samples], axes[subplot_row][ch%2], best_fit_data[run][ch][0:plotted_samples], offset_data[run][ch], "Channel {}".format(channel_map[targs.channels[ch]]))
+            subPlot(x_time[20:plotted_samples], real_data[run][ch][20:plotted_samples], axes[subplot_row][ch%2], best_fit_data[run][ch][20:plotted_samples], offset_data[run][ch], "Channel {}".format(channel_map[targs.channels[ch]]))
 
         plt.tight_layout(pad=0.4, w_pad=0.5, h_pad=1.0) #Formatting the plots nicely
 
@@ -145,11 +145,11 @@ def makePlots(x_time, real_data, best_fit_data, offset_data, wave_freq, sample_r
 
         #dots
         for ch in range(len(targs.channels)):
-            plt.plot(x_time[0:plotted_samples], real_data[run][ch][0:plotted_samples], '.', markersize=3, label="Real {}".format(channel_map[targs.channels[ch]]))
+            plt.plot(x_time[20:plotted_samples], real_data[run][ch][20:plotted_samples], '.', markersize=3, label="Real {}".format(channel_map[targs.channels[ch]]))
 
         #Best fits
         for ch in range(len(targs.channels)):
-            plt.plot(x_time[0:plotted_samples], best_fit_data[run][ch][0:plotted_samples], '-', linewidth= 0.75, label="Best Fit {}".format(channel_map[targs.channels[ch]]))
+            plt.plot(x_time[20:plotted_samples], best_fit_data[run][ch][20:plotted_samples], '-', linewidth= 0.75, label="Best Fit {}".format(channel_map[targs.channels[ch]]))
 
         plt.legend()
 
