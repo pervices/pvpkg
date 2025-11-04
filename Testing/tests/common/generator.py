@@ -226,7 +226,7 @@ def hi_band_gain_rx():
 def lo_band_phaseCoherency():
     print(sys._getframe().f_code.co_name)
     sample_rate = 25000000
-    sample_count = int(round(sample_rate/10000))
+    sample_count = int(round(sample_rate/1000))
     tx_gain = 25
     rx_gain = 25
     sample_rate = 25000000
