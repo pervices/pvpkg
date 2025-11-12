@@ -3,6 +3,7 @@ from common import engine
 from common import generator as gen
 from common import pdf_report
 from common import test_args
+from common import log
 
 import matplotlib.pyplot as plt
 from scipy.optimize import curve_fit
@@ -93,7 +94,8 @@ def bestFit(x, y, wave_freq):
         param, covariance  = curve_fit(waveEquation, x, y, p0=guess)
     except:
         frameinfo = getframeinfo(currentframe())
-        print("[ERROR][{}][{}]: Failed to fit curve to data.".format(frameinfo.filename, frameinfo.lineno))
+        component = "{}:{}".format(frameinfo.filename, frameinfo.lineno)
+        log.pvpkg_log_error("RX_PHASE_2", "Failed to fit curve to data.")
         return (0, 0), (0, 0, 0)
     fit_amp = abs(param[0])
     fit_freq = param[1]
@@ -159,7 +161,7 @@ def makePlots(x_time, real_data, best_fit_data, offset_data, wave_freq, sample_r
         img2 = report.get_image_from_io_stream(s2)
 
         report.buffer_put("image_double", [img1, img2], "Run " + str(run))
-        print("Run figure has been put in buffer")
+        log.pvpkg_log_info("RX_PHASE_2", "Run figure has been put in buffer")
         plt.clf()
 
 def boolToWord(word):
@@ -182,7 +184,7 @@ def main():
     if(targs.product == 'Tate'):
         iterations = gen.cyan.lo_band.phaseCoherencyAllBands()
     else:
-        print("ERROR: RX phase coherency test is currently only supported for Cyan units.")
+        log.pvpkg_log_error("RX_PHASE_2", "RX phase coherency test is currently only supported for Cyan units.")
         sys.exit(1)
 
     channel_list = channel_map[targs.channels].tolist()
@@ -194,7 +196,7 @@ def main():
     for it in iterations:
         # Prompt the user with the frequency of the signal to inject
         siggen_freq = it["wave_freq"] + it["center_freq"]
-        print("Connect {} MHz signal to each RX channel.".format(siggen_freq/1000000))
+        log.pvpkg_log_info("RX_PHASE_2", "Connect {} MHz signal to each RX channel.".format(siggen_freq/1000000))
         input("Press Enter to continue...")
 
         gen.dump(it) 
@@ -214,7 +216,7 @@ def main():
         sample_count = int(it["sample_count"])
         wave_freq = int(it["wave_freq"])
         for run in range(num_runs):
-            print("Beginning run {}/{}".format(run, num_runs - 1))
+            log.pvpkg_log_info("RX_PHASE_2", "Beginning run {}/{}".format(run, num_runs - 1))
             '''
             Note how each step of time is equiv to 1/sample_rate
             When you reach sample_rate/sample_rate, one second has passed.
@@ -228,7 +230,9 @@ def main():
                 vsnk = engine.run(targs.channels, it["wave_freq"], sample_rate, it["center_freq"], it["tx_gain"], it["rx_gain"], tx_stack, rx_stack)
             except Exception as err:
                 frameinfo = getframeinfo(currentframe())
-                print("[ERROR][{}][{}]: Exception occured while streaming:\n {}".format(frameinfo.filename, frameinfo.lineno, err))
+                component = "{}:{}".format(frameinfo.filename, frameinfo.lineno)
+                message = "Exception occured while streaming:\n {}".format(err)
+                log.pvpkg_log_error(component, message)
                 report.draw_from_buffer()
                 report.save()
                 sys.exit(1)
@@ -310,20 +314,22 @@ def main():
         global std_ratio
         alt_std_ratio = math.sqrt(num_runs)
         if alt_std_ratio > std_ratio:
-            print("Replacing old std_ratio (=" + str(std_ratio) + ") with updated str_ratio (="+ str(alt_std_ratio) + ") due to iteration count.")
+            log.pvpkg_log_info("RX_PHASE_2", "Replacing old std_ratio (=" + str(std_ratio) + ") with updated str_ratio (="+ str(alt_std_ratio) + ") due to iteration count.")
             std_ratio = alt_std_ratio
 
         # Increase the std_ratio_phase if the number of iterations implies a substantially smaller std_deviation
         global std_ratio_phase
         alt_std_ratio = math.sqrt(num_runs)
         if alt_std_ratio > std_ratio_phase:
-            print("Replacing old std_ratio_phase (=" + str(std_ratio) + ") with updated std_ratio_phase (="+ str(alt_std_ratio) + ") due to iteration count.")
+            log.pvpkg_log_info("RX_PHASE_2", "Replacing old std_ratio_phase (=" + str(std_ratio) + ") with updated std_ratio_phase (="+ str(alt_std_ratio) + ") due to iteration count.")
             std_ratio_phase = alt_std_ratio
 
         # Basic test to check if signal is present on our baseline channel. 
         if wave_freq - (std_ratio * freq_std_thresh) < freq_df.loc['mean'][channel_list[0]] < wave_freq + (std_ratio * freq_std_thresh):
             frameinfo = getframeinfo(currentframe())
-            print("[ERROR][{}][{}]: Signal not detected on Ch{}".format(frameinfo.filename, frameinfo.lineno, channel_list[0]))
+            component = "{}:{}".format(frameinfo.filename, frameinfo.lineno)
+            message = "Signal not detected on Ch{}".format(channel_list[0])
+            log.pvpkg_log_error(component, message)
 
         # Get test results for min, max, and stddev for freq, ampl, and phase
         result_cols = ['Test', 'Criteria'] + channel_list
@@ -367,18 +373,21 @@ def main():
         summary_table.append([it["center_freq"], it["wave_freq"], boolToWord(freq_overall_res), boolToWord(ampl_overall_res), boolToWord(phase_overall_res)])
 
         # Print data and results table to console
-        print("\nFrequency Data:")
-        print(freq_df.to_markdown(index=True))
-        print("\nAmplitude Data:")
-        print(ampl_df.to_markdown(index=True))
-        print("\nPhase Data:")
-        print(phase_df.to_markdown(index=True))
-        print("\nFrequency Results:")
-        print(freq_res.to_markdown(index=False))
-        print("\nAmplitude Results:")
-        print(ampl_res.to_markdown(index=False))
-        print("\nPhase Results:")
-        print(phase_res.to_markdown(index=False))
+        message = ("\nFrequency Data:"
+            freq_df.to_markdown(index=True)
+            "\nAmplitude Data:\n"
+            ampl_df.to_markdown(index=True)
+            "\nPhase Data:\n"
+            phase_df.to_markdown(index=True)
+            "\nFrequency Results:\n"
+            freq_res.to_markdown(index=False)
+            "\nAmplitude Results:\n"
+            ampl_res.to_markdown(index=False)
+            "\nPhase Results:\n"
+            phase_res.to_markdown(index=False)
+            "\n"
+        )
+        log.pvpkg_log_info("RX_PHASE_2", message)
 
         # Add plots to the report
         makePlots(x_time, reals, best_fits, offsets, wave_freq, sample_rate)

@@ -129,7 +129,7 @@ def run_rx(csrc, channels, stack, sample_rate, _vsnk, timeout_occured):
             uptime = subprocess.run(["cat /proc/uptime"], shell=True, capture_output=True, text=True).stdout
             date = datetime.datetime.now() #current date and time
             iso_time = date.strftime("%Y%m%dT%H%M%S.%fZ")
-            component = "[{}:{}]".format(frameinfo.filename, frameinfo.lineno)
+            component = "{}:{}".format(frameinfo.filename, frameinfo.lineno)
             errmsg = "UHD failed to provide expected number of samples before RX timeout - HOSTNAME:{} - TIME:{} - UPTIME:{} - SAMPS RECEIVED:{} - SAMPS EXPECTED:{}".format(hostname, iso_time, uptime, str(len(vsnk[0].data())), str(total_sample_count))
             log.pvpkg_log_error(component, errmsg)
             timeout_occured.set()
@@ -271,7 +271,7 @@ def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stac
 
     # Unreachable error message in case of a mistake during the previous elif series
     else:
-        print("\x1b[31mERROR: No valid data but no flowgraph error detected. This should be unreachable\x1b[0m", file=sys.stderr)
+        log.pvpkg_log_error("ENGINE", "No valid data but no flowgraph error detected. This should be unreachable")
         raise Exception ("Unexpected error")
 
 
@@ -313,10 +313,10 @@ def manual_tune_run(channels, wave_freq, tx_sample_rate, rx_sample_rate, tx_tune
             return vsnk
         else:
             # An error (probably rx data timeout) while running the flowgraph
-            print("\x1b[31mERROR: error while running flowgraph\x1b[0m", file=sys.stderr)
+            log.pvpkg_log_error("ENGINE", "Error while running flowgraph")
             raise Exception ("flowgraph error")
     else:
-        print("\x1b[31mERROR: Flowgraph timeout. UHD appears to be hanging forever. Issuing SIGTERM\x1b[0m", file=sys.stderr)
+        log.pvpkg_log_error("ENGINE", "Flowgraph timeout. UHD appears to be hanging forever. Issuing SIGTERM")
         flowgraph_timeout = True
         # Issue SIGTERM
         helper_process.terminate()
@@ -325,14 +325,14 @@ def manual_tune_run(channels, wave_freq, tx_sample_rate, rx_sample_rate, tx_tune
         
     flow_sigterm_timeout = False
     if(helper_process.is_alive()):
-        print("\x1b[31mERROR: Flowgraph still hanging after issuing SIGTERM. Issuing SIGKILL\x1b[0m", file=sys.stderr)
+        log.pvpkg_log_error("ENGINE", "Flowgraph still hanging after issuing SIGTERM. Issuing SIGKILL")
         helper_process.kill()
         flow_sigterm_timeout = True
         # Wait for process to close
         helper_process.join(30)
 
     if(helper_process.is_alive()):
-        print("\x1b[31mERROR: Flowgraph still hanging after issuing SIGKILL\x1b[0m", file=sys.stderr)
+        log.pvpkg_log_error("ENGINE", "Flowgraph still hanging after issuing SIGKILL")
         raise Exception ("flowgraph SIGKILL timeout")
 
     elif(flow_sigterm_timeout):
@@ -343,7 +343,7 @@ def manual_tune_run(channels, wave_freq, tx_sample_rate, rx_sample_rate, tx_tune
 
     # Unreachable error message in case of a mistake during the previous elif series
     else:
-        print("\x1b[31mERROR: No valid data but no flowgraph error detected. This should be unreachable\x1b[0m", file=sys.stderr)
+        log.pvpkg_log_error("ENGINE", "No valid data but no flowgraph error detected. This should be unreachable")
         raise Exception ("Unexpected error")
 
 

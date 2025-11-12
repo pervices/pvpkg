@@ -13,6 +13,7 @@ from common import sigproc
 from common import engine
 from common import generator as gen
 from common import crimson
+from common import log
 from retrying import retry
 import numpy as np
 import matplotlib.pyplot as plt
@@ -37,7 +38,7 @@ import math
 
 CF_table=["CF_50000000_", "CF_300000000_", "CF_600000000_", "CF_1200000000_", "CF_2400000000_", "CF_4000000000_", "CF_5000000000_", "CF_5500000000_"] #from generator program TODO: have this automatically taken from gen file
 #CF_table=str(gen.Shiptest_Crimson1.center_freq_list) ###TODO: get this automatically. NEED THE 'CF'??
-print('the CF table is', CF_table)
+log.pvpkg_log_info("NEW_FILE_PARSE", 'the CF table is', CF_table)
 wave_freq_array=[]
 center_freq_array=[]
 IQ_array_2=[] #array of IQ grouped in 4 Channels of same center frequency
@@ -153,9 +154,9 @@ os.chdir(output_path1)
 x=0
 #for c,f in zip(center_freq_array_2,channels_array_2):
 for I, Q in zip(I_array_2, Q_array_2):
-    print(x)
-    print(center_freq_array_2[x][0],center_freq_array_2[x][1])
-    print(channels_array_2[x][0],channels_array_2[x][1])
+    log.pvpkg_log_info("NEW_FILE_PARSE", x)
+    log.pvpkg_log_info("NEW_FILE_PARSE", "{}{}".format(center_freq_array_2[x][0],center_freq_array_2[x][1]))
+    log.pvpkg_log_info("NEW_FILE_PARSE", "{}{}".format(channels_array_2[x][0],channels_array_2[x][1]))
     #print(c,f)
     
     plt.figure(1)
@@ -342,7 +343,7 @@ for i, j in zip(peaks_fx_array, peaks_fy_array):
     for a, b in zip(i,j):
         maxim=np.real(max(b))
         index, =np.where(b==maxim)
-        print('the value 0 is', str(a[index]),maxim)
+        log.pvpkg_log_info("NEW_FILE_PARSE", 'the value 0 is'+str(a[index])+maxim)
         peak_x.append(np.ndarray.item((a[index])))
         peak_y.append(maxim)
         
@@ -526,12 +527,12 @@ for i in max_fy_peaks:
     if np.logical_and(i <= min_fy + 5, i >= max_fy - 5).all():
         test_out_pass=("Center Peaks= {}. \n FFT peak of all channels are within 5dB of one another, PASS".format(np.real(i)))
         test_info.append(test_out_pass)
-        print(str(test_out_pass))
+        log.pvpkg_log_info("NEW_FILE_PARSE", str(test_out_pass))
 
     else:
         test_out_fail=("Center Peaks= {}.FFT peak of all channels are NOT within 5dB of one another, FAIL".format(np.real(i)))
         test_info.append(test_out_fail)
-        print(str(test_out_fail))
+        log.pvpkg_log_info("NEW_FILE_PARSE", str(test_out_fail))
             
 output_path5=path +'/version_info'
 os.makedirs(output_path5, exist_ok=True)
@@ -628,7 +629,7 @@ files = [os.path.join(time_plots_path, f) for f in files] # add path to each fil
 
 i=0
 for file in sorted(files):
-    print("the file being procesed is:",file)
+    log.pvpkg_log_info("NEW_FILE_PARSE", "the file being procesed is:",file)
     fig, ax = plt.subplots(figsize=(8.5, 11))
     plt.axis('off')
     logo= Image.open('/home/jade/Desktop/dump_20220805153333.187244/pv-logo.png')
@@ -657,7 +658,7 @@ files = [os.path.join(FFT_plots_path, f) for f in files] # add path to each file
 
 i=0
 for file in sorted(files):
-    print("the file being procesed is:",file)
+    log.pvpkg_log_info("NEW_FILE_PARSE", "the file being procesed is:",file)
     fig, ax = plt.subplots(figsize=(8.5, 11))
     plt.axis('off')
     logo= Image.open('/home/jade/Desktop/dump_20220805153333.187244/pv-logo.png')
@@ -685,7 +686,7 @@ files = [os.path.join(peaks_table_path, f) for f in files] # add path to each fi
 
 i=0
 for file in sorted(files):
-    print("the file being procesed is:",file)
+    log.pvpkg_log_info("NEW_FILE_PARSE", "the file being procesed is:",file)
     fig, ax = plt.subplots(figsize=(8.5, 11))
     plt.axis('off')
     logo= Image.open('/home/jade/Desktop/dump_20220805153333.187244/pv-logo.png')

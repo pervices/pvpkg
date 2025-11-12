@@ -1,6 +1,7 @@
 import argparse
 import sys
 from inspect import currentframe, getframeinfo
+from . import log
 
 class TestArgs:
     serial = None
@@ -22,11 +23,13 @@ class TestArgs:
         self.serial = args.serial
         if len(args.channels) > 8 or len(args.channels) < 1:
             frameinfo = getframeinfo(currentframe())
-            print("[ERROR][{}][{}]: Channels list must contain between 1 and 8 channels".format(frameinfo.filename, frameinfo.lineno))
+            component = "{}:{}".format(frameinfo.filename, frameinfo.lineno)
+            log.pvpkg_log_error(component, "Channels list must contain between 1 and 8 channels.")
             sys.exit(1)
         if len(args.channels) != len(set(args.channels)):
             frameinfo = getframeinfo(currentframe())
-            print("[ERROR][{}][{}]: Channels list must contain unique elements.".format(frameinfo.filename, frameinfo.lineno))
+            component = "{}:{}".format(frameinfo.filename, frameinfo.lineno)
+            log.pvpkg_log_error(component, "Channels list must contain unique elements.")
         else:
             self.channels = args.channels
         
@@ -39,7 +42,7 @@ class TestArgs:
         elif args.product == 'l':
             self.product = "Lily"
         else:
-            print("Value of product argument must either be 'v' for vaunt, 't'for tate, 'b' for baseband tate, or 'l' for lily")
+            log.pvpkg_log_error("TEST_ARGS", "Value of product argument must either be 'v' for vaunt, 't'for tate, 'b' for baseband tate, or 'l' for lily")
             sys.exit(1)
 
         self.report_dir = args.output
