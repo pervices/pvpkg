@@ -413,7 +413,8 @@ def titlePage(pdf):
             pg_num.textLine(text=("Page " + str(page_count) + " of " + str(page_total)))
             pdf.drawText(pg_num)
 
-        start, end = z*4, (z*4)+4 #only have to be calculated once
+        #Splits the plots up to maximum 4 per page
+        start, end = z*4, min((z*4)+4,num_channels) #only have to be calculated once
 
         #Adding Tx Board Table
         board_info = [["TX Board Information: "], ["Board"], ["Branch"], ["Revision"], ["Date"], ["MCU Serial"], ["Fuse 00"], ["Fuse 02"], ["Fuse 03"], ["GCC"], ["Board Serial"]]
@@ -902,7 +903,7 @@ def main(iterations):
             plt.yticks([])
 
             #Variables to allow for flexibilty in the code
-            start, end = z*4,(z*4)+4
+            start, end = z*4,min((z*4)+4,num_channels)
             ax_st, ax_end = 0, 15
 
             #The actual plotting of the graphs
@@ -958,7 +959,7 @@ def main(iterations):
         axis.clear()
         for z in range(graph_max):
             #Splits the plots up to maximum 4 per page
-            start, end = z*4,(z*4)+4
+            start, end = z*4,min((z*4)+4,num_channels)
             ax_st, ax_end = 0, 15
             #Plotting the individual FFT Plots
             plt.suptitle("Individual Channels' FFTs for Run {}".format(counter))
@@ -1038,7 +1039,8 @@ def main(iterations):
             pdf.showPage() #Page break on pdf
             page_count += 1
             topOfPage(pdf, str(counter))
-            start, end = z*4, (z*4)+4
+            #Splits the plots up to maximum 4 per page
+            start, end = z*4,min((z*4)+4,num_channels)
 
             pdf.drawImage(IQ_plt_img[z], plot_img_pos_x, plot_img_pos_y, plot_img_width, plot_img_height)
 
@@ -1069,7 +1071,8 @@ def main(iterations):
             pdf.showPage()
             page_count += 1
             topOfPage(pdf, str(counter))
-            start, end = z*4, (z*4)+4
+            #Splits the plots up to maximum 4 per page
+            start, end = z*4,min((z*4)+4,num_channels)
             pdf.drawImage(FFT_plt_img[z], fft_pos_x, fft_pos_y, fft_width, fft_height)
 
             #Tables stuff
@@ -1114,7 +1117,8 @@ def main(iterations):
         #Tables stuff
         for z in range(graph_max): #NOTE: It doesn't have to use graph max here, any value with the layout should be fine
             snr_x, snr_y = nf_x, nf_y - snr_height
-            start, end = z*4, (z*4)+num_channels
+            #Splits the plots up to maximum 4 per page
+            start, end = z*4,min((z*4)+4,num_channels)
             nf_table_info = [["All Noise Floor Data :"], ["Channel"],["Maximum"], ["Minimum"], ["Mean"], ["Diff to A"], ["STD"]]
             mean_a = np.mean(noise_floor[0][1])
             snr_table_info = [["Top Peak Information", "(Based on Highest SNR):"], ["Channel"], ["Location (Hz)"], ["Amplitude (dB)"], ["SNR (dBc)"]]
