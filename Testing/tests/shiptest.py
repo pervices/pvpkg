@@ -976,7 +976,7 @@ def main(iterations):
                 # Sets the y axis of each of the individual plots to be the same
                 axis[-1].set_ylim(bottom = amplYBottom, top = amplYTop, auto = False)
 
-                FFT_plots.append(subPlotFFTs(fft_x[i], fft_y[i], axis[i], title, max_fours[i], np.mean(noise_floor[1])))
+                FFT_plots.append(subPlotFFTs(fft_x[i], fft_y[i], axis[i], title, max_fours[i], np.mean(noise_floor[i])))
                 ax_st = ax_end + 2
                 ax_end = ax_st + 15
 
