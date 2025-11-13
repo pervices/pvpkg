@@ -281,10 +281,10 @@ summary_info = [] #[iteration][[freq][amplitude][snr]]
 
 #page variables
 page_count = 1
-graph_max = int(np.ceil(num_channels/4))
-multi = (graph_max > 1)
+pages_per_superplot = int(np.ceil(num_channels/4))
+multi = (pages_per_superplot > 1)
 #Page total based on the unit your testing
-page_total = ((2*graph_max)+2)*(8*(product == 'V' or product == 'v') + 6*(product == 'T' or product == 't') + 6*(product == 'L' or product == 'l')) + 6*(product == 'B' or product == 'b') + graph_max
+page_total = ((2*pages_per_superplot)+2)*(8*(product == 'V' or product == 'v') + 6*(product == 'T' or product == 't') + 6*(product == 'L' or product == 'l')) + 6*(product == 'B' or product == 'b') + pages_per_superplot
 
 
 #Adding logo - more efficent to just initialize at beginning
@@ -397,7 +397,7 @@ def titlePage(pdf):
     board_table.drawOn(pdf, board_x, board_y)
     board_y -= rowHeight*11
 
-    for z in range(graph_max): #This ensures theres columns per page
+    for z in range(pages_per_superplot): #This ensures theres columns per page
 
         if (z != 0): #If there are more than 4 channels, make another page for the board info
             board_x, board_y = 3, list_y - rowHeight*10
@@ -891,7 +891,7 @@ def main(iterations):
         IQ_plt_img = []
         fig = plt.GridSpec(1, 68, wspace=0.3, hspace=0.3)
         axis = []
-        for z in range(graph_max): #Splits the plots up to maximum 4 per page
+        for z in range(pages_per_superplot): #Splits the plots up to maximum 4 per page
 
             plt.suptitle("Individual Channels' Amplitude versus Time for Run {}".format(counter))
             # Padding is to prevent overlap with subplot (for the individual graphs) ticks
@@ -957,7 +957,7 @@ def main(iterations):
         FFT_plots = []
         FFT_plt_img = []
         axis.clear()
-        for z in range(graph_max):
+        for z in range(pages_per_superplot):
             #Splits the plots up to maximum 4 per page
             start, end = z*4,min((z*4)+4,num_channels)
             ax_st, ax_end = 0, 15
@@ -1035,7 +1035,7 @@ def main(iterations):
         IQ_table_x, IQ_table_y = 5,5
 
         #graphs and table dependent on number of channels
-        for z in range(graph_max):
+        for z in range(pages_per_superplot):
             pdf.showPage() #Page break on pdf
             page_count += 1
             topOfPage(pdf, str(counter))
@@ -1067,7 +1067,7 @@ def main(iterations):
         max_peak_x, max_peak_y = 2, 5
 
         #making graphs and table dependent on number of channels
-        for z in range(graph_max):
+        for z in range(pages_per_superplot):
             pdf.showPage()
             page_count += 1
             topOfPage(pdf, str(counter))
@@ -1115,7 +1115,7 @@ def main(iterations):
             max_top.append((first_max[0][0], first_max[0][1]))
 
         #Tables stuff
-        for z in range(graph_max): #NOTE: It doesn't have to use graph max here, any value with the layout should be fine
+        for z in range(pages_per_superplot):
             snr_x, snr_y = nf_x, nf_y - snr_height
             #Splits the plots up to maximum 4 per page
             start, end = z*4,min((z*4)+4,num_channels)
