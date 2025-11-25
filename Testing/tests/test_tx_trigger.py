@@ -2,6 +2,7 @@ import os
 from common import pdf_report
 from common import generator as gen
 from common import test_args
+from common import log
 import sys
 
 
@@ -67,7 +68,7 @@ def test(it):
 
         for line in lines:
             # Print lines so they end up in the logs
-            print(line, end='')
+            log.pvpkg_log_info("TX_TRIGGER", line, end='')
 
             # Array containing the line seperated by " "
             row = line.split()
@@ -90,9 +91,9 @@ def test(it):
             # Having different channels be read at different times is not a concern. The reading is taken as soon as data is sent, and data is sent immediatly after a trigger so the program has almost a full second to read all channels and have them be the same
             if row[-1] != 0:
                 if buffer_filled:
-                    print("ERROR: discrepency in buffer level between channels")
+                    log.pvpkg_log_error("TX_TRIGGER", "Discrepency in buffer level between channels")
                 else:
-                    print("ERROR: discrepency in buffer level between channels while priming")
+                    log.pvpkg_log_error("TX_TRIGGER", "Discrepency in buffer level between channels while priming")
                 test_fail = test_fail | 1
 
             for ch in range(len(ch_buf_info)):
@@ -108,14 +109,14 @@ def test(it):
                 previous_buffer_level = row[0]
                 # If the buffer had data then data from previous runs wasn't cleared when initializing
                 if row[0] != 0:
-                    print("ERROR: data in buffer at start")
+                    log.pvpkg_log_error("TX_TRIGGER", "Data in buffer at start")
                     stale_data = True
                     test_fail = test_fail | 1
 
             elif not buffer_filled:
                 # Check if the buffer level is being filled up
                 if(row[0] <= previous_buffer_level):
-                    print("ERROR: samples not accepted while priming buffer")
+                    log.pvpkg_log_error("TX_TRIGGER", "Samples not accepted while priming buffer")
                     priming_error = True
                     test_fail = test_fail | 1
 
@@ -128,7 +129,7 @@ def test(it):
             # During normal streaming between reads data should be consumed and the same amount of data should be sent to replace it
             else:
                 if row[0] != previous_buffer_level:
-                    print("ERROR: incorrect number of samples consumed by trigger")
+                    log.pvpkg_log_error("TX_TRIGGER", "Incorrect number of samples consumed by trigger")
                     sample_count_error = True
                     test_fail = test_fail | 1
 
@@ -158,7 +159,7 @@ def build_report():
     report.insert_title_page("Tx Trigger Test")
     report.draw_from_buffer()
     report.save()
-    print("PDF report saved at " + report.get_filename())
+    log.pvpkg_log_info("TX_TRIGGER", "PDF report saved at " + report.get_filename())
 
 def main(iterations):
     for it in iterations:
@@ -172,7 +173,7 @@ elif(targs.product == "Lily"):
 elif(targs.product == "Tate" or targs.product == "BasebandTate"):
     main(gen.cyan.lo_band.tx_trigger())
 else:
-    print("ERROR: unrecognized product argument", file=sys.stderr)
+    log.pvpkg_log_error("TX_TRIGGER", "Unrecognized product argument")
     test_fail = 1
 
 build_report()

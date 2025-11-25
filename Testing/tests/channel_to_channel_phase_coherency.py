@@ -9,6 +9,7 @@ Created on Wed Aug 31 18:59:34 2022
 from common import sigproc
 from common import engine
 from common import generator as gen
+from common import log
 from retrying import retry
 import numpy as np
 import matplotlib.pyplot as plt
@@ -43,8 +44,8 @@ def test(it):
         real_coherency = sigproc.lag(real, reals[0], it["sample_rate"], it["wave_freq"])
         imag_coherency = sigproc.lag(imag, imags[0], it["sample_rate"], it["wave_freq"])
 
-        print("channel %2d: real coherency %f" % (ch, real_coherency))
-        print("channel %2d: imag coherency %f" % (ch, imag_coherency))
+        log.pvpkg_log("channel %2d: real coherency %f" % (ch, real_coherency))
+        log.pvpkg_log("channel %2d: imag coherency %f" % (ch, imag_coherency))
         
 def main(iterations):
 

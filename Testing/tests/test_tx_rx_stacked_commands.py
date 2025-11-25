@@ -3,6 +3,7 @@ from common import engine
 from common import generator as gen
 from common import pdf_report
 from common import test_args
+from common import log
 from retrying import retry
 import matplotlib.pyplot as plt
 import sys
@@ -60,7 +61,7 @@ def test(it, data):
     # Process.
     # Stacked commands vsnk channel extensions and must be indexed manually with sample_count.
     for ch, channel in enumerate(vsnk):
-        print("channel %d" % targs.channels[ch])
+        log.pvpkg_log_info("TX_RX_STACKED_COMMANDS", "channel %d" % targs.channels[ch])
         areas = []
         res = "pass"
         plt.figure()
@@ -79,7 +80,7 @@ def test(it, data):
             likeness = area / areas[0]
             frame_results.append(round(likeness, 8))
 
-            print("\tframe %d: aboslute area: likeness %f" % (i, likeness))
+            log.pvpkg_log_info("TX_RX_STACKED_COMMANDS", "\tframe %d: aboslute area: likeness %f" % (i, likeness))
 
             plt.plot(frame_data, label="Frame {}".format(i))
 
@@ -125,7 +126,7 @@ def build_report():
         add_summary_table(summary[0], summary[1])
     report.draw_from_buffer()
     report.save()
-    print("PDF report saved at " + report.get_filename())
+    log.pvpkg_log_info("TX_RX_STACKED_COMMANDS", "PDF report saved at " + report.get_filename())
 
 ## SCRIPT LOGIC ##
 if(targs.product == "Vaunt"):
@@ -143,7 +144,7 @@ elif(targs.product == "Lily"):
     main(gen.chestnut.mid_band.basic(), "Mid Band")
     main(gen.chestnut.hi_band.basic(), "High Band")
 else:
-    print("ERROR: unrecognized product argument", file=sys.stderr)
+    log.pvpkg_log_error("TX_RX_STACKED_COMMANDS", "Unrecognized product argument")
     test_fail = 1
 
 build_report()

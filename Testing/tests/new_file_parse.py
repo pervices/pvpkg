@@ -154,9 +154,9 @@ os.chdir(output_path1)
 x=0
 #for c,f in zip(center_freq_array_2,channels_array_2):
 for I, Q in zip(I_array_2, Q_array_2):
-    log.pvpkg_log_info("NEW_FILE_PARSE", x)
-    log.pvpkg_log_info("NEW_FILE_PARSE", "{}{}".format(center_freq_array_2[x][0],center_freq_array_2[x][1]))
-    log.pvpkg_log_info("NEW_FILE_PARSE", "{}{}".format(channels_array_2[x][0],channels_array_2[x][1]))
+    log.pvpkg_log(x)
+    log.pvpkg_log("{} {}".format(center_freq_array_2[x][0],center_freq_array_2[x][1]))
+    log.pvpkg_log("{} {}".format(channels_array_2[x][0],channels_array_2[x][1]))
     #print(c,f)
     
     plt.figure(1)
@@ -343,7 +343,7 @@ for i, j in zip(peaks_fx_array, peaks_fy_array):
     for a, b in zip(i,j):
         maxim=np.real(max(b))
         index, =np.where(b==maxim)
-        log.pvpkg_log_info("NEW_FILE_PARSE", 'the value 0 is'+str(a[index])+maxim)
+        log.pvpkg_log('the value 0 is'+str(a[index])+maxim)
         peak_x.append(np.ndarray.item((a[index])))
         peak_y.append(maxim)
         
@@ -629,7 +629,7 @@ files = [os.path.join(time_plots_path, f) for f in files] # add path to each fil
 
 i=0
 for file in sorted(files):
-    log.pvpkg_log_info("NEW_FILE_PARSE", "the file being procesed is:",file)
+    log.pvpkg_log_info("NEW_FILE_PARSE", "the file being processed is:",file)
     fig, ax = plt.subplots(figsize=(8.5, 11))
     plt.axis('off')
     logo= Image.open('/home/jade/Desktop/dump_20220805153333.187244/pv-logo.png')
@@ -658,7 +658,7 @@ files = [os.path.join(FFT_plots_path, f) for f in files] # add path to each file
 
 i=0
 for file in sorted(files):
-    log.pvpkg_log_info("NEW_FILE_PARSE", "the file being procesed is:",file)
+    log.pvpkg_log_info("NEW_FILE_PARSE", "the file being processed is:",file)
     fig, ax = plt.subplots(figsize=(8.5, 11))
     plt.axis('off')
     logo= Image.open('/home/jade/Desktop/dump_20220805153333.187244/pv-logo.png')
@@ -686,7 +686,7 @@ files = [os.path.join(peaks_table_path, f) for f in files] # add path to each fi
 
 i=0
 for file in sorted(files):
-    log.pvpkg_log_info("NEW_FILE_PARSE", "the file being procesed is:",file)
+    log.pvpkg_log_info("NEW_FILE_PARSE", "the file being processed is:",file)
     fig, ax = plt.subplots(figsize=(8.5, 11))
     plt.axis('off')
     logo= Image.open('/home/jade/Desktop/dump_20220805153333.187244/pv-logo.png')

@@ -7,6 +7,12 @@ YELLOW = str('\033[1;33m')
 GREEN = str('\033[0;32m')
 RESET = str('\033[0;39m')
 
+# Log levels
+DEBUG = 10
+INFO = 20
+WARNING = 30
+ERROR = 40
+
 class LevelFilter(logging.Filter):
     """
     Filter to keep only that below and including a given log level.
@@ -17,6 +23,16 @@ class LevelFilter(logging.Filter):
 
     def filter(self, record):
         return record.levelno <= self.level
+
+class LogFormatter(logging.Formatter):
+    """
+    Formatter to only apply custom format when a component is provided.
+    """
+    def format(self, record):
+        s = record.msg
+        if record.component:
+            s = super().format(record)
+        return s
 
 # Configuration for three logging levels and formatting
 logger_config = {
@@ -29,7 +45,8 @@ logger_config = {
     },
     "formatters": {
         "simple": {
-            "format": "%(colour)s[%(levelname)s] [%(component)s]" + RESET + " %(message)s"
+            "()": LogFormatter,
+            "format": "%(colour)s[%(levelname)s] [%(component)s]" + RESET + " %(message)s",
         }
     },
     "handlers": {
@@ -66,7 +83,7 @@ def pvpkg_log_info(component, message):
     """
     Print INFO level log message to stdout.
     Messages follow format:
-        [<LOG LEVEL>] [<COMPONENT>] <MESSAGE>...
+        [INFO] [<COMPONENT>] <MESSAGE>...
     """
     logger.info(message, extra={ 'component': component, 'colour': GREEN })
 
@@ -75,7 +92,7 @@ def pvpkg_log_warning(component, message):
     """
     Print WARNING level log message to stdout.
     Messages follow format:
-        [<LOG LEVEL>] [<COMPONENT>] <MESSAGE>...
+        [WARNING] [<COMPONENT>] <MESSAGE>...
     """
     logger.warning(message, extra={ 'component': component, 'colour': YELLOW })
 
@@ -83,6 +100,22 @@ def pvpkg_log_error(component, message):
     """
     Print ERROR level log message to stdout.
     Messages follow format:
-        [<LOG LEVEL>] [<COMPONENT>] <MESSAGE>...
+        [ERROR] [<COMPONENT>] <MESSAGE>...
     """
     logger.error(message, extra={ 'component': component, 'colour': RED })
+
+def pvpkg_log(message, level=logging.INFO):
+    """
+    Print <level> (default INFO) log message to stdout *without* formatting.
+    Acts as a replacement for print() but outputs to whatever the logger is configured to.
+    Useful for outputs with sensitive formatting like tables, where the "[<LOG LEVEL>] [<COMPONENT>]" prefix is unwanted.
+    Messages follow format:
+        <Message>...
+
+    level options:
+        DEBUG: 10
+        INFO: 20
+        WARNING: 30
+        ERROR: 40
+    """
+    logger.log(level, message, extra = { 'component': None })

@@ -5,6 +5,7 @@ from gnuradio import gr
 from common import crimson
 from common import pdf_report
 from common import test_args
+from common import log
 import time, sys, os
 import numpy as np
 
@@ -48,7 +49,7 @@ def main():
         csrc = crimson.get_src_c(channels, sample_rate, 15e6, 1.0)
 
     else:
-        print("ERROR: unrecognized product argument", file=sys.stderr)
+        log.pvpkg_log_error("RX_STACK", "Unrecognized product argument")
         failed = 1
 
     test_table = [
@@ -97,8 +98,8 @@ def main():
     for sec in range(end):
         for channel in channels:
             #print(channel)
-            print("%d: %d: %d" % (channel, sec, len(vsnk[channel].data())))
-            print(len(vsnk[channel].data()))
+            log.pvpkg_log("%d: %d: %d" % (channel, sec, len(vsnk[channel].data())))
+            log.pvpkg_log(len(vsnk[channel].data()))
             #Populate slot 1 of that array with the sample count for that time interval
         time.sleep(interval+interval*interval_additional_delay_coefficient)
 
@@ -114,7 +115,7 @@ def main():
         expect_sample_count = sample_count * (end - start)
         actual_sample_count = len((vsnk[channel].data()))
 
-        print("the expected sample count and the actual sample count are:", expect_sample_count,actual_sample_count)
+        log.pvpkg_log_info("RX_STACK", "The expected sample count and the actual sample count are:", expect_sample_count,actual_sample_count)
         test_table.append([str(channel), str(expect_sample_count), str(actual_sample_count), bool_to_passfail(expect_sample_count == actual_sample_count)])
 
         #Assert that both are true (or make a global pass bool)
@@ -127,7 +128,7 @@ def main():
     report.insert_table(test_table, 20)
 
     report.save()
-    print("PDF report saved at " + report.get_filename())
+    log.pvpkg_log_info("RX_STACK", "PDF report saved at " + report.get_filename())
 
     if (failed == 1):
         sys.exit(1)

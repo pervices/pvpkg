@@ -4,6 +4,7 @@ from gnuradio import gr
 from common import pdf_report
 from common import crimson
 from common import test_args
+from common import log
 import time
 import math
 import numpy as np
@@ -50,7 +51,7 @@ def main():
         csrc = crimson.get_src_c(channels, sample_rate, 15e6, 1.0)
 
     else:
-        print("ERROR: unrecognized product argument", file=sys.stderr)
+        log.pvpkg_log_error("RX_STACK_2", "Unrecognized product argument")
         test_fail = 1
 
 
@@ -97,7 +98,7 @@ def main():
     sample_count_array=np.arange(sample_count, int(sample_count*((end-start)+1)), sample_count, dtype=np.int32)
     zero_count_array=np.zeros(start, dtype=np.int32)
     expect_count_array= np.append(zero_count_array, sample_count_array)
-    print("the theoretical expected sample count array is:", expect_count_array)
+    log.pvpkg_log_info("RX_STACK_2", "The theoretical expected sample count array is: " + expect_count_array)
 
     # PDF report table for expected count
     table_data_expect_count_array = [['0']*len(expect_count_array)]
@@ -134,10 +135,10 @@ def main():
         ch_4_array[second] = (len(vsnk[3].data()))
 
         #Populate slot 1 of that array with the sample count for that time interval
-        print("%d: %d: %d" % (0, second, len(vsnk[0].data())))
-        print("%d: %d: %d" % (1, second, len(vsnk[1].data())))
-        print("%d: %d: %d" % (2, second, len(vsnk[2].data())))
-        print("%d: %d: %d" % (3, second, len(vsnk[3].data())))
+        log.pvpkg_log("%d: %d: %d" % (0, second, len(vsnk[0].data())))
+        log.pvpkg_log("%d: %d: %d" % (1, second, len(vsnk[1].data())))
+        log.pvpkg_log("%d: %d: %d" % (2, second, len(vsnk[2].data())))
+        log.pvpkg_log("%d: %d: %d" % (3, second, len(vsnk[3].data())))
 
         while(time.perf_counter() - start_time < interval):
             pass
@@ -146,10 +147,10 @@ def main():
     ch_2_actual_array=np.asarray(ch_2_array)
     ch_3_actual_array=np.asarray(ch_3_array)
     ch_4_actual_array=np.asarray(ch_4_array)
-    print("the collected channel 1 sample count array is:", ch_1_actual_array)
-    print("the collected channel 2 sample count array is:", ch_2_actual_array)
-    print("the collected channel 3 sample count array is:", ch_3_actual_array)
-    print("the collected channel 4 sample count array is:", ch_4_actual_array)
+    log.pvpkg_log_info("RX_STACK_2", "The collected channel 1 sample count array is:", ch_1_actual_array)
+    log.pvpkg_log_info("RX_STACK_2", "The collected channel 2 sample count array is:", ch_2_actual_array)
+    log.pvpkg_log_info("RX_STACK_2", "The collected channel 3 sample count array is:", ch_3_actual_array)
+    log.pvpkg_log_info("RX_STACK_2", "The collected channel 4 sample count array is:", ch_4_actual_array)
 
     # PDF report result tables
     table_data_ch1_array = [['0']*len(ch_1_array)]
@@ -182,7 +183,7 @@ def main():
         assert (np.array_equal((ch_3_actual_array),(expect_count_array)))
         assert (np.array_equal((ch_4_actual_array),(expect_count_array)))
     except:
-        print('expected and actual array are not equal, fail')
+        log.pvpkg_log_error("RX_STACK_2", 'expected and actual array are not equal, fail')
         test_fail = 1
 
     if (test_fail):
@@ -191,7 +192,7 @@ def main():
         report.insert_text_large("Test passed")
 
     report.save()
-    print("PDF report saved at " + report.get_filename())
+    log.pvpkg_log_info("RX_STACK_2", "PDF report saved at " + report.get_filename())
 
     if (test_fail):
         sys.exit(1)

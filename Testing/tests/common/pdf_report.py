@@ -639,25 +639,25 @@ if __name__ == "__main__":
         two_pictures = [test_pic, test_pic]
         report.buffer_put("image_double", two_pictures, desc="Double Picture grid")
     except:
-        log.pvpkg_log_error("PDF_REPORT", "Cant draw double pictues")
+        log.pvpkg_log_error("PDF_REPORT", "Can't draw double pictues")
 
     try:
         four_pictures = [test_pic, test_pic, test_pic, test_pic]
         report.buffer_put("image_quad", four_pictures, desc="Quadruple Picture grid")
     except:
-        log.pvpkg_log_error("PDF_REPORT", "Cant draw quadruple pictues")
+        log.pvpkg_log_error("PDF_REPORT", "Can't draw quadruple pictues")
 
     try:
         eight_pictures = [test_pic, test_pic, test_pic, test_pic, test_pic, test_pic, test_pic, test_pic]
         report.buffer_put("image_octo", eight_pictures, desc="Octuple Picture grid")
     except:
-        log.pvpkg_log_error("PDF_REPORT", "Cant draw Octuple pictues")
+        log.pvpkg_log_error("PDF_REPORT", "Can't draw Octuple pictues")
 
     try:
         eight_pictures = [test_pic, test_pic, test_pic, test_pic, test_pic, test_pic, test_pic, test_pic]
         report.buffer_put("image_list_dynamic", eight_pics, desc="Dynamic image list - 8")
     except:
-        log.pvpkg_log_error("PDF_REPORT", "Cant draw dynamic image list pictues")
+        log.pvpkg_log_error("PDF_REPORT", "Can't draw dynamic image list pictues")
 
     test_long_table = [
         ["Run", "Baseline A", "Diff AB", "Diff AC", "Diff AD"],

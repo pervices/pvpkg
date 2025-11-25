@@ -95,7 +95,7 @@ def bestFit(x, y, wave_freq):
     except:
         frameinfo = getframeinfo(currentframe())
         component = "{}:{}".format(frameinfo.filename, frameinfo.lineno)
-        log.pvpkg_log_error("RX_PHASE_2", "Failed to fit curve to data.")
+        log.pvpkg_log_error(component, "Failed to fit curve to data.")
         return (0, 0), (0, 0, 0)
     fit_amp = abs(param[0])
     fit_freq = param[1]
@@ -184,7 +184,7 @@ def main():
     if(targs.product == 'Tate'):
         iterations = gen.cyan.lo_band.phaseCoherencyAllBands()
     else:
-        log.pvpkg_log_error("RX_PHASE_2", "RX phase coherency test is currently only supported for Cyan units.")
+        log.pvpkg_log_warning("RX_PHASE_2", "RX phase coherency test is currently only supported for Cyan units.")
         sys.exit(1)
 
     channel_list = channel_map[targs.channels].tolist()
@@ -373,21 +373,18 @@ def main():
         summary_table.append([it["center_freq"], it["wave_freq"], boolToWord(freq_overall_res), boolToWord(ampl_overall_res), boolToWord(phase_overall_res)])
 
         # Print data and results table to console
-        message = ("\nFrequency Data:"
-            freq_df.to_markdown(index=True)
-            "\nAmplitude Data:\n"
-            ampl_df.to_markdown(index=True)
-            "\nPhase Data:\n"
-            phase_df.to_markdown(index=True)
-            "\nFrequency Results:\n"
-            freq_res.to_markdown(index=False)
-            "\nAmplitude Results:\n"
-            ampl_res.to_markdown(index=False)
-            "\nPhase Results:\n"
-            phase_res.to_markdown(index=False)
-            "\n"
-        )
-        log.pvpkg_log_info("RX_PHASE_2", message)
+        log.pvpkg_log("\nFrequency Data:")
+        log.pvpkg_log(freq_df.to_markdown(index=True))
+        log.pvpkg_log("\nAmplitude Data:")
+        log.pvpkg_log(ampl_df.to_markdown(index=True))
+        log.pvpkg_log("\nPhase Data:")
+        log.pvpkg_log(phase_df.to_markdown(index=True))
+        log.pvpkg_log("\nFrequency Results:")
+        log.pvpkg_log(freq_res.to_markdown(index=False))
+        log.pvpkg_log("\nAmplitude Results:")
+        log.pvpkg_log(ampl_res.to_markdown(index=False))
+        log.pvpkg_log("\nPhase Results:")
+        log.pvpkg_log(phase_res.to_markdown(index=False))
 
         # Add plots to the report
         makePlots(x_time, reals, best_fits, offsets, wave_freq, sample_rate)
@@ -426,7 +423,7 @@ def main():
     os.chdir(parent_dir)
     report.draw_from_buffer()
     report.save()
-    print("PDF report saved at " + report.get_filename())
+    log.pvpkg_log_info("RX_PHASE_2", "PDF report saved at " + report.get_filename())
 
     sys.exit(fail_flag)
 

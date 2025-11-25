@@ -102,7 +102,7 @@ def main(iterations, desc):
         if np.abs(channel_diff) <= 4 :
             passband_flat.append("Pass")
         else:
-            log.pvpkg_log_info("PASSBAND_FLATNESS", "Channel {} failed passband test with a difference of {}".format(ch, channel_diff))
+            log.pvpkg_log_error("PASSBAND_FLATNESS", "Channel {} failed passband test with a difference of {}".format(ch, channel_diff))
             test_fail = 10 + int(ch) #Set fail value to 10 + the channel that fails for easy debugging of error code
             passband_flat.append("Fail")
 
@@ -140,7 +140,7 @@ elif(targs.product == "Tate"):
 elif(targs.product == "Lily"):
     main(gen.chestnut.lo_band.passband_flatness_test(), "Low Band")
 else:
-    log.pvpkg_log_info("PASSBAND_FLATNESS", "Unrecognized product argument")
+    log.pvpkg_log_error("PASSBAND_FLATNESS", "Unrecognized product argument")
     test_fail = 1
 
 build_report()

@@ -2,6 +2,7 @@ import os
 from common import pdf_report
 from common import generator as gen
 from common import test_args
+from common import log
 import sys
 import time
 
@@ -38,7 +39,7 @@ def test(it):
         iteration_result = os.system("/usr/lib/uhd/examples/benchmark_rate --priority high --rx_rate={} --rx_channels {}  --overrun-threshold 0 --underrun-threshold 0 --drop-threshold 0 --seq-threshold 0".format(it["rx_rate"], list_to_arg_string(it["rx_channel"])))
     # tx only
     else:
-        print("No rx channels on this device. Skipping rx rate test")
+        log.pvpkg_log_warning("RX_RATE", "No rx channels on this device. Skipping rx rate test")
         return
 
     # Set test_fail to the return code of the first failed iteration
@@ -54,7 +55,7 @@ def build_report():
     report.insert_title_page("Tx Rx Rate Test")
     report.draw_from_buffer()
     report.save()
-    print("PDF report saved at " + report.get_filename())
+    log.pvpkg_log_info("RX_RATE", "PDF report saved at " + report.get_filename())
 
 def main(iterations):
     for it in iterations:
@@ -74,7 +75,7 @@ elif(targs.product == "Tate" or targs.product == "BasebandTate"):
     main(gen.cyan.lo_band.rx_rate(4))
 else:
     test_fail = 1
-    print("Error: invalid product specified")
+    log.pvpkg_log_error("RX_RATE", "Error: invalid product specified")
 
 build_report()
 # sys.exit only takes values in range 0-255 benchmark_rate returns EXIT_FAILURE which may be > 255. If that happens replace the value with 1
