@@ -68,7 +68,8 @@ def test(it):
 
         for line in lines:
             # Print lines so they end up in the logs
-            log.pvpkg_log_info("TX_TRIGGER", line, end='')
+            print()
+            log.pvpkg_log_info("TX_TRIGGER", line)
 
             # Array containing the line seperated by " "
             row = line.split()

@@ -66,7 +66,7 @@ def test(it, data):
         like_real = (float(it["wave_freq"]) / fund_real)
         like_imag = (float(it["wave_freq"]) / fund_imag)
 
-        log.pvpkg_log_info("TX_RX_FUNDAMENTAL_FREQUENCY", "channel %2d: real %10.0f Hz (%8.5f) :: imag %10.0f Hz (%8.5f)" % (targs.channels[ch], fund_real, like_real, fund_imag, like_imag))
+        log.pvpkg_log("channel %2d: real %10.0f Hz (%8.5f) :: imag %10.0f Hz (%8.5f)" % (targs.channels[ch], fund_real, like_real, fund_imag, like_imag))
 
         plt.figure()
         plt.title("Channel {}".format(targs.channels[ch]), fontsize=14)
