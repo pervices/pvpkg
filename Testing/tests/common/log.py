@@ -89,30 +89,30 @@ logger = logging.getLogger("pvpkg_logger");
 logger.setLevel(logging.INFO)
 
 # Functions to output
-def pvpkg_log_info(component, message):
+def pvpkg_log_info(component, message, end="\n"):
     """
     Print INFO level log message to stdout.
     Messages follow format:
         [INFO] [<COMPONENT>] <MESSAGE>...
     """
-    logger.info(message, extra={ 'component': component, 'colour': GREEN, 'end': '\n' })
+    logger.info(message, extra={ 'component': component, 'colour': GREEN, 'end': end })
 
 # FORMAT: [<LOG LEVEL>] [<COMPONENT>] <MESSAGE>...
-def pvpkg_log_warning(component, message):
+def pvpkg_log_warning(component, message, end="\n"):
     """
     Print WARNING level log message to stdout.
     Messages follow format:
         [WARNING] [<COMPONENT>] <MESSAGE>...
     """
-    logger.warning(message, extra={ 'component': component, 'colour': YELLOW, 'end': '\n' })
+    logger.warning(message, extra={ 'component': component, 'colour': YELLOW, 'end': end })
 
-def pvpkg_log_error(component, message):
+def pvpkg_log_error(component, message, end="\n"):
     """
     Print ERROR level log message to stdout.
     Messages follow format:
         [ERROR] [<COMPONENT>] <MESSAGE>...
     """
-    logger.error(message, extra={ 'component': component, 'colour': RED, 'end': '\n' })
+    logger.error(message, extra={ 'component': component, 'colour': RED, 'end': end })
 
 def pvpkg_log(message, level=logging.INFO, end="\n"):
     """
