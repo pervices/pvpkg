@@ -32,7 +32,17 @@ class LogFormatter(logging.Formatter):
         s = record.msg
         if record.component:
             s = super().format(record)
+        if not record.end:
+            s.replace("a", "b")
         return s
+
+class LogHandler(logging.StreamHandler):
+    """
+    Subclassed StreamHandler to replace the message terminator with a custom value.
+    """
+    def emit(self, record):
+        self.terminator = record.end
+        super().emit(record)
 
 # Configuration for three logging levels and formatting
 logger_config = {
@@ -51,14 +61,14 @@ logger_config = {
     },
     "handlers": {
         "stdout": {
-            "class": "logging.StreamHandler",
+            "()": LogHandler,
             "level": "INFO",
             "formatter": "simple",
             "filters": ["excludeErr"],
             "stream": "ext://sys.stdout"
         },
         "stderr": {
-            "class": "logging.StreamHandler",
+            "()": LogHandler,
             "level": "ERROR",
             "formatter": "simple",
             "stream": "ext://sys.stderr"
@@ -85,7 +95,7 @@ def pvpkg_log_info(component, message):
     Messages follow format:
         [INFO] [<COMPONENT>] <MESSAGE>...
     """
-    logger.info(message, extra={ 'component': component, 'colour': GREEN })
+    logger.info(message, extra={ 'component': component, 'colour': GREEN, 'end': '\n' })
 
 # FORMAT: [<LOG LEVEL>] [<COMPONENT>] <MESSAGE>...
 def pvpkg_log_warning(component, message):
@@ -94,7 +104,7 @@ def pvpkg_log_warning(component, message):
     Messages follow format:
         [WARNING] [<COMPONENT>] <MESSAGE>...
     """
-    logger.warning(message, extra={ 'component': component, 'colour': YELLOW })
+    logger.warning(message, extra={ 'component': component, 'colour': YELLOW, 'end': '\n' })
 
 def pvpkg_log_error(component, message):
     """
@@ -102,20 +112,22 @@ def pvpkg_log_error(component, message):
     Messages follow format:
         [ERROR] [<COMPONENT>] <MESSAGE>...
     """
-    logger.error(message, extra={ 'component': component, 'colour': RED })
+    logger.error(message, extra={ 'component': component, 'colour': RED, 'end': '\n' })
 
-def pvpkg_log(message, level=logging.INFO):
+def pvpkg_log(message, level=logging.INFO, end="\n"):
     """
     Print <level> (default INFO) log message to stdout *without* formatting.
     Acts as a replacement for print() but outputs to whatever the logger is configured to.
     Useful for outputs with sensitive formatting like tables, where the "[<LOG LEVEL>] [<COMPONENT>]" prefix is unwanted.
     Messages follow format:
-        <Message>...
+        <Message>...<end (default newline)>
 
     level options:
         DEBUG: 10
         INFO: 20
         WARNING: 30
         ERROR: 40
+
+    end: String appended after message. Defaults to a newline.
     """
-    logger.log(level, message, extra = { 'component': None })
+    logger.log(level, message, extra = { 'component': None, 'end': end })
