@@ -4,6 +4,7 @@ from common import engine
 from common import generator
 from common import pdf_report
 from common import test_args
+from common import log
 from retrying import retry
 import numpy as np
 import matplotlib.pyplot as plt
@@ -37,12 +38,12 @@ def main(iterations, title="TX RX Long-term Streaming Rate Test") -> int:
     report.buffer_put("text_large", "Test Summary")
     report.buffer_put("text", " ")
         
-    print("Running command: " + command)
+    log.pvpkg_log_info("TX_RX_LONGTERM_RATE", "Running command: " + command)
     
     try: 
         result = subprocess.check_output(command, shell=True, text=True)
     except subprocess.CalledProcessError as e: # Return is not 0
-        print("Error running command")
+        log.pvpkg_log_error("TX_RX_LONGTERM_RATE", "Error running command")
         result = str(e.output)
         test_fail = 1
         report.buffer_put("text", "Error running command: " + command)
@@ -54,7 +55,7 @@ def main(iterations, title="TX RX Long-term Streaming Rate Test") -> int:
         # sys.exit(1)
     
     # result = result.split("Done!\n", 1)[1]
-    print("Results:" + result)
+    log.pvpkg_log_info("TX_RX_LONGTERM_RATE", "Results:" + result)
 
     actual_receive_rate = result.split("Testing receive rate ")[1].split("on")[0]
     actual_transmit_rate = result.split("Testing transmit rate ")[1].split("on")[0]
@@ -115,7 +116,7 @@ def main(iterations, title="TX RX Long-term Streaming Rate Test") -> int:
     report.insert_title_page("Tx Rx Long-term Streaming Rate Test")
     report.draw_from_buffer()
     report.save()
-    print("PDF report saved at " + report.get_filename())
+    log.pvpkg_log_info("TX_RX_LONGTERM_RATE", "PDF report saved at " + report.get_filename())
     
     if (test_fail != 0):
         sys.exit(1)

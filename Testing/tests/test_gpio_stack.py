@@ -4,6 +4,7 @@ from gnuradio import gr
 from common import crimson
 from common import pdf_report
 from common import test_args
+from common import log
 import time, sys, os
 
 # Note that Tate has 80 GPIO pins
@@ -61,7 +62,7 @@ def main():
             try:
                 gpio_write(csrc, pins, mask, second);
             except:
-                print("GPIO write failed at " + str(second) + " second")
+                log.pvpkg_log_error("GPIO_STACK", "GPIO write failed at " + str(second) + " second")
                 test_failed = True
 
         if (not test_failed):
@@ -84,7 +85,7 @@ def main():
             try:
                 gpio_write(csrc, pins, mask, second);
             except:
-                print("GPIO write failed at " + str(second) + " second")
+                log.pvpkg_log_error("GPIO_STACK", "GPIO write failed at " + str(second) + " second")
                 test_failed = True
 
         if (not test_failed):
@@ -104,7 +105,7 @@ def main():
         try:
             gpio_write(csrc, pins, all, second);
         except:
-            print("GPIO write failed at " + str(second) + " second")
+            log.pvpkg_log_error("GPIO_STACK", "GPIO write failed at " + str(second) + " second")
             test_failed = True
 
         if (not test_failed):
@@ -115,7 +116,7 @@ def main():
 
 
     report.save()
-    print("PDF report saved at " + report.get_filename())
+    log.pvpkg_log_info("GPIO_STACK", "PDF report saved at " + report.get_filename())
 
     if (test_failed):
         sys.exit(1)

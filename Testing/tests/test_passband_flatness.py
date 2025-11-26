@@ -4,6 +4,7 @@ from common import engine
 from common import generator as gen
 from common import pdf_report
 from common import test_args
+from common import log
 import numpy as np
 import math
 import matplotlib.pyplot as plt
@@ -101,7 +102,7 @@ def main(iterations, desc):
         if np.abs(channel_diff) <= 4 :
             passband_flat.append("Pass")
         else:
-            print("INFO: Channel {} failed passband test with a difference of {}".format(ch, channel_diff), file=sys.stderr)
+            log.pvpkg_log_error("PASSBAND_FLATNESS", "Channel {} failed passband test with a difference of {}".format(ch, channel_diff))
             test_fail = 10 + int(ch) #Set fail value to 10 + the channel that fails for easy debugging of error code
             passband_flat.append("Fail")
 
@@ -128,7 +129,7 @@ def build_report():
     report.insert_title_page("UHD Passband Flatness Test")
     report.draw_from_buffer()
     report.save()
-    print("PDF report saved at " + report.get_filename())
+    log.pvpkg_log_info("PASSBAND_FLATNESS", "PDF report saved at " + report.get_filename())
 
 
 ## SCRIPT LOGIC ##
@@ -139,7 +140,7 @@ elif(targs.product == "Tate"):
 elif(targs.product == "Lily"):
     main(gen.chestnut.lo_band.passband_flatness_test(), "Low Band")
 else:
-    print("ERROR: unrecognized product argument", file=sys.stderr)
+    log.pvpkg_log_error("PASSBAND_FLATNESS", "Unrecognized product argument")
     test_fail = 1
 
 build_report()

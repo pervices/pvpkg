@@ -1,9 +1,10 @@
 import inspect
 import sys
+from . import log
 
 def ship_test_crimson(channels):
 
-    print(sys._getframe().f_code.co_name)
+    log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
 
     channels = list(range(channels))
     wave_freq = 100000
@@ -18,7 +19,7 @@ def ship_test_crimson(channels):
 
 def ship_test_cyan(channels):
 
-    print(sys._getframe().f_code.co_name)
+    log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
 
     channels = list(range(channels))
     wave_freq = 100000
@@ -33,7 +34,7 @@ def ship_test_cyan(channels):
 
 def ship_test_cyanbaseband(channels):
 
-    print(sys._getframe().f_code.co_name)
+    log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
 
     channels = list(range(channels))
     wave_freq = 100000
@@ -48,7 +49,7 @@ def ship_test_cyanbaseband(channels):
 
 def ship_test_chestnut(channels):
 
-    print(sys._getframe().f_code.co_name)
+    log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
 
     channels = list(range(channels))
     wave_freq = 100000
@@ -74,7 +75,7 @@ crimson_output = stream.read()
 #print(crimson_output)
 
 def lo_band_passband_flatness_test():
-    print(sys._getframe().f_code.co_name)
+    log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
     channels = list(range(4))
     sample_count = int(9803922/10000)
     tx_gain = 25
@@ -85,7 +86,7 @@ def lo_band_passband_flatness_test():
         yield locals()
 
 def lo_band_buffer_exhaust_test():
-    print(sys._getframe().f_code.co_name)
+    log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
     channels = list(range(4))
     sample_count = int(9803922/1000 + 74000)
     tx_gain = 25
@@ -97,7 +98,7 @@ def lo_band_buffer_exhaust_test():
 
 def hi_band_wave_sweep():
 
-    print(sys._getframe().f_code.co_name)
+    log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
 
     channels = list(range(4))
     sample_count = int(round(25000000/10000))
@@ -109,7 +110,7 @@ def hi_band_wave_sweep():
         yield locals()
 
 def hi_band_wave_easy():
-    print(sys._getframe().f_code.co_name)
+    log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
 
     channels = list(range(4))
     sample_rate = 9848485
@@ -124,7 +125,7 @@ def hi_band_wave_easy():
 
 def lo_band_wave_sweep():
 
-    print(sys._getframe().f_code.co_name)
+    log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
 
     channels = list(range(4))
     sample_count = int(round(25000000/10000))
@@ -137,7 +138,7 @@ def lo_band_wave_sweep():
 
 def lo_band_quick():
 
-    print(sys._getframe().f_code.co_name)
+    log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
 
     channels = list(range(channels))
     wave_freq = 1000000
@@ -150,7 +151,7 @@ def lo_band_quick():
 
 
 def lo_band_basic():
-    print(sys._getframe().f_code.co_name)
+    log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
 
     wave_freq = 1000000
     sample_count = 256
@@ -162,7 +163,7 @@ def lo_band_basic():
 
 
 def hi_band_basic():
-    print(sys._getframe().f_code.co_name)
+    log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
 
     wave_freq = 1000000
     sample_count = 256
@@ -174,7 +175,7 @@ def hi_band_basic():
 
 def lo_band_gain_rx():
 
-    print(sys._getframe().f_code.co_name)
+    log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
 
     wave_freq = 1000000
     sample_count = 1000
@@ -187,7 +188,7 @@ def lo_band_gain_rx():
 
 def lo_band_gain_tx():
 
-    print(sys._getframe().f_code.co_name)
+    log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
 
     wave_freq = 1000000
     sample_count = 1000
@@ -200,7 +201,7 @@ def lo_band_gain_tx():
 
 def hi_band_gain_tx():
 
-    print(sys._getframe().f_code.co_name)
+    log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
 
     wave_freq = 1000000
     sample_count = 1000
@@ -213,7 +214,7 @@ def hi_band_gain_tx():
 
 def hi_band_gain_rx():
 
-    print(sys._getframe().f_code.co_name)
+    log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
 
     wave_freq = 1000000
     sample_count = 1000
@@ -224,7 +225,7 @@ def hi_band_gain_rx():
         yield locals()
 
 def lo_band_phaseCoherency():
-    print(sys._getframe().f_code.co_name)
+    log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
     sample_rate = 25000000
     sample_count = int(round(sample_rate/1000))
     tx_gain = 25
@@ -235,7 +236,7 @@ def lo_band_phaseCoherency():
     yield locals()
 
 def tx_trigger():
-    print(sys._getframe().f_code.co_name)
+    log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
     center_freq = 0
     sample_rate = 10156250
     tx_gain = 20
@@ -247,7 +248,7 @@ def tx_trigger():
     yield locals()
 
 def tx_rx_rate():
-    print(sys._getframe().f_code.co_name)
+    log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
 
     descriptions = ["Max achievable combined rate on all ch"]
     rx_rates = [325e6/6]
@@ -268,7 +269,7 @@ def tx_rx_rate():
         yield iteration_dict
 
 def rx_rate():
-    print(sys._getframe().f_code.co_name)
+    log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
 
     descriptions = ["Max achievable rx rate on any number of ch", "Max achievable rx rate on all ch"]
     rx_rates = [162.5e6, 81.25e6]
@@ -283,7 +284,7 @@ def rx_rate():
         yield iteration_dict
 
 def tx_rate():
-    print(sys._getframe().f_code.co_name)
+    log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
 
     descriptions = ["Max achievable tx rate on any number of ch", "Max achievable tx rate on all ch"]
     tx_rates = [162.5e6, 81.25e6]
@@ -298,7 +299,7 @@ def tx_rate():
         yield iteration_dict
 
 def rx_uhd_tune():
-    print(sys._getframe().f_code.co_name)
+    log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
     channels = list(range(4))
     wave_freq = 1000000
     sample_count = 10000
@@ -310,7 +311,7 @@ def rx_uhd_tune():
         yield locals()
 
 def tx_uhd_tune():
-    print(sys._getframe().f_code.co_name)
+    log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
     channels = list(range(4))
     wave_freq = 1000000
     sample_count = 10000
@@ -322,21 +323,22 @@ def tx_uhd_tune():
         yield locals()
 
 def tx_rx_longterm_rate():
-    print(sys._getframe().f_code.co_name)
+    log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
     channels = list(range(4))
     sample_rate = 325e6/33          # 9.848485 Msps
     duration = 90                   # 90 sec
     yield locals()
 
 def dump(iteration):
+    log.pvpkg_log_info("GENERATOR", "Using configuration:")
     for key, value in iteration.items():
-        print("%20s : %r" % (key, value))
+        log.pvpkg_log("%20s : %r" % (key, value))
 
 class cyan:
     class lo_band:
         @staticmethod
         def passband_flatness_test():
-            print(sys._getframe().f_code.co_name)
+            log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
             channels = list(range(4))
             sample_count = int(round(25000000/10000))
             tx_gain = 25
@@ -348,7 +350,7 @@ class cyan:
 
         @staticmethod
         def buffer_exhaust_test():
-            print(sys._getframe().f_code.co_name)
+            log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
             channels = list(range(4))
             sample_count = int(round(25000000/10000)+4700000)
             tx_gain = 40
@@ -360,7 +362,7 @@ class cyan:
 
         @staticmethod
         def wave_sweep():
-            print(sys._getframe().f_code.co_name)
+            log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
 
             sample_count = int(round(25000000/10000))
             tx_gain = 40
@@ -372,7 +374,7 @@ class cyan:
 
         @staticmethod
         def quick(channels):
-            print(sys._getframe().f_code.co_name)
+            log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
 
             channels = list(range(channels))
             wave_freq = 1000000         # 1MHz
@@ -385,7 +387,7 @@ class cyan:
 
         @staticmethod
         def basic():
-            print(sys._getframe().f_code.co_name)
+            log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
 
             wave_freq = 1000000         # 1MHz
             sample_count = 256
@@ -397,7 +399,7 @@ class cyan:
 
         @staticmethod
         def gain_rx():
-            print(sys._getframe().f_code.co_name)
+            log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
 
             wave_freq = 1000000
             sample_count = 1000
@@ -409,7 +411,7 @@ class cyan:
 
         @staticmethod
         def gain_tx():
-            print(sys._getframe().f_code.co_name)
+            log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
 
             wave_freq = 1000000
             sample_count = 1000
@@ -421,7 +423,7 @@ class cyan:
 
         @staticmethod
         def phaseCoherency():
-            print(sys._getframe().f_code.co_name)
+            log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
             sample_rate = 25000000
             # Use 5000 samples to have a more accurate frequency estimate
             sample_count = int(round(sample_rate/10000*2))
@@ -433,7 +435,7 @@ class cyan:
 
         @staticmethod
         def phaseCoherencyAllBands():
-            print(sys._getframe().f_code.co_name)
+            log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
             sample_rate = 25000000
             sample_count = int(round(sample_rate/10000))
             tx_gain = 30
@@ -444,7 +446,7 @@ class cyan:
 
         @staticmethod
         def tx_trigger():
-            print(sys._getframe().f_code.co_name)
+            log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
             center_freq = 0
             sample_rate = 10204082
             tx_gain = 20
@@ -459,7 +461,7 @@ class cyan:
 
         @staticmethod
         def tx_rx_rate(channels):
-            print(sys._getframe().f_code.co_name)
+            log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
 
             descriptions = ["Max achievable combined rate on all ch"]
             # Higher rates are achievable outside of docker
@@ -482,7 +484,7 @@ class cyan:
 
         @staticmethod
         def rx_rate(channels):
-            print(sys._getframe().f_code.co_name)
+            log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
 
             descriptions = ["Max achievable rx rate on any number of ch", "Max achievable rx rate on all ch"]
             # Higher rates are achievable outside of docker
@@ -499,7 +501,7 @@ class cyan:
 
         @staticmethod
         def tx_rate(channels):
-            print(sys._getframe().f_code.co_name)
+            log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
 
             descriptions = ["Max achievable tx rate on any number of ch", "Max achievable tx rate on all ch"]
             # Higher rates are achievable outside of docker
@@ -517,7 +519,7 @@ class cyan:
     class mid_band:
         @staticmethod
         def wave_sweep():
-            print(sys._getframe().f_code.co_name)
+            log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
 
             sample_count = int(round(25000000/10000))
             tx_gain = 40
@@ -529,7 +531,7 @@ class cyan:
 
         @staticmethod
         def basic():
-            print(sys._getframe().f_code.co_name)
+            log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
 
             wave_freq = 1000000         # 1MHz
             sample_count = 256
@@ -542,7 +544,7 @@ class cyan:
 
         @staticmethod
         def wave_easy(channels):
-            print(sys._getframe().f_code.co_name)
+            log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
 
             channels = list(range(4))
             sample_rate = 10000000      # 10MSps
@@ -557,7 +559,7 @@ class cyan:
 
         @staticmethod
         def gain_tx():
-            print(sys._getframe().f_code.co_name)
+            log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
 
             wave_freq = 1000000
             sample_count = 1000
@@ -569,7 +571,7 @@ class cyan:
 
         @staticmethod
         def gain_rx():
-            print(sys._getframe().f_code.co_name)
+            log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
 
             wave_freq = 1000000
             sample_count = 1000
@@ -581,7 +583,7 @@ class cyan:
 
         @staticmethod
         def rx_uhd_tune():
-            print(sys._getframe().f_code.co_name)
+            log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
             channels = list(range(4))
             wave_freq = 1000000
             sample_count = 10000
@@ -594,7 +596,7 @@ class cyan:
 
         @staticmethod
         def tx_uhd_tune():
-            print(sys._getframe().f_code.co_name)
+            log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
             channels = list(range(4))
             wave_freq = 1000000
             sample_count = 10000
@@ -610,7 +612,7 @@ class cyan:
     class hi_band:
         @staticmethod
         def wave_sweep():
-            print(sys._getframe().f_code.co_name)
+            log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
 
             sample_count = int(round(25000000/10000))
             tx_gain = 50
@@ -622,7 +624,7 @@ class cyan:
 
         @staticmethod
         def wave_easy(channels):
-            print(sys._getframe().f_code.co_name)
+            log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
 
             channels = list(range(4))
             sample_rate = 9803922
@@ -637,7 +639,7 @@ class cyan:
 
         @staticmethod
         def basic():
-            print(sys._getframe().f_code.co_name)
+            log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
 
             wave_freq = 1000000
             sample_count = 256
@@ -650,7 +652,7 @@ class cyan:
 
         @staticmethod
         def gain_tx():
-            print(sys._getframe().f_code.co_name)
+            log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
 
             wave_freq = 1000000
             sample_count = 1000
@@ -662,7 +664,7 @@ class cyan:
 
         @staticmethod
         def gain_rx():
-            print(sys._getframe().f_code.co_name)
+            log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
 
             wave_freq = 1000000
             sample_count = 1000
@@ -676,7 +678,7 @@ class chestnut:
     class lo_band:
         @staticmethod
         def passband_flatness_test():
-            print(sys._getframe().f_code.co_name)
+            log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
             channels = list(range(4))
             sample_count = int(round(25000000/10000))
             tx_gain = 25
@@ -688,7 +690,7 @@ class chestnut:
 
         @staticmethod
         def buffer_exhaust_test():
-            print(sys._getframe().f_code.co_name)
+            log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
             channels = list(range(4))
             sample_count = int(round(25000000/10000)+4700000)
             tx_gain = 40
@@ -700,7 +702,7 @@ class chestnut:
 
         @staticmethod
         def wave_sweep():
-            print(sys._getframe().f_code.co_name)
+            log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
 
             sample_count = int(round(25000000/10000))
             tx_gain = 40
@@ -712,7 +714,7 @@ class chestnut:
 
         @staticmethod
         def quick(channels):
-            print(sys._getframe().f_code.co_name)
+            log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
 
             channels = list(range(channels))
             wave_freq = 1000000         # 1MHz
@@ -725,7 +727,7 @@ class chestnut:
 
         @staticmethod
         def basic():
-            print(sys._getframe().f_code.co_name)
+            log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
 
             wave_freq = 1000000         # 1MHz
             sample_count = 256
@@ -737,7 +739,7 @@ class chestnut:
 
         @staticmethod
         def gain_rx():
-            print(sys._getframe().f_code.co_name)
+            log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
 
             wave_freq = 1000000
             sample_count = 1000
@@ -749,7 +751,7 @@ class chestnut:
 
         @staticmethod
         def gain_tx():
-            print(sys._getframe().f_code.co_name)
+            log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
 
             wave_freq = 1000000
             sample_count = 1000
@@ -761,7 +763,7 @@ class chestnut:
 
         @staticmethod
         def phaseCoherency():
-            print(sys._getframe().f_code.co_name)
+            log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
             sample_rate = 25000000
             # Use 5000 samples to have a more accurate frequency estimate
             sample_count = int(round(sample_rate/10000*2))
@@ -774,7 +776,7 @@ class chestnut:
 
         @staticmethod
         def tx_trigger():
-            print(sys._getframe().f_code.co_name)
+            log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
             center_freq = 0
             sample_rate = 10204082
             tx_gain = 20
@@ -789,7 +791,7 @@ class chestnut:
 
         @staticmethod
         def tx_rx_rate(channels):
-            print(sys._getframe().f_code.co_name)
+            log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
 
             descriptions = ["Max achievable combined rate on all ch"]
             # Higher rates are achievable outside of docker
@@ -812,7 +814,7 @@ class chestnut:
 
         @staticmethod
         def rx_rate(channels):
-            print(sys._getframe().f_code.co_name)
+            log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
 
             descriptions = ["Max achievable rx rate on any number of ch", "Max achievable rx rate on all ch"]
             # Higher rates are achievable outside of docker
@@ -829,7 +831,7 @@ class chestnut:
 
         @staticmethod
         def tx_rate(channels):
-            print(sys._getframe().f_code.co_name)
+            log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
 
             descriptions = ["Max achievable tx rate on any number of ch", "Max achievable tx rate on all ch"]
             # Higher rates are achievable outside of docker
@@ -847,7 +849,7 @@ class chestnut:
     class mid_band:
         @staticmethod
         def wave_sweep():
-            print(sys._getframe().f_code.co_name)
+            log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
 
             sample_count = int(round(25000000/10000))
             tx_gain = 40
@@ -859,7 +861,7 @@ class chestnut:
 
         @staticmethod
         def basic():
-            print(sys._getframe().f_code.co_name)
+            log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
 
             wave_freq = 1000000         # 1MHz
             sample_count = 256
@@ -872,7 +874,7 @@ class chestnut:
 
         @staticmethod
         def wave_easy(channels):
-            print(sys._getframe().f_code.co_name)
+            log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
 
             channels = list(range(4))
             sample_rate = 10000000      # 10MSps
@@ -887,7 +889,7 @@ class chestnut:
 
         @staticmethod
         def gain_tx():
-            print(sys._getframe().f_code.co_name)
+            log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
 
             wave_freq = 1000000
             sample_count = 1000
@@ -899,7 +901,7 @@ class chestnut:
 
         @staticmethod
         def gain_rx():
-            print(sys._getframe().f_code.co_name)
+            log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
 
             wave_freq = 1000000
             sample_count = 1000
@@ -911,7 +913,7 @@ class chestnut:
 
         @staticmethod
         def rx_uhd_tune():
-            print(sys._getframe().f_code.co_name)
+            log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
             channels = list(range(4))
             wave_freq = 1000000
             sample_count = 10000
@@ -924,7 +926,7 @@ class chestnut:
 
         @staticmethod
         def tx_uhd_tune():
-            print(sys._getframe().f_code.co_name)
+            log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
             channels = list(range(4))
             wave_freq = 1000000
             sample_count = 10000
@@ -940,7 +942,7 @@ class chestnut:
     class hi_band:
         @staticmethod
         def wave_sweep():
-            print(sys._getframe().f_code.co_name)
+            log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
 
             sample_count = int(round(25000000/10000))
             tx_gain = 50
@@ -952,7 +954,7 @@ class chestnut:
 
         @staticmethod
         def wave_easy(channels):
-            print(sys._getframe().f_code.co_name)
+            log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
 
             channels = list(range(4))
             sample_rate = 9803922
@@ -967,7 +969,7 @@ class chestnut:
 
         @staticmethod
         def basic():
-            print(sys._getframe().f_code.co_name)
+            log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
 
             wave_freq = 1000000
             sample_count = 256
@@ -980,7 +982,7 @@ class chestnut:
 
         @staticmethod
         def gain_tx():
-            print(sys._getframe().f_code.co_name)
+            log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
 
             wave_freq = 1000000
             sample_count = 1000
@@ -992,7 +994,7 @@ class chestnut:
 
         @staticmethod
         def gain_rx():
-            print(sys._getframe().f_code.co_name)
+            log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
 
             wave_freq = 1000000
             sample_count = 1000

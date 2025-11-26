@@ -2,6 +2,7 @@ import os
 from common import pdf_report
 from common import generator as gen
 from common import test_args
+from common import log
 import sys
 import time
 
@@ -56,7 +57,7 @@ def build_report():
     report.insert_title_page("Tx Rx Rate Test")
     report.draw_from_buffer()
     report.save()
-    print("PDF report saved at " + report.get_filename())
+    log.pvpkg_log_info("TX_RX_RATE", "PDF report saved at " + report.get_filename())
 
 def main(iterations):
     for it in iterations:
@@ -76,7 +77,7 @@ elif(targs.product == "Tate" or targs.product == "BasebandTate"):
     main(gen.cyan.lo_band.tx_rx_rate(4))
 else:
     test_fail = 1
-    print("Error: invalid product specified")
+    log.pvpkg_log_error("TX_RX_RATE", "Invalid product specified")
 
 build_report()
 # sys.exit only takes values in range 0-255 benchmark_rate returns EXIT_FAILURE which may be > 255. If that happens replace the value with 1
