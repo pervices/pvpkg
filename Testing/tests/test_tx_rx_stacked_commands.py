@@ -80,7 +80,7 @@ def test(it, data):
             likeness = area / areas[0]
             frame_results.append(round(likeness, 8))
 
-            log.pvpkg_log_info("TX_RX_STACKED_COMMANDS", "\tframe %d: aboslute area: likeness %f" % (i, likeness))
+            log.pvpkg_log("\tframe %d: aboslute area: likeness %f" % (i, likeness))
 
             plt.plot(frame_data, label="Frame {}".format(i))
 
