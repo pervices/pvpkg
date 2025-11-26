@@ -24,22 +24,19 @@ class LevelFilter(logging.Filter):
     def filter(self, record):
         return record.levelno <= self.level
 
-class LogFormatter(logging.Formatter):
-    """
-    Formatter to only apply custom format when a component is provided.
-    """
-    def format(self, record):
-        s = record.msg
-        if record.component:
-            s = super().format(record)
-        if not record.end:
-            s.replace("a", "b")
-        return s
-
 class LogHandler(logging.StreamHandler):
     """
-    Subclassed StreamHandler to replace the message terminator with a custom value.
+    Custom StreamHandler to use custom format when component is given
+    and to replace the message terminator with a custom value.
     """
+    def format(self, record):
+        # If no component, then use the default formatter instead of the configured one
+        if record.component:
+            fmt = self.formatter
+        else:
+            fmt = logging.Formatter()
+        return fmt.format(record)
+
     def emit(self, record):
         self.terminator = record.end
         super().emit(record)
@@ -55,7 +52,6 @@ logger_config = {
     },
     "formatters": {
         "simple": {
-            "()": LogFormatter,
             "format": "%(colour)s[%(levelname)s] [%(component)s]" + RESET + " %(message)s",
         }
     },
@@ -97,7 +93,6 @@ def pvpkg_log_info(component, message, end="\n"):
     """
     logger.info(message, extra={ 'component': component, 'colour': GREEN, 'end': end })
 
-# FORMAT: [<LOG LEVEL>] [<COMPONENT>] <MESSAGE>...
 def pvpkg_log_warning(component, message, end="\n"):
     """
     Print WARNING level log message to stdout.
@@ -131,3 +126,4 @@ def pvpkg_log(message, level=logging.INFO, end="\n"):
     end: String appended after message. Defaults to a newline.
     """
     logger.log(level, message, extra = { 'component': None, 'end': end })
+
