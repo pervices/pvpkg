@@ -52,7 +52,7 @@ logger_config = {
     },
     "formatters": {
         "simple": {
-            "format": "%(colour)s[%(levelname)s] [%(component)s]" + RESET + " %(message)s",
+            "format": "%(before)s%(colour)s[%(levelname)s] [%(component)s]" + RESET + " %(message)s",
         }
     },
     "handlers": {
@@ -85,50 +85,53 @@ logger = logging.getLogger("pvpkg_logger");
 logger.setLevel(logging.INFO)
 
 # Logging functions
-def pvpkg_log_info(component, message, end="\n"):
+def pvpkg_log_info(component, message, before="", end="\n"):
     """
     Print INFO level log message.
-    Messages follow format:
-        [INFO] [<COMPONENT>] <MESSAGE>...<end>
+    Output follows format:
+        <before>[INFO] [<COMPONENT>] <MESSAGE>...<end>
 
+    before: String prepended before rest of output.
     end: String appended after message. Defaults to a newline.
     """
-    logger.info(message, extra={ 'component': component, 'colour': GREEN, 'end': end })
+    logger.info(message, extra={ 'component': component, 'colour': GREEN, 'before': before, 'end': end })
 
-def pvpkg_log_warning(component, message, end="\n"):
+def pvpkg_log_warning(component, message, before="", end="\n"):
     """
     Print WARNING level log message.
-    Messages follow format:
-        [WARNING] [<COMPONENT>] <MESSAGE>...<end>
+    Output follows format:
+        <before>[WARNING] [<COMPONENT>] <MESSAGE>...<end>
 
+    before: String prepended before rest of output.
     end: String appended after message. Defaults to a newline.
     """
-    logger.warning(message, extra={ 'component': component, 'colour': YELLOW, 'end': end })
+    logger.warning(message, extra={ 'component': component, 'colour': YELLOW, 'before': before, 'end': end })
 
-def pvpkg_log_error(component, message, end="\n"):
+def pvpkg_log_error(component, message, before="", end="\n"):
     """
     Print ERROR level log message.
-    Messages follow format:
-        [ERROR] [<COMPONENT>] <MESSAGE>...<end>
-    
+    Output follows format:
+        <before>[ERROR] [<COMPONENT>] <MESSAGE>...<end>
+
+    before: String prepended before rest of output.
     end: String appended after message. Defaults to a newline.
     """
-    logger.error(message, extra={ 'component': component, 'colour': RED, 'end': end })
+    logger.error(message, extra={ 'component': component, 'colour': RED, 'before': before, 'end': end })
 
-def pvpkg_log(message, level=logging.INFO, end="\n"):
+def pvpkg_log(message, level=logging.INFO, before="", end="\n"):
     """
     Print <level> log message (defaults to INFO level) *without* formatting.
     Acts as a replacement for print() but outputs to whatever the logger is configured to.
     Useful for outputs with sensitive formatting like tables, where the "[<LOG LEVEL>] [<COMPONENT>]" prefix is unwanted.
-    Messages follow format:
-        <Message>...<end>
+    Output follows format:
+        <before><Message>...<end>
 
     level options:
         DEBUG: 10
         INFO: 20
         WARNING: 30
         ERROR: 40
-
+    before: String prepended before rest of output.
     end: String appended after message. Defaults to a newline.
     """
-    logger.log(level, message, extra = { 'component': None, 'end': end })
+    logger.log(level, message, extra = { 'component': None, 'before': before, 'end': end })
