@@ -370,17 +370,17 @@ def main():
         summary_table.append([it["center_freq"], it["wave_freq"], boolToWord(freq_overall_res), boolToWord(ampl_overall_res), boolToWord(phase_overall_res)])
 
         # Print data and results table to console
-        log.pvpkg_log("\nFrequency Data:")
+        log.pvpkg_log_info("TX_RX_PHASE_2", "\nFrequency Data:")
         log.pvpkg_log(freq_df.to_markdown(index=True))
-        log.pvpkg_log("\nAmplitude Data:")
+        log.pvpkg_log_info("TX_RX_PHASE_2", "\nAmplitude Data:")
         log.pvpkg_log(ampl_df.to_markdown(index=True))
-        log.pvpkg_log("\nPhase Data:")
+        log.pvpkg_log_info("TX_RX_PHASE_2", "\nPhase Data:")
         log.pvpkg_log(phase_df.to_markdown(index=True))
-        log.pvpkg_log("\nFrequency Results:")
+        log.pvpkg_log_info("TX_RX_PHASE_2", "\nFrequency Results:")
         log.pvpkg_log(freq_res.to_markdown(index=False))
-        log.pvpkg_log("\nAmplitude Results:")
+        log.pvpkg_log_info("TX_RX_PHASE_2", "\nAmplitude Results:")
         log.pvpkg_log(ampl_res.to_markdown(index=False))
-        log.pvpkg_log("\nPhase Results:")
+        log.pvpkg_log_info("TX_RX_PHASE_2", "\nPhase Results:")
         log.pvpkg_log(phase_res.to_markdown(index=False))
 
         # Add plots to the report
