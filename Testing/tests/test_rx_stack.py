@@ -115,7 +115,7 @@ def main():
         expect_sample_count = sample_count * (end - start)
         actual_sample_count = len((vsnk[channel].data()))
 
-        log.pvpkg_log_info("RX_STACK", "The expected sample count and the actual sample count are:", expect_sample_count,actual_sample_count)
+        log.pvpkg_log_info("RX_STACK", "The expected sample count and the actual sample count are: {} {}".format(expect_sample_count,actual_sample_count))
         test_table.append([str(channel), str(expect_sample_count), str(actual_sample_count), bool_to_passfail(expect_sample_count == actual_sample_count)])
 
         #Assert that both are true (or make a global pass bool)

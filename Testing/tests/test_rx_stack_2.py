@@ -147,10 +147,10 @@ def main():
     ch_2_actual_array=np.asarray(ch_2_array)
     ch_3_actual_array=np.asarray(ch_3_array)
     ch_4_actual_array=np.asarray(ch_4_array)
-    log.pvpkg_log_info("RX_STACK_2", "The collected channel 1 sample count array is:", ch_1_actual_array)
-    log.pvpkg_log_info("RX_STACK_2", "The collected channel 2 sample count array is:", ch_2_actual_array)
-    log.pvpkg_log_info("RX_STACK_2", "The collected channel 3 sample count array is:", ch_3_actual_array)
-    log.pvpkg_log_info("RX_STACK_2", "The collected channel 4 sample count array is:", ch_4_actual_array)
+    log.pvpkg_log_info("RX_STACK_2", "The collected channel 1 sample count array is: " + ch_1_actual_array)
+    log.pvpkg_log_info("RX_STACK_2", "The collected channel 2 sample count array is: " + ch_2_actual_array)
+    log.pvpkg_log_info("RX_STACK_2", "The collected channel 3 sample count array is: " + ch_3_actual_array)
+    log.pvpkg_log_info("RX_STACK_2", "The collected channel 4 sample count array is: " + ch_4_actual_array)
 
     # PDF report result tables
     table_data_ch1_array = [['0']*len(ch_1_array)]
