@@ -330,6 +330,7 @@ def tx_rx_longterm_rate():
     yield locals()
 
 def dump(iteration):
+    log.pvpkg_log_info("GENERATOR", "")
     for key, value in iteration.items():
         log.pvpkg_log("%20s : %r" % (key, value))
 
