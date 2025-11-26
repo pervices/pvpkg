@@ -109,7 +109,7 @@ def pvpkg_log_error(component, message, end="\n"):
     """
     logger.error(message, extra={ 'component': component, 'colour': RED, 'end': end })
 
-def pvpkg_log(message, level=logging.INFO, end="\n"):
+def pvpkg_log(message, level=logging.INFO, start="", end="\n"):
     """
     Print <level> (default INFO) log message to stdout *without* formatting.
     Acts as a replacement for print() but outputs to whatever the logger is configured to.
