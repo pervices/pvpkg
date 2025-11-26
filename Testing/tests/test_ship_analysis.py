@@ -13,6 +13,7 @@ from common import sigproc
 from common import engine
 from common import generator as gen
 from common import crimson
+from common import log
 from retrying import retry
 import numpy as np
 import matplotlib.pyplot as plt
@@ -39,7 +40,7 @@ directory = os.fsencode(path)
 #CF_table_2=''.join('"' + item + '"' for item in CF_table)
 #print(CF_table_2)
 CF_table=["CF_50000000_", "CF_300000000_", "CF_600000000_", "CF_1200000000_", "CF_2400000000_", "CF_4000000000_", "CF_5000000000_", "CF_5500000000_"] #from generator program TODO: have this automatically taken from gen file
-print(len(CF_table))
+log.pvpkg_log_info("SHIP_ANALYSIS", len(CF_table))
 #WF_table=["WF_-30000000_", "WF_160000000_", "WF_-162000000_", "WF_162000000_"]
 center_freq_array=[]
 wave_freq_array=[]
@@ -52,7 +53,7 @@ for i in range(len(CF_table)):
     IQ_array=[]
     channels_array=[]
     for file in os.listdir(directory):
-        print('the file name is', file)
+        log.pvpkg_log_info("SHIP_ANALYSIS", 'the file name is', file)
         filename = os.fsdecode(file)
         #channels_array=[]
         if filename.endswith(".dat") and CF_table[i] in filename:
@@ -125,7 +126,7 @@ for i in range(len(CF_table)):
 
 x=0      
 for I, Q in zip(I_array_2, Q_array_2):
-    print(x)
+    log.pvpkg_log(x)
     
     
     plt.figure(1)
@@ -296,10 +297,10 @@ peaks_fx_array_np=np.asarray(peaks_fx_array)
 x=0
 for Fx, Fy in zip(xf_array_2, ywf_array_normalized):
     x+=len(channels_array)
-    print("the value of x 1 is",x)
+    log.pvpkg_log_info("SHIP_ANALYSIS", "the value of x 1 is",x)
     for f,NF in zip(xf_array_2, avg_noise_floor_array):
        
-        print("the value of x 2 is",x)
+        log.pvpkg_log_info("SHIP_ANALYSIS", "the value of x 2 is",x)
         plt.figure(3)
         fig3, axis= plt.subplots(2,2, figsize=(20,15))    
         plt.figtext(0.1 ,0,("wave_Freq=",wave_freq, "center_freq=", center_freq_array[x], "sample rate=", sample_rate,"gain=",gain))
@@ -327,7 +328,7 @@ for Fx, Fy in zip(xf_array_2, ywf_array_normalized):
         
         
         for j in ywf_max_array_2:
-            print('the value is',j)
+            log.pvpkg_log_info("SHIP_ANALYSIS", 'the value is',j)
             i_new=0
             j_new1=j[0]
             j_new2=j[1]

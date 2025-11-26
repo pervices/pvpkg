@@ -16,6 +16,8 @@ from PIL import Image
 from io import BytesIO
 from reportlab.lib.utils import ImageReader
 
+from . import log
+
 class ClassicShipTestReport:
     c = None            # The Canvas
     w, h = letter       # 612, 792
@@ -107,7 +109,7 @@ class ClassicShipTestReport:
             elif i[0] == "pagebreak":
                 self.new_page()
             else:
-                print("Wrong element type in report buffer")
+                log.pvpkg_log_error("PDF_REPORT", "Wrong element type in report buffer")
 
     """
         Insert an image that spans the width of a page
@@ -144,11 +146,11 @@ class ClassicShipTestReport:
         try:
             self.c.drawImage(images[0], 50, self.cursor_y, 250, 187)
         except:
-            print("Left image not found")
+            log.pvpkg_log_error("PDF_REPORT", "Left image not found")
         try:
             self.c.drawImage(images[1], 312, self.cursor_y, 250, 187)
         except:
-            print("Right image not found")
+            log.pvpkg_log_error("PDF_REPORT", "Right image not found")
 
     """
         Insert an array of four images
@@ -630,32 +632,32 @@ if __name__ == "__main__":
         test_pic_data = open(os.getcwd() + "/test-picture.png", "rb")
         test_pic = ImageReader(test_pic_data)
     except:
-        print("cannot find " + os.getcwd() + "/test-picture.png")
+        log.pvpkg_log_error("PDF_REPORT", "cannot find " + os.getcwd() + "/test-picture.png")
         pass
 
     try:
         two_pictures = [test_pic, test_pic]
         report.buffer_put("image_double", two_pictures, desc="Double Picture grid")
     except:
-        print("Cant draw double pictues")
+        log.pvpkg_log_error("PDF_REPORT", "Can't draw double pictues")
 
     try:
         four_pictures = [test_pic, test_pic, test_pic, test_pic]
         report.buffer_put("image_quad", four_pictures, desc="Quadruple Picture grid")
     except:
-        print("Cant draw quadruple pictues")
+        log.pvpkg_log_error("PDF_REPORT", "Can't draw quadruple pictues")
 
     try:
         eight_pictures = [test_pic, test_pic, test_pic, test_pic, test_pic, test_pic, test_pic, test_pic]
         report.buffer_put("image_octo", eight_pictures, desc="Octuple Picture grid")
     except:
-        print("Cant draw Octuple pictues")
+        log.pvpkg_log_error("PDF_REPORT", "Can't draw Octuple pictues")
 
     try:
         eight_pictures = [test_pic, test_pic, test_pic, test_pic, test_pic, test_pic, test_pic, test_pic]
         report.buffer_put("image_list_dynamic", eight_pics, desc="Dynamic image list - 8")
     except:
-        print("Cant draw dynamic image list pictues")
+        log.pvpkg_log_error("PDF_REPORT", "Can't draw dynamic image list pictues")
 
     test_long_table = [
         ["Run", "Baseline A", "Diff AB", "Diff AC", "Diff AD"],

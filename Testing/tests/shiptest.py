@@ -3,6 +3,7 @@
 from common import sigproc
 from common import engine
 from common import generator as gen
+from common import log
 
 #GNU radio
 from gnuradio import uhd
@@ -75,10 +76,10 @@ num_output_waves = args.displayed_waves
 try:
     assert 1 <= num_output_waves <= 4
 except AssertionError:
-    print("ERROR: Can only display 1 to 4 waves per graph. Try again: ")
+    log.pvpkg_log_error("SHIPTEST", "Can only display 1 to 4 waves per graph. Try again: ")
     num_output_waves = int(input("How many waves do you want shown on IQ graphs? "))
 except ValueError:
-    print("ERROR: Please only input integers. Try again: ")
+    log.pvpkg_log_error("SHIPTEST", "Please only input integers. Try again: ")
     num_output_waves = int(input("How many waves do you want shown on IQ graphs? "))
 
 sigfigs = args.sigfigs
@@ -155,7 +156,7 @@ elif(product == 'b'):
 
 if(os.system('ping 192.168.10.2 -c 1') != 0):
     # 0 exit code is successful ping - the reboot did not work
-    print("[FAILURE]: unit did not respond to ping.")
+    log.pvpkg_log_error("SHIPTEST", "[FAILURE]: unit did not respond to ping.")
     sys.exit(1)
 #Make sure the unit can be rebooted by software - if not usually caused by pinched wire during assembly
 #issue the reboot command, note that it sets the reboot 1 minute in the future
@@ -165,10 +166,10 @@ time.sleep(70)
 #the unit should be rebooting, make sure ping to MGMT fails
 if(os.system('ping 192.168.10.2 -c 1') == 0):
     # 0 exit code is successful ping - the reboot did not work
-    print("[FAILURE]: after reboot command, unit still responded to ping.")
+    log.pvpkg_log_error("SHIPTEST", "[FAILURE]: after reboot command, unit still responded to ping.")
     sys.exit(1)
 
-print("Waiting for reboot to complete")
+log.pvpkg_log_info("SHIPTEST", "Waiting for reboot to complete")
 #wait for the unit to come back up
 
 server_up = False
@@ -180,9 +181,9 @@ while (server_up == False and elapsed < 180):
         time.sleep(1)
         elapsed += 1
 if(server_up):
-    print("reboot complete")
+    log.pvpkg_log_info("SHIPTEST", "reboot complete")
 else:
-    print("[FAILURE]: after reboot, SDR did not come back online before timeout.")
+    log.pvpkg_log_error("SHIPTEST", "[FAILURE]: after reboot, SDR did not come back online before timeout.")
     sys.exit(1)
 
 #Using the terminal to pull unit info
@@ -217,7 +218,7 @@ time.append(subprocess.getstatusoutput("cat hold.txt | grep 'Fuse03' | cut --com
 time.append(subprocess.getstatusoutput("cat hold.txt | grep 'GCC' | cut --complement -d ':' -f1")[1])
 time_eep = subprocess.getstatusoutput("cat shiptest_out.txt | grep time/eeprom -A 1 | tail -n 1 | cut -d ':' -f2- | grep -o -E 'SERIAL [A-Z]{1,2}'")[1]
 if len(re.findall("SERIAL [a-zA-Z]{1,2}", time_eep)) != 1:
-    print("[ERROR]: Time board EEPROM not programmed! EEPROM read: {}".format(time_eep))
+    log.pvpkg_log_error("SHIPTEST", "Time board EEPROM not programmed! EEPROM read: {}".format(time_eep))
     eeprom_fail = True
 time.append(time_eep)
 
@@ -238,7 +239,7 @@ for i, name in zip(range(num_channels), channel_names): #NOTE: This might be mor
     rx_info["RX: " + name].append(subprocess.getstatusoutput("cat hold.txt | grep 'GCC' | cut --complement -d ':' -f1")[1])
     rx_eep = subprocess.getstatusoutput("cat shiptest_out.txt | grep rx/{}/eeprom -A 1 | tail -n 1 | cut -d ':' -f2- | grep -o -E 'SERIAL [A-Z]{{1,2}}'".format(i))[1]
     if len(re.findall("SERIAL [a-zA-Z]{1,2}", rx_eep)) != 1:
-        print("[ERROR]: RX {} EEPROM not programmed! EEPROM read: {}".format(i, rx_eep))
+        log.pvpkg_log_error("SHIPTEST", "RX {} EEPROM not programmed! EEPROM read: {}".format(i, rx_eep))
         eeprom_fail = True
     rx_info["RX: " + name].append(rx_eep)
 
@@ -258,7 +259,7 @@ for i, name in zip(range(num_channels), channel_names):
     tx_info["TX: " + name].append(subprocess.getstatusoutput("cat hold.txt | grep 'GCC' | cut --complement -d ':' -f1")[1])
     tx_eep = subprocess.getstatusoutput("cat shiptest_out.txt | grep tx/{}/eeprom -A 1 | tail -n 1 | cut -d ':' -f2- | grep -o -E 'SERIAL [A-Z]{{1,2}}'".format(i))[1]
     if len(re.findall("SERIAL [a-zA-Z]{1,2}", tx_eep)) != 1:
-        print("[ERROR]: TX {} EEPROM not programmed! EEPROM read: {}".format(i, tx_eep))
+        log.pvpkg_log_error("SHIPTEST", "TX {} EEPROM not programmed! EEPROM read: {}".format(i, tx_eep))
         eeprom_fail = True
     tx_info["TX: " + name].append(tx_eep)
 
@@ -267,7 +268,7 @@ os.system("rm hold.txt")
 os.system("rm shiptest_out.txt")
 
 if eeprom_fail:
-    print("[FAILURE]: Not all board EEPROMs are programmed correctly.")
+    log.pvpkg_log_error("SHIPTEST", "[FAILURE]: Not all board EEPROMs are programmed correctly.")
     sys.exit(1)
 
 #Globals that will be changed later in the code - all -1 currently because they are dependent on the generator code
@@ -810,11 +811,11 @@ def main(iterations):
         tx_stack = [(5.0 , sample_rate)] #Equivalent to 1 second
         rx_stack = [(5.25, sample_count)] #TODO: Maybe add the burst start times to table - or title page
 
-        print("Started data collection for run " + str(counter))
+        log.pvpkg_log_info("SHIPTEST", "Started data collection for run " + str(counter))
 
         vsnk = engine.run(it["channels"], it["wave_freq"], it["sample_rate"], it["center_freq"], it["tx_gain"], it["rx_gain"], tx_stack, rx_stack)
 
-        print("Completed data collection for run " + str(counter))
+        log.pvpkg_log_info("SHIPTEST", "Completed data collection for run " + str(counter))
 
         period_samples = int(round(1/(it["wave_freq"]/it["sample_rate"])))
         begin_cutoff = int(period_samples*begin_cutoff_waves)
@@ -871,19 +872,19 @@ def main(iterations):
         #This variable ensures only the number of waves requested will appear on the plots
         plotted_samples = int(period_samples*num_output_waves)
 
-        print("Waiting for time fitting")
+        log.pvpkg_log_info("SHIPTEST", "Waiting for time fitting")
 
         for thread in time_fitting_threads:
             thread.join()
 
-        print("Completed curve fitting for run " + str(counter))
-        print("Waiting for fft")
+        log.pvpkg_log_info("SHIPTEST", "Completed curve fitting for run " + str(counter))
+        log.pvpkg_log_info("SHIPTEST", "Waiting for fft")
 
         # Moved here instead of later because of possible problematic interaction it matplotlib
         for thread in fft_threads:
             thread.join()
 
-        print("Completed fft for run " + str(counter))
+        log.pvpkg_log_info("SHIPTEST", "Completed fft for run " + str(counter))
 
         #PDF PREP: Doing the plotting of FFT and IQ prior to making pdf pages to enable having the "together plot" as the first page
         #Plotting IQ Data, but not putting on pdf
@@ -1166,33 +1167,33 @@ def main(iterations):
         # Checking if this iteration passed SNR
         snr_bools.append(checkSNRs(fft_snr))
         if strict_mode and not snr_bools[-1]:
-            print("SNR test failed on iteraion " + str(counter) + ". Ending test early")
+            log.pvpkg_log_error("SHIPTEST", "SNR test failed on iteraion " + str(counter) + ". Ending test early")
             strict_failed = True
 
 
         # Checking if this iteration passed the frequency check
         freq_bools.append(checkFreq(max_fours[:,0,0]))
         if strict_mode and not freq_bools[-1]:
-            print("Freq test failed on iteraion " + str(counter) + ". Ending test early")
+            log.pvpkg_log_error("SHIPTEST", "Freq test failed on iteraion " + str(counter) + ". Ending test early")
             strict_failed = True
 
         # Checking if this iteration passed the spur check
         spur_bools.append(checkSpur(max_fours, spur_check_threshold))
         if strict_mode and not spur_bools[-1]:
-            print("Spur test failed on iteraion " + str(counter) + ". Ending test early")
+            log.pvpkg_log_error("SHIPTEST", "Spur test failed on iteraion " + str(counter) + ". Ending test early")
             strict_failed = True
 
         # Checking if this iteration passed the relative gain check
         gain_bools.append(checkGainRelative(max_fours, gain_check_threshold))
         if strict_mode and not gain_bools[-1]:
-            print("Relative gain test failed on iteraion " + str(counter) + ". Ending test early")
+            log.pvpkg_log_error("SHIPTEST", "Relative gain test failed on iteraion " + str(counter) + ". Ending test early")
             strict_failed = True
 
         if(strict_failed):
             break
 
 
-    print("Data collection complete")
+    log.pvpkg_log_info("SHIPTEST", "Data collection complete")
 
     #Pass/Fail final page
     pdf.showPage()

@@ -4,6 +4,7 @@ from common import engine
 from common import generator as gen
 from common import pdf_report
 from common import test_args
+from common import log
 from retrying import retry
 import numpy as np
 import matplotlib.pyplot as plt
@@ -65,7 +66,7 @@ def test(it, data):
         like_real = (float(it["wave_freq"]) / fund_real)
         like_imag = (float(it["wave_freq"]) / fund_imag)
 
-        print("channel %2d: real %10.0f Hz (%8.5f) :: imag %10.0f Hz (%8.5f)" % (targs.channels[ch], fund_real, like_real, fund_imag, like_imag))
+        log.pvpkg_log("channel %2d: real %10.0f Hz (%8.5f) :: imag %10.0f Hz (%8.5f)" % (targs.channels[ch], fund_real, like_real, fund_imag, like_imag))
 
         plt.figure()
         plt.title("Channel {}".format(targs.channels[ch]), fontsize=14)
@@ -114,7 +115,7 @@ def build_report():
         add_summary_table(summary[0], summary[1])
     report.draw_from_buffer()
     report.save()
-    print("PDF report saved at " + report.get_filename())
+    log.pvpkg_log_info("TX_RX_FUNDAMENTAL_FREQUENCY", "PDF report saved at " + report.get_filename())
 
 
 ## SCRIPT LOGIC ##
@@ -133,7 +134,7 @@ elif(targs.product == "Lily"):
     main(gen.chestnut.mid_band.wave_sweep(), "Mid Band")
     main(gen.chestnut.hi_band.wave_sweep(), "High Band")
 else:
-    print("ERROR: unrecognized product argument", file=sys.stderr)
+    log.pvpkg_log_error("TX_RX_FUNDAMENTAL_FREQUENCY", "Unrecognized product argument")
     test_fail = 1
 
 build_report()

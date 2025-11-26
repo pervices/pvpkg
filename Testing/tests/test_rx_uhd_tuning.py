@@ -4,6 +4,7 @@ from common import engine
 from common import generator as gen
 from common import pdf_report
 from common import test_args
+from common import log
 import numpy as np
 import math
 import matplotlib.pyplot as plt
@@ -118,7 +119,7 @@ def build_report():
         add_summary_table(summary[0], summary[1])
     report.draw_from_buffer()
     report.save()
-    print("PDF report saved at " + report.get_filename())
+    log.pvpkg_log_info("RX_UHD_TUNING", "PDF report saved at " + report.get_filename())
 
 
 ## SCRIPT LOGIC ##
@@ -129,7 +130,7 @@ elif(targs.product == "Tate" or targs.product == "BasebandTate"):
 elif(targs.product == "Lily"):
     main(gen.chestnut.mid_band.rx_uhd_tune(), "")
 else:
-    print("ERROR: unrecognized product argument", file=sys.stderr)
+    log.pvpkg_log_error("RX_UHD_TUNING", "ERROR: unrecognized product argument")
     test_fail = 1
 build_report()
 sys.exit(test_fail)

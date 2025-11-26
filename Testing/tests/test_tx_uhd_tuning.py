@@ -4,6 +4,7 @@ from common import engine
 from common import generator as gen
 from common import pdf_report
 from common import test_args
+from common import log
 import numpy as np
 import math
 import matplotlib.pyplot as plt
@@ -120,7 +121,7 @@ def build_report():
         add_summary_table(summary[0], summary[1])
     report.draw_from_buffer()
     report.save()
-    print("PDF report saved at " + report.get_filename())
+    log.pvpkg_log_info("TX_UHD_TUNING", "PDF report saved at " + report.get_filename())
 
 
 ## SCRIPT LOGIC ##
@@ -129,12 +130,12 @@ if(targs.product == "Vaunt"):
 elif(targs.product == "Tate"):
     main(gen.cyan.mid_band.tx_uhd_tune(), "")
 elif(targs.product == "BasebandTate"):
-    print("Skipping TX UHD Tuning test for BasebandTate. The BBTX board is deliberately designed to not produce an LO, and this test is intended to ensure the LO is at the correct frequency.")
+    log.pvpkg_log_warning("TX_UHD_TUNING", "Skipping TX UHD Tuning test for BasebandTate. The BBTX board is deliberately designed to not produce an LO, and this test is intended to ensure the LO is at the correct frequency.")
     sys.exit(0)
 elif(targs.product == "Lily"):
     main(gen.chestnut.mid_band.tx_uhd_tune(), "")
 else:
-    print("ERROR: unrecognized product argument", file=sys.stderr)
+    log.pvpkg_log_error("TX_UHD_TUNING", "Unrecognized product argument")
     test_fail = 1
 build_report()
 sys.exit(test_fail)

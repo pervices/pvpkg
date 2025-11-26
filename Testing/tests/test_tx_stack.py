@@ -7,6 +7,7 @@ import sys
 from common import crimson
 from common import pdf_report
 from common import test_args
+from common import log
 
 #Setup argument parsing
 targs = test_args.TestArgs(testDesc="Tx Stack Test")
@@ -39,7 +40,7 @@ def main():
         sample_rate = 100e6
         sample_count = int(sample_rate)
     else:
-        print("ERROR: unrecognized product argument", file=sys.stderr)
+        log.pvpkg_log_error("TX_STACK", "Unrecognized product argument")
         test_fail = 1
 
 
@@ -118,6 +119,6 @@ report.insert_title_page("Tx Stack Test")
 main()
 report.draw_from_buffer()
 report.save()
-print("PDF report saved at " + report.get_filename())
+log.pvpkg_log_info("TX_STACK", "PDF report saved at " + report.get_filename())
 sys.exit(test_fail)
 

@@ -3,6 +3,7 @@ from common import engine
 from common import generator as gen
 from common import pdf_report
 from common import test_args
+from common import log
 import matplotlib.pyplot as plt
 import numpy as np
 import sys
@@ -21,7 +22,7 @@ def main(iterations, title="TX RX Gain Test") -> int:
         try:
             vsnk = engine.run(targs.channels, it["wave_freq"], it["sample_rate"], it["center_freq"], it["tx_gain"], it["rx_gain"], tx_stack, rx_stack)
         except Exception as err:
-            print("\x1b[31m" + "ERROR while gathering data\n Iteration: " + str(it) + "\nException: " + str(err) + "\x1b[0m")
+            log.pvpkg_log_error("TX_RX_GAIN", "\x1b[31m" + "ERROR while gathering data\n Iteration: " + str(it) + "\nException: " + str(err) + "\x1b[0m")
             fail_flag = 1
             continue
 
@@ -58,7 +59,7 @@ def main(iterations, title="TX RX Gain Test") -> int:
             images.append(img)
 
         iteration_areas.append(channel_areas)
-        print("the areas of {} for gain are: {}".format(targs.channels, iteration_areas))
+        log.pvpkg_log_info("TX_RX_GAIN", "The areas of {} for gain are: {}".format(targs.channels, iteration_areas))
         # Assert area is increasing per channel.
         desc = "Gain plot of channels {} for wave_freq = {} Hz at Tx gain {} and Rx gain {} : ".format(targs.channels, it["wave_freq"], it["tx_gain"], it["rx_gain"])
         data = [["Center Frequency (Hz)", "Wave Frequency (Hz)", "Sample Rate (SPS)", "Sample Count", "TX Gain (dB)", "RX Gain (dB)"],
@@ -93,7 +94,7 @@ def main(iterations, title="TX RX Gain Test") -> int:
                 # make sure the difference in area is significant
                 assert iteration_areas[b+1][a] - iteration_areas[b][a] > 1
             except:
-                print(sys.argv[0] + " unacceptable variation in gain")
+                log.pvpkg_log_error("TX_RX_GAIN", sys.argv[0] + " unacceptable variation in gain")
                 fail_flag = 1
                 current_test_only_fail_flag = 1
 
@@ -196,14 +197,14 @@ if __name__ == "__main__":
         ret = main(gen.hi_band_gain_rx(), "High Band RX Gain Test")
         test_status.append(["High Band RX Gain Test", to_pass_fail(ret)])
     else:
-        print("ERROR: unrecognized product argument", file=sys.stderr)
+        log.pvpkg_log_error("TX_RX_GAIN", "Unrecognized product argument")
         test_status.append(["Recognized product argument", to_pass_fail(1)])
 
     report.insert_text_large("Test Results")
     report.insert_table(test_status, 20)
     report.draw_from_buffer()
     report.save()
-    print("PDF report saved at " + report.get_filename())
+    log.pvpkg_log_info("TX_RX_GAIN", "PDF report saved at " + report.get_filename())
 
     for test in test_status:
         if "Fail" in test:
