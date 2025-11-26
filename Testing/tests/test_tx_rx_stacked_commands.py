@@ -61,7 +61,7 @@ def test(it, data):
     # Process.
     # Stacked commands vsnk channel extensions and must be indexed manually with sample_count.
     for ch, channel in enumerate(vsnk):
-        log.pvpkg_log_info("TX_RX_STACKED_COMMANDS", "channel %d" % targs.channels[ch])
+        log.pvpkg_log("channel %d" % targs.channels[ch])
         areas = []
         res = "pass"
         plt.figure()
