@@ -89,7 +89,7 @@ def pvpkg_log_info(component, message, before="", end="\n"):
     """
     Print INFO level log message.
     Output follows format:
-        <before>[INFO] [<COMPONENT>] <MESSAGE>...<end>
+        <before>[INFO] [<component>] <message>...<end>
 
     before: String prepended before rest of output.
     end: String appended after message. Defaults to a newline.
@@ -100,7 +100,7 @@ def pvpkg_log_warning(component, message, before="", end="\n"):
     """
     Print WARNING level log message.
     Output follows format:
-        <before>[WARNING] [<COMPONENT>] <MESSAGE>...<end>
+        <before>[WARNING] [<component>] <message>...<end>
 
     before: String prepended before rest of output.
     end: String appended after message. Defaults to a newline.
@@ -111,7 +111,7 @@ def pvpkg_log_error(component, message, before="", end="\n"):
     """
     Print ERROR level log message.
     Output follows format:
-        <before>[ERROR] [<COMPONENT>] <MESSAGE>...<end>
+        <before>[ERROR] [<component>] <message>...<end>
 
     before: String prepended before rest of output.
     end: String appended after message. Defaults to a newline.
@@ -124,7 +124,7 @@ def pvpkg_log(message, level=logging.INFO, before="", end="\n"):
     Acts as a replacement for print() but outputs to whatever the logger is configured to.
     Useful for outputs with sensitive formatting like tables, where the "[<LOG LEVEL>] [<COMPONENT>]" prefix is unwanted.
     Output follows format:
-        <before><Message>...<end>
+        <before><message>...<end>
 
     level options:
         DEBUG: 10
