@@ -243,7 +243,7 @@ def tx_trigger():
     sample_count = 480
     period = 20
     setpoint = 1000
-    start_time = 5
+    start_time = 5.25
     num_trigger = 20
     yield locals()
 
@@ -450,10 +450,10 @@ class cyan:
             center_freq = 0
             sample_rate = 10204082
             tx_gain = 20
-            sample_count = 400
+            sample_count = 384
             period = 20
             setpoint = 1000
-            start_time = 5
+            start_time = 5.25
             # Cyan buffer level requests have a resolution of 128 samples
             # In order to detect an off by 1 issue it must have more that that many samples
             num_trigger = 130
@@ -780,10 +780,10 @@ class chestnut:
             center_freq = 0
             sample_rate = 10204082
             tx_gain = 20
-            sample_count = 400
+            sample_count = 384
             period = 20
             setpoint = 1000
-            start_time = 5
+            start_time = 5.25
             # Cyan buffer level requests have a resolution of 128 samples
             # In order to detect an off by 1 issue it must have more that that many samples
             num_trigger = 130

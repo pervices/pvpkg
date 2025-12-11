@@ -63,8 +63,10 @@ def test(it):
         b.seek(0)
 
         buffer_filled = False
+        secondary_buffer_filled = False
         first_line = True
         previous_buffer_level = 0
+        buffer_filled_level = 0
 
         for line in lines:
             # Print lines so they end up in the logs
@@ -93,7 +95,11 @@ def test(it):
                 if buffer_filled:
                     log.pvpkg_log_error("TX_TRIGGER", "Discrepency in buffer level between channels")
                 else:
-                    log.pvpkg_log_error("TX_TRIGGER", "Discrepency in buffer level between channels while priming")
+                    #in the case of a channel not recieving the end of burst bytes we want an info message
+                    if row[-1] == 4:
+                        log.pvpkg_log_warning("TX_TRIGGER", "Discrepency of 4 between channel buffer levels could be caused by EOB packet yet to arrive")
+                    else:
+                        log.pvpkg_log_error("TX_TRIGGER", "Discrepency in buffer level between channels while priming")
                 test_fail = test_fail | 1
 
             for ch in range(len(ch_buf_info)):
@@ -123,25 +129,29 @@ def test(it):
                 # Record that the buffer has been filled to the desired level
                 if(row[0] >= it["setpoint"]):
                     buffer_filled = True
+                    buffer_filled_level = row[0]
 
                 previous_buffer_level = row[0]
 
             # During normal streaming between reads data should be consumed and the same amount of data should be sent to replace it
             else:
-                if row[0] != previous_buffer_level:
+                # once buffer is primed, UHD waits to send 4 byte EOB packet because buffer is above target level
+                if((buffer_filled_level - row[0] == 4)):
+                      secondary_buffer_filled = True
+                elif ((row[0] != previous_buffer_level) & (secondary_buffer_filled == False)):
                     log.pvpkg_log_error("TX_TRIGGER", "Incorrect number of samples consumed by trigger")
                     sample_count_error = True
                     test_fail = test_fail | 1
 
                 previous_buffer_level = row[0]
 
-    divergence_res = "Fail" if max_div != 0 else "Pass"
+    divergence_res = "Fail" if (max_div != 0 & max_div != 4) else "Pass"
     stale_data_res = "Fail" if stale_data else "Pass"
     priming_res = "Fail" if priming_error else "Pass"
     sample_count_res = "Fail" if sample_count_error else "Pass"
     trigger_res = "Fail" if trigger_error else "Pass"
 
-    results.append(["Max Divergence", max_div, "== 0", divergence_res])
+    results.append(["Max Divergence", max_div, "== 0 or 4 (E.O.B. not yet arrived)", divergence_res])
     results.append(["Stale data", "--", "Starting buffer level > 0", stale_data_res])
     results.append(["Dropped data while priming", "--", "During priming buffer level > buffer level before the previous send", priming_res])
     results.append(["Correct samples per trigger", "--", "During streaming buffer level after each trigger + send is the same", sample_count_res])
