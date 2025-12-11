@@ -68,7 +68,9 @@ def main(iterations, desc):
     data  = [["Center Freq", "Wave Freq", "Channel", "Result"]]
 
     for it in iterations:
-        test(it, data)
+        # Do not run for wave frequency=0
+        if it["wave_freq" != 0]:
+            test(it, data)
 
     global test_fail
     passband_flat = []
