@@ -69,7 +69,7 @@ def main(iterations, desc):
 
     for it in iterations:
         # Do not run for wave frequency=0
-        if it["wave_freq" != 0]:
+        if it["wave_freq"] != 0:
             test(it, data)
 
     global test_fail
