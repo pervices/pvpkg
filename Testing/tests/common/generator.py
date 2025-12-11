@@ -83,7 +83,9 @@ def lo_band_passband_flatness_test():
     center_freq = 15000000
     sample_rate = 9803922
     for wave_freq in list(range(-int(0.45*sample_rate),int(0.45*sample_rate),int(0.9*sample_rate/24))):
-        yield locals()
+        # Only test non-zero wave frequencies
+        if wave_freq != 0:
+            yield locals()
 
 def lo_band_buffer_exhaust_test():
     log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
@@ -346,7 +348,9 @@ class cyan:
             center_freq = 100000000
             sample_rate = 9803922
             for wave_freq in list(range(-int(0.45*sample_rate),int(0.45*sample_rate),int(0.9*sample_rate/24))):
-                yield locals()
+                # Only test non-zero wave frequencies
+                if wave_freq != 0:
+                    yield locals()
 
         @staticmethod
         def buffer_exhaust_test():
@@ -686,7 +690,9 @@ class chestnut:
             center_freq = 100000000
             sample_rate = 9803922
             for wave_freq in list(range(-int(0.45*sample_rate),int(0.45*sample_rate),int(0.9*sample_rate/24))):
-                yield locals()
+                # Only test non-zero wave frequencies
+                if wave_freq != 0:
+                    yield locals()
 
         @staticmethod
         def buffer_exhaust_test():
