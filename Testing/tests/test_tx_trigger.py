@@ -96,6 +96,7 @@ def test(it):
                 if buffer_filled:
                     log.pvpkg_log_error("TX_TRIGGER", "Discrepency in buffer level between channels")
                     max_div_fail = True
+                    test_fail = test_fail | 1
                 else:
                     #in the case of a channel not recieving the end of burst bytes we want an info message
                     if row[-1] == 4:
@@ -103,7 +104,7 @@ def test(it):
                     else:
                         log.pvpkg_log_error("TX_TRIGGER", "Discrepency in buffer level between channels while priming")
                         max_div_fail = True
-                test_fail = test_fail | 1
+                        test_fail = test_fail | 1
 
             for ch in range(len(ch_buf_info)):
                 # Update maximum buffer level
