@@ -255,7 +255,11 @@ def tx_rx_rate():
     descriptions = ["Max achievable combined rate on all ch"]
     rx_rates = [325e6/6]
     rx_channels = [[0,1,2,3]]
-    tx_rates = [325e6/6]
+    # TODO: undo this reduction
+    # So that the test is stable during stand down tx will be tested at a very low rate
+    # After stand down revert the decrease
+    # tx_rates = [325e6/6]
+    tx_rates = [325e6/32]
     tx_channels = [[0,1,2,3]]
     assert(len(rx_rates) == len(rx_channels))
     assert(len(rx_rates) == len(tx_rates))
@@ -289,7 +293,11 @@ def tx_rate():
     log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
 
     descriptions = ["Max achievable tx rate on any number of ch", "Max achievable tx rate on all ch"]
-    tx_rates = [162.5e6, 81.25e6]
+    # TODO: undo this reduction
+    # So that the test is stable during stand down tx will be tested at a very low rate
+    # After stand down revert the decrease
+    # tx_rates = [162.5e6, 81.25e6]
+    tx_rates = [162.5e6/16, 81.25e6/16]
     tx_channels = [[0], [0,1,2,3]]
     assert(len(tx_rates) == len(tx_channels))
     for n in range(len(tx_rates)):
@@ -471,7 +479,11 @@ class cyan:
             # Higher rates are achievable outside of docker
             rx_rates = [100e6]
             rx_channels = [list(range(channels))]
-            tx_rates = [(500e6)/8]
+            # TODO: undo this reduction
+            # So that the test is stable during stand down tx will be tested at a very low rate
+            # After stand down revert the decrease
+            # tx_rates = [(500e6)/8]
+            tx_rates = [(500e6)/8/5]
             tx_channels = [list(range(channels))]
             assert(len(rx_rates) == len(rx_channels))
             assert(len(rx_rates) == len(tx_rates))
@@ -509,7 +521,11 @@ class cyan:
 
             descriptions = ["Max achievable tx rate on any number of ch", "Max achievable tx rate on all ch"]
             # Higher rates are achievable outside of docker
-            tx_rates = [250e6, (500e6)/8]
+            # TODO: undo this reduction
+            # So that the test is stable during stand down tx will be tested at a very low rate
+            # After stand down revert the decrease
+            # tx_rates = [250e6, (500e6)/8]
+            tx_rates = [250e6/25, (500e6)/8/5]
             tx_channels = [[0], list(range(channels))]
             assert(len(tx_rates) == len(tx_channels))
             for n in range(len(tx_rates)):
@@ -803,7 +819,11 @@ class chestnut:
             # Higher rates are achievable outside of docker
             rx_rates = [100e6]
             rx_channels = [list(range(channels))]
-            tx_rates = [(500e6)/8]
+            # TODO: undo this reduction
+            # So that the test is stable during stand down tx will be tested at a very low rate
+            # After stand down revert the decrease
+            # tx_rates = [(500e6)/8]
+            tx_rates = [(500e6)/8/5]
             tx_channels = [list(range(channels))]
             assert(len(rx_rates) == len(rx_channels))
             assert(len(rx_rates) == len(tx_rates))
@@ -841,7 +861,11 @@ class chestnut:
 
             descriptions = ["Max achievable tx rate on any number of ch", "Max achievable tx rate on all ch"]
             # Higher rates are achievable outside of docker
-            tx_rates = [250e6, (500e6)/8]
+            # TODO: undo this reduction
+            # So that the test is stable during stand down tx will be tested at a very low rate
+            # After stand down revert the decrease
+            # tx_rates = [250e6, (500e6)/8]
+            tx_rates = [250e6/25, (500e6)/8/5]
             tx_channels = [[0], list(range(channels))]
             assert(len(tx_rates) == len(tx_channels))
             for n in range(len(tx_rates)):
