@@ -52,7 +52,7 @@ def test(it):
     summary_table.append([it["description"], "{:.2f}".format(it["rx_rate"]/1e6), str(it["rx_channel"]), result_string])
 
 def build_report():
-    report.insert_title_page("Tx Rx Rate Test")
+    report.insert_title_page("Rx Rate Test")
     report.draw_from_buffer()
     report.save()
     log.pvpkg_log_info("RX_RATE", "PDF report saved at " + report.get_filename())
