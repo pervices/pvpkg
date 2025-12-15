@@ -56,7 +56,8 @@ def test(it):
     priming_error = False
     #Flag for if an incorrect number of samples consumed per trigger
     sample_count_error = False
-
+    #Flag for if maximum divergence between channels is not 0 or 4
+    max_div_fail = False
 
     with open(name, "r") as b:
         lines = b.readlines()
@@ -94,12 +95,14 @@ def test(it):
             if row[-1] != 0:
                 if buffer_filled:
                     log.pvpkg_log_error("TX_TRIGGER", "Discrepency in buffer level between channels")
+                    max_div_fail = True
                 else:
                     #in the case of a channel not recieving the end of burst bytes we want an info message
                     if row[-1] == 4:
-                        log.pvpkg_log_warning("TX_TRIGGER", "Discrepency of 4 between channel buffer levels could be caused by EOB packet yet to arrive")
+                        log.pvpkg_log_info("TX_TRIGGER", "Discrepency of 4 between channel buffer levels could be caused by EOB packet yet to arrive")
                     else:
                         log.pvpkg_log_error("TX_TRIGGER", "Discrepency in buffer level between channels while priming")
+                        max_div_fail = True
                 test_fail = test_fail | 1
 
             for ch in range(len(ch_buf_info)):
@@ -145,7 +148,7 @@ def test(it):
 
                 previous_buffer_level = row[0]
 
-    divergence_res = "Fail" if (max_div != 0 & max_div != 4) else "Pass"
+    divergence_res = "Fail" if max_div_fail else "Pass"
     stale_data_res = "Fail" if stale_data else "Pass"
     priming_res = "Fail" if priming_error else "Pass"
     sample_count_res = "Fail" if sample_count_error else "Pass"
