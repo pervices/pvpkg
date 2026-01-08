@@ -342,7 +342,7 @@ def main():
         phase_df = pd.concat([phase_df.describe().loc[['min', 'max', 'mean', 'std']], phase_df])
         offset_df = pd.concat([offset_df.describe().loc[['min', 'max', 'mean', 'std']], offset_df])
 
-        
+        plot_cmp_amplitudes(ampl_df)
 
         # Increase the std_ratio if the number of iterations implies a substantially smaller std_deviation
         global std_ratio
