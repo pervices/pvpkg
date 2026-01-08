@@ -6,6 +6,7 @@ from common import test_args
 from common import log
 
 import matplotlib.pyplot as plt
+import matplotlib.axes as mp_ax
 from scipy.optimize import curve_fit
 from scipy import stats
 import math
@@ -172,6 +173,38 @@ def boolToWord(word):
     else:
         return("Fail")
 
+# Compare 
+def plot_cmp_amplitudes(amplitudes: pd.DataFrame):
+    plt.suptitle("Amplitudes vs Runs")
+    os.chdir(test_plots)
+    fig, axes = plt.subplots(2, 2)
+    for ch in range(len(targs.channels)):
+        subplot_row = int(ch / 2)
+        ax: mp_ax.Axes = axes[subplot_row][ch%2]
+        ax.set_title(ch)
+        ax.set_xlabel("Run")
+        ax.set_ylabel("Amplitude")
+        min_amp = amplitudes.loc["min"][ch]
+        max_amp = amplitudes.loc["max"][ch]
+        mean_amp = amplitudes.loc["mean"][ch]
+        for run in range(num_runs):
+            # Plot amplitude for run
+            ax.plot(run, amplitudes[run][ch], '.', color='magenta', label='Amplitude')
+            ax.plot(run, min_amp, '-', color='k', label='Min amp.')
+            ax.plot(run, max_amp, '-', color='k', label='Max amp.')
+            ax.plot(run, mean_amp, '-', color='k', label='Mean amp.')
+        plt.tight_layout(pad=0.4, w_pad=0.5, h_pad=1.0)
+        os.chdir(test_plots)
+        fig.savefig(("ch{}_amps".format(ch) + ".svg"))
+        s1 = report.get_image_io_stream()
+        fig.savefig(s1, format="png", dpi=300)
+        img1 = report.get_image_from_io_stream(s1)
+        plt.clf()
+        report.buffer_put("image", img1, "Channel " + str(ch))
+
+    log.pvpkg_log_info("TX_RX_PHASE_2", "Amp figures has been put in buffer")
+
+
 def main():
     # Add generic test arguments
     global targs
@@ -308,6 +341,8 @@ def main():
         ampl_df = pd.concat([ampl_df.describe().loc[['min', 'max', 'mean', 'std']], ampl_df])
         phase_df = pd.concat([phase_df.describe().loc[['min', 'max', 'mean', 'std']], phase_df])
         offset_df = pd.concat([offset_df.describe().loc[['min', 'max', 'mean', 'std']], offset_df])
+
+        
 
         # Increase the std_ratio if the number of iterations implies a substantially smaller std_deviation
         global std_ratio
