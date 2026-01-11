@@ -17,6 +17,21 @@ def ship_test_crimson(channels):
     for tx_gain, rx_gain, center_freq in zip(tx_gains, rx_gains, center_freqs):
         yield locals()
 
+def ship_test_calamine(channels):
+
+    log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
+
+    channels = list(range(channels))
+    wave_freq = 100000
+    sample_rate = 9848485
+    sample_count = int(sample_rate/ 10)
+    # The highest frequency uses a higher gain because the signal begins to roll off as the frequency gets higher
+    tx_gains = [0, 25, 25, 25, 25, 30, 25, 30]
+    rx_gains = [0, 25, 25, 25, 25, 30, 25, 30]
+    center_freqs = [600000000, 2400000000, 4000000000, 9000000000, 17000000000, 24000000000, 35000000000]
+    for tx_gain, rx_gain, center_freq in zip(tx_gains, rx_gains, center_freqs):
+        yield locals()
+
 def ship_test_cyan(channels):
 
     log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)

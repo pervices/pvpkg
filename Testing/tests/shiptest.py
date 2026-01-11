@@ -64,7 +64,7 @@ parser.add_argument('-o', '--freq_threshold', default=1, type=int, help="Allowab
 parser.add_argument('-q', '--spur_threshold', default=20, type=int, help="Minimum acceptable difference between the desired signal and the strongest spur")
 parser.add_argument('-g', '--gain_threshold', default = 5, type=int,  help="The maximum allowable difference in gain between channels")
 parser.add_argument('-a', '--serial', required=True, help="Serial number of the unit")
-parser.add_argument('-p', '--product', required=True, help="The product to be tested. v for Vaunt, t for Tate, l for Lily")
+parser.add_argument('-p', '--product', required=True, help="The product to be tested. v for Vaunt, a for Avery, t for Tate, l for Lily")
 parser.add_argument('-c', '--num_channels', default = 4, type=int,  help="The number of channels to test. Will test ch a, ch b, ...")
 parser.add_argument('-b', '--strict', default = False, type=bool,  help="Exit the test as soon as any test fails")
 
@@ -122,7 +122,7 @@ os.makedirs(plots_dir, exist_ok=True)
 #NOTE: I think this could be expanded to just choosing which channels on the unit to test
 product = args.product
 try:
-    if (product != 't' and product != 'v' and product != 'l' and product != 'b'):
+    if (product != 't' and product != 'v' and product != 'a' and product != 'l' and product != 'b'):
         raise(ValueError)
 except:
     sys.exit("Invalid product. Only v (Vaunt), t (Tate), and l (Lily) are supported")
@@ -130,6 +130,8 @@ except:
 num_channels = args.num_channels
 channel_names = ["Channel A", "Channel B", "Channel C", "Channel D", "Channel E", "Channel F", "Channel G", "Channel H"]
 if(product == 'v'):
+    max_channels = 4
+elif(product == 'a'):
     max_channels = 4
 elif(product == 't'):
     max_channels = 8
@@ -147,6 +149,8 @@ channel_names = channel_names[0:num_channels]
 
 if(product == 'v'):
     generate = gen.ship_test_crimson(num_channels)
+elif(product == 'a'):
+    generate = gen.ship_test_calamine(num_channels)
 elif(product == 't'):
     generate = gen.ship_test_cyan(num_channels)
 elif(product == 'l'):
@@ -284,8 +288,8 @@ summary_info = [] #[iteration][[freq][amplitude][snr]]
 page_count = 1
 pages_per_superplot = int(np.ceil(num_channels/4))
 multi = (pages_per_superplot > 1)
-#Page total based on the unit your testing
-page_total = ((2*pages_per_superplot)+2)*(8*(product == 'V' or product == 'v') + 6*(product == 'T' or product == 't') + 6*(product == 'L' or product == 'l')) + 6*(product == 'B' or product == 'b') + pages_per_superplot
+#Page total based on the unit you're testing
+page_total = ((2*pages_per_superplot)+2)*(8*(product == 'v') + 8*(product == 'a') + 6*(product == 't') + 6*(product == 'l')) + 6*(product == 'b') + pages_per_superplot
 
 
 #Adding logo - more efficent to just initialize at beginning
