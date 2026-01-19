@@ -212,8 +212,9 @@ def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stac
         # Expected rx duration = start time of last burst + (length of last burst / sample rate)
         rx_duration = rx_stack[-1][0] + (rx_stack[-1][1] / sample_rate)
 
+    ctx = multiprocessing.get_context("fork")
     # Start process to run tx and rx
-    helper_process = multiprocessing.Process(target = run_helper, kwargs = { 
+    helper_process = ctx.Process(target = run_helper, kwargs = { 
         "channels": channels,
         "wave_freq": wave_freq,
         "tx_gain": tx_gain,
@@ -281,9 +282,10 @@ def manual_tune_run(channels, wave_freq, tx_sample_rate, rx_sample_rate, tx_tune
     # Expected tx duration = start time of last burst + (length of last burst / sample rate)
     tx_duration = tx_stack[-1][0] + (tx_stack[-1][1] / tx_sample_rate)
     rx_duration = rx_stack[-1][0] + (rx_stack[-1][1] / rx_sample_rate)
-
+    
+    ctx = multiprocessing.get_context("fork")
     # Start helper process to manage tx/rx threads
-    helper_process = multiprocessing.Process(target = run_helper, kwargs = { 
+    helper_process = ctx.Process(target = run_helper, kwargs = { 
         "channels": channels,
         "wave_freq": wave_freq,
         "tx_gain": tx_gain,
