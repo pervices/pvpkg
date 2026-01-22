@@ -1,4 +1,3 @@
-from Testing.tests.test_rx_rate import list_to_arg_string
 from common import sigproc
 from common import engine
 from common import generator as gen
