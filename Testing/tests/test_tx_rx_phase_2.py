@@ -220,7 +220,7 @@ def main():
         # Temporary fix for amplitude subtest issue on Chestnut where amplitude between first few runs has large difference
         # Run loopback test long enough for amplitude to stabilize.
         if targs.product == 'Lily':
-            prewave_samps = iterations["sample_rate"] * 40   # Enough samples for 40s. This is the lowest amount that worked reliably when testing.
+            prewave_samps = sample_rate * 40   # Enough samples for 40s. This is the lowest amount that worked reliably when testing.
             prewave_channels = ','.join(str(x) for x in targs.channels)
             status, _ = subprocess.getstatusoutput("/usr/lib/uhd/examples/rx_to_tx_loopback --rate {} --rx_channels {} --tx_channels {} --tx_gain {} --rx_gain {} --tx_freq {} --rx_freq {} --nsamps {}".format(sample_rate, prewave_channels, prewave_channels, it["tx_gain"], it["rx_gain"], it["center_freq"], it["center_freq"], prewave_samps))
             if status != 0:
