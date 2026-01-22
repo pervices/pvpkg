@@ -26,6 +26,7 @@ import os
 from datetime import datetime
 import time
 import argparse
+import subprocess
 
 #USER CHOSEN VALUES
 num_output_waves =1 #depends what plots look like
@@ -197,7 +198,7 @@ def main():
         channel_list[ch] = "\u0394" + channel_list[ch] + channel_map[targs.channels[0]]
 
     summary_table = [["Center Freq", "Wave Freq", "Freq Result", "Ampl Result", "Phase Result"]]
-
+    
     for it in iterations:
         gen.dump(it) 
 
@@ -215,6 +216,19 @@ def main():
         sample_rate = int(it["sample_rate"])
         sample_count = int(it["sample_count"])
         wave_freq = int(it["wave_freq"])
+        
+        # Temporary fix for amplitude subtest issue on Chestnut where amplitude between first few runs has large difference
+        # Run loopback test long enough for amplitude to stabilize.
+        if targs.product == 'Lily':
+            prewave_samps = sample_rate * 40   # Enough samples for 40s. This is the lowest amount that worked reliably when testing.
+            prewave_channels = ','.join(str(x) for x in targs.channels)
+            log.pvpkg_log_info("TX_RX_PHASE_2", "Running pre-test loopback to stabilize amplitude...")
+            status, _ = subprocess.getstatusoutput("/usr/lib/uhd/examples/rx_to_tx_loopback --rate {} --rx_channels {} --tx_channels {} --tx_gain {} --rx_gain {} --tx_freq {} --rx_freq {} --nsamps {}".format(sample_rate, prewave_channels, prewave_channels, it["tx_gain"], it["rx_gain"], it["center_freq"], it["center_freq"], prewave_samps))
+            if status == 0:
+                log.pvpkg_log_info("TX_RX_PHASE_2", "Pre-test loopback complete.")
+            else:
+                log.pvpkg_log_warning("TX_RX_PHASE_2", "Pre-test loopback did not successfully run. Amplitude between first few runs may be unstable.")
+
         for run in range(num_runs):
             log.pvpkg_log_info("TX_RX_PHASE_2", "Beginning run {}/{}".format(run, num_runs - 1))
             '''
