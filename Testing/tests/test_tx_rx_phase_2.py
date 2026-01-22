@@ -227,7 +227,7 @@ def main():
             if status == 0:
                 log.pvpkg_log_info("Pre-test loopback complete.")
             else:
-                log.pvpkg_log_warning("Pre-test wave did not successfully run. Amplitude between first few runs may be unstable.")
+                log.pvpkg_log_warning("Pre-test loopback did not successfully run. Amplitude between first few runs may be unstable.")
 
         for run in range(num_runs):
             log.pvpkg_log_info("TX_RX_PHASE_2", "Beginning run {}/{}".format(run, num_runs - 1))
