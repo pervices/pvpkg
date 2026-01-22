@@ -222,8 +222,11 @@ def main():
         if targs.product == 'Lily':
             prewave_samps = sample_rate * 40   # Enough samples for 40s. This is the lowest amount that worked reliably when testing.
             prewave_channels = ','.join(str(x) for x in targs.channels)
+            log.pvpkg_log_info("Running pre-test loopback to stabilize amplitude...")
             status, _ = subprocess.getstatusoutput("/usr/lib/uhd/examples/rx_to_tx_loopback --rate {} --rx_channels {} --tx_channels {} --tx_gain {} --rx_gain {} --tx_freq {} --rx_freq {} --nsamps {}".format(sample_rate, prewave_channels, prewave_channels, it["tx_gain"], it["rx_gain"], it["center_freq"], it["center_freq"], prewave_samps))
-            if status != 0:
+            if status == 0:
+                log.pvpkg_log_info("Pre-test loopback complete.")
+            else:
                 log.pvpkg_log_warning("Pre-test wave did not successfully run. Amplitude between first few runs may be unstable.")
 
         for run in range(num_runs):
