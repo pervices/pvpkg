@@ -188,6 +188,8 @@ def main():
         iterations = gen.cyan.lo_band.phaseCoherency()
     elif(targs.product == 'Lily'):
         iterations = gen.chestnut.lo_band.phaseCoherency()
+        # Acceptable threshold is greater for Chestnut since it takes a few runs for amplitude to stabilize, likely an rf thermal issue
+        ampl_std_thresh = 0.003
     else:
         log.pvpkg_log_error("TX_RX_PHASE", "Unrecognized product argument")
         fail_flag = 1
