@@ -188,6 +188,7 @@ def main():
         iterations = gen.cyan.lo_band.phaseCoherency()
     elif(targs.product == 'Lily'):
         iterations = gen.chestnut.lo_band.phaseCoherency()
+        ampl_std_thresh = 0.003
     else:
         log.pvpkg_log_error("TX_RX_PHASE_2", "Unrecognized product argument")
         fail_flag = 1
