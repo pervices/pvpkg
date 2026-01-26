@@ -42,7 +42,7 @@ std_ratio_phase = 8  #number std gets multiplied by for checks, normalized to a 
 # Criteria  
 freq_std_thresh = 0.6
 # NOTE: ampl_std_thresh may be changed for device specific reasons
-ampl_std_thresh = 0.001
+default_ampl_std_thresh = 0.001
 phase_mean_thresh = 0.0349066 #rad bound
 phase_std_thresh = 0.002
 
@@ -176,8 +176,7 @@ def boolToWord(word):
 def main():
     # Add generic test arguments
     global targs
-    # To allow for modifying ampl_std_thresh for device specific reasons
-    global ampl_std_thresh
+    ampl_std_thresh = default_ampl_std_thresh
     targs = test_args.TestArgs(testDesc="TX/RX phase coherency test")
     fail_flag = 0
 
