@@ -97,7 +97,7 @@ def lo_band_passband_flatness_test():
     rx_gain = 25
     center_freq = 15000000
     sample_rate = 9803922
-    for wave_freq in list(range(-int(0.45*sample_rate),int(0.45*sample_rate),int(0.9*sample_rate/24))):
+    for wave_freq in list(range(-int(0.45*sample_rate),int(0.45*sample_rate+1),int(0.9*sample_rate/24))):
         # Only test non-zero wave frequencies
         if wave_freq != 0:
             yield locals()
@@ -370,7 +370,7 @@ class cyan:
             rx_gain = 25
             center_freq = 100000000
             sample_rate = 9803922
-            for wave_freq in list(range(-int(0.45*sample_rate),int(0.45*sample_rate),int(0.9*sample_rate/24))):
+            for wave_freq in list(range(-int(0.45*sample_rate),int(0.45*sample_rate+1),int(0.9*sample_rate/24))):
                 # Only test non-zero wave frequencies
                 if wave_freq != 0:
                     yield locals()
@@ -720,7 +720,7 @@ class chestnut:
             rx_gain = 25
             center_freq = 100000000
             sample_rate = 9803922
-            for wave_freq in list(range(-int(0.45*sample_rate),int(0.45*sample_rate),int(0.9*sample_rate/24))):
+            for wave_freq in list(range(-int(0.45*sample_rate),int(0.45*sample_rate+1),int(0.9*sample_rate/24))):
                 # Only test non-zero wave frequencies
                 if wave_freq != 0:
                     yield locals()
