@@ -87,8 +87,8 @@ CHANNEL_IPS=(10.10.10.2 10.10.11.2 10.10.12.2 10.10.13.2)
 
 # nsamps=0 will stream continuously, nsamps > 0 will recv only set number of samples
 # Stream for 100000 samples or equivalent duration
-CMD_FIXED="/lib/uhd/examples/rx_samples_to_file --nsamps 100000 --rate 125e6 --channels $CHANNELS"
-CMD_CONTINUOUS="/lib/uhd/examples/rx_samples_to_file --nsamps 0 --rate 125e6 --channels $CHANNELS --duration 0.002"
+CMD_FIXED="/lib/uhd/examples/rx_samples_to_file --nsamps 100000 --rate 125e6 --channels $CHANNELS --null"
+CMD_CONTINUOUS="/lib/uhd/examples/rx_samples_to_file --nsamps 0 --rate 125e6 --channels $CHANNELS --duration 0.002 --null"
 
 attempt=0
 ping_status=0
