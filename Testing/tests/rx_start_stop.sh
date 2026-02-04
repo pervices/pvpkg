@@ -38,6 +38,9 @@ function check_rc() {
 
 
 function print_help() {
+    echo "Repeatedly runs an rx program until an SFP port becomes unresponsive"
+    echo "This is used to diagnose rare bugs causing an SFP port to become unresponsive"
+    echo "This is intended for manual invocation only"
     echo "Usage:"
     echo "  ./short_rx.sh -m <MODE>"
     echo "  ./short_rx.sh [-h|--help]  # Prints this help menu"
