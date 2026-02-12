@@ -354,6 +354,10 @@ def tx_rx_longterm_rate():
     duration = 90                   # 90 sec
     yield locals()
 
+def uhd_device_type():
+    log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
+    yield locals()
+
 def dump(iteration):
     log.pvpkg_log_info("GENERATOR", "Using configuration:")
     for key, value in iteration.items():
