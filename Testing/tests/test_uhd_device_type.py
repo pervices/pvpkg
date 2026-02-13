@@ -48,27 +48,33 @@ def main(iterations, title="UHD_Device_Type_Test") -> int:
     match = re.search(r'type:\s*([^,]+)', result)
     device_type = match.group(1).strip()
 
+    if (device_type == "crimson_tng"):
+        test_fail = 0
+    else:
+        test_fail = 1
+
+    if (test_fail):
+        test_result = "PASS"
+        #report.buffer_put("text", "Test failed")
+    else:
+        test_result = "FAIL"
+        #report.buffer_put("text", "Test passed")
+
     test_info = [
     [
         "Device Type",
+        "Result"
         ],
     [
         device_type,
+        test_result,
         ]
     ]
 
     report.buffer_put("table", test_info, "Parameters")
     report.buffer_put("text", " ")
     
-    if (device_type == "crimson_tng"):
-        test_fail = 0
-    else:
-        test_fail = 1
-            
-    if (test_fail): 
-        report.buffer_put("text", "Test failed")
-    else:
-        report.buffer_put("text", "Test passed") 
+
     
     report.insert_title_page("UHD Device Type Test")
     report.draw_from_buffer()
