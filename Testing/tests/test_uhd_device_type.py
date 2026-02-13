@@ -54,11 +54,9 @@ def main(iterations, title="UHD_Device_Type_Test") -> int:
         test_fail = 1
 
     if (test_fail):
-        test_result = "PASS"
-        #report.buffer_put("text", "Test failed")
-    else:
         test_result = "FAIL"
-        #report.buffer_put("text", "Test passed")
+    else:
+        test_result = "PASS"
 
     test_info = [
     [
