@@ -1,74 +1,13 @@
-DOWNLOADS
-===
-
-1) Download the required material.
-
-We've prepared two packages. The first is the update package that you will use
-to completely update the server, mcu code, and firmware in order to support that
-crimson revision.
-
-The second is a support package that includes a sample wave form, instructions
-for how to generate waveforms, a complete command invocation example that uses
-the provided data file, and confirmatory screen shots demonstrating what you
-should see on a scope output.
-
-In addition to these two packages, you will also have to download our latest UHD
-driver, from our master-fulltx branch. You *must* download the latest UHD
-version, taking care to checkout to the *master-fulltx* branch. If you don't
-also update your UHD version, you'll run into problems.
-
-Please download the update package here:
-
-http://pervices.com/bin/update-crimson-rtm56-fulltx-d3
-
-Please download the support package here:
-
-http://pervices.com/bin/trig-support.tar.gz
-
-Please find the latest UHD version, supporting fulltx, here:
-
-https://github.com/pervices/uhd/archive/tng-v2.5-fulltx.zip
-
-Consider downloading our update instructions from here;
-
-https://raw.githubusercontent.com/pervices/releases/master/README.md
-
-If you would also like to print them out, you may do so from here;
-
-https://github.com/pervices/releases/blob/master/README.md
-
-(NOTE: As we have provided you with a custom image, you do not need to download
-or clone the releases directory).
-
 FIRMWARE UPDATE INSTRUCTIONS
 ===
 
-UHD Updating
+UHD Update
 
-1) To update UHD, checkout to the appropriate branch, and follow the same
-instructions you usually do. There should be no changes.
+Please update UHD on the host computer by following the directions at https://support.pervices.com/how-to/pvht-3-softwaresetup/
 
--> To uninstall the old version of UHD, type, 'sudo make uninstall', in the same
-location where you previously built it. This should remove all the files that
-were installed.
+Crimson Update
 
--> To install UHD, please reference the build instructions in our manual.
-
--> NOTE: After installing this UHD update, you will very likely have to
-recompile gnuradio, to ensure that it correctly links to our updated UHD library.
-
-CRIMSON UPDATE INSTRUCTIONS
-
-1) To update Crimson using the upgrade package, please follow the instructions
-on our release repo, but start from step 2 - "COPY RELEASE BINARY TO CRIMSON".
-
-2) The username to ssh into the crimson machine is 'dev0'. The password is the
-same as the username.
-
-3) I advise saving a copy of, or else printing the update instructions. You may
-find the update instructions here:
-
-https://github.com/pervices/releases/blob/master/README.md
+Please update the Crimson firmware by following the directions at https://support.pervices.com/how-to/pvht-5-updatefirmware/
 
 TRIGGER SUPPORT PACKAGE DESCRIPTION
 ===
@@ -108,7 +47,7 @@ version, rather than the executable located within the example directory.
 TRIGGER SUPPORT PACKAGE OPERATION
 ===
 
-0. Set up the bench as follows;
+1. Set up the bench as follows;
 
 a) Hook up the PPS port of Crimson to an SMA tee-connector and then *PREPARE* to
 route the the first tee-output to the Crimson "Trig in" port, and the second
@@ -118,11 +57,6 @@ NOTE: Do NOT connect the Trig In port to the PPS in port until AFTER you start
 sending data to the device.
 
 b) Hook up crimson channels a,b,c to CH 2,3,4 of the scope.
-
-1. To use the trigger support package, copy the tarball to a reasonable
-location, and the extract it. To extract the package from the terminal type;
-
-tar -xf trig-support.tar.gz
 
 2. Enter the directory with;
 
@@ -218,40 +152,3 @@ IF THE TRIGGER APPEARS TO "SKIP" a pulse, then HALF this value.
     you're ignoring valid transitions.
 
 Once you find a value that works, then everything should work.
-
-
-ERRATA
-===
-
-The following is a list of things that don't work 100%.
-
-1) Output gating does not work
-
-CAUSE -> Due to a problem, this revision does not concurrently support output
-gating and dsp gating.
-
-WORKAROUND -> Based on your use case, you didn't need output gating, so no
-workaround is required.
-
-2) test_tx_trigger only reads the "edge_sample_number" samples from file.
-
-CAUSE -> We implemented the test code (test_tx_trigger) to only read the first
-edge_sample_number from the data.txt file, and then we loop back, regardless of
-file size. This is simply to avoid under flows or over flows due to mismatch
-in file size and the samples we read every cycle.
-
-This means that edge_sample_number is LESS than the size of data.txt, then
-we will only read the first edge_sample_number samples into the buffer.
-This loops every time you have data.
-
-WORKAROUND -> You can modify the code to fix this by adjusting the buffer size.
-Unless you have a fixed filesize and application, however, this can lead to
-segmentation faults if you try and read past the size of the file.
-
-If you do so, then the best course of action is to make the data.txt file an
-integer number of the waveform sample number. In otherwords, if you want to
-transmit 480 samples (edge_sample_number=480), then make the data.txt file
-contain 4800 samples (edge_sample_number*10) and the set point something like
-2400 (=edge_sample_number*5). This will help ensure sample alignment with the
-file size and will likely simplify your life a bit.
-
