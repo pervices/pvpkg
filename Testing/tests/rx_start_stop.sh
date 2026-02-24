@@ -12,7 +12,7 @@ rc=0
 
 function print_diagnostics() {
     echo "----------------------------------------"
-    echo $0 $@
+    echo $SCRIPT_PROG $SCRIPT_ARGS
     echo "----------------------------------------"
     echo "Running as: $SCRIPT_USER@$SCRIPT_HM    "
     echo "Date: $SCRIPT_DATE"
