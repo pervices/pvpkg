@@ -605,7 +605,7 @@ def plotToPdf(title, counter):
     os.chdir(plots_dir) #ensuring in right directory
     plt.gcf().set_size_inches(8, 5)
 
-    plt.savefig((title + "_" + str(counter)), format='png', dpi=300)
+    plt.savefig((title + "_" + str(counter)), format="svg", dpi=300)
 
     #Opening file as io bits, then translating them to image reader
     img_data = open(plots_dir + "/" + title + "_" + str(counter), "rb")

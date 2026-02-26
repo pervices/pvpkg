@@ -53,7 +53,7 @@ def main(iterations, title="TX RX Gain Test") -> int:
             plt.legend()
 
             s = report.get_image_io_stream()
-            plt.savefig(s, format='png', dpi=200)
+            plt.savefig(s, format="svg", dpi=200)
             plt.close()     # remember to close or you'll use up all the memory
             img = report.get_image_from_io_stream(s)
             images.append(img)
