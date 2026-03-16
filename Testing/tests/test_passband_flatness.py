@@ -71,6 +71,7 @@ def test(it, data):
 
 def main(iterations, desc):
     data  = [["Center Freq", "Wave Freq", "Channel", "Result"]]
+    global iteration_num
 
     for it in iterations:
         test(it, data)
