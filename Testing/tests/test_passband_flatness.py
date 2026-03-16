@@ -20,9 +20,11 @@ plot_points_xf = []
 plot_points_yf = []
 images = []
 test_info = [["Channel Peak Information (dB):","A","B","C","D", "Wave Frequency (Hz)"]]
+iteration_num = 0
 
 def test(it, data):
     global test_fail
+    global iteration_num
     gen.dump(it)
     largest_peak = []
     yfp = []
@@ -34,7 +36,7 @@ def test(it, data):
     except Exception as err:
         test_fail = 1
         # Exist test early with DNF for missing data since engine failed
-        test_info.append(["Iteration {}:".format(it), "DNF", "DNF", "DNF", "DNF", it["wave_freq"]])
+        test_info.append(["Iteration {}:".format(iteration_num), "DNF", "DNF", "DNF", "DNF", it["wave_freq"]])
         log.pvpkg_log_error("PASSBAND_FLATNESS", "Failed during engine.run. Test will continue but be marked as failed.")
         return data
 
@@ -63,8 +65,9 @@ def test(it, data):
     plot_points_xf.append(xf)
     plot_points_yf.append(yfp)
     channel_peak.append(largest_peak)
-    test_info.append(["Iteration {}:".format(it),
-                round(channel_peak[it][0],3),round(channel_peak[it][1],3),round(channel_peak[it][2],3),round(channel_peak[it][3],3), it["wave_freq"]])
+    test_info.append(["Iteration {}:".format(iteration_num),
+                round(largest_peak[0],3),round(largest_peak[1],3),round(largest_peak[2],3),round(largest_peak[3],3), it["wave_freq"]])
+    iteration_num += 1
     return data
 
 def main(iterations, desc):
