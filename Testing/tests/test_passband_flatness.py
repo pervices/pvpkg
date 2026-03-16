@@ -67,7 +67,6 @@ def test(it, data):
     channel_peak.append(largest_peak)
     test_info.append(["Iteration {}:".format(iteration_num),
                 round(largest_peak[0],3),round(largest_peak[1],3),round(largest_peak[2],3),round(largest_peak[3],3), it["wave_freq"]])
-    iteration_num += 1
     return data
 
 def main(iterations, desc):
@@ -75,6 +74,7 @@ def main(iterations, desc):
 
     for it in iterations:
         test(it, data)
+        iteration_num += 1
 
     global test_fail
     passband_flat = []
