@@ -23,6 +23,7 @@ def main(iterations, title="TX RX Gain Test") -> int:
             vsnk = engine.run(targs.channels, it["wave_freq"], it["sample_rate"], it["center_freq"], it["tx_gain"], it["rx_gain"], tx_stack, rx_stack)
         except Exception as err:
             log.pvpkg_log_error("TX_RX_GAIN", "\x1b[31m" + "ERROR while gathering data\n Iteration: " + str(it) + "\nException: " + str(err) + "\x1b[0m")
+            iteration_areas.append("DNF")
             fail_flag = 1
             continue
 
@@ -77,13 +78,13 @@ def main(iterations, title="TX RX Gain Test") -> int:
             report.buffer_put("text_large", "This test has failed")
             current_test_only_fail_flag = 0
 
-    channel_data = [["Channel Power Information (dB):","A","B","C","D"],
-                    ["Iteration 1:",
-                    round(iteration_areas[0][0],3),round(iteration_areas[0][1],3), round(iteration_areas[0][2],3),round(iteration_areas[0][3],3)],
-                    ["Iteration 2:",
-                    round(iteration_areas[1][0],3),round(iteration_areas[1][1],3), round(iteration_areas[1][2],3),round(iteration_areas[1][3],3)],
-                    ["Iteration 3:",
-                    round(iteration_areas[2][0],3),round(iteration_areas[2][1],3), round(iteration_areas[2][2],3),round(iteration_areas[2][3],3)]]
+    channel_data = [["Channel Power Information (dB):","A","B","C","D"]]
+    for i in range(len(iteration_areas)):
+        # Mark iteration as DNF in table if vsnk failed
+        if iteration_areas[i] == "DNF":
+            channel_data.append(["Iteration {}:".format(i), "DNF", "DNF", "DNF", "DNF"])
+        else:
+            channel_data.append(["Iteration {}:".format(i), round(iteration_areas[i][0],3),round(iteration_areas[i][1],3), round(iteration_areas[i][2],3),round(iteration_areas[i][3],3)])
 
     report.buffer_put("pagebreak")
     report.buffer_put("table_wide", channel_data)
