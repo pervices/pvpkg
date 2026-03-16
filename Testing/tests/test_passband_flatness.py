@@ -19,23 +19,26 @@ channel_peak = []
 plot_points_xf = []
 plot_points_yf = []
 images = []
-test_summary = []
+test_info = [["Channel Peak Information (dB):","A","B","C","D", "Wave Frequency (Hz)"]]
+iteration_num = 0
 
 def test(it, data):
     global test_fail
+    global iteration_num
     gen.dump(it)
-    reals = []
-    imags = []
     largest_peak = []
     yfp = []
 
     tx_stack = [ (10.0, it["sample_count"]) ] # One seconds worth.
     rx_stack = [ (10.0, it["sample_count"]) ]
-    vsnk = engine.run(it["channels"], it["wave_freq"], it["sample_rate"], it["center_freq"], it["tx_gain"], it["rx_gain"], tx_stack, rx_stack)
-    error_detected = 0
-
-    if it["wave_freq"] not in test_summary:
-        test_summary.append(it["wave_freq"])
+    try:
+        vsnk = engine.run(it["channels"], it["wave_freq"], it["sample_rate"], it["center_freq"], it["tx_gain"], it["rx_gain"], tx_stack, rx_stack)
+    except Exception as err:
+        test_fail = 1
+        # Exist test early with DNF for missing data since engine failed
+        test_info.append(["Iteration {}:".format(iteration_num), "DNF", "DNF", "DNF", "DNF", it["wave_freq"]])
+        log.pvpkg_log_error("PASSBAND_FLATNESS", "Failed during engine.run. Test will continue but be marked as failed.")
+        return data
 
     # Process.
     for ch, channel in enumerate(vsnk):
@@ -62,13 +65,17 @@ def test(it, data):
     plot_points_xf.append(xf)
     plot_points_yf.append(yfp)
     channel_peak.append(largest_peak)
+    test_info.append(["Iteration {}:".format(iteration_num),
+                round(largest_peak[0],3),round(largest_peak[1],3),round(largest_peak[2],3),round(largest_peak[3],3), it["wave_freq"]])
     return data
 
 def main(iterations, desc):
     data  = [["Center Freq", "Wave Freq", "Channel", "Result"]]
+    global iteration_num
 
     for it in iterations:
         test(it, data)
+        iteration_num += 1
 
     global test_fail
     passband_flat = []
@@ -105,13 +112,6 @@ def main(iterations, desc):
             log.pvpkg_log_error("PASSBAND_FLATNESS", "Channel {} failed passband test with a difference of {}".format(ch, channel_diff))
             test_fail = 10 + int(ch) #Set fail value to 10 + the channel that fails for easy debugging of error code
             passband_flat.append("Fail")
-
-    test_info = [["Channel Peak Information (dB):","A","B","C","D", "Wave Frequency (Hz)"]]
-
-    # Iterate through the channel peak array to create a summary chart
-    for it in list(range(len(plot_points_xf))):
-        test_info.append(["Iteration {}:".format(it),
-                round(channel_peak[it][0],3),round(channel_peak[it][1],3),round(channel_peak[it][2],3),round(channel_peak[it][3],3), test_summary[it]])
 
     test_info.append(["Channel High Low Difference",test_info_channel_diff[0],test_info_channel_diff[1],test_info_channel_diff[2],test_info_channel_diff[3], "N/A"])
     test_info.append(["Passband Flatness Pass",passband_flat[0],passband_flat[1],passband_flat[2],passband_flat[3], "N/A"])
