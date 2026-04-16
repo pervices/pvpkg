@@ -221,6 +221,7 @@ def main():
         sample_rate = int(it["sample_rate"])
         sample_count = int(it["sample_count"])
         wave_freq = int(it["wave_freq"])
+        print("2 wave_freq: " + str(wave_freq))
         for run in range(num_runs):
             log.pvpkg_log_info("TX_RX_PHASE_2", "Beginning run {}/{}".format(run, num_runs - 1))
             '''

@@ -197,7 +197,7 @@ def run_helper(channels, wave_freq, tx_gain, rx_gain, tx_stack, rx_stack, tx_dur
 
 
 def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stack, rx_stack):
-    print("wave_freq: " + str(wave_freq))
+    print("3 wave_freq: " + str(wave_freq))
     print("sample_rate: " + str(sample_rate))
     print("center_freq: " + str(center_freq))
     vsnk = []
