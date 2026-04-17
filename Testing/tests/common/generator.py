@@ -251,7 +251,7 @@ def lo_band_phaseCoherency():
     # center_freq = 10000000
     center_freq = 0
     # wave_freq = 500000
-    wave_freq = sample_rate/50
+    wave_freq = sample_rate/25
     yield locals()
 
 def tx_trigger():
