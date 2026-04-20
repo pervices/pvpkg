@@ -15,7 +15,7 @@ class TestArgs:
             parser = argparse.ArgumentParser(description = testDesc)
         parser.add_argument('-s', '--serial', required=True, default=None, help="Serial number of the unit")
         parser.add_argument('-p', '--product', required=True, help="Product, v for vaunt t for tate l for lily")
-        parser.add_argument('-c', '--channels', required=False, type=int, nargs='+', default=[0,1,2,3], help="Channel list to use for testing. Example usage: [0,1,2,3]")
+        parser.add_argument('-c', '--channels', required=False, type=int, nargs='+', default=[0,1,2,3], help="Channel list to use for testing. Example usage: -c 0 1 2 3")
         parser.add_argument('-o', '--output', required=False, default=None, help="Report output directory")
         parser.add_argument('-d', '--docker', required=False, default=None, help="Docker SHA")
         args = parser.parse_args()
