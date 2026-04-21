@@ -22,7 +22,8 @@ def test(it, data):
     gen.dump(it)
 
     # Create manual tune request for tx, use default tuning for rx (just pass center freq)
-    tx_tune_request = uhd.tune_request(it["center_freq"], it["tx_lo"])
+    # LO offset param is calculated as tx_lo - center_freq
+    tx_tune_request = uhd.tune_request(it["center_freq"], it["tx_lo"] - it["center_freq"])
 
     tx_stack = [ (5.0, int(it["sample_count"])) ] # One seconds worth.
     rx_stack = [ (5.0, int(it["sample_count"]) ) ]
