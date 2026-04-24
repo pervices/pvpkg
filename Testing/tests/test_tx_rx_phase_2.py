@@ -28,7 +28,7 @@ import time
 import argparse
 
 #USER CHOSEN VALUES
-num_output_waves =25 #depends what plots look like
+num_output_waves =10 #depends what plots look like
 begin_cutoff_waves = 0 #0.00000425 #e(-5) - guessed from previous diagrams (but seconds)
 tx_burst = 5.0 #burst should be slightly delayed to ensure all data is being collected
 rx_burst = 5.0
