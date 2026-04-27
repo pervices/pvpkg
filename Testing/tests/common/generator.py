@@ -244,10 +244,9 @@ def hi_band_gain_rx():
 def lo_band_phaseCoherency():
     log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
     sample_rate = 25000000
-    sample_count = int(sample_rate * 5.5)
+    sample_count = int(sample_rate * 1)
     tx_gain = 25
     rx_gain = 25
-    sample_rate = 25000000
     center_freq = 10000000
     wave_freq = 500000
     yield locals()

@@ -29,7 +29,7 @@ import argparse
 
 #USER CHOSEN VALUES
 num_output_waves =1 #depends what plots look like
-begin_cutoff_waves = 2500000 # 5s of 500e3Hz waves at 25e6Msps #0.00000425 #e(-5) - guessed from previous diagrams (but seconds)
+begin_cutoff_waves = 250000 # 5s of 500e3Hz waves at 25e6Msps #0.00000425 #e(-5) - guessed from previous diagrams (but seconds)
 tx_burst = 5.0 #burst should be slightly delayed to ensure all data is being collected
 rx_burst = 5.0
 
