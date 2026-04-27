@@ -232,7 +232,7 @@ def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stac
     helper_process.start()
 
     # Wait for helper process to finish or timeout
-    time_limit = max(tx_duration, rx_duration) + 30
+    time_limit = max(tx_duration, rx_duration) + 60
     helper_process.join(time_limit)
 
     flowgraph_timeout = False
