@@ -188,7 +188,9 @@ def main():
 
     if(targs.product == 'Vaunt'):
         iterations = gen.lo_band_phaseCoherency()
-    elif(targs.product == 'Tate' or targs.product == "BasebandTate"):
+    elif(targs.product == 'Tate'):
+        iterations = gen.cyan.lo_band.phaseCoherencyAllBands()
+    elif(targs.product == "BasebandTate"):
         iterations = gen.cyan.lo_band.phaseCoherency()
     elif(targs.product == 'Lily'):
         iterations = gen.chestnut.lo_band.phaseCoherency()
