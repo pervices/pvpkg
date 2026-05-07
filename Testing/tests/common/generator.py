@@ -1048,3 +1048,8 @@ class chestnut:
             tx_gain = 30#increasing the fixed gain may cause saturation
             for rx_gain in [45, 60, 75]:
                 yield locals()
+
+def uhd_find_devices():
+    log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
+    # No parameters needed for this test
+    yield locals()
