@@ -271,7 +271,7 @@ def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stac
     elif(flow_sigterm_timeout):
         raise Exception ("flowgraph SIGTERM timeout")
     elif(flowgraph_timeout):
-        PRINT("Ignoring GNU Radio tx timeout")
+        print("Ignoring GNU Radio tx timeout")
         #raise Exception ("flowgraph timeout")
 
     # Unreachable error message in case of a mistake during the previous elif series
