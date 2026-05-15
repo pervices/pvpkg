@@ -389,20 +389,14 @@ def main():
 
         # Update overall summary table with this iteration
         summary_table.append([it["center_freq"], it["wave_freq"], boolToWord(freq_overall_res), boolToWord(ampl_overall_res), boolToWord(phase_overall_res)])
-
-        # Replace NaN entries with DNF before printing or adding to report.
-        freq_df = freq_df.mask(np.isnan(freq_df), "DNF")
-        ampl_df = ampl_df.mask(np.isnan(ampl_df), "DNF")
-        phase_df = phase_df.mask(np.isnan(phase_df), "DNF")
-        offset_df = offset_df.mask(np.isnan(offset_df), "DNF")
         
         # Print data and results table to console
         log.pvpkg_log_info("TX_RX_PHASE_2", "Frequency Data:", before="\n")
-        log.pvpkg_log(freq_df.to_markdown(index=True))
+        log.pvpkg_log(freq_df.to_markdown(index=True)).replace("nan", "DNF")
         log.pvpkg_log_info("TX_RX_PHASE_2", "Amplitude Data:", before="\n")
-        log.pvpkg_log(ampl_df.to_markdown(index=True))
+        log.pvpkg_log(ampl_df.to_markdown(index=True)).replace("nan", "DNF")
         log.pvpkg_log_info("TX_RX_PHASE_2", "Phase Data:", before="\n")
-        log.pvpkg_log(phase_df.to_markdown(index=True))
+        log.pvpkg_log(phase_df.to_markdown(index=True)).replace("nan", "DNF")
         log.pvpkg_log_info("TX_RX_PHASE_2", "Frequency Results:", before="\n")
         log.pvpkg_log(freq_res.to_markdown(index=False))
         log.pvpkg_log_info("TX_RX_PHASE_2", "Amplitude Results:", before="\n")
