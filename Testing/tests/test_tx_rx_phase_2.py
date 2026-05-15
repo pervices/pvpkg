@@ -392,11 +392,11 @@ def main():
         
         # Print data and results table to console
         log.pvpkg_log_info("TX_RX_PHASE_2", "Frequency Data:", before="\n")
-        log.pvpkg_log(freq_df.to_markdown(index=True)).replace("nan", "DNF")
+        log.pvpkg_log(freq_df.to_markdown(index=True).replace("nan", "DNF"))
         log.pvpkg_log_info("TX_RX_PHASE_2", "Amplitude Data:", before="\n")
-        log.pvpkg_log(ampl_df.to_markdown(index=True)).replace("nan", "DNF")
+        log.pvpkg_log(ampl_df.to_markdown(index=True).replace("nan", "DNF"))
         log.pvpkg_log_info("TX_RX_PHASE_2", "Phase Data:", before="\n")
-        log.pvpkg_log(phase_df.to_markdown(index=True)).replace("nan", "DNF")
+        log.pvpkg_log(phase_df.to_markdown(index=True).replace("nan", "DNF"))
         log.pvpkg_log_info("TX_RX_PHASE_2", "Frequency Results:", before="\n")
         log.pvpkg_log(freq_res.to_markdown(index=False))
         log.pvpkg_log_info("TX_RX_PHASE_2", "Amplitude Results:", before="\n")
