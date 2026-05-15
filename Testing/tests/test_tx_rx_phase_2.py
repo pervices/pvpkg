@@ -123,9 +123,8 @@ def makePlots(x_time, real_data, best_fit_data, offset_data, wave_freq, sample_r
     for run in range(num_runs):
         # Runs where engine.run failed use np.nan to indicate DNF. There is nothing to plot for these runs but still put DNF so it's not empty.
         # All channels are marked DNF when the run fails, so only need to check the first one.
-        if (real_data[run][0] == np.nan):
-            log.pvpkg_log_warning("This run was marked as DNF. Nothing to plot for this run.")
-            report.buffer_put("text", "DNF", "Run " + str(run))
+        if (np.all(np.isnan(real_data[run][0]))):
+            report.buffer_put("text", "Run " + str(run) + ": DNF")
             continue
 
         fig, axes = plt.subplots(num_subplot_rows, 2)
@@ -251,17 +250,15 @@ def main():
                 log.pvpkg_log_error("TX_RX_PHASE_2", 
                     "Exception occured while streaming.\nIteration {}\nException: {}\nTest will continue but be marked as failed with DNF for this iteration."
                     .format(str(it), str(err)))
-                # Mark data as DNF
-                # TODO: Make sure panda handles this correctly with calculating max/min/etc... Should just ignore it
-                # TODO: Don't try to plot the failed runs
-                # Data to use when DNF in matrices/arrays. 
-                # Using NaN since it will not be counted for calculations and setting as a string will break functions that are expecting numbers.
+                # Set data for this run to numpy NaN since it will be ignored for calculations like max/min and setting it as a string "DNF" would break functions that expect numbers.
                 dnf_data = [np.nan for _ in range(len(channel_list))]
-                freq_delta_matrix[run][baselineCh_index] = dnf_data
-                ampl_delta_matrix[run][baselineCh_index] = dnf_data
-                phase_delta_matrix[run][baselineCh_index] = dnf_data
-                offset_delta_matrix[run][baselineCh_index] = dnf_data
+                freq_delta_matrix[run] = dnf_data
+                ampl_delta_matrix[run] = dnf_data
+                phase_delta_matrix[run] = dnf_data
+                offset_delta_matrix[run] = dnf_data
                 reals.append(dnf_data)
+                best_fits.append(dnf_data)
+                offsets.append(dnf_data)
                 # Mark test as failed and continue to next run of iteration
                 fail_flag = 1
                 continue
@@ -393,6 +390,12 @@ def main():
         # Update overall summary table with this iteration
         summary_table.append([it["center_freq"], it["wave_freq"], boolToWord(freq_overall_res), boolToWord(ampl_overall_res), boolToWord(phase_overall_res)])
 
+        # Replace NaN entries with DNF before printing or adding to report.
+        freq_df = freq_df.mask(np.isnan(freq_df), "DNF")
+        ampl_df = ampl_df.mask(np.isnan(ampl_df), "DNF")
+        phase_df = phase_df.mask(np.isnan(phase_df), "DNF")
+        offset_df = offset_df.mask(np.isnan(offset_df), "DNF")
+        
         # Print data and results table to console
         log.pvpkg_log_info("TX_RX_PHASE_2", "Frequency Data:", before="\n")
         log.pvpkg_log(freq_df.to_markdown(index=True))
