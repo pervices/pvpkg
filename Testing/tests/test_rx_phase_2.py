@@ -120,6 +120,12 @@ def makePlots(x_time, real_data, best_fit_data, offset_data, wave_freq, sample_r
 
     num_subplot_rows = int(math.ceil(len(targs.channels) / 2))
     for run in range(num_runs):
+        # Runs where engine.run failed use np.nan to indicate DNF. There is nothing to plot for these runs but still put DNF so it's not empty.
+        # All channels are marked DNF when the run fails, so only need to check the first one.
+        if (np.all(np.isnan(real_data[run][0]))):
+            report.buffer_put("text", "Run " + str(run) + ": DNF")
+            continue
+
         fig, axes = plt.subplots(num_subplot_rows, 2)
         plt.suptitle("Amplitude versus Samples: Individual Channels for Run {}".format(run))
 
@@ -215,6 +221,11 @@ def main():
         sample_rate = int(it["sample_rate"])
         sample_count = int(it["sample_count"])
         wave_freq = int(it["wave_freq"])
+
+        table_data = [["Center Frequency (Hz)", "Wave Frequency (Hz)", "Sample Rate (SPS)", "Sample Count", "TX Gain (dB)", "RX Gain (dB)"],
+                                [it["center_freq"], it["wave_freq"], sample_rate, it["sample_count"], it["tx_gain"], it["rx_gain"]]]
+        report.buffer_put("table_wide", table_data, "Test Configuration")
+
         for run in range(num_runs):
             log.pvpkg_log_info("RX_PHASE_2", "Beginning run {}/{}".format(run, num_runs - 1))
             '''
@@ -229,19 +240,22 @@ def main():
             try:
                 vsnk = engine.run(targs.channels, it["wave_freq"], sample_rate, it["center_freq"], it["tx_gain"], it["rx_gain"], tx_stack, rx_stack)
             except Exception as err:
-                frameinfo = getframeinfo(currentframe())
-                component = "{}:{}".format(frameinfo.filename, frameinfo.lineno)
-                message = "Exception occured while streaming:\n {}".format(err)
-                log.pvpkg_log_error(component, message)
-                report.draw_from_buffer()
-                report.save()
-                sys.exit(1)
-
-            if (run == 0):
-                table_data = [["Center Frequency (Hz)", "Wave Frequency (Hz)", "Sample Rate (SPS)", "Sample Count", "TX Gain (dB)", "RX Gain (dB)"],
-                                [it["center_freq"], it["wave_freq"], sample_rate, it["sample_count"], it["tx_gain"], it["rx_gain"]]]
-                report.buffer_put("table_wide", table_data, "Test Configuration")
-            
+                # Test will be marked as failed with DNF for missing data but still continue to next iterations.
+                log.pvpkg_log_error("RX_PHASE_2", 
+                    "Exception occured while streaming.\nIteration {}\nException: {}\nTest will continue but be marked as failed with DNF for this iteration."
+                    .format(str(it), str(err)))
+                # Set data for this run to numpy NaN since it will be ignored for calculations like max/min and setting it as a string "DNF" would break functions that expect numbers.
+                dnf_data = [np.nan for _ in range(len(channel_list))]
+                freq_delta_matrix[run] = dnf_data
+                ampl_delta_matrix[run] = dnf_data
+                phase_delta_matrix[run] = dnf_data
+                offset_delta_matrix[run] = dnf_data
+                reals.append(dnf_data)
+                best_fits.append(dnf_data)
+                offsets.append(dnf_data)
+                # Mark test as failed and continue to next run of iteration
+                fail_flag = 1
+                continue                
 
             # Number of waves to cutoff before starting analysis
             begin_cutoff = int(round((1/(wave_freq/sample_rate))*begin_cutoff_waves))
@@ -374,11 +388,11 @@ def main():
 
         # Print data and results table to console
         log.pvpkg_log_info("RX_PHASE_2", "Frequency Data:", before="\n")
-        log.pvpkg_log(freq_df.to_markdown(index=True))
+        log.pvpkg_log(freq_df.to_markdown(index=True).replace("nan", "DNF"))
         log.pvpkg_log_info("RX_PHASE_2", "Amplitude Data:", before="\n")
-        log.pvpkg_log(ampl_df.to_markdown(index=True))
+        log.pvpkg_log(ampl_df.to_markdown(index=True).replace("nan", "DNF"))
         log.pvpkg_log_info("RX_PHASE_2", "Phase Data:", before="\n")
-        log.pvpkg_log(phase_df.to_markdown(index=True))
+        log.pvpkg_log(phase_df.to_markdown(index=True).replace("nan", "DNF"))
         log.pvpkg_log_info("RX_PHASE_2", "Frequency Results:", before="\n")
         log.pvpkg_log(freq_res.to_markdown(index=False))
         log.pvpkg_log_info("RX_PHASE_2", "Amplitude Results:", before="\n")
@@ -405,13 +419,13 @@ def main():
 
         # Add data tables to the report
         report.buffer_put("text", " ")
-        report.buffer_put("table_wide", [tuple(' ') + tuple(freq_df.columns.tolist())] + freq_df.to_records(index=True).tolist(), "Frequency Data:")
+        report.buffer_put("table_wide", [tuple(' ') + tuple(freq_df.columns.tolist())] + freq_df.fillna("DNF").to_records(index=True).tolist(), "Frequency Data:")
         report.buffer_put("text", " ")
-        report.buffer_put("table_wide", [tuple(' ') + tuple(ampl_df.columns.tolist())] + ampl_df.to_records(index=True).tolist(), "Amplitude Data:")
+        report.buffer_put("table_wide", [tuple(' ') + tuple(ampl_df.columns.tolist())] + ampl_df.fillna("DNF").to_records(index=True).tolist(), "Amplitude Data:")
         report.buffer_put("text", " ")
-        report.buffer_put("table_wide", [tuple(' ') + tuple(phase_df.columns.tolist())] + phase_df.to_records(index=True).tolist(), "Phase Data:")
+        report.buffer_put("table_wide", [tuple(' ') + tuple(phase_df.columns.tolist())] + phase_df.fillna("DNF").to_records(index=True).tolist(), "Phase Data:")
         report.buffer_put("text", " ")
-        report.buffer_put("table_wide", [tuple(' ') + tuple(offset_df.columns.tolist())] + offset_df.to_records(index=True).tolist(), "Offset Data:")
+        report.buffer_put("table_wide", [tuple(' ') + tuple(offset_df.columns.tolist())] + offset_df.fillna("DNF").to_records(index=True).tolist(), "Offset Data:")
         report.buffer_put("pagebreak")
     
     # Add overall summary table

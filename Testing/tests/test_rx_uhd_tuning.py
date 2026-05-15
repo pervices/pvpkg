@@ -19,6 +19,7 @@ summary_tables = []
 
 def test(it, data):
     global test_fail
+    iteration_dnf = False
     gen.dump(it)
 
     # Create manual tune request for rx, use default tuning for tx (just pass center freq)
@@ -35,8 +36,12 @@ def test(it, data):
                                     it["tx_gain"], it["rx_gain"],
                                     tx_stack, rx_stack)
     except Exception as err:
-        build_report()
-        sys.exit(1)
+        # Test will be marked as failed with DNF for missing data but still continue to next iterations.
+        log.pvpkg_log_error("RX_UHD_TUNING", 
+            "Exception occured while streaming.\nIteration {}\nException: {}\nTest will continue but be marked as failed with DNF for this iteration."
+            .format(str(it), str(err)))
+        # Mark iteration as DNF
+        iteration_dnf = True
 
     center_freq = "{:.3e}".format(it["center_freq"])
     rx_lo = "{:.2e}".format(it["rx_lo"])
@@ -48,6 +53,21 @@ def test(it, data):
     title = "NCO: {}Hz, Center Freq: {}Hz".format(rx_dsp_sci, center_freq)
     test_info = [["Rx NCO (Hz)", "Rx LO (Hz)", "Center Freq (Hz)", "Wave Freq (Hz)", "Rate (SPS)", "Sample Count", "TX Gain (dB)", "RX Gain (dB)"],
                 [rx_dsp_sci, rx_lo, center_freq, wave_freq, it["sample_rate"], it["sample_count"], it["tx_gain"], it["rx_gain"]]]
+
+    # Use "DNF" instead of missing data for this iteration
+    if iteration_dnf:
+        for ch in it["channels"]:
+            data.append([str(rx_dsp_sci) , str(rx_lo), str(center_freq), str(wave_freq), str(ch), "DNF",  "fail"])
+        
+        # Put DNF in report instead of plots
+        report.buffer_put("text_large", title)
+        report.buffer_put("table_wide", test_info, "")
+        report.buffer_put("text", "DNF")
+        report.buffer_put("pagebreak")
+
+        # Mark test as failed and continue to next iteration
+        test_fail = 1
+        return
 
     images = []
     for ch, channel in enumerate(vsnk):

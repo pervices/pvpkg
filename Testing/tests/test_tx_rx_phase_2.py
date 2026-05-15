@@ -423,13 +423,13 @@ def main():
 
         # Add data tables to the report
         report.buffer_put("text", " ")
-        report.buffer_put("table_wide", [tuple(' ') + tuple(freq_df.columns.tolist())] + freq_df.to_records(index=True).tolist(), "Frequency Data:")
+        report.buffer_put("table_wide", [tuple(' ') + tuple(freq_df.columns.tolist())] + freq_df.fillna("DNF").to_records(index=True).tolist(), "Frequency Data:")
         report.buffer_put("text", " ")
-        report.buffer_put("table_wide", [tuple(' ') + tuple(ampl_df.columns.tolist())] + ampl_df.to_records(index=True).tolist(), "Amplitude Data:")
+        report.buffer_put("table_wide", [tuple(' ') + tuple(ampl_df.columns.tolist())] + ampl_df.fillna("DNF").to_records(index=True).tolist(), "Amplitude Data:")
         report.buffer_put("text", " ")
-        report.buffer_put("table_wide", [tuple(' ') + tuple(phase_df.columns.tolist())] + phase_df.to_records(index=True).tolist(), "Phase Data:")
+        report.buffer_put("table_wide", [tuple(' ') + tuple(phase_df.columns.tolist())] + phase_df.fillna("DNF").to_records(index=True).tolist(), "Phase Data:")
         report.buffer_put("text", " ")
-        report.buffer_put("table_wide", [tuple(' ') + tuple(offset_df.columns.tolist())] + offset_df.to_records(index=True).tolist(), "Offset Data:")
+        report.buffer_put("table_wide", [tuple(' ') + tuple(offset_df.columns.tolist())] + offset_df.fillna("DNF").to_records(index=True).tolist(), "Offset Data:")
         report.buffer_put("pagebreak")
     
     # Add overall summary table
