@@ -38,7 +38,7 @@ def test(it, data):
     except Exception as err:
         # Test will be marked as failed with DNF for missing data but still continue to next iterations.
         log.pvpkg_log_error("TX_UHD_TUNING", 
-            "Exception occured while streaming.\nIteration {}\nException: {}\nTest will continue but be marked as failed with DNF for this iteration."
+            "Exception occured while streaming.\nIteration {}\nException: {}\nTest will continue but be marked as failed with DNF for missing data."
             .format(str(it), str(err)))
         # Mark iteration as DNF
         iteration_dnf = True

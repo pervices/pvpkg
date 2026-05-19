@@ -31,7 +31,7 @@ def test(it, data):
     except Exception as err:
         # Test will be marked as failed with DNF for missing data but still continue to next iterations.
         log.pvpkg_log_error("BUFFER_EXHAUSTION", 
-            "Exception occured while streaming.\nIteration {}\nException: {}\nTest will continue but be marked as failed with DNF for this iteration."
+            "Exception occured while streaming.\nIteration {}\nException: {}\nTest will continue but be marked as failed with DNF for missing data."
             .format(str(it), str(err)))
         test_fail = 1
         test_dnf = True

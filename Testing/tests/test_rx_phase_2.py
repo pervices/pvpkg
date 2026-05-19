@@ -242,7 +242,7 @@ def main():
             except Exception as err:
                 # Test will be marked as failed with DNF for missing data but still continue to next iterations.
                 log.pvpkg_log_error("RX_PHASE_2", 
-                    "Exception occured while streaming.\nIteration {}\nException: {}\nTest will continue but be marked as failed with DNF for this iteration."
+                    "Exception occured while streaming.\nIteration {}\nException: {}\nTest will continue but be marked as failed with DNF for missing data."
                     .format(str(it), str(err)))
                 # Set data for this run to numpy NaN since it will be ignored for calculations like max/min and setting it as a string "DNF" would break functions that expect numbers.
                 dnf_data = [np.nan for _ in range(len(channel_list))]
