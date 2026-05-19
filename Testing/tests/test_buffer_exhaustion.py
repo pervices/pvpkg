@@ -29,6 +29,10 @@ def test(it, data):
     try:
         vsnk = engine.run(targs.channels, it["wave_freq"], it["sample_rate"], it["center_freq"], it["tx_gain"], it["rx_gain"], tx_stack, rx_stack)
     except Exception as err:
+        # Test will be marked as failed with DNF for missing data but still continue to next iterations.
+        log.pvpkg_log_error("BUFFER_EXHAUSTION", 
+            "Exception occured while streaming.\nIteration {}\nException: {}\nTest will continue but be marked as failed with DNF for missing data."
+            .format(str(it), str(err)))
         test_fail = 1
         test_dnf = True
 
@@ -43,8 +47,11 @@ def test(it, data):
     report.buffer_put("text", " ")
     images = []
 
+    # Since engine.run failed, exit test early with DNF for missing data
     if test_dnf:
-        data.append([str(center_freq), str(wave_freq), "DNF", "fail"])
+        for ch in range(len(targs.channels)):
+            data.append([str(center_freq), str(wave_freq), targs.channels[ch], "DNF"])
+        report.buffer_put("text", "DNF")
         report.buffer_put("pagebreak")
         return data
 

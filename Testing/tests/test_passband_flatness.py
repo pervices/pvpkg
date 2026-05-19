@@ -34,10 +34,12 @@ def test(it, data):
     try:
         vsnk = engine.run(it["channels"], it["wave_freq"], it["sample_rate"], it["center_freq"], it["tx_gain"], it["rx_gain"], tx_stack, rx_stack)
     except Exception as err:
+        # Test will be marked as failed with DNF for missing data but still continue to next iterations.
+        log.pvpkg_log_error("PASSBAND_FLATNESS", 
+            "Exception occured while streaming.\nIteration {}\nException: {}\nTest will continue but be marked as failed with DNF for missing data."
+            .format(str(it), str(err)))
         test_fail = 1
-        # Exist test early with DNF for missing data since engine failed
         test_info.append(["Iteration {}:".format(iteration_num), "DNF", "DNF", "DNF", "DNF", it["wave_freq"]])
-        log.pvpkg_log_error("PASSBAND_FLATNESS", "Failed during engine.run. Test will continue but be marked as failed.")
         return data
 
     # Process.
@@ -81,6 +83,7 @@ def main(iterations, desc):
     passband_flat = []
     test_info_channel_diff = []
 
+    # Check the data for passband flatness. This only checks iterations that finished, so does not consider any marked as DNF.
     for ch in list(range(4)):
         channel_test = []
 

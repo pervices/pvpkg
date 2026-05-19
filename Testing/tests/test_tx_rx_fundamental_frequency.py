@@ -33,10 +33,18 @@ def test(it, data):
     try:
         vsnk = engine.run(targs.channels, it["wave_freq"], it["sample_rate"], it["center_freq"], it["tx_gain"], it["rx_gain"], tx_stack, rx_stack)
     except Exception as err:
+        # Show user whenever engine.run fails and mark test as failed even if it will retry
+        log.pvpkg_log_error("TX_RX_FUNDAMENTAL_FREQUENCY", 
+            "Exception occured while streaming.\nIteration {}\nException: {}\nTest will continue but be marked as failed."
+            .format(str(it), str(err)))
         test_fail = 1
+        # If we haven't exceeded max attempts, retry this iteration
         if attempt_num < max_attempts:
+            log.pvpkg_log_info("TX_RX_FUNDAMENTAL_FREQUENCY", "Retrying test...")
             raise
         else:
+            # If we have exceeded the max attempts, mark this iteration as DNF
+            log.pvpkg_log_error("TX_RX_FUNDAMENTAL_FREQUENCY", "Reached max number of retries without getting any data. Missing data will be marked as DNF and the test will continue.")
             test_dnf = True
 
     center_freq = "{:.1e}".format(it["center_freq"])
@@ -52,7 +60,9 @@ def test(it, data):
 
     # Since engine.run failed, exit test early with DNF for missing data
     if attempt_num >= max_attempts and test_dnf:
-        data.append([str(center_freq), str(wave_freq), "DNF", "fail"])
+        for ch in range(len(targs.channels)):
+            data.append([str(center_freq), str(wave_freq), targs.channels[ch], "DNF", "fail"])
+        report.buffer_put("text", "DNF")
         report.buffer_put("pagebreak")
         return data
 
