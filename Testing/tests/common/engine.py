@@ -14,6 +14,7 @@ import time
 import subprocess
 import sys
 import datetime
+import gc
 
 # Manage shared memory for vsnk samples in multiproc.-friendly way
 class SharedSink:
@@ -145,6 +146,9 @@ def run_rx(csrc, channels, stack, sample_rate, _vsnk, timeout_occured):
 # Multiprocess is needed for the ability to terminate, but tx and rx must be in the same process as each other
 # run_helper is run as it's own process, which then spawns tx and rx threads
 def run_helper(channels, wave_freq, tx_gain, rx_gain, tx_stack, rx_stack, tx_duration, rx_duration, tx_sample_rate, rx_sample_rate, tx_center_freq, rx_center_freq, sink_arr):
+    # Disable garbage collection
+    gc.disable()
+
     rx_timeout_occured = threading.Event()
 
     vsnk = [] # Will be extended when using stacked commands.
