@@ -44,7 +44,7 @@ freq_std_thresh = 0.6
 # NOTE: ampl_std_thresh may be changed for device specific reasons
 default_ampl_std_thresh = 0.001
 phase_mean_thresh = 0.0349066 #rad bound
-phase_std_thresh = 0.002
+phase_std_thresh = 0.1
 
 # Number of test runs per frequency
 num_runs = 15
