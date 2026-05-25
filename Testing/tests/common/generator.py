@@ -87,7 +87,7 @@ uhd_output = stream.read()
 #Crimson version info
 stream = os.popen('uhd_usrp_info -v')
 crimson_output = stream.read()
-#print(crimson_output)
+stream.close()
 
 def lo_band_passband_flatness_test():
     log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
