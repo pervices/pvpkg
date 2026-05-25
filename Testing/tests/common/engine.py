@@ -22,7 +22,7 @@ class SharedSink:
         # The shared memory size is not dynamic, so must be calculated based on the amount of samples
         sample_count = sum([frame[1] for frame in stack])
         # Manage shared memory for the samples from within class
-        self.shared_memory = shared_memory.SharedMemory(create=True, size=(sample_count * sys.getsizeof(complex())))
+        self.shared_memory = shared_memory.SharedMemory(create=True, size=(sample_count * sys.getsizeof(complex())), track=False)
         self.samples=np.ndarray((sample_count,), dtype=complex, buffer=self.shared_memory.buf)
 
     # Shared memory must be freed when the program is done with the object
