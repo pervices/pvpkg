@@ -1,5 +1,6 @@
 import inspect
 import sys
+import subprocess
 from . import log
 
 def ship_test_crimson(channels):
@@ -79,15 +80,12 @@ def ship_test_chestnut(channels):
 
 
 #UHD_version
-import os
-stream = os.popen('uhd_find_devices')
-uhd_output = stream.read()
-#print(uhd_output)
+stream = subprocess.run(['uhd_find_devices'], capture_output=True, text=True)
+uhd_output = stream.stdout
 
 #Crimson version info
-stream = os.popen('uhd_usrp_info -v')
-crimson_output = stream.read()
-#print(crimson_output)
+stream = subprocess.run(['uhd_usrp_info', '-v'], capture_output=True, text=True)
+crimson_output = stream.stdout
 
 def lo_band_passband_flatness_test():
     log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
