@@ -135,7 +135,14 @@ def makePlots(x_time, real_data, best_fit_data, offset_data, wave_freq, sample_r
         row = 0
         for ch in range(len(targs.channels)):
             subplot_row = int(ch / 2)
-            subPlot(x_time[0:plotted_samples], real_data[run][ch][0:plotted_samples], axes[subplot_row][ch%2], best_fit_data[run][ch][0:plotted_samples], offset_data[run][ch], "Channel {}".format(channel_map[targs.channels[ch]]))
+
+            # If the number of channels is greater than 2 axes is a 2D list, if it is less than that it is a 1D list
+            if(ch < 2):
+                axis = axes[subplot_row]
+            else:
+                axis = axes[subplot_row][ch%2]
+
+            subPlot(x_time[0:plotted_samples], real_data[run][ch][0:plotted_samples], axis, best_fit_data[run][ch][0:plotted_samples], offset_data[run][ch], "Channel {}".format(channel_map[targs.channels[ch]]))
 
         plt.tight_layout(pad=0.4, w_pad=0.5, h_pad=1.0) #Formatting the plots nicely
 
