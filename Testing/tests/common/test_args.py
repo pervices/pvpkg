@@ -35,6 +35,8 @@ class TestArgs:
         
         if args.product == 'v':
             self.product = "Vaunt"
+        if args.product == 'a':
+            self.product = "Avery"
         elif args.product == 't':
             self.product = "Tate"
         elif args.product == 'b':
