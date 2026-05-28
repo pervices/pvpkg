@@ -142,6 +142,10 @@ def build_report():
 if(targs.product == "Vaunt"):
     main(gen.lo_band_basic(), "Low Band")
     main(gen.hi_band_basic(), "High Band")
+elif(targs.product == "Avery"):
+    main(gen.calamine.lo_band.basic(), "Low Band")
+    main(gen.calamine.mid_band.basic(), "Mid Band")
+    main(gen.calamine.hi_band.basic(), "High Band")
 elif(targs.product == "Tate"):
     main(gen.cyan.lo_band.basic(), "Low Band")
     main(gen.cyan.mid_band.basic(), "Mid Band")

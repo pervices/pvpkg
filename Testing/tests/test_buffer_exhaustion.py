@@ -120,6 +120,9 @@ def build_report():
 if(targs.product == "Vaunt"):
     buffer_shift = 74000
     main(gen.lo_band_buffer_exhaust_test(), "Low Band")
+elif(targs.product == "Avery"):
+    buffer_shift = 74000
+    main(gen.calamine.lo_band.buffer_exhaust_test(), "Low Band")
 elif(targs.product == "Tate" or targs.product == "BasebandTate"):
     buffer_shift = 4700000
     main(gen.cyan.lo_band.buffer_exhaust_test(), "Low Band")

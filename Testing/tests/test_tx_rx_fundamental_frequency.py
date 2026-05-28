@@ -132,6 +132,10 @@ def build_report():
 if(targs.product == "Vaunt"):
     main(gen.lo_band_wave_sweep(), "Low Band")
     main(gen.hi_band_wave_sweep(), "High Band")
+elif(targs.product == "Avery"):
+    main(gen.calamine.lo_band.wave_sweep(), "Low Band")
+    main(gen.calamine.mid_band.wave_sweep(), "Mid Band")
+    main(gen.calamine.hi_band.wave_sweep(), "High Band")
 elif(targs.product == "Tate"):
     main(gen.cyan.lo_band.wave_sweep(), "Low Band")
     main(gen.cyan.mid_band.wave_sweep(), "Mid Band")
