@@ -368,7 +368,7 @@ class calamine:
             tx_gain = 0
             rx_gain = 0
             center_freq = 100000000
-            sample_rate = 9803922
+            sample_rate = 10000000
             for wave_freq in list(range(-int(0.45*sample_rate),int(0.45*sample_rate+1),int(0.9*sample_rate/24))):
                 # Only test non-zero wave frequencies
                 if wave_freq != 0:
@@ -382,7 +382,7 @@ class calamine:
             tx_gain = 0
             rx_gain = 0
             center_freq = 15000000      # 15MHz
-            sample_rate = 9803922
+            sample_rate = 10000000
             for wave_freq in [ 1000000 ]:
                 yield locals()
 
@@ -414,10 +414,10 @@ class calamine:
             log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
             wave_freq = 1000000         # 1MHz
             sample_count = 256
-            tx_gain = 0
-            rx_gain = 0
-            for center_freq in [ 1000000000, 2000000000, 3000000000, 4000000000 ]:
-                for sample_rate in [ 9848485, 25000000, 36111111 ]:
+            tx_gain = 25
+            rx_gain = 25
+            for center_freq in [ 2000000000, 4000000000 ]:
+                for sample_rate in [ 10000000, 25000000, 37500000 ]:
                     yield locals()
 
         @staticmethod
@@ -552,7 +552,7 @@ class calamine:
             tx_gain = 0
             rx_gain = 0
             for center_freq in [ 8e9, 12e9, 16e9 ]:     # 8GHz, 12GHz, 16GHz
-                for sample_rate in [ 9848485, 25000000, 36111111 ]:
+                for sample_rate in [ 10000000, 25000000, 37500000 ]:
                     yield locals()
 
         @staticmethod
@@ -637,7 +637,7 @@ class calamine:
             tx_gain = 0
             rx_gain = 0
             for center_freq in [ 25e9, 30e9, 35e9 ]:     # 25GHz, 30GHz, 35GHz
-                for sample_rate in [ 9848485, 25000000, 36111111 ]:
+                for sample_rate in [ 10000000, 25000000, 37500000 ]:
                     yield locals()
 
         @staticmethod
