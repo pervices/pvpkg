@@ -7,7 +7,7 @@ from common import log
 import matplotlib.pyplot as plt
 import numpy as np
 import sys
-import os
+import subprocess
 
 def main(iterations, title="TX RX Gain Test") -> int:
     fail_flag = 0
@@ -219,11 +219,15 @@ if __name__ == "__main__":
         ret = main(gen.calamine.mid_band.gain_rx(), "Mid Band RX Gain Test")
         test_status.append(["Mid Band RX Gain Test", to_pass_fail(ret)])
 
-        ret = main(gen.calamine.hi_band.gain_tx(), "High Band TX Gain Test")
-        test_status.append(["High Band TX Gain Test", to_pass_fail(ret)])
+        # For RTM1 in loopback testing, signal amplitude is inconsistent in highband which is related to the same LO frequency for rx/tx
+        # Since this is likely to cause failure for this test, only run highband if not RTM1
+        rtm_ver = subprocess.check_output("uhd_usrp_info -s | grep 'RTM' | cut --complement -d ':' -f1", shell=True, text=True)
+        if (rtm_ver != 1):
+            ret = main(gen.calamine.hi_band.gain_tx(), "High Band TX Gain Test")
+            test_status.append(["High Band TX Gain Test", to_pass_fail(ret)])
 
-        ret = main(gen.calamine.hi_band.gain_rx(), "High Band RX Gain Test")
-        test_status.append(["High Band RX Gain Test", to_pass_fail(ret)])
+            ret = main(gen.calamine.hi_band.gain_rx(), "High Band RX Gain Test")
+            test_status.append(["High Band RX Gain Test", to_pass_fail(ret)])
 
     else:
         log.pvpkg_log_error("TX_RX_GAIN", "Unrecognized product argument")

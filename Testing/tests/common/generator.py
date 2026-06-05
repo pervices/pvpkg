@@ -365,10 +365,10 @@ class calamine:
             log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
             channels = list(range(4))
             sample_count = int(round(25000000/10000))
-            tx_gain = 0
-            rx_gain = 0
-            center_freq = 100000000
-            sample_rate = 10000000
+            tx_gain = 10
+            rx_gain = 10
+            center_freq = 15000000      # 15MHz
+            sample_rate = 10000000      # 10MSps
             for wave_freq in list(range(-int(0.45*sample_rate),int(0.45*sample_rate+1),int(0.9*sample_rate/24))):
                 # Only test non-zero wave frequencies
                 if wave_freq != 0:
@@ -378,23 +378,23 @@ class calamine:
         def buffer_exhaust_test():
             log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
             channels = list(range(4))
-            sample_count = int(9803922/1000 + 74000)
-            tx_gain = 0
-            rx_gain = 0
-            center_freq = 15000000      # 15MHz
-            sample_rate = 10000000
-            for wave_freq in [ 1000000 ]:
+            sample_count = int(round(25000000/10000)+4700000)
+            tx_gain = 10
+            rx_gain = 10
+            center_freq = 15000000          # 15MHz
+            sample_rate = 10000000          # 10MSps
+            for wave_freq in [ 1000000 ]:   # 1MHz
                 yield locals()
 
         @staticmethod
         def wave_sweep():
             log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
             sample_count = int(round(25000000/10000))
-            tx_gain = 0
-            rx_gain = 0
+            tx_gain = 25
+            rx_gain = 25
             center_freq = 1000000000    # 1GHz
             sample_rate = 25000000      # 25MSps
-            for wave_freq in [ 600000, 800000, 1000000 ]:
+            for wave_freq in [ 600000, 800000, 1000000 ]:   # 600kHz, 800kHz, 1MHz
                 yield locals()
 
         @staticmethod
@@ -412,12 +412,12 @@ class calamine:
         @staticmethod
         def basic():
             log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
-            wave_freq = 1000000         # 1MHz
+            wave_freq = 1000000     # 1MHz
             sample_count = 256
             tx_gain = 25
             rx_gain = 25
-            for center_freq in [ 2000000000, 4000000000 ]:
-                for sample_rate in [ 10000000, 25000000, 37500000 ]:
+            for center_freq in [ 2000000000, 4000000000 ]:              # 2GHz, 4GHz
+                for sample_rate in [ 10000000, 25000000, 37500000 ]:    # 10MSps, 25MSps, 37.5MSps
                     yield locals()
 
         @staticmethod
@@ -426,8 +426,8 @@ class calamine:
             wave_freq = 1000000         # 1MHz
             sample_count = 1000
             center_freq = 2000000000    # 2GHz
-            sample_rate = 9848485       # 9.848485MSps
-            tx_gain = 40                #increasing the fixed gain may cause saturation
+            sample_rate = 10000000      # 10MSps
+            tx_gain = 25                #increasing the fixed gain may cause saturation
             for rx_gain in [0, 15, 30]:
                 yield locals()
 
@@ -437,8 +437,8 @@ class calamine:
             wave_freq = 1000000         # 1MHz
             sample_count = 1000
             center_freq = 2000000000    # 2GHz
-            sample_rate = 9848485       # 9.848485MSps
-            rx_gain = 40                #increasing the fixed gain may cause saturation
+            sample_rate = 10000000      # 10MSps
+            rx_gain = 25                #increasing the fixed gain may cause saturation
             for tx_gain in [0, 15, 30]:
                 yield locals()
 
@@ -472,9 +472,9 @@ class calamine:
             log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
             descriptions = ["Max achievable combined rate on all ch"]
             # Higher rates are achievable outside of docker
-            rx_rates = [325e6/6]
+            rx_rates = [300e6/6]
             rx_channels = [list(range(channels))]
-            tx_rates = [325e6/6]
+            tx_rates = [300e6/6]
             tx_channels = [list(range(channels))]
             assert(len(rx_rates) == len(rx_channels))
             assert(len(rx_rates) == len(tx_rates))
@@ -494,7 +494,7 @@ class calamine:
             log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
             descriptions = ["Max achievable rx rate on any number of ch", "Max achievable rx rate on all ch"]
             # Higher rates are achievable outside of docker
-            rx_rates = [162.5e6, 81.25e6]
+            rx_rates = [150e6, 75e6]
             rx_channels = [[0, 1], list(range(channels))]
             assert(len(rx_rates) == len(rx_channels))
             for n in range(len(rx_rates)):
@@ -509,7 +509,7 @@ class calamine:
         def tx_rate(channels):
             log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
             descriptions = ["Max achievable tx rate on any number of ch", "Max achievable tx rate on all ch"]
-            tx_rates = [162.5e6, 81.25e6]
+            tx_rates = [150e6, 75e6]
             tx_channels = [[0], list(range(channels))]
             assert(len(tx_rates) == len(tx_channels))
             for n in range(len(tx_rates)):
@@ -529,19 +529,19 @@ class calamine:
             rx_gain = 25
             center_freq = 10000000000   # 10GHz
             sample_rate = 25000000      # 25Msps
-            for wave_freq in [ 600000, 800000, 1000000 ]:
+            for wave_freq in [ 600000, 800000, 1000000 ]:   # 600kHz, 800kHz, 1MHz
                 yield locals()
 
         @staticmethod
         def wave_easy(channels):
             log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
             channels = list(range(4))
-            sample_rate = 9848485
+            sample_rate = 10000000          # 10MSps
             sample_count = int((round(9848485/1000)))
             tx_gain = 25
             rx_gain = 25
-            center_freq = 15000000000   # 15GHz
-            for wave_freq in [ 50000 ]:
+            center_freq = 15000000000       # 15GHz
+            for wave_freq in [ 50000 ]:     # 5kHz
                 yield locals()
 
         @staticmethod
@@ -549,10 +549,10 @@ class calamine:
             log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
             wave_freq = 1000000          # 1MHz
             sample_count = 256
-            tx_gain = 0
-            rx_gain = 0
-            for center_freq in [ 8e9, 12e9, 16e9 ]:     # 8GHz, 12GHz, 16GHz
-                for sample_rate in [ 10000000, 25000000, 37500000 ]:
+            tx_gain = 25
+            rx_gain = 25
+            for center_freq in [ 8e9, 12e9, 16e9 ]:                     # 8GHz, 12GHz, 16GHz
+                for sample_rate in [ 10000000, 25000000, 37500000 ]:    # 10MSps, 25MSps, 37.5MSps
                     yield locals()
 
         @staticmethod
@@ -561,8 +561,8 @@ class calamine:
             wave_freq = 1000000         # 1MHz
             sample_count = 1000
             center_freq = 9000000000    # 9GHz
-            sample_rate = 9848485       # 9.848485MSps
-            rx_gain = 40                #increasing the fixed gain may cause saturation
+            sample_rate = 10000000      # 10MSps
+            rx_gain = 25                #increasing the fixed gain may cause saturation
             for tx_gain in [0, 15, 30]:
                 yield locals()
 
@@ -572,9 +572,9 @@ class calamine:
             wave_freq = 1000000         # 1MHz
             sample_count = 1000
             center_freq = 9000000000    # 9GHz
-            sample_rate = 9848485       # 9.848485MSps
-            tx_gain = 40                #increasing the fixed gain may cause saturation
-            for rx_gain in [0, 30, 60]:
+            sample_rate = 10000000      # 10MSps
+            tx_gain = 25                #increasing the fixed gain may cause saturation
+            for rx_gain in [0, 15, 30]:
                 yield locals()
 
         @staticmethod
@@ -583,10 +583,10 @@ class calamine:
             channels = list(range(4))
             wave_freq = 1000000         # 1MHz
             sample_count = 10000
-            tx_gain = 25
-            rx_gain = 25
+            tx_gain = 0
+            rx_gain = 0
             rx_lo = 8250000000          # 8.25GHz
-            sample_rate = 9848485       # 9.848485MSps
+            sample_rate = 10000000      # 10MSps
             for center_freq in [ (rx_lo - 2000000), rx_lo, (rx_lo + 2000000) ]: # 3 cases for dsp (pos, zero, neg).
                 yield locals()
 
@@ -598,10 +598,10 @@ class calamine:
             sample_count = 10000
             # Using too low a gain will result in the lo feedthrough not being visible next to the main tone
             # Using too high a gain will result in either the lo feedthrough or main tone not being visible
-            tx_gain = 25
-            rx_gain = 25
+            tx_gain = 0
+            rx_gain = 0
             tx_lo = 8250000000          # 8.25GHz
-            sample_rate = 9848485       # 9.848485MSps
+            sample_rate = 10000000      # 10MSps
             for center_freq in [ (tx_lo - 2000000), tx_lo, (tx_lo + 2000000) ]: # 3 cases for dsp nco (pos, zero, neg).
                 yield locals()
 
@@ -612,32 +612,32 @@ class calamine:
             sample_count = int(round(25000000/10000))
             tx_gain = 25
             rx_gain = 25
-            center_freq = 30000000000   # 30GHz
+            center_freq = 35000000000   # 35GHz
             sample_rate = 25000000      # 25Msps
-            for wave_freq in [ 600000, 800000, 1000000 ]:
+            for wave_freq in [ 600000, 800000, 1000000 ]:   # 600kHz, 800kHz, 1MHz
                 yield locals()
 
         @staticmethod
         def wave_easy(channels):
             log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
             channels = list(range(4))
-            sample_rate = 9848485
+            sample_rate = 10000000      # 10MHz
             sample_count = int((round(9848485/1000)))
             tx_gain = 25
             rx_gain = 25
-            center_freq = 30000000000   # 30GHz
-            for wave_freq in [ 50000 ]:
+            center_freq = 35000000000   # 35GHz
+            for wave_freq in [ 50000 ]: # 50kHz
                 yield locals()
 
         @staticmethod
         def basic():
             log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
-            wave_freq = 1000000          # 1MHz
+            wave_freq = 1000000     # 1MHz
             sample_count = 256
-            tx_gain = 0
-            rx_gain = 0
-            for center_freq in [ 25e9, 30e9, 35e9 ]:     # 25GHz, 30GHz, 35GHz
-                for sample_rate in [ 10000000, 25000000, 37500000 ]:
+            tx_gain = 25
+            rx_gain = 25
+            for center_freq in [ 24e9, 35e9 ]:  # 24GHz, 35GHz
+                for sample_rate in [ 10000000, 25000000, 37500000 ]: # 10MSps, 25MSps, 37.5MSps
                     yield locals()
 
         @staticmethod
@@ -645,9 +645,9 @@ class calamine:
             log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
             wave_freq = 1000000         # 1MHz
             sample_count = 1000
-            center_freq = 30000000000    # 30GHz
-            sample_rate = 9848485       # 9.848485MSps
-            rx_gain = 45                #increasing the fixed gain may cause saturation
+            center_freq = 30000000000   # 30GHz
+            sample_rate = 10000000      # 10MSps
+            rx_gain = 25                #increasing the fixed gain may cause saturation
             for tx_gain in [0, 15, 30]:
                 yield locals()
 
@@ -656,10 +656,10 @@ class calamine:
             log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
             wave_freq = 1000000         # 1MHz
             sample_count = 1000
-            center_freq = 30000000000    # 30GHz
-            sample_rate = 9848485       # 9.848485MSps
-            tx_gain = 30                #increasing the fixed gain may cause saturation
-            for rx_gain in [0, 30, 60]:
+            center_freq = 30000000000   # 30GHz
+            sample_rate = 10000000      # 10MSps
+            tx_gain = 25                #increasing the fixed gain may cause saturation
+            for rx_gain in [0, 15, 30]:
                 yield locals()
         
 

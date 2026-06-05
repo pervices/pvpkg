@@ -7,6 +7,7 @@ from common import log
 from retrying import retry
 import matplotlib.pyplot as plt
 import sys
+import subprocess
 
 
 #Setup argument parsing
@@ -145,7 +146,11 @@ if(targs.product == "Vaunt"):
 elif(targs.product == "Avery"):
     main(gen.calamine.lo_band.basic(), "Low Band")
     main(gen.calamine.mid_band.basic(), "Mid Band")
-    main(gen.calamine.hi_band.basic(), "High Band")
+    # For RTM1 in loopback testing, signal amplitude is inconsistent in highband which is related to the same LO frequency for rx/tx
+    # Since this is likely to cause failure for this test, only run highband if not RTM1
+    rtm_ver = subprocess.check_output("uhd_usrp_info -s | grep 'RTM' | cut --complement -d ':' -f1", shell=True, text=True)
+    if (rtm_ver != 1):
+        main(gen.calamine.hi_band.basic(), "High Band")
 elif(targs.product == "Tate"):
     main(gen.cyan.lo_band.basic(), "Low Band")
     main(gen.cyan.mid_band.basic(), "Mid Band")
