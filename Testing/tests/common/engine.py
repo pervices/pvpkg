@@ -165,10 +165,10 @@ def run_helper(channels, wave_freq, tx_gain, rx_gain, tx_stack, rx_stack, tx_dur
         rx_thread = threading.Thread(target = run_rx, args = (csrc, channels, rx_stack, rx_sample_rate, vsnk, rx_timeout_occured))
   
     # Start threads
-    if(tx_thread != None):
-        tx_thread.start()
     if(rx_thread != None):
         rx_thread.start()
+    if(tx_thread != None):
+        tx_thread.start()
 
     # Wait for thread to finish with a timeout
     if(tx_thread != None):
