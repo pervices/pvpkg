@@ -155,24 +155,20 @@ def run_helper(channels, wave_freq, tx_gain, rx_gain, tx_stack, rx_stack, tx_dur
     tx_thread = None
     rx_thread = None
 
-    if rx_stack != None:
-        csrc = crimson.get_src_c(channels, rx_sample_rate, rx_center_freq, rx_gain)
-        rx_thread = threading.Thread(target = run_rx, args = (csrc, channels, rx_stack, rx_sample_rate, vsnk, rx_timeout_occured))
-
-    if(rx_thread != None):
-        rx_thread.start()
-        time.sleep(3)
-
     # Prepare thread
     if tx_stack != None:
         csnk = crimson.get_snk_s(channels, tx_sample_rate, tx_center_freq, tx_gain)
         tx_thread = threading.Thread(target = run_tx, args = (csnk, channels, tx_stack, tx_sample_rate, wave_freq))
 
-
+    if rx_stack != None:
+        csrc = crimson.get_src_c(channels, rx_sample_rate, rx_center_freq, rx_gain)
+        rx_thread = threading.Thread(target = run_rx, args = (csrc, channels, rx_stack, rx_sample_rate, vsnk, rx_timeout_occured))
   
     # Start threads
     if(tx_thread != None):
         tx_thread.start()
+    if(rx_thread != None):
+        rx_thread.start()
 
     # Wait for thread to finish with a timeout
     if(tx_thread != None):
