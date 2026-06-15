@@ -427,7 +427,7 @@ class calamine:
             sample_count = 1000
             center_freq = 2000000000    # 2GHz
             sample_rate = 10000000      # 10MSps
-            tx_gain = 25                #increasing the fixed gain may cause saturation
+            tx_gain = 20                #increasing the fixed gain may cause saturation
             for rx_gain in [0, 15, 30]:
                 yield locals()
 
@@ -438,7 +438,7 @@ class calamine:
             sample_count = 1000
             center_freq = 2000000000    # 2GHz
             sample_rate = 10000000      # 10MSps
-            rx_gain = 25                #increasing the fixed gain may cause saturation
+            rx_gain = 20                #increasing the fixed gain may cause saturation
             for tx_gain in [0, 15, 30]:
                 yield locals()
 
