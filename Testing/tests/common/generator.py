@@ -421,17 +421,6 @@ class calamine:
                     yield locals()
 
         @staticmethod
-        def gain_rx():
-            log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
-            wave_freq = 1000000         # 1MHz
-            sample_count = 1000
-            center_freq = 2000000000    # 2GHz
-            sample_rate = 10000000      # 10MSps
-            tx_gain = 20                #increasing the fixed gain may cause saturation
-            for rx_gain in [0, 15, 30]:
-                yield locals()
-
-        @staticmethod
         def gain_tx():
             log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
             wave_freq = 1000000         # 1MHz
@@ -440,6 +429,17 @@ class calamine:
             sample_rate = 10000000      # 10MSps
             rx_gain = 20                #increasing the fixed gain may cause saturation
             for tx_gain in [0, 15, 30]:
+                yield locals()
+
+        @staticmethod
+        def gain_rx():
+            log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
+            wave_freq = 1000000         # 1MHz
+            sample_count = 1000
+            center_freq = 2000000000    # 2GHz
+            sample_rate = 10000000      # 10MSps
+            tx_gain = 20                #increasing the fixed gain may cause saturation
+            for rx_gain in [0, 15, 30]:
                 yield locals()
 
         @staticmethod
