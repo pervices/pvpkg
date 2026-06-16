@@ -450,7 +450,7 @@ class calamine:
             sample_count = int(round(sample_rate/10000*2))
             tx_gain = 25
             rx_gain = 25
-            center_freq = 1000000000    # 1GHz
+            center_freq = 100000000     # 100MHz
             wave_freq = 500000          # 500kHz
             yield locals()
 
@@ -648,7 +648,7 @@ class calamine:
             center_freq = 30000000000   # 30GHz
             sample_rate = 10000000      # 10MSps
             rx_gain = 25                #increasing the fixed gain may cause saturation
-            for tx_gain in [0, 15, 30]:
+            for tx_gain in [0, 10, 20]:
                 yield locals()
 
         @staticmethod
