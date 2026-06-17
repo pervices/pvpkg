@@ -34,6 +34,11 @@ def main():
         channels = np.array([0,1,2,3])
         sample_rate = 20312500
         sample_count = int(sample_rate)
+    elif(targs.product == 'Avery'):
+        # Calamine Setup,
+        channels = np.array([0,1,2,3])
+        sample_rate = 300e6/16
+        sample_count = int(sample_rate)
     elif(targs.product == 'Lily'):
         # Chestnut Setup.
         channels = np.array([0,1,2,3])

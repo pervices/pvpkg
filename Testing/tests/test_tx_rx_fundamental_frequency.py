@@ -9,7 +9,7 @@ from retrying import retry
 import numpy as np
 import matplotlib.pyplot as plt
 import sys
-import time, datetime
+import subprocess
 
 
 targs = test_args.TestArgs(testDesc="Tx Rx Fundamental Frequency Test")
@@ -132,6 +132,14 @@ def build_report():
 if(targs.product == "Vaunt"):
     main(gen.lo_band_wave_sweep(), "Low Band")
     main(gen.hi_band_wave_sweep(), "High Band")
+elif(targs.product == "Avery"):
+    main(gen.calamine.lo_band.wave_sweep(), "Low Band")
+    main(gen.calamine.mid_band.wave_sweep(), "Mid Band")
+    # For RTM1 in loopback testing, signal amplitude is inconsistent in highband which is related to the same LO frequency for rx/tx
+    # Since this is likely to cause failure for this test, only run highband if not RTM1
+    rtm_ver = subprocess.check_output("uhd_usrp_info -s | grep 'RTM' | cut --complement -d ':' -f1", shell=True, text=True)
+    if (rtm_ver != 1):
+        main(gen.calamine.hi_band.wave_sweep(), "High Band")
 elif(targs.product == "Tate"):
     main(gen.cyan.lo_band.wave_sweep(), "Low Band")
     main(gen.cyan.mid_band.wave_sweep(), "Mid Band")

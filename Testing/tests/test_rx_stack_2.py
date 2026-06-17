@@ -50,6 +50,16 @@ def main():
         # Crimson TNG acts as a source by providing complex float samples.
         csrc = crimson.get_src_c(channels, sample_rate, 15e6, 1.0)
 
+    elif(targs.product == "Avery"):
+        report.insert_title_page("Calamine RX Sample Count Test")
+        # Calamine Setup.
+        channels = np.array([0,1,2,3])
+        sample_rate = 300e6/16
+        sample_count = 4096
+
+        # Calamine acts as a source by providing complex float samples.
+        csrc = crimson.get_src_c(channels, sample_rate, 15e6, 1.0)
+
     else:
         log.pvpkg_log_error("RX_STACK_2", "Unrecognized product argument")
         test_fail = 1

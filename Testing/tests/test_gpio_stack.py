@@ -114,6 +114,25 @@ def main():
         else:
             report.insert_text("Test failed")
 
+    elif(targs.product == "Avery"):
+        report.insert_title_page("Calamine Stacked GPIO Commands Test")
+        csrc = crimson.get_src_c(list(range(4)), 300e6/16, 15e6, 0.0) # Does not matter if sink or source is used here.
+        pins = 0x0
+        all = 0xFFFFFFFFFFFFFFFF; # 64bit.
+
+        for second in range(1, duration_s, 1):
+            pins ^= all
+        try:
+            gpio_write(csrc, pins, all, second);
+        except:
+            log.pvpkg_log_error("GPIO_STACK", "GPIO write failed at " + str(second) + " second")
+            test_failed = True
+
+        if (not test_failed):
+            report.insert_text("Test ran for " + str(duration_s) + " seconds")
+            report.insert_text("Test successfully completed")
+        else:
+            report.insert_text("Test failed")
 
     report.save()
     log.pvpkg_log_info("GPIO_STACK", "PDF report saved at " + report.get_filename())

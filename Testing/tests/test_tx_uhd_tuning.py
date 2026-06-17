@@ -148,6 +148,8 @@ def build_report():
 ## SCRIPT LOGIC ##
 if(targs.product == "Vaunt"):
     main(gen.tx_uhd_tune(), "")
+elif(targs.product == "Avery"):
+    main(gen.calamine.mid_band.tx_uhd_tune(), "")
 elif(targs.product == "Tate"):
     main(gen.cyan.mid_band.tx_uhd_tune(), "")
 elif(targs.product == "BasebandTate"):
