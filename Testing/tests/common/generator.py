@@ -389,11 +389,11 @@ class calamine:
         @staticmethod
         def wave_sweep():
             log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
-            sample_count = int(round(25000000/10000))
             tx_gain = 25
             rx_gain = 25
             center_freq = 1000000000    # 1GHz
             sample_rate = 25000000      # 25MSps
+            sample_count = int(round(sample_rate/10000))
             for wave_freq in [ 600000, 800000, 1000000 ]:   # 600kHz, 800kHz, 1MHz
                 yield locals()
 
@@ -446,11 +446,10 @@ class calamine:
         def phaseCoherency():
             log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
             sample_rate = 25000000      # 25MSps  
-            # Use 5000 samples to have a more accurate frequency estimate
-            sample_count = int(round(sample_rate/10000*2))
-            tx_gain = 25
-            rx_gain = 25
-            center_freq = 100000000     # 100MHz
+            sample_count = int(round(sample_rate/1000))
+            tx_gain = 5
+            rx_gain = 5
+            center_freq = 10000000      # 10MHz
             wave_freq = 500000          # 500kHz
             yield locals()
 
@@ -524,11 +523,11 @@ class calamine:
         @staticmethod
         def wave_sweep():
             log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
-            sample_count = int(round(25000000/10000))
             tx_gain = 25
             rx_gain = 25
             center_freq = 10000000000   # 10GHz
             sample_rate = 25000000      # 25Msps
+            sample_count = int(round(sample_rate/10000))
             for wave_freq in [ 600000, 800000, 1000000 ]:   # 600kHz, 800kHz, 1MHz
                 yield locals()
 
@@ -537,7 +536,7 @@ class calamine:
             log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
             channels = list(range(4))
             sample_rate = 10000000          # 10MSps
-            sample_count = int((round(9848485/1000)))
+            sample_count = int((round(sample_rate/1000)))
             tx_gain = 25
             rx_gain = 25
             center_freq = 15000000000       # 15GHz
@@ -622,7 +621,7 @@ class calamine:
             log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
             channels = list(range(4))
             sample_rate = 10000000      # 10MHz
-            sample_count = int((round(9848485/1000)))
+            sample_count = int((round(sample_rate/1000)))
             tx_gain = 25
             rx_gain = 25
             center_freq = 35000000000   # 35GHz
