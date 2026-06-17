@@ -39,6 +39,11 @@ case $PRODUCT in
 	TEST_NAMES=("${V_TEST_NAMES[@]}")
 	TEST_FILES=("${V_TEST_FILES[@]}")
 	;;
+*"calamine"*)
+	PRODUCT=a
+	TEST_NAMES=("${A_TEST_NAMES[@]}")
+	TEST_FILES=("${A_TEST_FILES[@]}")
+	;;
 *"cyan"*)
 	if uhd_manual_get --path /mboards/0/tx/0/fw_version | grep BBTx; then
 		# If the unit uses BBTx boards, we need to run the tests at frequencies less than 5GHz to allow the loopback to work

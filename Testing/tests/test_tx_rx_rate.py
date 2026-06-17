@@ -71,6 +71,8 @@ def main(iterations):
 ## SCRIPT LOGIC ##
 if(targs.product == "Vaunt"):
     main(gen.tx_rx_rate())
+elif(targs.product == "Avery"):
+    main(gen.calamine.lo_band.tx_rx_rate(4))
 elif(targs.product == "Lily"):
     main(gen.chestnut.lo_band.tx_rx_rate(4))
 elif(targs.product == "Tate" or targs.product == "BasebandTate"):

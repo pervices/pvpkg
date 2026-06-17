@@ -138,6 +138,8 @@ def build_report():
 ## SCRIPT LOGIC ##
 if(targs.product == "Vaunt"):
     main(gen.lo_band_passband_flatness_test(), "Low Band")
+elif(targs.product == "Avery"):
+    main(gen.calamine.lo_band.passband_flatness_test(), "Low Band")
 elif(targs.product == "Tate"):
     main(gen.cyan.lo_band.passband_flatness_test(), "Low Band")
 elif(targs.product == "Lily"):
