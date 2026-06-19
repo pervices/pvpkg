@@ -15,23 +15,26 @@ class TestArgs:
             parser = argparse.ArgumentParser(description = testDesc)
         parser.add_argument('-s', '--serial', required=True, default=None, help="Serial number of the unit")
         parser.add_argument('-p', '--product', required=True, help="Product, v for vaunt, a for avery, t for tate, l for lily")
-        parser.add_argument('-c', '--channels', required=False, type=int, nargs='+', default=[0,1,2,3], help="Channel list to use for testing. Example usage: -c 0 1 2 3")
+        # Do not provide default channels. Channels will be specified in generator.py or the tests themselves.
+        # Specifying channels using this arg will act as an override to whatever the default for the test is.
+        parser.add_argument('-c', '--channels', required=False, type=int, nargs='+', default=None, help="Channel list to use for testing. Example usage: -c 0 1 2 3")
         parser.add_argument('-o', '--output', required=False, default=None, help="Report output directory")
         parser.add_argument('-d', '--docker', required=False, default=None, help="Docker SHA")
         args = parser.parse_args()
         
         self.serial = args.serial
-        if len(args.channels) > 8 or len(args.channels) < 1:
-            frameinfo = getframeinfo(currentframe())
-            component = "{}:{}".format(frameinfo.filename, frameinfo.lineno)
-            log.pvpkg_log_error(component, "Channels list must contain between 1 and 8 channels.")
-            sys.exit(1)
-        if len(args.channels) != len(set(args.channels)):
-            frameinfo = getframeinfo(currentframe())
-            component = "{}:{}".format(frameinfo.filename, frameinfo.lineno)
-            log.pvpkg_log_error(component, "Channels list must contain unique elements.")
-        else:
-            self.channels = args.channels
+        if args.channels != None:
+            if len(args.channels) > 8 or len(args.channels) < 1:
+                frameinfo = getframeinfo(currentframe())
+                component = "{}:{}".format(frameinfo.filename, frameinfo.lineno)
+                log.pvpkg_log_error(component, "Channels list must contain between 1 and 8 channels.")
+                sys.exit(1)
+            if len(args.channels) != len(set(args.channels)):
+                frameinfo = getframeinfo(currentframe())
+                component = "{}:{}".format(frameinfo.filename, frameinfo.lineno)
+                log.pvpkg_log_error(component, "Channels list must contain unique elements.")
+            else:
+                self.channels = args.channels
         
         if args.product == 'v':
             self.product = "Vaunt"

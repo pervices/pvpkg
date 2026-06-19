@@ -119,7 +119,7 @@ def makePlots(x_time, real_data, best_fit_data, offset_data, wave_freq, sample_r
     f = open("Data_Plots.txt", "w")
     f.close()
 
-    num_subplot_rows = int(math.ceil(len(targs.channels) / 2))
+    num_subplot_rows = int(math.ceil(len(channels) / 2))
     for run in range(num_runs):
         # Runs where engine.run failed use np.nan to indicate DNF. There is nothing to plot for these runs but still put DNF so it's not empty.
         # All channels are marked DNF when the run fails, so only need to check the first one.
@@ -133,9 +133,9 @@ def makePlots(x_time, real_data, best_fit_data, offset_data, wave_freq, sample_r
         os.chdir(test_plots) #To save to a file
 
         row = 0
-        for ch in range(len(targs.channels)):
+        for ch in range(len(channels)):
             subplot_row = int(ch / 2)
-            subPlot(x_time[0:plotted_samples], real_data[run][ch][0:plotted_samples], axes[subplot_row][ch%2], best_fit_data[run][ch][0:plotted_samples], offset_data[run][ch], "Channel {}".format(channel_map[targs.channels[ch]]))
+            subPlot(x_time[0:plotted_samples], real_data[run][ch][0:plotted_samples], axes[subplot_row][ch%2], best_fit_data[run][ch][0:plotted_samples], offset_data[run][ch], "Channel {}".format(channel_map[channels[ch]]))
 
         plt.tight_layout(pad=0.4, w_pad=0.5, h_pad=1.0) #Formatting the plots nicely
 
@@ -153,12 +153,12 @@ def makePlots(x_time, real_data, best_fit_data, offset_data, wave_freq, sample_r
         plt.ylabel("Amplitude")
 
         #dots
-        for ch in range(len(targs.channels)):
-            plt.plot(x_time[0:plotted_samples], real_data[run][ch][0:plotted_samples], '.', markersize=3, label="Real {}".format(channel_map[targs.channels[ch]]))
+        for ch in range(len(channels)):
+            plt.plot(x_time[0:plotted_samples], real_data[run][ch][0:plotted_samples], '.', markersize=3, label="Real {}".format(channel_map[channels[ch]]))
 
         #Best fits
-        for ch in range(len(targs.channels)):
-            plt.plot(x_time[0:plotted_samples], best_fit_data[run][ch][0:plotted_samples], '-', linewidth= 0.75, label="Best Fit {}".format(channel_map[targs.channels[ch]]))
+        for ch in range(len(channels)):
+            plt.plot(x_time[0:plotted_samples], best_fit_data[run][ch][0:plotted_samples], '-', linewidth= 0.75, label="Best Fit {}".format(channel_map[channels[ch]]))
 
         plt.legend()
 
@@ -182,6 +182,7 @@ def boolToWord(word):
 def main():
     # Add generic test arguments
     global targs
+    global channels
     ampl_std_thresh = default_ampl_std_thresh
     targs = test_args.TestArgs(testDesc="TX/RX phase coherency test")
     fail_flag = 0
@@ -204,22 +205,31 @@ def main():
         log.pvpkg_log_error("TX_RX_PHASE", "Unrecognized product argument")
         fail_flag = 1
 
-    channel_list = channel_map[targs.channels].tolist()
-    for ch in range(1, len(channel_list)):
-        channel_list[ch] = "\u0394" + channel_list[ch] + channel_map[targs.channels[0]]
-
     summary_table = [["Center Freq", "Wave Freq", "Freq Result", "Ampl Result", "Phase Result"]]
 
     for it in iterations:
         gen.dump(it) 
 
+        # If the channels argument was set, it will override the channels specified in the generator.
+        # If neither the channels arg or the generator specified the channels, fallback to four channels
+        if targs.channels != None:
+            channels = targs.channels
+        elif "channels" in it:
+            channels = it["channels"]
+        else:
+            channels = [0,1,2,3]
+
+        channel_list = channel_map[channels].tolist()
+        for ch in range(1, len(channel_list)):
+            channel_list[ch] = "\u0394" + channel_list[ch] + channel_map[channels[0]]
+
         # First column is the first channel's value. Subsequent columns are the delta between that channel and the first.
         # Example: channel list is [0, 1, 3], freq_delta_matrix for a single iteration would be as follows:
         # [freqCh0, freqCh1 - freqCh0, freqCh3 - freqCh0]
-        freq_delta_matrix = np.zeros((num_runs, len(targs.channels)))
-        ampl_delta_matrix = np.zeros((num_runs, len(targs.channels)))
-        phase_delta_matrix = np.zeros((num_runs, len(targs.channels)))
-        offset_delta_matrix = np.zeros((num_runs, len(targs.channels)))
+        freq_delta_matrix = np.zeros((num_runs, len(channels)))
+        ampl_delta_matrix = np.zeros((num_runs, len(channels)))
+        phase_delta_matrix = np.zeros((num_runs, len(channels)))
+        offset_delta_matrix = np.zeros((num_runs, len(channels)))
 
         reals = []
         best_fits = []
@@ -244,7 +254,7 @@ def main():
             rx_stack = [ (rx_burst, int(it["sample_count"]))]
 
             try:
-                vsnk = engine.run(targs.channels, it["wave_freq"], sample_rate, it["center_freq"], it["tx_gain"], it["rx_gain"], tx_stack, rx_stack)
+                vsnk = engine.run(channels, it["wave_freq"], sample_rate, it["center_freq"], it["tx_gain"], it["rx_gain"], tx_stack, rx_stack)
             except Exception as err:
                 # Test will be marked as failed with DNF for missing data but still continue to next iterations.
                 log.pvpkg_log_error("TX_RX_PHASE", 
@@ -306,7 +316,7 @@ def main():
             ampl_delta_matrix[run][baselineCh_index] = ampl[baselineCh_index]
             phase_delta_matrix[run][baselineCh_index] = phase[baselineCh_index]
             offset_delta_matrix[run][baselineCh_index] = offset[baselineCh_index]
-            for channel in range(1, len(targs.channels)):
+            for channel in range(1, len(channels)):
                 freq_delta_matrix[run][channel] = freq[channel] - freq[baselineCh_index]
                 ampl_delta_matrix[run][channel] = ampl[channel] - ampl[baselineCh_index]
                 phase_delta_matrix[run][channel] = phase[channel] - phase[baselineCh_index]
