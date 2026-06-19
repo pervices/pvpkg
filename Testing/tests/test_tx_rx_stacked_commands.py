@@ -27,12 +27,21 @@ def test(it, data):
     test_dnf = False
     gen.dump(it)
 
+    # If the channels argument was set, it will override the channels specified in the generator.
+    # If neither the channels arg or the generator specified the channels, fallback to four channels
+    if targs.channels != None:
+        channels = targs.channels
+    elif "channels" in it:
+        channels = it["channels"]
+    else:
+        channels = [0,1,2,3]
+
     # Collect.
     # First frame of TX/RX stack is gold standard (sample_count samples in middle of 1 second of TX).
     tx_stack = [ (5.0, it["sample_count" ]), (8.0, it["sample_count"]), (11.0, it["sample_count"]), (14.0, it["sample_count"]) ]
     rx_stack = [ (5.0, it["sample_count"]), (8.0, it["sample_count"]), (11.0, it["sample_count"]), (14.0, it["sample_count"]) ]
     try:
-        vsnk = engine.run(targs.channels, it["wave_freq"], it["sample_rate"], it["center_freq"], it["tx_gain"], it["rx_gain"], tx_stack, rx_stack)
+        vsnk = engine.run(channels, it["wave_freq"], it["sample_rate"], it["center_freq"], it["tx_gain"], it["rx_gain"], tx_stack, rx_stack)
     except Exception as err:
         # Show user whenever engine.run fails and mark test as failed even if it will retry
         log.pvpkg_log_error("TX_RX_STACKED_COMMANDS", 
@@ -63,8 +72,8 @@ def test(it, data):
 
     # Since engine.run failed, exit test early with DNF for missing data
     if attempt_num >= max_attempts and test_dnf:
-        for ch in range(len(targs.channels)):
-            data.append([str(center_freq), str(wave_freq), it["sample_rate"], targs.channels[ch], "DNF", "DNF", "DNF", attempt_num, "fail"])
+        for ch in range(len(channels)):
+            data.append([str(center_freq), str(wave_freq), it["sample_rate"], channels[ch], "DNF", "DNF", "DNF", attempt_num, "fail"])
         report.buffer_put("text", "DNF")
         report.buffer_put("pagebreak")
         return data
@@ -72,11 +81,11 @@ def test(it, data):
     # Process.
     # Stacked commands vsnk channel extensions and must be indexed manually with sample_count.
     for ch, channel in enumerate(vsnk):
-        log.pvpkg_log("channel %d" % targs.channels[ch])
+        log.pvpkg_log("channel %d" % channels[ch])
         areas = []
         res = "pass"
         plt.figure()
-        plt.title("Channel {}".format(targs.channels[ch]))
+        plt.title("Channel {}".format(channels[ch]))
         frame_results = []
         for i, frame in enumerate(rx_stack):
             sample_count = frame[1]
@@ -110,7 +119,7 @@ def test(it, data):
         plt.close()
         img = report.get_image_from_io_stream(s)
         images.append(img)
-        data.append([str(center_freq), str(wave_freq), it["sample_rate"], str(targs.channels[ch]), frame_results[1], frame_results[2], frame_results[3], attempt_num, res])
+        data.append([str(center_freq), str(wave_freq), it["sample_rate"], str(channels[ch]), frame_results[1], frame_results[2], frame_results[3], attempt_num, res])
 
     report.buffer_put("image_list_dynamic", images, "")
     report.buffer_put("pagebreak")

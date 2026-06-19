@@ -16,12 +16,22 @@ def test(it):
 
     name = "tx_trigger_log.txt"
 
+    # If the channels argument was set, it will override the channels specified in the generator.
+    # If neither the channels arg or the generator specified the channels, fallback to four channels
+    if targs.channels != None:
+        channels = targs.channels
+    elif "channels" in it:
+        channels = it["channels"]
+    else:
+        channels = [0,1,2,3]
+
+
     # os.system("/home/notroot/libuhd/examples/test_tx_trigger.cpp > %s" % name)
     # TODO: Check if the following file exists; if it doesn't, throw and error and
     # indicate that the test_tx_trigger example binary was not found
     # Using invokation from tx_trig pkg
-    channels = ','.join(str(x) for x in targs.channels)
-    test_fail = test_fail | os.system("/usr/lib/uhd/examples/test_tx_trigger --channels={} --path ./test_tx_trig_files/data.txt --start_time={} --period={} --tx_rate={} --tx_center_freq={} --tx_gain={} --setpoint={} --samples={} --num_trigger={} --gating=dsp > {}".format(channels, it["start_time"], it["period"], it["sample_rate"], it["center_freq"], it["tx_gain"], it["setpoint"], it["sample_count"], it["num_trigger"], name))
+    channels_str = ','.join(str(x) for x in channels)
+    test_fail = test_fail | os.system("/usr/lib/uhd/examples/test_tx_trigger --channels={} --path ./test_tx_trig_files/data.txt --start_time={} --period={} --tx_rate={} --tx_center_freq={} --tx_gain={} --setpoint={} --samples={} --num_trigger={} --gating=dsp > {}".format(channels_str, it["start_time"], it["period"], it["sample_rate"], it["center_freq"], it["tx_gain"], it["setpoint"], it["sample_count"], it["num_trigger"], name))
 
     # Flag to indicate that triggers failed to activate
     # Technically this could be caused by anything that returns an error code in UHD, but the trigger failing in time is most likely
@@ -44,7 +54,7 @@ def test(it):
     buffer_info = [["Channel", "Max Buffer Level", "Max difference from A"]]
     # [Ch, MaxLevel, Max difference from A]
     ch_buf_info = []
-    for ch in targs.channels:
+    for ch in channels:
         ch_buf_info.append([ch, 0, 0])
 
     # Maximum divergence between channels
