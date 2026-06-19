@@ -29,6 +29,15 @@ def test(it):
     global summary_table
     gen.dump(it)
 
+    # If the channels argument was set, it will override the channels specified in the generator.
+    # If neither the channels arg or the generator specified the channels, fallback to four channels
+    if targs.channels != None:
+        rx_channels = targs.channels
+    elif "channels" in it:
+        rx_channels = it["rx_channels"]
+    else:
+        rx_channels = [0,1,2,3]
+
     # Error code for this iteration
     iteration_result = 0
 
@@ -36,7 +45,7 @@ def test(it):
     # rx only
     if(len(it["rx_channel"]) != 0):
         time.sleep(60) # give network card on host some time to cool down between runs
-        iteration_result = os.system("/usr/lib/uhd/examples/benchmark_rate --priority high --rx_rate={} --rx_channels {}  --overrun-threshold 0 --underrun-threshold 0 --drop-threshold 0 --seq-threshold 0".format(it["rx_rate"], list_to_arg_string(it["rx_channel"])))
+        iteration_result = os.system("/usr/lib/uhd/examples/benchmark_rate --priority high --rx_rate={} --rx_channels {}  --overrun-threshold 0 --underrun-threshold 0 --drop-threshold 0 --seq-threshold 0".format(it["rx_rate"], list_to_arg_string(rx_channels)))
     # tx only
     else:
         log.pvpkg_log_warning("RX_RATE", "No rx channels on this device. Skipping rx rate test")
@@ -49,7 +58,7 @@ def test(it):
     result_string = "Fail" if iteration_result != 0 else "Pass"
 
     # Adds this iteration's results to the summary table
-    summary_table.append([it["description"], "{:.2f}".format(it["rx_rate"]/1e6), str(it["rx_channel"]), result_string])
+    summary_table.append([it["description"], "{:.2f}".format(it["rx_rate"]/1e6), str(rx_channels), result_string])
 
 def build_report():
     report.insert_title_page("Rx Rate Test")

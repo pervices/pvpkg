@@ -48,9 +48,15 @@ def main():
     test_failed = False
     report = pdf_report.ClassicShipTestReport("gpio", targs.serial, targs.report_dir, targs.docker_sha)
 
+    # If the channels argument was not set, fallback to four channels.
+    if targs.channels != None:
+        channels = targs.channels
+    else:
+        channels = [0,1,2,3]
+
     if(targs.product == 'Tate'):
         report.insert_title_page("Cyan Stacked GPIO Commands Test")
-        csrc = crimson.get_src_c(list(range(4)), 20e6, 15e6, 0.0) # Does not matter if sink or source is used here.
+        csrc = crimson.get_src_c(channels, 20e6, 15e6, 0.0) # Does not matter if sink or source is used here.
         pins = [0x0601806018060180, 0x6018]
         mask = [0xFFFFFFFFFFFFFFFF, 0xFFFF]
 
@@ -73,7 +79,7 @@ def main():
 
     elif(targs.product == 'Lily'):
         report.insert_title_page("Chestnut Stacked GPIO Commands Test")
-        csrc = crimson.get_src_c(list(range(4)), 20e6, 15e6, 0.0) # Does not matter if sink or source is used here.
+        csrc = crimson.get_src_c(channels, 20e6, 15e6, 0.0) # Does not matter if sink or source is used here.
         pins = [0x0601806018060180, 0x6018]
         mask = [0xFFFFFFFFFFFFFFFF, 0xFFFF]
 
@@ -96,7 +102,7 @@ def main():
 
     elif(targs.product == "Vaunt"):
         report.insert_title_page("Crimson Stacked GPIO Commands Test")
-        csrc = crimson.get_src_c(list(range(4)), 20312500, 15e6, 0.0) # Does not matter if sink or source is used here.
+        csrc = crimson.get_src_c(channels, 20312500, 15e6, 0.0) # Does not matter if sink or source is used here.
         pins = 0x0
         all = 0xFFFFFFFFFFFFFFFF; # 64bit.
 
@@ -116,7 +122,7 @@ def main():
 
     elif(targs.product == "Avery"):
         report.insert_title_page("Calamine Stacked GPIO Commands Test")
-        csrc = crimson.get_src_c(list(range(4)), 300e6/16, 15e6, 0.0) # Does not matter if sink or source is used here.
+        csrc = crimson.get_src_c(channels, 300e6/16, 15e6, 0.0) # Does not matter if sink or source is used here.
         pins = 0x0
         all = 0xFFFFFFFFFFFFFFFF; # 64bit.
 

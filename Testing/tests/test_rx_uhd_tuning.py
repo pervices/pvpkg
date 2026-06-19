@@ -22,6 +22,15 @@ def test(it, data):
     iteration_dnf = False
     gen.dump(it)
 
+    # If the channels argument was set, it will override the channels specified in the generator.
+    # If neither the channels arg or the generator specified the channels, fallback to four channels
+    if targs.channels != None:
+        channels = targs.channels
+    elif "channels" in it:
+        channels = it["channels"]
+    else:
+        channels = [0,1,2,3]
+
     # Create manual tune request for rx, use default tuning for tx (just pass center freq)
     # LO offset param is caclulated as rx_lo - center_freq
     rx_tune_request = uhd.tune_request(it["center_freq"], it["rx_lo"] - it["center_freq"])
@@ -30,7 +39,7 @@ def test(it, data):
     rx_stack = [ (5.5, int(it["sample_count"])) ]
 
     try:
-        vsnk = engine.manual_tune_run(it["channels"], it["wave_freq"],
+        vsnk = engine.manual_tune_run(channels, it["wave_freq"],
                                     it["sample_rate"], it["sample_rate"],
                                     it["center_freq"], rx_tune_request,
                                     it["tx_gain"], it["rx_gain"],
@@ -56,7 +65,7 @@ def test(it, data):
 
     # Use "DNF" instead of missing data for this iteration
     if iteration_dnf:
-        for ch in it["channels"]:
+        for ch in channels:
             data.append([str(rx_dsp_sci) , str(rx_lo), str(center_freq), str(wave_freq), str(ch), "DNF",  "fail"])
         
         # Put DNF in report instead of plots
