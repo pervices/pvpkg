@@ -189,8 +189,10 @@ def main():
 
     if(targs.product == 'Tate'):
         iterations = gen.cyan.lo_band.phaseCoherencyAllBands()
+    elif(targs.product == 'Avery'):
+        iterations = gen.calamine.lo_band.phaseCoherencyAllBands()
     else:
-        log.pvpkg_log_warning("RX_PHASE_2", "RX phase coherency test is currently only supported for Cyan units.")
+        log.pvpkg_log_warning("RX_PHASE_2", "RX phase coherency test is currently only supported for Cyan or Calamine units.")
         sys.exit(1)
 
     channel_list = channel_map[targs.channels].tolist()

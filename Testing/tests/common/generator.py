@@ -454,6 +454,17 @@ class calamine:
             yield locals()
 
         @staticmethod
+        def phaseCoherencyAllBands():
+            log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
+            sample_rate = 25000000      # 25MSps
+            sample_count = int(round(sample_rate/1000))
+            tx_gain = 25
+            rx_gain = 25
+            wave_freq = 500000          # 500kHz
+            for center_freq in [10e6, 2e9, 9e9, 17e9, 30e9]: #10MHz, 2GHz, 9GHz, 17GHz, 30GHz
+                yield locals()
+
+        @staticmethod
         def tx_trigger():
             log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
             center_freq = 0
