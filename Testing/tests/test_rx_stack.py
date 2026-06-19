@@ -21,7 +21,12 @@ def main():
     if(targs.product == 'Tate' or targs.product == "BasebandTate"):
         report.insert_title_page("Cyan RX Sample Count Test")
         # Cyan NRNT Setup.
-        channels = np.array([0,1,2,3])
+        # If the channels argument was set, it will override the default four channels.
+        if targs.channels != None:
+            channels = targs.channels
+        else:
+            channels = np.array([0,1,2,3])
+
         sample_rate = 100e6
         sample_count = 4096
 
@@ -31,7 +36,12 @@ def main():
     elif(targs.product == 'Lily'):
         report.insert_title_page("Chestnut RX Sample Count Test")
         # Chestnut Setup.
-        channels = np.array([0,1,2,3])
+        # If the channels argument was set, it will override the default four channels.
+        if targs.channels != None:
+            channels = targs.channels
+        else:
+            channels = np.array([0,1,2,3])
+
         sample_rate = 100e6
         sample_count = 4096
 
@@ -41,7 +51,12 @@ def main():
     elif(targs.product == "Vaunt"):
         report.insert_title_page("Crimson RX Sample Count Test")
         # Crimson TNG Setup.
-        channels = np.array([0,1,2,3])
+        # If the channels argument was set, it will override the default four channels.
+        if targs.channels != None:
+            channels = targs.channels
+        else:
+            channels = np.array([0,1,2,3])
+
         sample_rate = 20312500
         sample_count = 4096
 
@@ -51,7 +66,12 @@ def main():
     elif(targs.product == "Avery"):
         report.insert_title_page("Calamine RX Sample Count Test")
         # Calamine Setup.
-        channels = np.array([0,1,2,3])
+        # If the channels argument was set, it will override the default four channels.
+        if targs.channels != None:
+            channels = targs.channels
+        else:
+            channels = np.array([0,1,2,3])
+
         sample_rate = 300e6/16
         sample_count = 4096
 

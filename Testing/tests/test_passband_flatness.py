@@ -19,28 +19,50 @@ channel_peak = []
 plot_points_xf = []
 plot_points_yf = []
 images = []
-test_info = [["Channel Peak Information (dB):","A","B","C","D", "Wave Frequency (Hz)"]]
+test_info = [["Channel Peak Information (dB):", "Wave Frequency (Hz)"]]
 iteration_num = 0
+channel_map = np.array(['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'])
+# All iterations should have same number of channels so declare here so test() and main() can both access it
+channels = []
 
-def test(it, data):
+def test(it):
     global test_fail
     global iteration_num
     gen.dump(it)
     largest_peak = []
     yfp = []
 
+    # Since this test formats the report table to include each channel as a column header instead of a row and
+    # overlays each iteration for a channel on the same graph, every iteration should have the same number of channels.
+    # Since the number of channels may be specified in the generator, we must check it here instead of in main(), so
+    # assume the channels for the first iteration is the same as the rest.
+    if iteration_num == 0:
+        # If the channels argument was set, it will override the channels specified in the generator.
+        # If neither the channels arg or the generator specified the channels, fallback to four channels.
+        if targs.channels != None:
+            channels = targs.channels
+        elif "channels" in it:
+            channels = it["channels"]
+        else:
+            channels = [0,1,2,3]
+
+        # Insert channel column headers for the report
+        channel_names = channel_map[targs.channels].tolist()
+        for ch in reversed(channel_names):
+            test_info[0].insert(1, ch)
+
     tx_stack = [ (10.0, it["sample_count"]) ] # One seconds worth.
     rx_stack = [ (10.0, it["sample_count"]) ]
     try:
-        vsnk = engine.run(it["channels"], it["wave_freq"], it["sample_rate"], it["center_freq"], it["tx_gain"], it["rx_gain"], tx_stack, rx_stack)
+        vsnk = engine.run(channels, it["wave_freq"], it["sample_rate"], it["center_freq"], it["tx_gain"], it["rx_gain"], tx_stack, rx_stack)
     except Exception as err:
         # Test will be marked as failed with DNF for missing data but still continue to next iterations.
         log.pvpkg_log_error("PASSBAND_FLATNESS", 
             "Exception occured while streaming.\nIteration {}\nException: {}\nTest will continue but be marked as failed with DNF for missing data."
             .format(str(it), str(err)))
         test_fail = 1
-        test_info.append(["Iteration {}:".format(iteration_num), "DNF", "DNF", "DNF", "DNF", it["wave_freq"]])
-        return data
+        test_info.append(["Iteration {}:".format(iteration_num)] + ["DNF" for _ in channels] + [it["wave_freq"]])
+        return
 
     # Process.
     for ch, channel in enumerate(vsnk):
@@ -67,24 +89,20 @@ def test(it, data):
     plot_points_xf.append(xf)
     plot_points_yf.append(yfp)
     channel_peak.append(largest_peak)
-    test_info.append(["Iteration {}:".format(iteration_num),
-                round(largest_peak[0],3),round(largest_peak[1],3),round(largest_peak[2],3),round(largest_peak[3],3), it["wave_freq"]])
-    return data
+    test_info.append(["Iteration {}:".format(iteration_num)] + [round(peak, 3) for peak in largest_peak] + [it["wave_freq"]])
 
 def main(iterations, desc):
-    data  = [["Center Freq", "Wave Freq", "Channel", "Result"]]
     global iteration_num
-
-    for it in iterations:
-        test(it, data)
-        iteration_num += 1
-
     global test_fail
     passband_flat = []
     test_info_channel_diff = []
 
+    for it in iterations:
+        test(it)
+        iteration_num += 1
+
     # Check the data for passband flatness. This only checks iterations that finished, so does not consider any marked as DNF.
-    for ch in list(range(4)):
+    for ch in channels:
         channel_test = []
 
         plt.figure()
@@ -116,13 +134,13 @@ def main(iterations, desc):
             test_fail = 10 + int(ch) #Set fail value to 10 + the channel that fails for easy debugging of error code
             passband_flat.append("Fail")
 
-    test_info.append(["Channel High Low Difference",test_info_channel_diff[0],test_info_channel_diff[1],test_info_channel_diff[2],test_info_channel_diff[3], "N/A"])
-    test_info.append(["Passband Flatness Pass",passband_flat[0],passband_flat[1],passband_flat[2],passband_flat[3], "N/A"])
+    test_info.append(["Channel High Low Difference"] + [diff for diff in test_info_channel_diff] + ["N/A"])
+    test_info.append(["Passband Flatness Pass"] + [flat for flat in passband_flat] + ["N/A"])
 
     title = "Passband Flatness Test : {}".format(desc)
     report.buffer_put("text_large", title)
     report.buffer_put("text", " ")
-    report.buffer_put("image_quad", images, "")
+    report.buffer_put("image_list_dynamic", images, "")
     report.buffer_put("pagebreak")
     report.buffer_put("table_wide", test_info, "")
     report.buffer_put("pagebreak")

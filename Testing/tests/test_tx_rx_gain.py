@@ -9,6 +9,8 @@ import numpy as np
 import sys
 import subprocess
 
+channel_map = np.array(['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'])
+
 def main(iterations, title="TX RX Gain Test") -> int:
     fail_flag = 0
 
@@ -16,11 +18,24 @@ def main(iterations, title="TX RX Gain Test") -> int:
 
     for it in iterations:
         gen.dump(it)
+
+        # If the channels argument was set, it will override the channels specified in the generator.
+        # If neither the channels arg or the generator specified the channels, fallback to four channels
+        if targs.channels != None:
+            channels = targs.channels
+        elif "channels" in it:
+            channels = it["channels"]
+        else:
+            channels = [0,1,2,3]
+
+        # Map channels to their names
+        channel_names = channel_map[channels].tolist()
+
         sample_count = it["sample_count"]
         tx_stack = [ (5.0, int(it["sample_count" ])) ]
         rx_stack = [ (5.0, int(it["sample_count"])) ]
         try:
-            vsnk = engine.run(targs.channels, it["wave_freq"], it["sample_rate"], it["center_freq"], it["tx_gain"], it["rx_gain"], tx_stack, rx_stack)
+            vsnk = engine.run(channels, it["wave_freq"], it["sample_rate"], it["center_freq"], it["tx_gain"], it["rx_gain"], tx_stack, rx_stack)
         except Exception as err:
             # Test will be marked as failed with DNF for missing data but still continue to next iterations.
             log.pvpkg_log_error("TX_RX_GAIN", 
@@ -49,7 +64,7 @@ def main(iterations, title="TX RX Gain Test") -> int:
 
             #plot and save real component
             plt.figure()
-            plt.title("Gain plot of ch{} for wave_freq = {} Hz".format(targs.channels[ch],it["wave_freq"]))
+            plt.title("Gain plot of ch{} for wave_freq = {} Hz".format(channels[ch],it["wave_freq"]))
             plt.xlabel("Sample")
             plt.ylabel("Amplitude")
             plt.plot(imag[0:300], label='reals')
@@ -63,9 +78,9 @@ def main(iterations, title="TX RX Gain Test") -> int:
             images.append(img)
 
         iteration_areas.append(channel_areas)
-        log.pvpkg_log_info("TX_RX_GAIN", "The areas of {} for gain are: {}".format(targs.channels, iteration_areas))
+        log.pvpkg_log_info("TX_RX_GAIN", "The areas of {} for gain are: {}".format(channels, iteration_areas))
         # Assert area is increasing per channel.
-        desc = "Gain plot of channels {} for wave_freq = {} Hz at Tx gain {} and Rx gain {} : ".format(targs.channels, it["wave_freq"], it["tx_gain"], it["rx_gain"])
+        desc = "Gain plot of channels {} for wave_freq = {} Hz at Tx gain {} and Rx gain {} : ".format(channels, it["wave_freq"], it["tx_gain"], it["rx_gain"])
         data = [["Center Frequency (Hz)", "Wave Frequency (Hz)", "Sample Rate (SPS)", "Sample Count", "TX Gain (dB)", "RX Gain (dB)"],
                         [it["center_freq"], it["wave_freq"], it["sample_rate"], it["sample_count"], it["tx_gain"], it["rx_gain"]]]
 
@@ -81,13 +96,13 @@ def main(iterations, title="TX RX Gain Test") -> int:
             report.buffer_put("text_large", "This test has failed")
             current_test_only_fail_flag = 0
 
-    channel_data = [["Channel Power Information (dB):","A","B","C","D"]]
+    channel_data = [["Channel Power Information (dB):"]+channel_names]
     for i in range(len(iteration_areas)):
         # Mark iteration as DNF in table if vsnk failed
         if iteration_areas[i] == "DNF":
-            channel_data.append(["Iteration {}:".format(i), "DNF", "DNF", "DNF", "DNF"])
+            channel_data.append(["Iteration {}:".format(i)] + ["DNF" for _ in range(len(channels))])
         else:
-            channel_data.append(["Iteration {}:".format(i), round(iteration_areas[i][0],3),round(iteration_areas[i][1],3), round(iteration_areas[i][2],3),round(iteration_areas[i][3],3)])
+            channel_data.append(["Iteration {}:".format(i)] + [round(iteration_areas[i][ch],3) for ch in range(len(channels))])
 
     report.buffer_put("pagebreak")
     report.buffer_put("table_wide", channel_data)

@@ -29,20 +29,38 @@ def test(it):
     global summary_table
     gen.dump(it)
 
+    # If the channels argument was set, it will override the channels specified in the generator.
+    # If neither the channels arg or the generator specified the channels, fallback to four channels
+    if targs.channels != None:
+        rx_channels = targs.channels
+    elif "channels" in it:
+        rx_channels = it["rx_channels"]
+    else:
+        rx_channels = [0,1,2,3]
+
+    # If the channels argument was set, it will override the channels specified in the generator.
+    # If neither the channels arg or the generator specified the channels, fallback to four channels
+    if targs.channels != None:
+        tx_channels = targs.channels
+    elif "channels" in it:
+        tx_channels = it["tx_channels"]
+    else:
+        tx_channels = [0,1,2,3]
+
     # Error code for this iteration
     iteration_result = 0
 
     # Call cpp program to run the benchmark since it is much faster and reliable
     # The ifelse decides whether to pass rx only, tx only, or both args
-    if((len(it["rx_channel"])) != 0 and (len(it["tx_channel"]) != 0)):
+    if((len(rx_channels)) != 0 and (len(tx_channels) != 0)):
         time.sleep(60) # give network card on host some time to cool down between runs
-        iteration_result = os.system("/usr/lib/uhd/examples/benchmark_rate --priority high --rx_rate {} --rx_channels {} --tx_rate={} --tx_channels {}  --overrun-threshold 0 --underrun-threshold 0 --drop-threshold 0 --seq-threshold 0".format(it["rx_rate"], list_to_arg_string(it["rx_channel"]), it["tx_rate"], list_to_arg_string(it["tx_channel"])))
+        iteration_result = os.system("/usr/lib/uhd/examples/benchmark_rate --priority high --rx_rate {} --rx_channels {} --tx_rate={} --tx_channels {}  --overrun-threshold 0 --underrun-threshold 0 --drop-threshold 0 --seq-threshold 0".format(it["rx_rate"], list_to_arg_string(rx_channels), it["tx_rate"], list_to_arg_string(tx_channels)))
     # rx only
-    elif(len(it["rx_channel"]) != 0):
-        iteration_result = os.system("/usr/lib/uhd/examples/benchmark_rate --priority high --rx_rate={} --rx_channels {}  --overrun-threshold 0 --underrun-threshold 0 --drop-threshold 0 --seq-threshold 0".format(it["rx_rate"], list_to_arg_string(it["rx_channel"])))
+    elif(len(rx_channels) != 0):
+        iteration_result = os.system("/usr/lib/uhd/examples/benchmark_rate --priority high --rx_rate={} --rx_channels {}  --overrun-threshold 0 --underrun-threshold 0 --drop-threshold 0 --seq-threshold 0".format(it["rx_rate"], list_to_arg_string(rx_channels)))
     # tx only
     else:
-        iteration_result = os.system("/usr/lib/uhd/examples/benchmark_rate --priority high --tx_rate={} --tx_channels {}  --overrun-threshold 0 --underrun-threshold 0 --drop-threshold 0 --seq-threshold 0".format(it["tx_rate"], list_to_arg_string(it["tx_channel"])))
+        iteration_result = os.system("/usr/lib/uhd/examples/benchmark_rate --priority high --tx_rate={} --tx_channels {}  --overrun-threshold 0 --underrun-threshold 0 --drop-threshold 0 --seq-threshold 0".format(it["tx_rate"], list_to_arg_string(tx_channels)))
 
     # Set test_fail to the return code of the first failed iteration
     if(iteration_result and not test_fail):
@@ -51,7 +69,7 @@ def test(it):
     result_string = "Fail" if iteration_result != 0 else "Pass"
 
     # Adds this iteration's results to the summary table
-    summary_table.append([it["description"], "{:.2f}".format(it["rx_rate"]/1e6), str(it["rx_channel"]), "{:.2f}".format(it["tx_rate"]/1e6), str(it["tx_channel"]), result_string])
+    summary_table.append([it["description"], "{:.2f}".format(it["rx_rate"]/1e6), str(rx_channels), "{:.2f}".format(it["tx_rate"]/1e6), str(tx_channels), result_string])
 
 def build_report():
     report.insert_title_page("Tx Rx Rate Test")
