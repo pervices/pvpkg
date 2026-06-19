@@ -23,7 +23,12 @@ def main():
     if(targs.product == 'Tate' or targs.product == "BasebandTate"):
         report.insert_title_page("Cyan RX Sample Count Test")
         # Cyan NRNT Setup.
-        channels = np.array([0,1,2,3])
+        # If the channels argument was set, it will override the default four channels.
+        if targs.channels != None:
+            channels = targs.channels
+        else:
+            channels = np.array([0,1,2,3])
+
         sample_rate = 100e6
         sample_count = 4096
 
@@ -33,7 +38,12 @@ def main():
     elif(targs.product == 'Lily'):
         report.insert_title_page("Chestnut RX Sample Count Test")
         # Chestnut Setup.
-        channels = np.array([0,1,2,3])
+        # If the channels argument was set, it will override the default four channels.
+        if targs.channels != None:
+            channels = targs.channels
+        else:
+            channels = np.array([0,1,2,3])
+
         sample_rate = 100e6
         sample_count = 4096
 
@@ -43,7 +53,12 @@ def main():
     elif(targs.product == "Vaunt"):
         report.insert_title_page("Crimson RX Sample Count Test")
         # Crimson TNG Setup.
-        channels = np.array([0,1,2,3])
+        # If the channels argument was set, it will override the default four channels.
+        if targs.channels != None:
+            channels = targs.channels
+        else:
+            channels = np.array([0,1,2,3])
+
         sample_rate = 20312500
         sample_count = 4096
 
@@ -53,7 +68,12 @@ def main():
     elif(targs.product == "Avery"):
         report.insert_title_page("Calamine RX Sample Count Test")
         # Calamine Setup.
-        channels = np.array([0,1,2,3])
+        # If the channels argument was set, it will override the default four channels.
+        if targs.channels != None:
+            channels = targs.channels
+        else:
+            channels = np.array([0,1,2,3])
+
         sample_rate = 300e6/16
         sample_count = 4096
 
@@ -90,8 +110,8 @@ def main():
     +-----------+
     """
     flowgraph = gr.top_block()
-    for channel in channels:
-        flowgraph.connect((csrc, channel), vsnk[channel])
+    for ch in range(len(channels)):
+        flowgraph.connect((csrc, ch), vsnk[ch])
 
     # The flowgraph must be started before commands are sent.
     flowgraph.start()
@@ -126,72 +146,50 @@ def main():
 
     #Poll for incoming RX commands and print the length of the vector sink.
 
-    ch_1_array = [0] * end
-    ch_2_array = [0] * end
-    ch_3_array = [0] * end
-    ch_4_array = [0] * end
+    # Initialize channel arrays
+    ch_arrays = [[0] * end for _ in channels]
 
     config_time = time.perf_counter() - host_start_time
     sampling_start_time = math.ceil(config_time)
     time.sleep(sampling_start_time - config_time)
 
+    # Show the format of the sample count logs
+    log.pvpkg_log("<CH: SECOND: SAMPLE_COUNT>")
     for second in range(sampling_start_time, end):
         start_time = time.perf_counter()
         time.sleep(poll_delay)
 
-        ch_1_array[second] = (len(vsnk[0].data()))
-        ch_2_array[second] = (len(vsnk[1].data()))
-        ch_3_array[second] = (len(vsnk[2].data()))
-        ch_4_array[second] = (len(vsnk[3].data()))
+        # Store sample counts of each channel
+        for i, ch in enumerate(ch_arrays):
+            ch[second] = (len(vsnk[i].data()))
 
         #Populate slot 1 of that array with the sample count for that time interval
-        log.pvpkg_log("%d: %d: %d" % (0, second, len(vsnk[0].data())))
-        log.pvpkg_log("%d: %d: %d" % (1, second, len(vsnk[1].data())))
-        log.pvpkg_log("%d: %d: %d" % (2, second, len(vsnk[2].data())))
-        log.pvpkg_log("%d: %d: %d" % (3, second, len(vsnk[3].data())))
+        for i, ch in enumerate(ch_arrays):
+            log.pvpkg_log("%d: %d: %d" % (i, second, ch[second]))
 
         while(time.perf_counter() - start_time < interval):
             pass
 
-    ch_1_actual_array=np.asarray(ch_1_array)
-    ch_2_actual_array=np.asarray(ch_2_array)
-    ch_3_actual_array=np.asarray(ch_3_array)
-    ch_4_actual_array=np.asarray(ch_4_array)
-    log.pvpkg_log_info("RX_STACK_2", "The collected channel 1 sample count array is: {}".format(ch_1_actual_array))
-    log.pvpkg_log_info("RX_STACK_2", "The collected channel 2 sample count array is: {}".format(ch_2_actual_array))
-    log.pvpkg_log_info("RX_STACK_2", "The collected channel 3 sample count array is: {}".format(ch_3_actual_array))
-    log.pvpkg_log_info("RX_STACK_2", "The collected channel 4 sample count array is: {}".format(ch_4_actual_array))
+    # Print sample count for each channel
+    ch_actual_arrays = [np.asarray(ch_array) for ch_array in ch_arrays]
+    for i, ch in enumerate(channels):
+        log.pvpkg_log_info("RX_STACK_2", "The collected channel {} sample count array is: {}".format(ch, ch_actual_arrays[i]))
 
     # PDF report result tables
-    table_data_ch1_array = [['0']*len(ch_1_array)]
-    # rotate the table
-    for i in range(len(ch_1_array)):
-        table_data_ch1_array[0][i] = str(ch_1_array[i])
+    table_data_ch_arrays = [[['0']*len(ch_arr)] for ch_arr in ch_arrays]
+    for i, ch in enumerate(ch_arrays):
+        # rotate the table
+        for j in range(len(ch)):
+            table_data_ch_arrays[i][0][j] = str(ch[j])
 
-    table_data_ch2_array = [['0']*len(ch_2_array)]
-    for i in range(len(ch_2_array)):
-        table_data_ch2_array[0][i] = str(ch_2_array[i])
-
-    table_data_ch3_array = [['0']*len(ch_3_array)]
-    for i in range(len(ch_3_array)):
-        table_data_ch3_array[0][i] = str(ch_3_array[i])
-
-    table_data_ch4_array = [['0']*len(ch_4_array)]
-    for i in range(len(ch_4_array)):
-        table_data_ch4_array[0][i] = str(ch_4_array[i])
-
-
-    report.insert_table(table_data_ch1_array, 20, "Collected channel 1 sample count array")
-    report.insert_table(table_data_ch2_array, 20, "Collected channel 2 sample count array")
-    report.insert_table(table_data_ch3_array, 20, "Collected channel 3 sample count array")
-    report.insert_table(table_data_ch4_array, 20, "Collected channel 4 sample count array")
+    # Add tables to report
+    for i, ch in enumerate(channels):
+        report.insert_table(table_data_ch_arrays[i], 20, "Collected channel {} sample count array".format(ch))
 
     #Test 2: Make sure that slots 0..start = 0, and start..end increment by sample count.
     try:
-        assert (np.array_equal((ch_1_actual_array),(expect_count_array)))
-        assert (np.array_equal((ch_2_actual_array),(expect_count_array)))
-        assert (np.array_equal((ch_3_actual_array),(expect_count_array)))
-        assert (np.array_equal((ch_4_actual_array),(expect_count_array)))
+        for ch_array in ch_actual_arrays:
+            assert (np.array_equal((ch_array),(expect_count_array)))
     except:
         log.pvpkg_log_error("RX_STACK_2", 'expected and actual array are not equal, fail')
         test_fail = 1

@@ -21,7 +21,12 @@ def main():
     if(targs.product == 'Tate' or targs.product == "BasebandTate"):
         report.insert_title_page("Cyan RX Sample Count Test")
         # Cyan NRNT Setup.
-        channels = np.array([0,1,2,3])
+        # If the channels argument was set, it will override the default four channels.
+        if targs.channels != None:
+            channels = targs.channels
+        else:
+            channels = np.array([0,1,2,3])
+
         sample_rate = 100e6
         sample_count = 4096
 
@@ -31,7 +36,12 @@ def main():
     elif(targs.product == 'Lily'):
         report.insert_title_page("Chestnut RX Sample Count Test")
         # Chestnut Setup.
-        channels = np.array([0,1,2,3])
+        # If the channels argument was set, it will override the default four channels.
+        if targs.channels != None:
+            channels = targs.channels
+        else:
+            channels = np.array([0,1,2,3])
+
         sample_rate = 100e6
         sample_count = 4096
 
@@ -41,7 +51,12 @@ def main():
     elif(targs.product == "Vaunt"):
         report.insert_title_page("Crimson RX Sample Count Test")
         # Crimson TNG Setup.
-        channels = np.array([0,1,2,3])
+        # If the channels argument was set, it will override the default four channels.
+        if targs.channels != None:
+            channels = targs.channels
+        else:
+            channels = np.array([0,1,2,3])
+
         sample_rate = 20312500
         sample_count = 4096
 
@@ -51,7 +66,12 @@ def main():
     elif(targs.product == "Avery"):
         report.insert_title_page("Calamine RX Sample Count Test")
         # Calamine Setup.
-        channels = np.array([0,1,2,3])
+        # If the channels argument was set, it will override the default four channels.
+        if targs.channels != None:
+            channels = targs.channels
+        else:
+            channels = np.array([0,1,2,3])
+
         sample_rate = 300e6/16
         sample_count = 4096
 
@@ -84,8 +104,8 @@ def main():
     +-----------+
     """
     flowgraph = gr.top_block()
-    for channel in channels:
-        flowgraph.connect((csrc, channel), vsnk[channel])
+    for ch in range(len(channels)):
+        flowgraph.connect((csrc, ch), vsnk[ch])
 
     # The flowgraph must be started before commands are sent.
     flowgraph.start()
@@ -106,10 +126,10 @@ def main():
 
     # Poll for incoming RX commands and print the length of the vector sink.
     for sec in range(end):
-        for channel in channels:
+        for ch, channel in enumerate(channels):
             #print(channel)
-            log.pvpkg_log("%d: %d: %d" % (channel, sec, len(vsnk[channel].data())))
-            log.pvpkg_log(len(vsnk[channel].data()))
+            log.pvpkg_log("%d: %d: %d" % (channel, sec, len(vsnk[ch].data())))
+            log.pvpkg_log(len(vsnk[ch].data()))
             #Populate slot 1 of that array with the sample count for that time interval
         time.sleep(interval+interval*interval_additional_delay_coefficient)
 
@@ -121,9 +141,9 @@ def main():
     flowgraph.wait()
 
     #Test 1: assure length of all Rx samples received are as expected
-    for channel in channels:
+    for ch, channel in enumerate(channels):
         expect_sample_count = sample_count * (end - start)
-        actual_sample_count = len((vsnk[channel].data()))
+        actual_sample_count = len((vsnk[ch].data()))
 
         log.pvpkg_log_info("RX_STACK", "The expected sample count and the actual sample count are: {} {}".format(expect_sample_count,actual_sample_count))
         test_table.append([str(channel), str(expect_sample_count), str(actual_sample_count), bool_to_passfail(expect_sample_count == actual_sample_count)])

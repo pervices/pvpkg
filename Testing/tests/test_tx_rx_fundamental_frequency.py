@@ -27,11 +27,19 @@ def test(it, data):
     test_dnf = False
     gen.dump(it)
 
+    # If the channels argument was set, it will override the channels specified in the generator.
+    # If neither the channels arg or the generator specified the channels, fallback to four channels
+    if targs.channels != None:
+        channels = targs.channels
+    elif "channels" in it:
+        channels = it["channels"]
+    else:
+        channels = [0,1,2,3]
 
     tx_stack = [ (5.0, it["sample_count"]) ] # One seconds worth.
     rx_stack = [ (5.0, int(it["sample_count"]) ) ]
     try:
-        vsnk = engine.run(targs.channels, it["wave_freq"], it["sample_rate"], it["center_freq"], it["tx_gain"], it["rx_gain"], tx_stack, rx_stack)
+        vsnk = engine.run(channels, it["wave_freq"], it["sample_rate"], it["center_freq"], it["tx_gain"], it["rx_gain"], tx_stack, rx_stack)
     except Exception as err:
         # Show user whenever engine.run fails and mark test as failed even if it will retry
         log.pvpkg_log_error("TX_RX_FUNDAMENTAL_FREQUENCY", 
@@ -60,8 +68,8 @@ def test(it, data):
 
     # Since engine.run failed, exit test early with DNF for missing data
     if attempt_num >= max_attempts and test_dnf:
-        for ch in range(len(targs.channels)):
-            data.append([str(center_freq), str(wave_freq), targs.channels[ch], "DNF", "fail"])
+        for ch in range(len(channels)):
+            data.append([str(center_freq), str(wave_freq), channels[ch], "DNF", "fail"])
         report.buffer_put("text", "DNF")
         report.buffer_put("pagebreak")
         return data
@@ -76,10 +84,10 @@ def test(it, data):
         like_real = (float(it["wave_freq"]) / fund_real)
         like_imag = (float(it["wave_freq"]) / fund_imag)
 
-        log.pvpkg_log("channel %2d: real %10.0f Hz (%8.5f) :: imag %10.0f Hz (%8.5f)" % (targs.channels[ch], fund_real, like_real, fund_imag, like_imag))
+        log.pvpkg_log("channel %2d: real %10.0f Hz (%8.5f) :: imag %10.0f Hz (%8.5f)" % (channels[ch], fund_real, like_real, fund_imag, like_imag))
 
         plt.figure()
-        plt.title("Channel {}".format(targs.channels[ch]), fontsize=14)
+        plt.title("Channel {}".format(channels[ch]), fontsize=14)
         plt.xlabel("Sample", fontsize=12)
         plt.ylabel("Amplitude", fontsize=12)
         plt.plot(real[0:300], label='real')
@@ -98,7 +106,7 @@ def test(it, data):
             res = "fail"
             test_fail = 1
 
-        data.append([str(center_freq), str(wave_freq), str(ch), attempt_num, res])
+        data.append([str(center_freq), str(wave_freq), str(channels[ch]), attempt_num, res])
 
     report.buffer_put("image_list_dynamic", images, "")
     report.buffer_put("pagebreak")

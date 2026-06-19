@@ -27,11 +27,20 @@ def main(iterations, title="TX RX Long-term Streaming Rate Test") -> int:
     global test_fail
     generator.dump(iterations)
 
+    # If the channels argument was set, it will override the channels specified in the generator.
+    # If neither the channels arg or the generator specified the channels, fallback to four channels
+    if targs.channels != None:
+        channels = targs.channels
+    elif "channels" in it:
+        channels = it["channels"]
+    else:
+        channels = [0,1,2,3]
+
     command = "/usr/lib/uhd/examples/benchmark_rate --tx_rate={} --rx_rate={} --tx_channels={} --rx_channels={} --duration={}".format(
         iterations["sample_rate"], 
         iterations["sample_rate"],
-        str(iterations["channels"])[1:-1].replace(" ", ""),
-        str(iterations["channels"])[1:-1].replace(" ", ""),
+        str(channels)[1:-1].replace(" ", ""),
+        str(channels)[1:-1].replace(" ", ""),
         iterations["duration"],
     )
 

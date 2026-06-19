@@ -22,6 +22,15 @@ def test(it, data):
     iteration_dnf = False
     gen.dump(it)
 
+    # If the channels argument was set, it will override the channels specified in the generator.
+    # If neither the channels arg or the generator specified the channels, fallback to four channels
+    if targs.channels != None:
+        channels = targs.channels
+    elif "channels" in it:
+        channels = it["channels"]
+    else:
+        channels = [0,1,2,3]
+
     # Create manual tune request for tx, use default tuning for rx (just pass center freq)
     # LO offset param is calculated as tx_lo - center_freq
     tx_tune_request = uhd.tune_request(it["center_freq"], it["tx_lo"] - it["center_freq"])
@@ -30,7 +39,7 @@ def test(it, data):
     rx_stack = [ (5.0, int(it["sample_count"]) ) ]
 
     try:
-        vsnk = engine.manual_tune_run(it["channels"], it["wave_freq"],
+        vsnk = engine.manual_tune_run(channels, it["wave_freq"],
                                     it["sample_rate"], it["sample_rate"],
                                     tx_tune_request, it["center_freq"],
                                     it["tx_gain"], it["rx_gain"],
@@ -56,7 +65,7 @@ def test(it, data):
 
     # Use "DNF" instead of missing data for this iteration
     if iteration_dnf:
-        for ch in it["channels"]:
+        for ch in channels:
             data.append([str(tx_dsp_sci) , str(tx_lo), str(center_freq), str(wave_freq), str(ch), "DNF", "DNF", "fail"])
         
         # Put DNF in report instead of plots
@@ -94,7 +103,7 @@ def test(it, data):
                 LO_feedthrough_present = True
 
         plt.figure()
-        plt.title("Channel {} Rx FFT".format(ch), fontsize=14)
+        plt.title("Channel {} Rx FFT".format(channels[ch]), fontsize=14)
         plt.xlabel("Frequency (Hz)", fontsize=12)
         plt.ylabel("Magnitude", fontsize=12)
         plt.plot(xf, yf, label="FFT")
@@ -114,12 +123,12 @@ def test(it, data):
         else:
             res = "pass"
 
-        data.append([str(tx_dsp_sci) , str(tx_lo), str(center_freq), str(wave_freq), str(ch), str(tone_present), str(LO_feedthrough_present),  res])
+        data.append([str(tx_dsp_sci) , str(tx_lo), str(center_freq), str(wave_freq), str(channels[ch]), str(tone_present), str(LO_feedthrough_present),  res])
 
     report.buffer_put("text_large", title)
     report.buffer_put("table_wide", test_info, "")
     report.buffer_put("text", " ")
-    report.buffer_put("image_quad", images, "")
+    report.buffer_put("image_list_dynamic", images, "")
     report.buffer_put("pagebreak")
 
     return data
