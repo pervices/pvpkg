@@ -26,6 +26,7 @@ import os
 from datetime import datetime
 import time
 import argparse
+import subprocess
 
 #USER CHOSEN VALUES
 num_output_waves =1 #depends what plots look like
@@ -211,6 +212,9 @@ def main():
     summary_table = [["Center Freq", "Wave Freq", "Freq Result", "Ampl Result", "Phase Result"]]
 
     for it in iterations:
+
+        subprocess.run("PW=dev0; sshpass -p $PW ssh -ttq -o ConnectTimeout=10 dev0@192.168.10.2 -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no \"echo $PW | sudo -S reboot\" || rc=$?; sleep 60", shell=True)
+
         gen.dump(it) 
 
         # First column is the first channel's value. Subsequent columns are the delta between that channel and the first.
