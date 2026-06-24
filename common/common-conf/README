@@ -14,16 +14,24 @@ Additionally, you SHALL have to modify the configuration files
 to get them working properly. In particular;
 
 common-conf/etc/conf.d/setmtu
-	Change the contents of this file to reflect the adapter 
-	names.
+    Change the contents of this file to reflect the adapter 
+    names.
 
 common-conf/etc/netctl
-	ARCHLINUX: If you use netctl, you can modify this 
-	directory to reflect adapter names.
+    ARCHLINUX: If you use netctl, you can modify this 
+    directory to reflect adapter names.
 
 common-conf/etc/network/interfaces
-	UBUNTU: If you use the network interfaces file, you can 
-	modify this file to reflect adapter names.
+    UBUNTU: If you use the network interfaces file, you can 
+    modify this file to reflect adapter names.
+
+common-conf/etc/security/limits.d/98-pervicessdr.conf
+    Change the memlock value based on the number of hugepages 
+    you have set.
+
+common-conf/etc/sysctl.d/98-pervicessdr.conf
+    Change the value of vm.nr_hugepages based on the available
+    system resources and requirements of the attached unit.
 
 Once you copy over the setmtu utility, you should be able to set 
 the correct MTU by using a systemd script;
