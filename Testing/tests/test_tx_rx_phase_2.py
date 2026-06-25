@@ -79,6 +79,8 @@ def subPlot(x, y, ax, best_fit, offset, title):
     #ax.plot(x, offset, color='green', label='DC Offset')
     ax.axhline(y = offset, color='green', label='DC Offset')
     ax.legend()
+    # Set subplot aspect ratio so all plots look the same
+    ax.set_box_aspect(3/4)
 
     peaks = find_peaks(y)
     f = open("Data_Plots.txt", "a")
@@ -120,6 +122,7 @@ def makePlots(x_time, real_data, best_fit_data, offset_data, wave_freq, sample_r
     f.close()
 
     num_subplot_rows = int(math.ceil(len(channels) / 2))
+
     for run in range(num_runs):
         # Runs where engine.run failed use np.nan to indicate DNF. There is nothing to plot for these runs but still put DNF so it's not empty.
         # All channels are marked DNF when the run fails, so only need to check the first one.
@@ -127,30 +130,30 @@ def makePlots(x_time, real_data, best_fit_data, offset_data, wave_freq, sample_r
             report.buffer_put("text", "Run " + str(run) + ": DNF")
             continue
 
-        fig, axes = plt.subplots(num_subplot_rows, 2, squeeze=False)
-        plt.suptitle("Amplitude versus Samples: Individual Channels for Run {}".format(run))
+        # Create two subfigures. One for individual channels, one for all channels overlapping.
+        fig = plt.figure(layout='tight')
+        subfigs = fig.subfigures(1, 2)
+
+        axes = subfigs[0].subplots(num_subplot_rows, 2, squeeze=False)
+        subfigs[0].suptitle("Amplitude versus Samples: Individual Channels for Run {}".format(run))
 
         os.chdir(test_plots) #To save to a file
 
-        row = 0
         for ch in range(len(channels)):
             subplot_row = int(ch / 2)
             subPlot(x_time[0:plotted_samples], real_data[run][ch][0:plotted_samples], axes[subplot_row][ch%2], best_fit_data[run][ch][0:plotted_samples], offset_data[run][ch], "Channel {}".format(channel_map[channels[ch]]))
 
-        plt.tight_layout(pad=0.4, w_pad=0.5, h_pad=1.0) #Formatting the plots nicely
+        subfigs[0].tight_layout(pad=0.4, w_pad=0.5, h_pad=1.0) #Formatting the plots nicely
 
         os.chdir(test_plots)
-        fig.savefig(("run{}_indiv".format(ch) + ".svg"))
-        s1 = report.get_image_io_stream()
-        fig.savefig(s1, format="png", dpi=300)
-        img1 = report.get_image_from_io_stream(s1)
-        plt.clf()
+        subfigs[0].savefig(("run{}_indiv".format(ch) + ".svg"))
+
 
         #Layout of the combined plot 
-        fig = plt.figure("Amplitude vs Time All Channels")
-        plt.title("Amplitude versus Samples: All Channels for Run {}".format(run))
-        plt.xlabel("Time")
-        plt.ylabel("Amplitude")
+        subfigs[1].suptitle("Amplitude vs Time All Channels")
+        subfigs[1].title("Amplitude versus Samples: All Channels for Run {}".format(run))
+        subfigs[1].xlabel("Time")
+        subfigs[1].ylabel("Amplitude")
 
         #dots
         for ch in range(len(channels)):
@@ -162,12 +165,14 @@ def makePlots(x_time, real_data, best_fit_data, offset_data, wave_freq, sample_r
 
         plt.legend()
 
-        fig.savefig(("run{}_together".format(run) + ".svg"))
-        s2 = report.get_image_io_stream()
-        fig.savefig(s2, format="png", dpi=300)
-        img2 = report.get_image_from_io_stream(s2)
+        subfigs[1].savefig(("run{}_together".format(run) + ".svg"))
 
-        report.buffer_put("image_double", [img1, img2], "Run " + str(run))
+        # Add the figure to the report
+        img_stream = report.get_image_io_stream()
+        fig.savefig(img_stream, format="png", dpi=300)
+        img = report.get_image_from_io_stream(img_stream)
+
+        report.buffer_put("image", img, "Run " + str(run))
         log.pvpkg_log_info("TX_RX_PHASE_2", "Run figure has been put in buffer")
         plt.clf()
 
