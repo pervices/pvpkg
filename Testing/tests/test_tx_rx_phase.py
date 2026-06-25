@@ -127,7 +127,7 @@ def makePlots(x_time, real_data, best_fit_data, offset_data, wave_freq, sample_r
             report.buffer_put("text", "Run " + str(run) + ": DNF")
             continue
 
-        fig, axes = plt.subplots(num_subplot_rows, 2)
+        fig, axes = plt.subplots(num_subplot_rows, 2, squeeze=False)
         plt.suptitle("Amplitude versus Samples: Individual Channels for Run {}".format(run))
 
         os.chdir(test_plots) #To save to a file

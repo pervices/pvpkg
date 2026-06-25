@@ -28,6 +28,7 @@ channels = []
 def test(it):
     global test_fail
     global iteration_num
+    global channels
     gen.dump(it)
     largest_peak = []
     yfp = []

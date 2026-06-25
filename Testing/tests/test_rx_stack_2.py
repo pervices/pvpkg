@@ -153,6 +153,8 @@ def main():
     sampling_start_time = math.ceil(config_time)
     time.sleep(sampling_start_time - config_time)
 
+    # Show the format of the sample count logs
+    log.pvpkg_log("<CH: SECOND: SAMPLE_COUNT>")
     for second in range(sampling_start_time, end):
         start_time = time.perf_counter()
         time.sleep(poll_delay)
@@ -162,7 +164,6 @@ def main():
             ch[second] = (len(vsnk[i].data()))
 
         #Populate slot 1 of that array with the sample count for that time interval
-        log.pvpkg_log("<CH: SECOND: SAMPLE_COUNT>")
         for i, ch in enumerate(ch_arrays):
             log.pvpkg_log("%d: %d: %d" % (i, second, ch[second]))
 
@@ -171,7 +172,7 @@ def main():
 
     # Print sample count for each channel
     ch_actual_arrays = [np.asarray(ch_array) for ch_array in ch_arrays]
-    for i, ch in channels:
+    for i, ch in enumerate(channels):
         log.pvpkg_log_info("RX_STACK_2", "The collected channel {} sample count array is: {}".format(ch, ch_actual_arrays[i]))
 
     # PDF report result tables
@@ -181,9 +182,8 @@ def main():
         for j in range(len(ch)):
             table_data_ch_arrays[i][0][j] = str(ch[j])
 
-
     # Add tables to report
-    for i, ch in channels:
+    for i, ch in enumerate(channels):
         report.insert_table(table_data_ch_arrays[i], 20, "Collected channel {} sample count array".format(ch))
 
     #Test 2: Make sure that slots 0..start = 0, and start..end increment by sample count.
