@@ -90,6 +90,8 @@ class ClassicShipTestReport:
                 self.insert_image(i[1], i[2])
             elif i[0] == "image_double":
                 self.insert_image_double(i[1], i[2])
+            elif i[0] == "image_double_height":
+                self.insert_image_double_height(i[1][0], i[1][1], i[2])
             elif i[0] == "image_quad":
                 self.insert_image_quad_grid(i[1], i[2])
             elif i[0] == "image_octo":
@@ -131,7 +133,7 @@ class ClassicShipTestReport:
     """
         Insert two images side by side
     """
-    def insert_image_double(self, images, desc=None):
+    def insert_image_double(self, images, desc=None, ):
         # Check y space for both image and text
         if (self.cursor_y < (187 + 16)):
             self.new_page()
@@ -151,6 +153,13 @@ class ClassicShipTestReport:
             self.c.drawImage(images[1], 312, self.cursor_y, 250, 187)
         except:
             log.pvpkg_log_error("PDF_REPORT", "Right image not found")
+
+    """
+        Insert two images side with custom heights.
+        If no height specified, defaults to 187.
+    """
+    def insert_image_double_height(self, images, heights=[187,187], desc=None):
+        log.pvpkg_log_info("","")
 
     """
         Insert an array of four images
