@@ -133,12 +133,9 @@ def makePlots(x_time, real_data, best_fit_data, offset_data, wave_freq, sample_r
         fig, axes = plt.subplots(num_subplot_rows, 2, squeeze=False)
         plt.suptitle("Amplitude versus Samples: Individual Channels for Run {}".format(run))
 
-        # When adding the plots to the pdf report, the individual channel plots are in two columns on one half of the page.
-        # The other half has the combined plot. Two rows (4 channels) of individual plots has the same height as the combined plot,
-        # so to prevent compression of the plots, we must dynamically set the individual channel figure height.
-        # The PDF report allocates 250pt width and 187pt height for each figure, so an individual channel plot gets 93.5pt plus 1.4in of padding per row.
-        # 1inch=72pt, so figure height should be (93.5/72)*num_subplot_rows+(1.4*num_subplot_rows) inches.
-        figure_height = (93.5/72)*num_subplot_rows+(1.4*num_subplot_rows)
+        # Normally, one figure fits four subplots in a 2x2 grid, so one row is half the default figure height.
+        # To support any number of channels, adjust the figure height according to the number of subplot rows.
+        figure_height = (fig.get_figheight()/2)*num_subplot_rows    # height in inches
         fig.set_figheight(figure_height)
 
         os.chdir(test_plots) #To save to a file
@@ -177,7 +174,7 @@ def makePlots(x_time, real_data, best_fit_data, offset_data, wave_freq, sample_r
         fig.savefig(s2, format="png", dpi=300)
         img2 = report.get_image_from_io_stream(s2)
 
-        report.buffer_put("image_double", [[img1, img2], [figure_height, None]], "Run " + str(run))
+        report.buffer_put("image_double_height", [[img1, img2], [num_subplot_rows, None]], "Run " + str(run))
         log.pvpkg_log_info("TX_RX_PHASE_2", "Run figure has been put in buffer")
         plt.clf()
 
