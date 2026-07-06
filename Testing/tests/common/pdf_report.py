@@ -179,12 +179,16 @@ class ClassicShipTestReport:
 
         # Draw the images with the specified heights
         try:
+            # Get enough space for image
             self.move_cursor(0, row_height*rows[0] + 3)
             self.c.drawImage(images[0], 50, self.cursor_y, 250, row_height*rows[0])
+            # Move cursor back so images are top-aligned
+            self.move_cursor(0, -(row_height*rows[0] + 3))
         except:
             log.pvpkg_log_error("PDF_REPORT", "Left image not found")
 
         try:
+            # Get enough space for image
             self.move_cursor(0, row_height*rows[1] + 3)
             self.c.drawImage(images[1], 312, self.cursor_y, 250, row_height*rows[1])
         except:
