@@ -183,12 +183,12 @@ class ClassicShipTestReport:
 
         # Draw the images with the specified heights
         try:
-            self.c.drawImage(images[0], 50, self.cursor_y - (max_height - row_height*rows[0]), 250, row_height*rows[0])
+            self.c.drawImage(images[0], 50, self.cursor_y + (max_height - row_height*rows[0]), 250, row_height*rows[0])
         except:
             log.pvpkg_log_error("PDF_REPORT", "Left image not found")
 
         try:
-            self.c.drawImage(images[1], 312, self.cursor_y - (max_height - row_height*rows[1]), 250, row_height*rows[1])
+            self.c.drawImage(images[1], 312, self.cursor_y + (max_height - row_height*rows[1]), 250, row_height*rows[1])
         except:
             log.pvpkg_log_error("PDF_REPORT", "Right image not found")
 
