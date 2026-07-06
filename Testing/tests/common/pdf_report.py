@@ -155,11 +155,36 @@ class ClassicShipTestReport:
             log.pvpkg_log_error("PDF_REPORT", "Right image not found")
 
     """
-        Insert two images side with custom heights.
-        If no height specified, defaults to 187.
+        Insert two images side-by-side with custom heights.
+        If no height is specified, defaults to 187.
     """
-    def insert_image_double_height(self, images, heights=[187,187], desc=None):
-        log.pvpkg_log_info("","")
+    def insert_image_double_height(self, images, custom_heights, desc=None):
+        # Default to 187 if height=None or only one height is given
+        heights=[187, 187]
+        for i, h in enumerate(custom_heights):
+            heights[i] = h or heights[i]
+
+        # Move to new page if there is not enough y space for the tallest image
+        if self.cursor_y < (max(heights) + 16):
+            self.new_page()
+        
+        if desc != None:
+            self.insert_text(desc)
+
+        # Get enough space to fit images
+        self.move_cursor(0, max(heights) + 3)
+
+        # Draw the images with the specified heights
+        try:
+            self.c.drawImage(images[0], 50, self.cursor_y, 250, heights[0])
+        except:
+            log.pvpkg_log_error("PDF_REPORT", "Left image not found")
+
+        try:
+            self.c.drawImage(images[1], 312, self.cursor_y, 250, heights[1])
+        except:
+            log.pvpkg_log_error("PDF_REPORT", "Right image not found")
+
 
     """
         Insert an array of four images
