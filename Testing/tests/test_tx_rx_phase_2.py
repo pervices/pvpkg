@@ -79,8 +79,6 @@ def subPlot(x, y, ax, best_fit, offset, title):
     #ax.plot(x, offset, color='green', label='DC Offset')
     ax.axhline(y = offset, color='green', label='DC Offset')
     ax.legend()
-    # Set subplot aspect ratio so all plots look the same
-    ax.set_box_aspect(3/4)
 
     peaks = find_peaks(y)
     f = open("Data_Plots.txt", "a")

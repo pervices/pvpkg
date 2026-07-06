@@ -177,20 +177,18 @@ class ClassicShipTestReport:
         if desc != None:
             self.insert_text(desc)
 
+        # Get enough space for tallest image
+        max_height = row_height*max(rows) + 3
+        self.move_cursor(0, max_height)
+
         # Draw the images with the specified heights
         try:
-            # Get enough space for image
-            self.move_cursor(0, row_height*rows[0] + 3)
-            self.c.drawImage(images[0], 50, self.cursor_y, 250, row_height*rows[0])
-            # Move cursor back so images are top-aligned
-            self.move_cursor(0, -(row_height*rows[0] + 3))
+            self.c.drawImage(images[0], 50, self.cursor_y - (max_height - row_height*rows[0]), 250, row_height*rows[0])
         except:
             log.pvpkg_log_error("PDF_REPORT", "Left image not found")
 
         try:
-            # Get enough space for image
-            self.move_cursor(0, row_height*rows[1] + 3)
-            self.c.drawImage(images[1], 312, self.cursor_y, 250, row_height*rows[1])
+            self.c.drawImage(images[1], 312, self.cursor_y - (max_height - row_height*rows[1]), 250, row_height*rows[1])
         except:
             log.pvpkg_log_error("PDF_REPORT", "Right image not found")
 
