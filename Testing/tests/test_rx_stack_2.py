@@ -85,10 +85,6 @@ def main():
         test_fail = 1
 
 
-    test_table = [
-        ['Channel', 'Expected Sample Count', 'Actual Sample Count', 'Result']
-    ]
-
     # Crimson TNG acts as a source by providing complex float samples.
     csrc = crimson.get_src_c(channels, sample_rate, 15e6, 5.0)
 
@@ -134,6 +130,8 @@ def main():
     table_data_expect_count_array = [['0']*len(expect_count_array)]
     for i in range(len(expect_count_array)):
         table_data_expect_count_array[0][i] = str(expect_count_array[i])
+    # Insert empty header for table
+    table_data_expect_count_array.insert(0, [])
     report.insert_text_large("Test Results")
     report.insert_table(table_data_expect_count_array, 20, "Theoretical expected sample count array, for all channels")
 
@@ -184,6 +182,8 @@ def main():
 
     # Add tables to report
     for i, ch in enumerate(channels):
+        # Insert empty header for table
+        table_data_ch_arrays[i].insert(0, [])
         report.insert_table(table_data_ch_arrays[i], 20, "Collected channel {} sample count array".format(ch))
 
     #Test 2: Make sure that slots 0..start = 0, and start..end increment by sample count.
