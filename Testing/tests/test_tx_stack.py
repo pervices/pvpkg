@@ -108,10 +108,10 @@ def main():
 
         # Connects flowgraph.
         flowgraph = gr.top_block()
-        for ch, channel in enumerate(channels):
+        for ch in range(len(channels)):
             flowgraph.connect(sigs[ch], heds[ch])
             flowgraph.connect(heds[ch], c2ss[ch])
-            flowgraph.connect(c2ss[ch], (csnk, channel))
+            flowgraph.connect(c2ss[ch], (csnk, ch))
 
         # Runs each TX command at specified start times.
         csnk.set_time_now(uhd.time_spec(0.0))

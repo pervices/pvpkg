@@ -104,8 +104,8 @@ def main():
     +-----------+
     """
     flowgraph = gr.top_block()
-    for ch, channel in enumerate(channels):
-        flowgraph.connect((csrc, channel), vsnk[ch])
+    for ch in range(len(channels)):
+        flowgraph.connect((csrc, ch), vsnk[ch])
 
     # The flowgraph must be started before commands are sent.
     flowgraph.start()
@@ -126,9 +126,9 @@ def main():
 
     # Poll for incoming RX commands and print the length of the vector sink.
     for sec in range(end):
-        for channel in channels:
+        for ch, channel in enumerate(channels):
             #print(channel)
-            log.pvpkg_log("%d: %d: %d" % (channel, sec, len(vsnk[channel].data())))
+            log.pvpkg_log("%d: %d: %d" % (channel, sec, len(vsnk[ch].data())))
             log.pvpkg_log(len(vsnk[channel].data()))
             #Populate slot 1 of that array with the sample count for that time interval
         time.sleep(interval+interval*interval_additional_delay_coefficient)
