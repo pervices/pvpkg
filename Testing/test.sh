@@ -126,7 +126,7 @@ else
 		echo ":: Executing ${TEST_NAMES[$idx]} test" | tee -a log.txt
 		pwd
 
-		python3 -u ${TEST_FILES[$idx]}.py -p $PRODUCT -s $serial_number -o $REPORT_DIR -d $DOCKER_SHA
+		python3 -u ${TEST_FILES[$idx]}.py -p $PRODUCT -s $serial_number -o $REPORT_DIR -d $DOCKER_SHA -c 0
 
 		rv=$?
 		if [ $rv -eq 0 ]; then
