@@ -120,7 +120,6 @@ def makePlots(x_time, real_data, best_fit_data, offset_data, wave_freq, sample_r
     f.close()
 
     num_subplot_rows = int(math.ceil(len(channels) / 2))
-
     for run in range(num_runs):
         # Runs where engine.run failed use np.nan to indicate DNF. There is nothing to plot for these runs but still put DNF so it's not empty.
         # All channels are marked DNF when the run fails, so only need to check the first one.
@@ -130,6 +129,10 @@ def makePlots(x_time, real_data, best_fit_data, offset_data, wave_freq, sample_r
 
         fig, axes = plt.subplots(num_subplot_rows, 2, squeeze=False)
         plt.suptitle("Amplitude versus Samples: Individual Channels for Run {}".format(run))
+
+        # Remove extra plot from last row if there is an odd number of channels
+        if len(channels) % 2:
+            axes[-1][-1].remove()
 
         # Normally, one figure fits four subplots in a 2x2 grid, so one row is half the default figure height.
         # To support any number of channels, adjust the figure height according to the number of subplot rows.
@@ -172,9 +175,12 @@ def makePlots(x_time, real_data, best_fit_data, offset_data, wave_freq, sample_r
         fig.savefig(s2, format="png", dpi=300)
         img2 = report.get_image_from_io_stream(s2)
 
-        report.buffer_put("image_double_height", [[img1, img2], [num_subplot_rows, None]], "Run " + str(run))
+        report.buffer_put("image_double_rows", [[img1, img2], [num_subplot_rows, None]], "Run " + str(run))
         log.pvpkg_log_info("TX_RX_PHASE_2", "Run figure has been put in buffer")
         plt.clf()
+    
+    # Move to a new page for the rest of the report
+    report.buffer_put("pagebreak")
 
 def boolToWord(word):
     if word > 0:

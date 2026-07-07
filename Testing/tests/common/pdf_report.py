@@ -90,7 +90,7 @@ class ClassicShipTestReport:
                 self.insert_image(i[1], i[2])
             elif i[0] == "image_double":
                 self.insert_image_double(i[1], i[2])
-            elif i[0] == "image_double_height":
+            elif i[0] == "image_double_rows":
                 self.insert_image_double_rows(i[1][0], i[1][1], i[2])
             elif i[0] == "image_quad":
                 self.insert_image_quad_grid(i[1], i[2])
@@ -181,7 +181,7 @@ class ClassicShipTestReport:
         max_height = row_height*max(rows) + 3
         self.move_cursor(0, max_height)
 
-        # Draw the images with the specified heights
+        # Draw the images with the specified heights. The y value is calculated so they are top-aligned.
         try:
             self.c.drawImage(images[0], 50, self.cursor_y + (max_height - row_height*rows[0]), 250, row_height*rows[0])
         except:
