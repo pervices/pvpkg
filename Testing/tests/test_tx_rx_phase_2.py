@@ -127,12 +127,20 @@ def makePlots(x_time, real_data, best_fit_data, offset_data, wave_freq, sample_r
             report.buffer_put("text", "Run " + str(run) + ": DNF")
             continue
 
-        fig, axes = plt.subplots(num_subplot_rows, 2)
+        fig, axes = plt.subplots(num_subplot_rows, 2, squeeze=False)
         plt.suptitle("Amplitude versus Samples: Individual Channels for Run {}".format(run))
+
+        # Remove extra plot from last row if there is an odd number of channels
+        if len(channels) % 2:
+            axes[-1][-1].remove()
+
+        # Normally, one figure fits four subplots in a 2x2 grid, so one row is half the default figure height.
+        # To support any number of channels, adjust the figure height according to the number of subplot rows.
+        figure_height = (fig.get_figheight()/2)*num_subplot_rows    # height in inches
+        fig.set_figheight(figure_height)
 
         os.chdir(test_plots) #To save to a file
 
-        row = 0
         for ch in range(len(channels)):
             subplot_row = int(ch / 2)
             subPlot(x_time[0:plotted_samples], real_data[run][ch][0:plotted_samples], axes[subplot_row][ch%2], best_fit_data[run][ch][0:plotted_samples], offset_data[run][ch], "Channel {}".format(channel_map[channels[ch]]))
@@ -167,9 +175,12 @@ def makePlots(x_time, real_data, best_fit_data, offset_data, wave_freq, sample_r
         fig.savefig(s2, format="png", dpi=300)
         img2 = report.get_image_from_io_stream(s2)
 
-        report.buffer_put("image_double", [img1, img2], "Run " + str(run))
+        report.buffer_put("image_double_rows", [[img1, img2], [num_subplot_rows, None]], "Run " + str(run))
         log.pvpkg_log_info("TX_RX_PHASE_2", "Run figure has been put in buffer")
         plt.clf()
+    
+    # Move to a new page for the rest of the report
+    report.buffer_put("pagebreak")
 
 def boolToWord(word):
     if word > 0:
