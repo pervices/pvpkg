@@ -48,7 +48,7 @@ def test(it):
             channels = [0,1,2,3]
 
         # Insert channel column headers for the report
-        channel_names = channel_map[targs.channels].tolist()
+        channel_names = channel_map[channels].tolist()
         for ch in reversed(channel_names):
             test_info[0].insert(1, ch)
 

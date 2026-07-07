@@ -129,7 +129,7 @@ def main():
         for ch, channel in enumerate(channels):
             #print(channel)
             log.pvpkg_log("%d: %d: %d" % (channel, sec, len(vsnk[ch].data())))
-            log.pvpkg_log(len(vsnk[channel].data()))
+            log.pvpkg_log(len(vsnk[ch].data()))
             #Populate slot 1 of that array with the sample count for that time interval
         time.sleep(interval+interval*interval_additional_delay_coefficient)
 
