@@ -104,8 +104,8 @@ def main():
     +-----------+
     """
     flowgraph = gr.top_block()
-    for channel in channels:
-        flowgraph.connect((csrc, channel), vsnk[channel])
+    for ch, channel in enumerate(channels):
+        flowgraph.connect((csrc, channel), vsnk[ch])
 
     # The flowgraph must be started before commands are sent.
     flowgraph.start()
@@ -141,9 +141,9 @@ def main():
     flowgraph.wait()
 
     #Test 1: assure length of all Rx samples received are as expected
-    for channel in channels:
+    for ch, channel in enumerate(channels):
         expect_sample_count = sample_count * (end - start)
-        actual_sample_count = len((vsnk[channel].data()))
+        actual_sample_count = len((vsnk[ch].data()))
 
         log.pvpkg_log_info("RX_STACK", "The expected sample count and the actual sample count are: {} {}".format(expect_sample_count,actual_sample_count))
         test_table.append([str(channel), str(expect_sample_count), str(actual_sample_count), bool_to_passfail(expect_sample_count == actual_sample_count)])

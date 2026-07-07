@@ -106,8 +106,8 @@ def main():
     +-----------+
     """
     flowgraph = gr.top_block()
-    for channel in channels:
-        flowgraph.connect((csrc, channel), vsnk[channel])
+    for ch, channel in enumerate(channels):
+        flowgraph.connect((csrc, channel), vsnk[ch])
 
     # The flowgraph must be started before commands are sent.
     flowgraph.start()

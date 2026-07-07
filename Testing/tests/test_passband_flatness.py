@@ -103,11 +103,11 @@ def main(iterations, desc):
         iteration_num += 1
 
     # Check the data for passband flatness. This only checks iterations that finished, so does not consider any marked as DNF.
-    for ch in channels:
+    for ch, channel in enumerate(channels):
         channel_test = []
 
         plt.figure()
-        plt.title("Channel {} Rx FFT".format(ch), fontsize=14)
+        plt.title("Channel {} Rx FFT".format(channel), fontsize=14)
         plt.xlabel("Frequency (Hz)", fontsize=12)
         plt.ylabel("Magnitude", fontsize=12)
 

@@ -108,10 +108,10 @@ def main():
 
         # Connects flowgraph.
         flowgraph = gr.top_block()
-        for ch in channels:
+        for ch, channel in enumerate(channels):
             flowgraph.connect(sigs[ch], heds[ch])
             flowgraph.connect(heds[ch], c2ss[ch])
-            flowgraph.connect(c2ss[ch], (csnk, ch))
+            flowgraph.connect(c2ss[ch], (csnk, channel))
 
         # Runs each TX command at specified start times.
         csnk.set_time_now(uhd.time_spec(0.0))
@@ -122,7 +122,7 @@ def main():
             flowgraph.run()
 
             # Sets head count to zero for next TX command start time.
-            for ch in channels:
+            for ch in range(len(channels)):
                 heds[ch].reset()
 
         test_info.append([wave_center, wave_freq, wave_ampl, sample_rate, sample_count, "Pass"])
