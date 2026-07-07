@@ -90,6 +90,8 @@ class ClassicShipTestReport:
                 self.insert_image(i[1], i[2])
             elif i[0] == "image_double":
                 self.insert_image_double(i[1], i[2])
+            elif i[0] == "image_double_rows":
+                self.insert_image_double_rows(i[1][0], i[1][1], i[2])
             elif i[0] == "image_quad":
                 self.insert_image_quad_grid(i[1], i[2])
             elif i[0] == "image_octo":
@@ -151,6 +153,45 @@ class ClassicShipTestReport:
             self.c.drawImage(images[1], 312, self.cursor_y, 250, 187)
         except:
             log.pvpkg_log_error("PDF_REPORT", "Right image not found")
+
+    """
+        Insert two images side-by-side with the image height adjusted
+        based on the number of 93.5pt rows specified.
+        This allows different sized images. For example, 
+        num_rows=[1,2] would give the second image twice the height of the first.
+
+        num_rows defaults to [2, 2]
+    """
+    def insert_image_double_rows(self, images, num_rows, desc=None):
+        row_height = 93.5
+        # Default to 2 rows if num_rows=None or it was only specified for one image.
+        # Default is 2 since a full size image (insert_image_double()) has a height of 187pt.
+        rows = [2, 2]
+        for i, r in enumerate(num_rows):
+            rows[i] = r or rows[i]
+
+        # Move to new page if there is not enough y space for the tallest image
+        if self.cursor_y < (row_height*max(rows) + 16):
+            self.new_page()
+        
+        if desc != None:
+            self.insert_text(desc)
+
+        # Get enough space for tallest image
+        max_height = row_height*max(rows) + 3
+        self.move_cursor(0, max_height)
+
+        # Draw the images with the specified heights. The y value is calculated so they are top-aligned.
+        try:
+            self.c.drawImage(images[0], 50, self.cursor_y + (max_height - row_height*rows[0]), 250, row_height*rows[0])
+        except:
+            log.pvpkg_log_error("PDF_REPORT", "Left image not found")
+
+        try:
+            self.c.drawImage(images[1], 312, self.cursor_y + (max_height - row_height*rows[1]), 250, row_height*rows[1])
+        except:
+            log.pvpkg_log_error("PDF_REPORT", "Right image not found")
+
 
     """
         Insert an array of four images
