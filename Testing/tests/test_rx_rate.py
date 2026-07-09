@@ -33,7 +33,7 @@ def test(it):
     # If neither the channels arg or the generator specified the channels, fallback to four channels
     if targs.channels != None:
         rx_channels = targs.channels
-    elif "channels" in it:
+    elif "rx_channels" in it:
         rx_channels = it["rx_channels"]
     else:
         rx_channels = [0,1,2,3]
@@ -43,7 +43,7 @@ def test(it):
 
     # Call cpp program to run the benchmark since it is much faster and reliable
     # rx only
-    if(len(it["rx_channel"]) != 0):
+    if(len(rx_channels) != 0):
         time.sleep(60) # give network card on host some time to cool down between runs
         iteration_result = os.system("/usr/lib/uhd/examples/benchmark_rate --priority high --rx_rate={} --rx_channels {}  --overrun-threshold 0 --underrun-threshold 0 --drop-threshold 0 --seq-threshold 0".format(it["rx_rate"], list_to_arg_string(rx_channels)))
     # tx only

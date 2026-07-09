@@ -282,9 +282,9 @@ def tx_rx_rate():
         iteration_dict = {
             "description" : descriptions[n],
             "rx_rate" : rx_rates[n],
-            "rx_channel" : rx_channels[n],
+            "rx_channels" : rx_channels[n],
             "tx_rate" : tx_rates[n],
-            "tx_channel" : tx_channels[n]
+            "tx_channels" : tx_channels[n]
         }
         yield iteration_dict
 
@@ -299,7 +299,7 @@ def rx_rate():
         iteration_dict = {
             "description" : descriptions[n],
             "rx_rate" : rx_rates[n],
-            "rx_channel" : rx_channels[n]
+            "rx_channels" : rx_channels[n]
         }
         yield iteration_dict
 
@@ -318,7 +318,7 @@ def tx_rate():
         iteration_dict = {
             "description" : descriptions[n],
             "tx_rate" : tx_rates[n],
-            "tx_channel" : tx_channels[n]
+            "tx_channels" : tx_channels[n]
         }
         yield iteration_dict
 
@@ -482,9 +482,9 @@ class calamine:
                 iteration_dict = {
                     "description" : descriptions[n],
                     "rx_rate" : rx_rates[n],
-                    "rx_channel" : rx_channels[n],
+                    "rx_channels" : rx_channels[n],
                     "tx_rate" : tx_rates[n],
-                    "tx_channel" : tx_channels[n]
+                    "tx_channels" : tx_channels[n]
                 }
                 yield iteration_dict
 
@@ -500,7 +500,7 @@ class calamine:
                 iteration_dict = {
                     "description" : descriptions[n],
                     "rx_rate" : rx_rates[n],
-                    "rx_channel" : rx_channels[n]
+                    "rx_channels" : rx_channels[n]
                 }
                 yield iteration_dict
 
@@ -515,7 +515,7 @@ class calamine:
                 iteration_dict = {
                     "description" : descriptions[n],
                     "tx_rate" : tx_rates[n],
-                    "tx_channel" : tx_channels[n]
+                    "tx_channels" : tx_channels[n]
                 }
                 yield iteration_dict
 
@@ -809,9 +809,9 @@ class cyan:
                 iteration_dict = {
                     "description" : descriptions[n],
                     "rx_rate" : rx_rates[n],
-                    "rx_channel" : rx_channels[n],
+                    "rx_channels" : rx_channels[n],
                     "tx_rate" : tx_rates[n],
-                    "tx_channel" : tx_channels[n]
+                    "tx_channels" : tx_channels[n]
                 }
                 yield iteration_dict
 
@@ -828,7 +828,7 @@ class cyan:
                 iteration_dict = {
                     "description" : descriptions[n],
                     "rx_rate" : rx_rates[n],
-                    "rx_channel" : rx_channels[n]
+                    "rx_channels" : rx_channels[n]
                 }
                 yield iteration_dict
 
@@ -849,7 +849,7 @@ class cyan:
                 iteration_dict = {
                     "description" : descriptions[n],
                     "tx_rate" : tx_rates[n],
-                    "tx_channel" : tx_channels[n]
+                    "tx_channels" : tx_channels[n]
                 }
                 yield iteration_dict
 
@@ -1149,9 +1149,9 @@ class chestnut:
                 iteration_dict = {
                     "description" : descriptions[n],
                     "rx_rate" : rx_rates[n],
-                    "rx_channel" : rx_channels[n],
+                    "rx_channels" : rx_channels[n],
                     "tx_rate" : tx_rates[n],
-                    "tx_channel" : tx_channels[n]
+                    "tx_channels" : tx_channels[n]
                 }
                 yield iteration_dict
 
@@ -1168,7 +1168,7 @@ class chestnut:
                 iteration_dict = {
                     "description" : descriptions[n],
                     "rx_rate" : rx_rates[n],
-                    "rx_channel" : rx_channels[n]
+                    "rx_channels" : rx_channels[n]
                 }
                 yield iteration_dict
 
@@ -1189,7 +1189,7 @@ class chestnut:
                 iteration_dict = {
                     "description" : descriptions[n],
                     "tx_rate" : tx_rates[n],
-                    "tx_channel" : tx_channels[n]
+                    "tx_channels" : tx_channels[n]
                 }
                 yield iteration_dict
 

@@ -33,7 +33,7 @@ def test(it):
     # If neither the channels arg or the generator specified the channels, fallback to four channels
     if targs.channels != None:
         rx_channels = targs.channels
-    elif "channels" in it:
+    elif "rx_channels" in it:
         rx_channels = it["rx_channels"]
     else:
         rx_channels = [0,1,2,3]
