@@ -1,8 +1,3 @@
-# uhd/gnuradio is not used by this file
-# Due unknown reason (investigated by 18381) importing uhd after scipy causes a segmentation fault
-# As a workaround include it first. After 18381 is resolved remove this import
-from gnuradio import uhd
-
 import scipy.fftpack
 import numpy as np
 import sys
