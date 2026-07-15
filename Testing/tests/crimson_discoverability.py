@@ -79,7 +79,7 @@ def main(iterations, title="CrimsonTNG Unit Discoverability Test") -> int:
     report.insert_title_page("CrimsonTNG Unit Discoverability Test")
     report.draw_from_buffer()
     report.save()
-    log.pvpkg_log_info("CRIMSON_DISCOVERABLE", "Test finished.")
+    log.pvpkg_log_info("CRIMSON_DISCOVERABLE", "PDF report saved at " + report.get_filename())
     
     if (test_fail != 0):
         sys.exit(1)
