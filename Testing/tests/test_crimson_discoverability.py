@@ -16,7 +16,7 @@ Created on Tue Jul 14 19:06:08 2026
 
 targs = test_args.TestArgs(testDesc="CrimsonTNG Unit Discoverability Test")
 report = pdf_report.ClassicShipTestReport(
-    "crimson_discoverable",
+    "crimson_discoverability",
     targs.serial, 
     targs.report_dir, 
     targs.docker_sha
