@@ -33,6 +33,7 @@ def test(it, data):
         channels = [0,1,2,3]
 
     tx_stack = [ (5.0, it["sample_count"]) ] # One seconds worth.
+    # Start rx after tx has transmitted enough samples to exhaust the buffer
     rx_stack = [ (5.0 + (buffer_shift/int(it["sample_rate"])), int(it["sample_count"])-buffer_shift) ]
     try:
         vsnk = engine.run(channels, it["wave_freq"], it["sample_rate"], it["center_freq"], it["tx_gain"], it["rx_gain"], tx_stack, rx_stack)
@@ -127,9 +128,9 @@ def build_report():
 ## SCRIPT LOGIC ##
 if(targs.product == "Vaunt"):
     buffer_shift = 74000
-    main(gen.lo_band_buffer_exhaust_test(), "Low Band")
+    main(gen.crimson.lo_band.buffer_exhaust_test(), "Low Band")
 elif(targs.product == "Avery"):
-    buffer_shift = 4700000
+    buffer_shift = 74000
     main(gen.calamine.lo_band.buffer_exhaust_test(), "Low Band")
 elif(targs.product == "Tate" or targs.product == "BasebandTate"):
     buffer_shift = 4700000

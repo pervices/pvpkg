@@ -1,11 +1,10 @@
-from gnuradio import blocks
 from gnuradio import uhd
-from gnuradio import gr
 from common import crimson
 from common import pdf_report
 from common import test_args
 from common import log
-import time, sys, os
+import sys
+import subprocess
 
 # Note that Tate has 80 GPIO pins
 # The following is the mapping of the GPIO pins to the registers
@@ -102,7 +101,16 @@ def main():
 
     elif(targs.product == "Vaunt"):
         report.insert_title_page("Crimson Stacked GPIO Commands Test")
-        csrc = crimson.get_src_c(channels, 20312500, 15e6, 0.0) # Does not matter if sink or source is used here.
+
+        # Need to support Crimson tests for 300msps and 325msps
+        valid_system_rates = [300e6, 325e6]
+        # The unit sample rate. Used to calculate appropriate values for both 300msps and 325msps tests.
+        system_rate = subprocess.check_output("uhd_usrp_info -f | grep 'System sample rate:' | cut --complement -d ': ' -f1")
+        # Default to 325msps if any unexpected value was returned
+        if system_rate not in valid_system_rates:
+            system_rate = 325e6
+
+        csrc = crimson.get_src_c(channels, int(system_rate / 16), 15e6, 0.0) # Does not matter if sink or source is used here.
         pins = 0x0
         all = 0xFFFFFFFFFFFFFFFF; # 64bit.
 
