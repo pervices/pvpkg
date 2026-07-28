@@ -101,7 +101,7 @@ class crimson_properties:
         valid_system_rates = [300e6, 325e6]
         # The unit sample rate. Used to calculate appropriate values for both 300msps and 325msps tests.
         # TODO: Move this out of class and use for all products? Then it would be clearer where the values come from
-        system_rate = subprocess.check_output("uhd_usrp_info -f | grep 'System sample rate:' | cut --complement -d ': ' -f1")
+        system_rate = int(float(subprocess.check_output("uhd_usrp_info -f | grep 'System sample rate:' | cut --complement -d ':' -f1", shell=True)))
         # Default to 325msps if any unexpected value was returned
         if system_rate not in valid_system_rates:
             system_rate = 325e6
@@ -137,7 +137,7 @@ class crimson:
             rx_gain = 25
             center_freq = 15e6
             wave_freq = 1e6
-            yield locals()
+            yield { k: v for k,v in locals().items() if k != "self" }
 
         # Used for fundamental frequency test
         def wave_sweep(self):
@@ -207,7 +207,15 @@ class crimson:
 
         def tx_trigger(self):
             log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
-            # TODO: 
+            # sample_rate = 
+            # sample_count =
+            tx_gain = 20
+            center_freq = 0
+            period = 20
+            setpoint = 1000
+            num_trigger = 20
+            start_time = 5.25
+            yield locals()
 
         def tx_rx_rate(self, channels):
             log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
