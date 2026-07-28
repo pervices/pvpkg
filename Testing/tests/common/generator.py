@@ -1,5 +1,5 @@
-import inspect
 import sys
+import subprocess
 from . import log
 
 def ship_test_crimson(channels):
@@ -78,189 +78,6 @@ def ship_test_chestnut(channels):
         yield locals()
 
 
-import os
-
-_uhd_output = None
-_crimson_output = None
-
-def get_uhd_output(addr=None):
-    global _uhd_output
-    if _uhd_output is None:
-        args_flag = f'--args="addr={addr}"' if addr else ""
-        stream = os.popen(f'uhd_find_devices {args_flag}')
-        _uhd_output = stream.read()
-    return _uhd_output
-
-def get_crimson_output(addr=None):
-    global _crimson_output
-    if _crimson_output is None:
-        args_flag = f'--args="addr={addr}"' if addr else ""
-        stream = os.popen(f'uhd_usrp_info {args_flag} -v')
-        _crimson_output = stream.read()
-    return _crimson_output
-
-def lo_band_passband_flatness_test():
-    log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
-    channels = list(range(4))
-    sample_count = int(9803922/10000)
-    tx_gain = 25
-    rx_gain = 25
-    center_freq = 15000000
-    sample_rate = 9803922
-    for wave_freq in list(range(-int(0.45*sample_rate),int(0.45*sample_rate+1),int(0.9*sample_rate/24))):
-        # Only test non-zero wave frequencies
-        if wave_freq != 0:
-            yield locals()
-
-def lo_band_buffer_exhaust_test():
-    log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
-    channels = list(range(4))
-    sample_count = int(9803922/1000 + 74000)
-    tx_gain = 25
-    rx_gain = 25
-    center_freq = 15000000
-    sample_rate = 9803922
-    for wave_freq in [ 1000000 ]:
-        yield locals()
-
-def hi_band_wave_sweep():
-
-    log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
-
-    channels = list(range(4))
-    sample_count = int(round(25000000/10000))
-    tx_gain = 25
-    rx_gain = 25
-    center_freq = 1000000000
-    sample_rate = 25000000
-    for wave_freq in [ 600000, 800000, 1000000 ]:
-        yield locals()
-
-def hi_band_wave_easy():
-    log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
-
-    channels = list(range(4))
-    sample_rate = 9848485
-    sample_count = int((round(9848485/1000)))
-    #sample_count_tx = 9848485
-    #sample_count_rx = int(round(9848485/1000))
-    tx_gain = 25
-    rx_gain = 25
-    center_freq = 1000000000
-    for wave_freq in [ 50000 ]:
-        yield locals()
-
-def lo_band_wave_sweep():
-
-    log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
-
-    channels = list(range(4))
-    sample_count = int(round(25000000/10000))
-    tx_gain = 25
-    rx_gain = 25
-    center_freq = 10000000
-    sample_rate = 25000000
-    for wave_freq in [ 600000, 800000, 1000000 ]:
-        yield locals()
-
-def lo_band_quick():
-
-    log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
-
-    channels = list(range(channels))
-    wave_freq = 1000000
-    sample_count = 10000
-    tx_gain = 25
-    rx_gain = 25
-    center_freq = 15000000
-    sample_rate = 10000000
-    yield locals()
-
-
-def lo_band_basic():
-    log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
-
-    wave_freq = 1000000
-    sample_count = 256
-    tx_gain = 25
-    rx_gain = 25
-    for center_freq in [ 15000000 ]:
-        for sample_rate in [ 9848485, 25000000 ]:
-            yield locals()
-
-
-def hi_band_basic():
-    log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
-
-    wave_freq = 1000000
-    sample_count = 256
-    tx_gain = 25
-    rx_gain = 25
-    for center_freq in [ 1000000000, 2000000000, 3000000000, 4000000000 ]:
-        for sample_rate in [ 9848485, 25000000, 36111111 ]:
-            yield locals()
-
-def lo_band_gain_rx():
-
-    log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
-
-    wave_freq = 1000000
-    sample_count = 1000
-    center_freq = 15000000
-    sample_rate = 9848485
-    tx_gain = 10 #increasing the fixed gain may cause saturation
-    for rx_gain in [ 5, 10, 20 ]:
-        yield locals()
-
-
-def lo_band_gain_tx():
-
-    log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
-
-    wave_freq = 1000000
-    sample_count = 1000
-    center_freq = 15000000
-    sample_rate = 9848485
-    rx_gain = 10#increasing the fixed gain may cause saturation
-    for tx_gain in [ 5, 10, 20 ]:
-        yield locals()
-
-
-def hi_band_gain_tx():
-
-    log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
-
-    wave_freq = 1000000
-    sample_count = 1000
-    center_freq = 2000000000
-    sample_rate = 9848485
-    rx_gain = 40#increasing the fixed gain may cause saturation
-    for tx_gain in [ 5, 10, 20 ]:
-        yield locals()
-
-
-def hi_band_gain_rx():
-
-    log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
-
-    wave_freq = 1000000
-    sample_count = 1000
-    center_freq = 2000000000
-    sample_rate = 4062500
-    tx_gain = 40#increasing the fixed gain may cause saturation
-    for rx_gain in [ 10, 20, 30 ]:
-        yield locals()
-
-def lo_band_phaseCoherency():
-    log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
-    sample_rate = 25000000
-    sample_count = int(round(sample_rate/1000))
-    tx_gain = 25
-    rx_gain = 25
-    center_freq = 10000000
-    wave_freq = 500000
-    yield locals()
-
 def tx_trigger():
     log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
     center_freq = 0
@@ -273,92 +90,264 @@ def tx_trigger():
     num_trigger = 20
     yield locals()
 
-def tx_rx_rate():
-    log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
-
-    descriptions = ["Max achievable combined rate on all ch"]
-    rx_rates = [325e6/6]
-    rx_channels = [[0,1,2,3]]
-    tx_rates = [325e6/6]
-    tx_channels = [[0,1,2,3]]
-    assert(len(rx_rates) == len(rx_channels))
-    assert(len(rx_rates) == len(tx_rates))
-    assert(len(rx_rates) == len(tx_channels))
-    for n in range(len(rx_rates)):
-        iteration_dict = {
-            "description" : descriptions[n],
-            "rx_rate" : rx_rates[n],
-            "rx_channels" : rx_channels[n],
-            "tx_rate" : tx_rates[n],
-            "tx_channels" : tx_channels[n]
-        }
-        yield iteration_dict
-
-def rx_rate():
-    log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
-
-    descriptions = ["Max achievable rx rate on any number of ch", "Max achievable rx rate on all ch"]
-    rx_rates = [162.5e6, 81.25e6]
-    rx_channels = [[0, 1], [0,1,2,3]]
-    assert(len(rx_rates) == len(rx_channels))
-    for n in range(len(rx_rates)):
-        iteration_dict = {
-            "description" : descriptions[n],
-            "rx_rate" : rx_rates[n],
-            "rx_channels" : rx_channels[n]
-        }
-        yield iteration_dict
-
-def tx_rate():
-    log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
-
-    descriptions = ["Max achievable tx rate on any number of ch", "Max achievable tx rate on all ch"]
-    tx_rates = [162.5e6, 81.25e6]
-    tx_channels = [[0], [0,1,2,3]]
-    assert(len(tx_rates) == len(tx_channels))
-    for n in range(len(tx_rates)):
-        iteration_dict = {
-            "description" : descriptions[n],
-            "tx_rate" : tx_rates[n],
-            "tx_channels" : tx_channels[n]
-        }
-        yield iteration_dict
-
-def rx_uhd_tune():
-    log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
-    channels = list(range(4))
-    wave_freq = 1000000
-    sample_count = 10000
-    tx_gain = 25
-    rx_gain = 25
-    rx_lo = 2250000000
-    sample_rate = 9848485
-    for center_freq in [ (rx_lo - 2000000), rx_lo, (rx_lo + 2000000) ]: # 3 cases for dsp (pos, zero, neg).
-        yield locals()
-
-def tx_uhd_tune():
-    log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
-    channels = list(range(4))
-    wave_freq = 1000000
-    sample_count = 10000
-    tx_gain = 25
-    rx_gain = 25
-    tx_lo = 2250000000
-    sample_rate = 9848485
-    for center_freq in [ (tx_lo - 2000000), tx_lo, (tx_lo + 2000000) ]: # 3 cases for dsp (pos, zero, neg).
-        yield locals()
-
-def tx_rx_longterm_rate():
-    log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
-    channels = list(range(4))
-    sample_rate = 325e6/33          # 9.848485 Msps
-    duration = 90                   # 90 sec
-    yield locals()
-
 def dump(iteration):
     log.pvpkg_log_info("GENERATOR", "Using configuration:")
     for key, value in iteration.items():
         log.pvpkg_log("%20s : %r" % (key, value))
+
+class crimson_properties:
+    def __init__(self):
+        # Need to support Crimson tests for 300msps and 325msps
+        valid_system_rates = [300e6, 325e6]
+        # The unit sample rate. Used to calculate appropriate values for both 300msps and 325msps tests.
+        # TODO: Move this out of class and use for all products? Then it would be clearer where the values come from
+        system_rate = subprocess.check_output("uhd_usrp_info -f | grep 'System sample rate:' | cut --complement -d ': ' -f1")
+        # Default to 325msps if any unexpected value was returned
+        if system_rate not in valid_system_rates:
+            system_rate = 325e6
+        
+        self.system_rate = system_rate
+
+class crimson:
+    class lo_band(crimson_properties):
+        # Confirm the passband is flat by comparing amplitudes of peaks across passband frequencies
+        def passband_flatness_test(self):
+            log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
+            channels = list(range(4))
+            sample_rate = int(self.system_rate / 33)
+            sample_count = int(sample_rate / 10e3)
+            tx_gain = 25
+            rx_gain = 25
+            center_freq = 15e6
+            # Crimson passband is ~90% of the sample rate, so test frequencies within that range (-45% to 45%)
+            for wave_freq in list(range(-int(0.45*sample_rate),int(0.45*sample_rate+1),int(0.9*sample_rate/24))):
+                # Only test non-zero wave frequencies
+                if wave_freq != 0:
+                    yield locals()
+
+        # Confirm expected frequency but transmit more samples than the size of the tx buffer
+        def buffer_exhaust_test(self):
+            log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
+            channels = list(range(4))
+            # The amount of samples to send to exhaust the tx buffer before starting rx
+            buffer_shift = 74000
+            sample_rate = int(self.system_rate / 33)
+            sample_count = int(sample_rate/1000 + buffer_shift)
+            tx_gain = 25
+            rx_gain = 25
+            center_freq = 15e6
+            wave_freq = 1e6
+            yield locals()
+
+        # Used for fundamental frequency test
+        def wave_sweep(self):
+            log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
+            channels = list(range(4))
+            sample_rate = 25e6
+            sample_count = int(round(sample_rate/10e3))
+            tx_gain = 25
+            rx_gain = 25
+            center_freq = 10e6
+            for wave_freq in [ 600e3, 800e3, 1e6 ]:
+                yield locals()
+
+        def quick(self, channels):
+            log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
+            channels = list(range(channels))
+            sample_rate = 10e6
+            sample_count = 10e3
+            tx_gain = 25
+            rx_gain = 25
+            center_freq = 15e6
+            wave_freq = 1e6
+            yield locals()
+
+        # Used for stacked commands test
+        def basic(self):
+            log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
+            sample_count = 256
+            tx_gain = 25
+            rx_gain = 25
+            wave_freq = 1e6
+            for center_freq in [ 15e6 ]:
+                for sample_rate in [ int(self.system_rate / 33), 25e6 ]:
+                    yield locals()
+
+        # Test increase in tx gain with everything else fixed
+        def gain_tx(self):
+            log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
+            sample_rate = int(self.system_rate / 33)
+            sample_count = 1000
+            center_freq = 15e6
+            wave_freq = 1e6
+            rx_gain = 10 # increasing the fixed gain may cause saturation
+            for tx_gain in [ 5, 10, 20 ]:
+                yield locals()
+
+        # Test increase in rx gain with everything else fixed
+        def gain_rx(self):
+            log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
+            sample_rate = int(self.system_rate / 33)
+            sample_count = 1000
+            center_freq = 15e6
+            wave_freq = 1e6
+            tx_gain = 10 # increasing the fixed gain may cause saturation
+            for rx_gain in [ 5, 10, 20 ]:
+                yield locals()
+
+        def phaseCoherency(self):
+            log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
+            sample_rate = 25e6
+            sample_count = int(sample_rate/1000)
+            tx_gain = 25
+            rx_gain = 25
+            center_freq = 10e6
+            wave_freq = 500e3
+            yield locals()
+
+        def tx_trigger(self):
+            log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
+            # TODO: 
+
+        def tx_rx_rate(self, channels):
+            log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
+            descriptions = ["Max achievable combined rate on all ch"]
+            # Higher rates are achievable outside of docker
+            rx_rates = [int(self.system_rate / 6)]
+            rx_channels = [list(range(channels))]
+            tx_rates = [int(self.system_rate / 6)]
+            tx_channels = [list(range(channels))]
+            assert(len(rx_rates) == len(rx_channels))
+            assert(len(rx_rates) == len(tx_rates))
+            assert(len(rx_rates) == len(tx_channels))
+            for n in range(len(rx_rates)):
+                iteration_dict = {
+                    "description" : descriptions[n],
+                    "rx_rate" : rx_rates[n],
+                    "rx_channels" : rx_channels[n],
+                    "tx_rate" : tx_rates[n],
+                    "tx_channels" : tx_channels[n]
+                }
+                yield iteration_dict
+
+        def tx_rate(self, channels):
+            log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
+            descriptions = ["Max achievable tx rate on any number of ch", "Max achievable tx rate on all ch"]
+            tx_rates = [int(self.system_rate / 2), int(self.system_rate / 4)]
+            tx_channels = [[0], list(range(channels))]
+            assert(len(tx_rates) == len(tx_channels))
+            for n in range(len(tx_rates)):
+                iteration_dict = {
+                    "description" : descriptions[n],
+                    "tx_rate" : tx_rates[n],
+                    "tx_channels" : tx_channels[n]
+                }
+                yield iteration_dict
+
+        def rx_rate(self, channels):
+            log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
+            descriptions = ["Max achievable rx rate on any number of ch", "Max achievable rx rate on all ch"]
+            # Higher rates are achievable outside of docker
+            rx_rates = [int(self.system_rate / 2), int(self.system_rate / 4)]
+            rx_channels = [[0, 1], list(range(channels))]
+            assert(len(rx_rates) == len(rx_channels))
+            for n in range(len(rx_rates)):
+                iteration_dict = {
+                    "description" : descriptions[n],
+                    "rx_rate" : rx_rates[n],
+                    "rx_channels" : rx_channels[n]
+                }
+                yield iteration_dict
+
+        def tx_rx_longterm_rate(self):
+            log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
+            channels = list(range(4))
+            sample_rate = self.system_rate / 33
+            duration = 90
+            yield locals()
+
+    class hi_band(crimson_properties):
+        # Used for fundamental frequency test
+        def wave_sweep(self):
+            log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
+            channels = list(range(4))
+            sample_rate = 25e6
+            sample_count = int(round(sample_rate/10e3))
+            tx_gain = 25
+            rx_gain = 25
+            center_freq = 1e9
+            for wave_freq in [ 600e3, 800e3, 1e6 ]:
+                yield locals()
+
+        def wave_easy(self):
+            log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
+            channels = list(range(4))
+            sample_rate = int(self.system_rate / 33)
+            sample_count = int((round(sample_rate/1000)))
+            tx_gain = 25
+            rx_gain = 25
+            center_freq = 1e9
+            for wave_freq in [ 50e3 ]:
+                yield locals()
+
+        # Used for stacked commands test
+        def basic(self):
+            log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
+            sample_count = 256
+            tx_gain = 25
+            rx_gain = 25
+            wave_freq = 1e6
+            for center_freq in [ 1e9, 2e9, 3e9, 4e9 ]:
+                for sample_rate in [ int(self.system_rate / 33), 25e6, int(self.system_rate / 9) ]:
+                    yield locals()
+
+        # Test increase in tx gain with everything else fixed
+        def gain_tx(self):
+            log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
+            sample_rate = int(self.system_rate / 33)
+            sample_count = 1000
+            center_freq = 2e9
+            wave_freq = 1e6
+            rx_gain = 40 # increasing the fixed gain may cause saturation
+            for tx_gain in [ 5, 10, 20 ]:
+                yield locals()
+
+        # Test increase in rx gain with everything else fixed
+        def gain_rx(self):
+            log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
+            sample_rate = int(self.system_rate / 33)
+            sample_count = 1000
+            center_freq = 2e9
+            wave_freq = 1e6
+            tx_gain = 40 # increasing the fixed gain may cause saturation
+            for rx_gain in [ 10, 20, 30 ]:
+                yield locals()
+
+        # Test manual tuning through UHD
+        def tx_uhd_tune(self):
+            log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
+            channels = list(range(4))
+            sample_rate = int(self.system_rate / 33)
+            sample_count = 10e3
+            tx_gain = 25
+            rx_gain = 25
+            wave_freq = 1e6
+            tx_lo = 2.25e9
+            for center_freq in [ (tx_lo - 2e6), tx_lo, (tx_lo + 2e6) ]: # 3 cases for dsp (pos, zero, neg).
+                yield locals()
+
+        def rx_uhd_tune(self):
+            log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
+            channels = list(range(4))
+            sample_rate = int(self.system_rate / 33)
+            sample_count = 10e3
+            tx_gain = 25
+            rx_gain = 25
+            wave_freq = 1e6
+            rx_lo = 2.25e9
+            for center_freq in [ (rx_lo - 2e6), rx_lo, (rx_lo + 2e6) ]: # 3 cases for dsp (pos, zero, neg).
+                yield locals()
+
 
 class calamine:
     class lo_band: # 0-6GHz is lowband
@@ -380,7 +369,7 @@ class calamine:
         def buffer_exhaust_test():
             log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
             channels = list(range(4))
-            sample_count = int(round(25000000/10000)+4700000)
+            sample_count = int(round(25000000/10000)+74000)
             tx_gain = 10
             rx_gain = 10
             center_freq = 15000000          # 15MHz
@@ -520,6 +509,14 @@ class calamine:
                     "tx_channels" : tx_channels[n]
                 }
                 yield iteration_dict
+
+        @staticmethod
+        def tx_rx_longterm_rate():
+            log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
+            channels = list(range(4))
+            sample_rate = int(300e6 / 33)
+            duration = 90
+            yield locals()
 
     class mid_band: # 6GHz-20GHz is midband
         @staticmethod
@@ -846,6 +843,14 @@ class cyan:
                     "tx_channels" : tx_channels[n]
                 }
                 yield iteration_dict
+
+        @staticmethod
+        def tx_rx_longterm_rate():
+            log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
+            channels = list(range(4))
+            sample_rate = 9803922
+            duration = 90
+            yield locals()
 
     class mid_band:
         @staticmethod
@@ -1178,6 +1183,14 @@ class chestnut:
                     "tx_channels" : tx_channels[n]
                 }
                 yield iteration_dict
+
+        @staticmethod
+        def tx_rx_longterm_rate():
+            log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
+            channels = list(range(4))
+            sample_rate = 9803922
+            duration = 90
+            yield locals()
 
     class mid_band:
         @staticmethod

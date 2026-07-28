@@ -1,15 +1,9 @@
-import os
-from common import sigproc
-from common import engine
-from common import generator
+from common import generator as gen
 from common import pdf_report
 from common import test_args
 from common import log
-from retrying import retry
-import numpy as np
-import matplotlib.pyplot as plt
 import sys
-import time, datetime
+import time
 import subprocess
 import re
 
@@ -24,9 +18,9 @@ report = pdf_report.ClassicShipTestReport(
 
 test_fail = 0
 
-def main(iterations, title="TX RX Long-term Streaming Rate Test") -> int:
+def test(iterations) -> int:
     global test_fail
-    generator.dump(iterations)
+    gen.dump(iterations)
 
     # If the channels argument was set, it will override the channels specified in the generator.
     # If neither the channels arg or the generator specified the channels, fallback to four channels
@@ -122,18 +116,30 @@ def main(iterations, title="TX RX Long-term Streaming Rate Test") -> int:
         report.buffer_put("text", "Test failed")
     else:
         report.buffer_put("text", "Test passed") 
-    
+
+
+def build_report():
     report.insert_title_page("Tx Rx Long-term Streaming Rate Test")
     report.draw_from_buffer()
     report.save()
     log.pvpkg_log_info("TX_RX_LONGTERM_RATE", "PDF report saved at " + report.get_filename())
-    
-    if (test_fail != 0):
-        sys.exit(1)
-    
-    sys.exit(0)
 
+def main(iterations):
+    for it in iterations:
+        time.sleep(60) # give network card on host some time to cool down between runs
+        test(it)
 
-for it in generator.tx_rx_longterm_rate():
-    time.sleep(60) # give network card on host some time to cool down between runs
-    main(it)
+if(targs.product == "Vaunt"):
+    main(gen.crimson.lo_band.tx_rx_longterm_rate())
+elif(targs.product == "Avery"):
+    main(gen.calamine.lo_band.tx_rx_longterm_rate())
+elif(targs.product == "Lily"):
+    main(gen.chestnut.lo_band.tx_rx_longterm_rate())
+elif(targs.product == "Tate" or targs.product == "BasebandTate"):
+    main(gen.cyan.lo_band.tx_rx_longterm_rate())
+else:
+    test_fail = 1
+    log.pvpkg_log_error("TX_RX_RATE", "Invalid product specified")
+
+build_report()
+sys.exit(test_fail)

@@ -75,4 +75,4 @@ def main(iterations):
 main(gen.Shiptest_Crimson1)
 # main(gen.ship_test_low())
 # main(gen.ship_test_high())
-main(gen.hi_band_wave_easy())
+main(gen.crimson.hi_band.wave_easy())

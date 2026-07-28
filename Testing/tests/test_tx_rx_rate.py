@@ -88,7 +88,7 @@ def main(iterations):
 
 ## SCRIPT LOGIC ##
 if(targs.product == "Vaunt"):
-    main(gen.tx_rx_rate())
+    main(gen.crimson.lo_band.tx_rx_rate(4))
 elif(targs.product == "Avery"):
     main(gen.calamine.lo_band.tx_rx_rate(4))
 elif(targs.product == "Lily"):
