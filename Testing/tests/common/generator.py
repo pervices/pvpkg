@@ -93,7 +93,8 @@ def tx_trigger():
 def dump(iteration):
     log.pvpkg_log_info("GENERATOR", "Using configuration:")
     for key, value in iteration.items():
-        log.pvpkg_log("%20s : %r" % (key, value))
+        if key != "self":
+            log.pvpkg_log("%20s : %r" % (key, value))
 
 class crimson_properties:
     def __init__(self):
@@ -137,7 +138,7 @@ class crimson:
             rx_gain = 25
             center_freq = 15e6
             wave_freq = 1e6
-            yield { k: v for k,v in locals().items() if k != "self" }
+            yield locals()
 
         # Used for fundamental frequency test
         def wave_sweep(self):

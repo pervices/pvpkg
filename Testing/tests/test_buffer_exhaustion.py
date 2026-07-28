@@ -128,7 +128,7 @@ def build_report():
 ## SCRIPT LOGIC ##
 if(targs.product == "Vaunt"):
     buffer_shift = 74000
-    main(gen.crimson.lo_band.buffer_exhaust_test(), "Low Band")
+    main(gen.crimson.lo_band().buffer_exhaust_test(), "Low Band")
 elif(targs.product == "Avery"):
     buffer_shift = 74000
     main(gen.calamine.lo_band.buffer_exhaust_test(), "Low Band")

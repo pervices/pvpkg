@@ -203,7 +203,7 @@ def main():
     report.insert_title_page("Low Band TX RX Phase Coherency Test")
 
     if(targs.product == 'Vaunt'):
-        iterations = gen.crimson.lo_band.phaseCoherency()
+        iterations = gen.crimson.lo_band().phaseCoherency()
     elif(targs.product == 'Avery'):
         iterations = gen.calamine.lo_band.phaseCoherency()
     elif(targs.product == 'Tate' or targs.product == "BasebandTate"):

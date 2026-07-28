@@ -129,7 +129,7 @@ def main(iterations):
         test(it)
 
 if(targs.product == "Vaunt"):
-    main(gen.crimson.lo_band.tx_rx_longterm_rate())
+    main(gen.crimson.lo_band().tx_rx_longterm_rate())
 elif(targs.product == "Avery"):
     main(gen.calamine.lo_band.tx_rx_longterm_rate())
 elif(targs.product == "Lily"):
