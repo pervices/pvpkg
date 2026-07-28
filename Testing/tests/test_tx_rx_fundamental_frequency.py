@@ -138,8 +138,8 @@ def build_report():
 
 ## SCRIPT LOGIC ##
 if(targs.product == "Vaunt"):
-    main(gen.crimson.lo_band.wave_sweep(), "Low Band")
-    main(gen.crimson.hi_band.wave_sweep(), "High Band")
+    main(gen.crimson.lo_band().wave_sweep(), "Low Band")
+    main(gen.crimson.hi_band().wave_sweep(), "High Band")
 elif(targs.product == "Avery"):
     main(gen.calamine.lo_band.wave_sweep(), "Low Band")
     main(gen.calamine.mid_band.wave_sweep(), "Mid Band")
