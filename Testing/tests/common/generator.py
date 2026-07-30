@@ -271,7 +271,7 @@ class crimson:
         def tx_rx_longterm_rate(self):
             log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
             channels = list(range(4))
-            sample_rate = self.system_rate / 33
+            sample_rate = int(self.system_rate / 33)
             duration = 90
             yield locals()
 
