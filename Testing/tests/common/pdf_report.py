@@ -485,8 +485,8 @@ class ClassicShipTestReport:
         # Get the infomation needed
         # This is copied from shiptest.py
 
-        # When a management addr is known, skip network discovery and query it directly
-        uhd_args_flag = f'--args="addr={self.addr}"' if self.addr else ""
+        # Skip network discovery and query the unit directly at its known management addr
+        uhd_args_flag = f'--args="addr={self.addr}"'
 
         #Using the terminal to pull unit info
         # os.system('rm ' + current_dir + '/shiptest_out.txt')
@@ -535,8 +535,8 @@ class ClassicShipTestReport:
     def insert_unit_table(self):
         # This is copied from shiptest.py
 
-        # When a management addr is known, skip network discovery and query it directly
-        uhd_args_flag = f'--args="addr={self.addr}"' if self.addr else ""
+        # Skip network discovery and query the unit directly at its known management addr
+        uhd_args_flag = f'--args="addr={self.addr}"'
 
         # organizing info in order of time, tx, and rx using gterminal grep
         os.system(f'uhd_usrp_info {uhd_args_flag} --all > shiptest_out.txt')
