@@ -13,7 +13,7 @@ import sys
 #Setup argument parsing
 targs = test_args.TestArgs(testDesc="Tx UHD Tuning Test")
 
-report = pdf_report.ClassicShipTestReport("tx_uhd_tuning", targs.serial, targs.report_dir, targs.docker_sha)
+report = pdf_report.ClassicShipTestReport("tx_uhd_tuning", targs.serial, targs.report_dir, targs.docker_sha, targs.addr)
 test_fail = 0
 summary_tables = []
 
@@ -43,7 +43,7 @@ def test(it, data):
                                     it["sample_rate"], it["sample_rate"],
                                     tx_tune_request, it["center_freq"],
                                     it["tx_gain"], it["rx_gain"],
-                                    tx_stack, rx_stack)
+                                    tx_stack, rx_stack, targs.addr)
     except Exception as err:
         # Test will be marked as failed with DNF for missing data but still continue to next iterations.
         log.pvpkg_log_error("TX_UHD_TUNING", 

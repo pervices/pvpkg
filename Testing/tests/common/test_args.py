@@ -1,4 +1,6 @@
 import argparse
+import re
+import subprocess
 import sys
 from inspect import currentframe, getframeinfo
 from . import log
@@ -9,6 +11,7 @@ class TestArgs:
     channels = None
     report_dir = None
     docker_sha = None
+    addr = None
 
     def __init__(self, parser=None, testDesc=""):
         if parser == None:
@@ -20,6 +23,7 @@ class TestArgs:
         parser.add_argument('-c', '--channels', required=False, type=int, nargs='+', default=None, help="Channel list to use for testing. Example usage: -c 0 1 2 3")
         parser.add_argument('-o', '--output', required=False, default=None, help="Report output directory")
         parser.add_argument('-d', '--docker', required=False, default=None, help="Docker SHA")
+        parser.add_argument('-a', '--addr', required=False, default=None, help="Management IP address of the unit, e.g. 192.168.10.2. Skips network discovery when provided.")
         args = parser.parse_args()
         
         self.serial = args.serial
@@ -52,3 +56,23 @@ class TestArgs:
 
         self.report_dir = args.output
         self.docker_sha = args.docker
+        self.addr = args.addr
+
+        # If no addr was given explicitly, discover it once here (instead of letting
+        # every downstream UHD call re-discover it on its own) and reuse it for the rest of the run.
+        if self.addr is None:
+            self.addr = self._detect_addr()
+
+    def _detect_addr(self):
+        try:
+            output = subprocess.run(['uhd_find_devices'], capture_output=True, text=True, timeout=30).stdout
+        except (subprocess.SubprocessError, OSError):
+            return None
+
+        match = re.search(r'^\s*addr:\s*(\S+)', output, re.MULTILINE)
+        if match:
+            addr = match.group(1)
+            log.pvpkg_log_info("TEST_ARGS", "Detected unit management IP address: " + addr)
+            return addr
+
+        return None

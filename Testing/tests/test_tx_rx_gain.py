@@ -35,7 +35,7 @@ def main(iterations, title="TX RX Gain Test") -> int:
         tx_stack = [ (5.0, int(it["sample_count" ])) ]
         rx_stack = [ (5.0, int(it["sample_count"])) ]
         try:
-            vsnk = engine.run(channels, it["wave_freq"], it["sample_rate"], it["center_freq"], it["tx_gain"], it["rx_gain"], tx_stack, rx_stack)
+            vsnk = engine.run(channels, it["wave_freq"], it["sample_rate"], it["center_freq"], it["tx_gain"], it["rx_gain"], tx_stack, rx_stack, targs.addr)
         except Exception as err:
             # Test will be marked as failed with DNF for missing data but still continue to next iterations.
             log.pvpkg_log_error("TX_RX_GAIN", 
@@ -133,7 +133,7 @@ if __name__ == "__main__":
 
     global report
 
-    report = pdf_report.ClassicShipTestReport("tx_rx_gain", targs.serial, targs.report_dir, targs.docker_sha)
+    report = pdf_report.ClassicShipTestReport("tx_rx_gain", targs.serial, targs.report_dir, targs.docker_sha, targs.addr)
 
     if(targs.product == 'Tate'):
         report.insert_title_page("Cyan TX RX Gain Test")

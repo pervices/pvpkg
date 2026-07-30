@@ -8,7 +8,7 @@ import time
 
 
 targs = test_args.TestArgs(testDesc="Tx Rate Test")
-report = pdf_report.ClassicShipTestReport("tx_rate", targs.serial, targs.report_dir, targs.docker_sha)
+report = pdf_report.ClassicShipTestReport("tx_rate", targs.serial, targs.report_dir, targs.docker_sha, targs.addr)
 test_fail = 0
 summary_table = [ ["Description", "Tx Rate (Msps)", "Tx Channels", "Result"] ]
 

@@ -12,7 +12,7 @@ from common import log
 #Setup argument parsing
 targs = test_args.TestArgs(testDesc="Tx Stack Test")
 
-report = pdf_report.ClassicShipTestReport("tx_stack", targs.serial, targs.report_dir, targs.docker_sha)
+report = pdf_report.ClassicShipTestReport("tx_stack", targs.serial, targs.report_dir, targs.docker_sha, targs.addr)
 test_fail = 0
 
 def main():
@@ -90,7 +90,7 @@ def main():
     test_info = [["Center Freq", "Wave Freq", "Wave Ampl", "Sample Rate", "Sample Count", "Result"]]
     try:
         # Takes interleaved shorts and outputs to Crimson/Cyan.
-        csnk = crimson.get_snk_s(channels, sample_rate, wave_center, 0.0)
+        csnk = crimson.get_snk_s(channels, sample_rate, wave_center, 0.0, targs.addr)
 
         """                                       +-----------+
         +---------+   +---------+   +---------+   |           |

@@ -144,7 +144,7 @@ def run_rx(csrc, channels, stack, sample_rate, _vsnk, timeout_occured):
 
 # Multiprocess is needed for the ability to terminate, but tx and rx must be in the same process as each other
 # run_helper is run as it's own process, which then spawns tx and rx threads
-def run_helper(channels, wave_freq, tx_gain, rx_gain, tx_stack, rx_stack, tx_duration, rx_duration, tx_sample_rate, rx_sample_rate, tx_center_freq, rx_center_freq, sink_arr):
+def run_helper(channels, wave_freq, tx_gain, rx_gain, tx_stack, rx_stack, tx_duration, rx_duration, tx_sample_rate, rx_sample_rate, tx_center_freq, rx_center_freq, sink_arr, addr):
     rx_timeout_occured = threading.Event()
 
     vsnk = [] # Will be extended when using stacked commands.
@@ -153,11 +153,11 @@ def run_helper(channels, wave_freq, tx_gain, rx_gain, tx_stack, rx_stack, tx_dur
 
     # Prepare thread
     if tx_stack != None:
-        csnk = crimson.get_snk_s(channels, tx_sample_rate, tx_center_freq, tx_gain)
+        csnk = crimson.get_snk_s(channels, tx_sample_rate, tx_center_freq, tx_gain, addr)
         tx_thread = threading.Thread(target = run_tx, args = (csnk, channels, tx_stack, tx_sample_rate, wave_freq))
 
     if rx_stack != None:
-        csrc = crimson.get_src_c(channels, rx_sample_rate, rx_center_freq, rx_gain)
+        csrc = crimson.get_src_c(channels, rx_sample_rate, rx_center_freq, rx_gain, addr)
         rx_thread = threading.Thread(target = run_rx, args = (csrc, channels, rx_stack, rx_sample_rate, vsnk, rx_timeout_occured))
   
     # Start threads
@@ -196,7 +196,7 @@ def run_helper(channels, wave_freq, tx_gain, rx_gain, tx_stack, rx_stack, tx_dur
             sink_arr[i].set_data(snk.data())
 
 
-def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stack, rx_stack):
+def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stack, rx_stack, addr):
     vsnk = []
     tx_duration = 0
     rx_duration = 0
@@ -228,6 +228,7 @@ def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stac
         "tx_center_freq": center_freq,
         "rx_center_freq": center_freq,
         "sink_arr": vsnk,
+        "addr": addr,
     })
     helper_process.start()
 
@@ -253,7 +254,7 @@ def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stac
         helper_process.terminate()
         # Wait for process to close
         helper_process.join(30)
-        
+
     flow_sigterm_timeout = False
     if(helper_process.is_alive()):
         log.pvpkg_log_error("ENGINE", "Flowgraph still hanging after issuing SIGTERM. Issuing SIGKILL")
@@ -276,7 +277,7 @@ def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stac
         raise Exception ("Unexpected error")
 
 
-def manual_tune_run(channels, wave_freq, tx_sample_rate, rx_sample_rate, tx_tune_request, rx_tune_request, tx_gain, rx_gain, tx_stack, rx_stack):
+def manual_tune_run(channels, wave_freq, tx_sample_rate, rx_sample_rate, tx_tune_request, rx_tune_request, tx_gain, rx_gain, tx_stack, rx_stack, addr):
     # Create SharedSink object for each channel to hold all the samples in shared memory between processes
     vsnk=[SharedSink(rx_stack) for _ in channels]
     # Expected tx duration = start time of last burst + (length of last burst / sample rate)
@@ -299,6 +300,7 @@ def manual_tune_run(channels, wave_freq, tx_sample_rate, rx_sample_rate, tx_tune
         "tx_center_freq": tx_tune_request,
         "rx_center_freq": rx_tune_request,
         "sink_arr": vsnk,
+        "addr": addr,
     })
     helper_process.start()
 
