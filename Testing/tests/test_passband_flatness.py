@@ -13,7 +13,7 @@ import sys
 #Setup argument parsing
 targs = test_args.TestArgs(testDesc="Passband Flatness Test")
 
-report = pdf_report.ClassicShipTestReport("passband_flatness_test", targs.serial, targs.report_dir, targs.docker_sha)
+report = pdf_report.ClassicShipTestReport("passband_flatness_test", targs.serial, targs.report_dir, targs.docker_sha, targs.addr)
 test_fail = 0
 channel_peak = []
 plot_points_xf = []
@@ -55,7 +55,7 @@ def test(it):
     tx_stack = [ (10.0, it["sample_count"]) ] # One seconds worth.
     rx_stack = [ (10.0, it["sample_count"]) ]
     try:
-        vsnk = engine.run(channels, it["wave_freq"], it["sample_rate"], it["center_freq"], it["tx_gain"], it["rx_gain"], tx_stack, rx_stack)
+        vsnk = engine.run(channels, it["wave_freq"], it["sample_rate"], it["center_freq"], it["tx_gain"], it["rx_gain"], tx_stack, rx_stack, targs.addr)
     except Exception as err:
         # Test will be marked as failed with DNF for missing data but still continue to next iterations.
         log.pvpkg_log_error("PASSBAND_FLATNESS", 

@@ -38,9 +38,10 @@ class ClassicShipTestReport:
     # This stores the elements temporarily before calling draw all
     buffer = []
 
-    def __init__(self, doc_title, serial_num = "SERIAL", output_dir = None, docker_sha = None):
+    def __init__(self, doc_title, serial_num = "SERIAL", output_dir = None, docker_sha = None, addr = None):
         self.serial_num = serial_num
         self.docker_sha = docker_sha
+        self.addr = addr
         if output_dir == None:
             output_dir = str(os.getcwd())
         self.output_dir = output_dir
@@ -484,10 +485,13 @@ class ClassicShipTestReport:
         # Get the infomation needed
         # This is copied from shiptest.py
 
+        # Skip network discovery and query the unit directly at its known management addr
+        uhd_args_flag = f'--args="addr={self.addr}"'
+
         #Using the terminal to pull unit info
         # os.system('rm ' + current_dir + '/shiptest_out.txt')
         os.system('touch shiptest_out.txt')
-        os.system('uhd_usrp_info  -s > shiptest_out.txt')
+        os.system(f'uhd_usrp_info {uhd_args_flag} -s > shiptest_out.txt')
 
         #Using terminal grep to set unit data
         server_ver = subprocess.getstatusoutput("cat shiptest_out.txt | grep Revision | cut --complement -d ':' -f1 | tr -d [:blank:] ")[1]
@@ -500,7 +504,7 @@ class ClassicShipTestReport:
         operating_sys = subprocess.run(["cat /etc/os-release | grep PRETTY_NAME | cut -d '=' -f2 | tr -d '\"' | tr -d '\n' "], shell=True, capture_output=True, text=True).stdout
         pvpkg_commit = subprocess.run(["git describe --abbrev=8 --dirty --always --long | tr -d '\n' "], shell=True, capture_output=True, text=True).stdout
         pvpkg_branch = subprocess.run(["git rev-parse --abbrev-ref HEAD | tr -d '\n' "], shell=True, capture_output=True, text=True).stdout
-        fpga_ddr = subprocess.run(["uhd_usrp_info --all | grep DDR | tr -d '\n' "], shell=True, capture_output=True, text=True).stdout
+        fpga_ddr = subprocess.run([f"uhd_usrp_info {uhd_args_flag} --all | grep DDR | tr -d '\n' "], shell=True, capture_output=True, text=True).stdout
 
         os.system('rm shiptest_out.txt')
 
@@ -531,8 +535,11 @@ class ClassicShipTestReport:
     def insert_unit_table(self):
         # This is copied from shiptest.py
 
+        # Skip network discovery and query the unit directly at its known management addr
+        uhd_args_flag = f'--args="addr={self.addr}"'
+
         # organizing info in order of time, tx, and rx using gterminal grep
-        os.system('uhd_usrp_info --all > shiptest_out.txt')
+        os.system(f'uhd_usrp_info {uhd_args_flag} --all > shiptest_out.txt')
         os.system("touch hold.txt")
         os.system("grep '0/time/fw_version' shiptest_out.txt -A 15 > hold.txt")
 

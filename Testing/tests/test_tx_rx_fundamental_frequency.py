@@ -13,7 +13,7 @@ import subprocess
 
 
 targs = test_args.TestArgs(testDesc="Tx Rx Fundamental Frequency Test")
-report = pdf_report.ClassicShipTestReport("tx_rx_fundamental_frequency", targs.serial, targs.report_dir, targs.docker_sha)
+report = pdf_report.ClassicShipTestReport("tx_rx_fundamental_frequency", targs.serial, targs.report_dir, targs.docker_sha, targs.addr)
 test_fail = 0
 summary_tables = []
 max_attempts = 1
@@ -39,7 +39,7 @@ def test(it, data):
     tx_stack = [ (5.0, it["sample_count"]) ] # One seconds worth.
     rx_stack = [ (5.0, int(it["sample_count"]) ) ]
     try:
-        vsnk = engine.run(channels, it["wave_freq"], it["sample_rate"], it["center_freq"], it["tx_gain"], it["rx_gain"], tx_stack, rx_stack)
+        vsnk = engine.run(channels, it["wave_freq"], it["sample_rate"], it["center_freq"], it["tx_gain"], it["rx_gain"], tx_stack, rx_stack, targs.addr)
     except Exception as err:
         # Show user whenever engine.run fails and mark test as failed even if it will retry
         log.pvpkg_log_error("TX_RX_FUNDAMENTAL_FREQUENCY", 
