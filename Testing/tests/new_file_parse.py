@@ -511,7 +511,7 @@ os.chdir(output_path4)
 #Version info
 fig, ax=plt.subplots(figsize=(14,10))
 plt.axis('off')
-output= str(gen.crimson_output)
+output= str(gen.get_crimson_output())
 plt.text(0,1, output)
 plt.savefig('crimson_versions.png')
 plt.show()

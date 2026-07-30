@@ -78,16 +78,26 @@ def ship_test_chestnut(channels):
         yield locals()
 
 
-#UHD_version
 import os
-stream = os.popen('uhd_find_devices')
-uhd_output = stream.read()
-#print(uhd_output)
 
-#Crimson version info
-stream = os.popen('uhd_usrp_info -v')
-crimson_output = stream.read()
-#print(crimson_output)
+_uhd_output = None
+_crimson_output = None
+
+def get_uhd_output(addr=None):
+    global _uhd_output
+    if _uhd_output is None:
+        args_flag = f'--args="addr={addr}"' if addr else ""
+        stream = os.popen(f'uhd_find_devices {args_flag}')
+        _uhd_output = stream.read()
+    return _uhd_output
+
+def get_crimson_output(addr=None):
+    global _crimson_output
+    if _crimson_output is None:
+        args_flag = f'--args="addr={addr}"' if addr else ""
+        stream = os.popen(f'uhd_usrp_info {args_flag} -v')
+        _crimson_output = stream.read()
+    return _crimson_output
 
 def lo_band_passband_flatness_test():
     log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)

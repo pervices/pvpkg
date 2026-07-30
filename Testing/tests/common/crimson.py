@@ -13,16 +13,20 @@ def calibrate(end, channels, sample_rate, center_freq, gain):
     end.set_time_now(uhd.time_spec(0.0))
 
 
-def get_snk_s(channels, sample_rate, center_freq, gain):
+def device_str(addr=None):
+    return "crimson" if not addr else f"crimson,addr={addr}"
 
-    snk = uhd.usrp_sink("crimson", uhd.stream_args(cpu_format="sc16", otw_format="sc16", channels=channels))
+
+def get_snk_s(channels, sample_rate, center_freq, gain, addr=None):
+
+    snk = uhd.usrp_sink(device_str(addr), uhd.stream_args(cpu_format="sc16", otw_format="sc16", channels=channels))
     calibrate(snk, channels, sample_rate, center_freq, gain)
     return snk
 
 
-def get_src_c(channels, sample_rate, center_freq, gain):
+def get_src_c(channels, sample_rate, center_freq, gain, addr=None):
 
-    src = uhd.usrp_source("crimson", uhd.stream_args(cpu_format="fc32", otw_format="sc16", channels=channels), False)
+    src = uhd.usrp_source(device_str(addr), uhd.stream_args(cpu_format="fc32", otw_format="sc16", channels=channels), False)
     calibrate(src, channels, sample_rate, center_freq, gain)
     return src
 

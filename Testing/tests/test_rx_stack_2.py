@@ -19,7 +19,7 @@ def main():
 
     global report
 
-    report = pdf_report.ClassicShipTestReport("rx_stack2", targs.serial, targs.report_dir, targs.docker_sha)
+    report = pdf_report.ClassicShipTestReport("rx_stack2", targs.serial, targs.report_dir, targs.docker_sha, targs.addr)
     if(targs.product == 'Tate' or targs.product == "BasebandTate"):
         report.insert_title_page("Cyan RX Sample Count Test")
         # Cyan NRNT Setup.
@@ -33,7 +33,7 @@ def main():
         sample_count = 4096
 
         # Cyan acts as a source by providing complex float samples.
-        csrc = crimson.get_src_c(channels, sample_rate, 100e6, 1.0)
+        csrc = crimson.get_src_c(channels, sample_rate, 100e6, 1.0, targs.addr)
 
     elif(targs.product == 'Lily'):
         report.insert_title_page("Chestnut RX Sample Count Test")
@@ -48,7 +48,7 @@ def main():
         sample_count = 4096
 
         # Cyan acts as a source by providing complex float samples.
-        csrc = crimson.get_src_c(channels, sample_rate, 100e6, 1.0)
+        csrc = crimson.get_src_c(channels, sample_rate, 100e6, 1.0, targs.addr)
 
     elif(targs.product == "Vaunt"):
         report.insert_title_page("Crimson RX Sample Count Test")
@@ -63,7 +63,7 @@ def main():
         sample_count = 4096
 
         # Crimson TNG acts as a source by providing complex float samples.
-        csrc = crimson.get_src_c(channels, sample_rate, 15e6, 1.0)
+        csrc = crimson.get_src_c(channels, sample_rate, 15e6, 1.0, targs.addr)
 
     elif(targs.product == "Avery"):
         report.insert_title_page("Calamine RX Sample Count Test")
@@ -78,7 +78,7 @@ def main():
         sample_count = 4096
 
         # Calamine acts as a source by providing complex float samples.
-        csrc = crimson.get_src_c(channels, sample_rate, 15e6, 1.0)
+        csrc = crimson.get_src_c(channels, sample_rate, 15e6, 1.0, targs.addr)
 
     else:
         log.pvpkg_log_error("RX_STACK_2", "Unrecognized product argument")
@@ -86,7 +86,7 @@ def main():
 
 
     # Crimson TNG acts as a source by providing complex float samples.
-    csrc = crimson.get_src_c(channels, sample_rate, 15e6, 5.0)
+    csrc = crimson.get_src_c(channels, sample_rate, 15e6, 5.0, targs.addr)
 
     # Vector buffer that accepts complex float samples.
     vsnk = [blocks.vector_sink_c() for channel in channels]

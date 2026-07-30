@@ -16,9 +16,10 @@ import re
 targs = test_args.TestArgs(testDesc="Tx Rx Long-term Streaming Rate Test")
 report = pdf_report.ClassicShipTestReport(
     "tx_rx_longterm_rate",
-    targs.serial, 
-    targs.report_dir, 
-    targs.docker_sha
+    targs.serial,
+    targs.report_dir,
+    targs.docker_sha,
+    targs.addr
     )
 
 test_fail = 0

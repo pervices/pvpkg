@@ -13,7 +13,7 @@ import time, datetime
 
 
 targs = test_args.TestArgs(testDesc="Buffer Exhaustion")
-report = pdf_report.ClassicShipTestReport("buffer_exhaustion", targs.serial, targs.report_dir, targs.docker_sha)
+report = pdf_report.ClassicShipTestReport("buffer_exhaustion", targs.serial, targs.report_dir, targs.docker_sha, targs.addr)
 test_fail = 0
 summary_tables = []
 buffer_shift = 0
@@ -35,7 +35,7 @@ def test(it, data):
     tx_stack = [ (5.0, it["sample_count"]) ] # One seconds worth.
     rx_stack = [ (5.0 + (buffer_shift/int(it["sample_rate"])), int(it["sample_count"])-buffer_shift) ]
     try:
-        vsnk = engine.run(channels, it["wave_freq"], it["sample_rate"], it["center_freq"], it["tx_gain"], it["rx_gain"], tx_stack, rx_stack)
+        vsnk = engine.run(channels, it["wave_freq"], it["sample_rate"], it["center_freq"], it["tx_gain"], it["rx_gain"], tx_stack, rx_stack, targs.addr)
     except Exception as err:
         # Test will be marked as failed with DNF for missing data but still continue to next iterations.
         log.pvpkg_log_error("BUFFER_EXHAUSTION", 

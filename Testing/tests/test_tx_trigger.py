@@ -7,7 +7,7 @@ import sys
 
 
 targs = test_args.TestArgs(testDesc="Basic Tx Trigger Test")
-report = pdf_report.ClassicShipTestReport("tx_trigger", targs.serial, targs.report_dir, targs.docker_sha)
+report = pdf_report.ClassicShipTestReport("tx_trigger", targs.serial, targs.report_dir, targs.docker_sha, targs.addr)
 test_fail = 0
 
 def test(it):

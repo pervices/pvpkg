@@ -9,6 +9,7 @@ class TestArgs:
     channels = None
     report_dir = None
     docker_sha = None
+    addr = None
 
     def __init__(self, parser=None, testDesc=""):
         if parser == None:
@@ -20,6 +21,7 @@ class TestArgs:
         parser.add_argument('-c', '--channels', required=False, type=int, nargs='+', default=None, help="Channel list to use for testing. Example usage: -c 0 1 2 3")
         parser.add_argument('-o', '--output', required=False, default=None, help="Report output directory")
         parser.add_argument('-d', '--docker', required=False, default=None, help="Docker SHA")
+        parser.add_argument('-a', '--addr', required=False, default=None, help="Management IP address of the unit, e.g. 192.168.10.2. Skips network discovery when provided.")
         args = parser.parse_args()
         
         self.serial = args.serial
@@ -52,3 +54,4 @@ class TestArgs:
 
         self.report_dir = args.output
         self.docker_sha = args.docker
+        self.addr = args.addr

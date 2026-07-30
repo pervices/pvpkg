@@ -199,7 +199,7 @@ def main():
     fail_flag = 0
 
     global report
-    report = pdf_report.ClassicShipTestReport("tx_rx_phase", targs.serial, targs.report_dir, targs.docker_sha)
+    report = pdf_report.ClassicShipTestReport("tx_rx_phase", targs.serial, targs.report_dir, targs.docker_sha, targs.addr)
     report.insert_title_page("Low Band TX RX Phase Coherency Test")
 
     if(targs.product == 'Vaunt'):
@@ -265,7 +265,7 @@ def main():
             rx_stack = [ (rx_burst, int(it["sample_count"]))]
 
             try:
-                vsnk = engine.run(channels, it["wave_freq"], sample_rate, it["center_freq"], it["tx_gain"], it["rx_gain"], tx_stack, rx_stack)
+                vsnk = engine.run(channels, it["wave_freq"], sample_rate, it["center_freq"], it["tx_gain"], it["rx_gain"], tx_stack, rx_stack, targs.addr)
             except Exception as err:
                 # Test will be marked as failed with DNF for missing data but still continue to next iterations.
                 log.pvpkg_log_error("TX_RX_PHASE", 

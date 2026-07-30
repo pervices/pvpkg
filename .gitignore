@@ -1,1 +1,3 @@
 *.orig
+.claude/
+Testing/tests/__pycache__/
