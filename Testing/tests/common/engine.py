@@ -1,10 +1,5 @@
-from gnuradio import analog
-from gnuradio import blocks
-from gnuradio import uhd
-from gnuradio import gr
 import numpy as np
 
-from . import crimson
 from . import log
 import threading
 import multiprocessing
@@ -14,6 +9,14 @@ import time
 import subprocess
 import sys
 import datetime
+
+# gnuradio/uhd/crimson are imported lazily inside run_tx/run_rx/run_helper
+# (instead of at module scope) because those are the only functions that run
+# inside the forked child process (see run() / manual_tune_run() below).
+# UHD's log-delivery thread is created the first time libuhd is loaded; if
+# that happens in the parent before fork(), the thread does not survive into
+# the child and UHD_LOG_* output is silently dropped there. Importing here
+# instead ensures libuhd (and its log thread) is first loaded in the child.
 
 # Manage shared memory for vsnk samples in multiproc.-friendly way
 class SharedSink:
@@ -50,6 +53,8 @@ def run_tx(csnk, channels, stack, sample_rate, wave_freq):
     +---------+   +---------+   +---------+   |      csnk |
                                               +-----------+
     """
+    from gnuradio import analog, blocks, gr, uhd
+
     for frame in stack: #in fund_freq.py this is tx_stack
 
         # Connect.
@@ -94,6 +99,7 @@ def run_rx(csrc, channels, stack, sample_rate, _vsnk, timeout_occured):
     | csrc      |   +---------+
     +-----------+
     """
+    from gnuradio import blocks, gr, uhd
 
     # Connect.
     vsnk = [blocks.vector_sink_c() for ch in channels]
@@ -145,6 +151,8 @@ def run_rx(csrc, channels, stack, sample_rate, _vsnk, timeout_occured):
 # Multiprocess is needed for the ability to terminate, but tx and rx must be in the same process as each other
 # run_helper is run as it's own process, which then spawns tx and rx threads
 def run_helper(channels, wave_freq, tx_gain, rx_gain, tx_stack, rx_stack, tx_duration, rx_duration, tx_sample_rate, rx_sample_rate, tx_center_freq, rx_center_freq, sink_arr, addr):
+    from . import crimson
+
     rx_timeout_occured = threading.Event()
 
     vsnk = [] # Will be extended when using stacked commands.
