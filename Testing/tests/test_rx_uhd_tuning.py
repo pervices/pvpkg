@@ -1,4 +1,3 @@
-from gnuradio import uhd
 from common import sigproc
 from common import engine
 from common import generator as gen
@@ -33,7 +32,7 @@ def test(it, data):
 
     # Create manual tune request for rx, use default tuning for tx (just pass center freq)
     # LO offset param is caclulated as rx_lo - center_freq
-    rx_tune_request = uhd.tune_request(it["center_freq"], it["rx_lo"] - it["center_freq"])
+    rx_lo_offset = it["rx_lo"] - it["center_freq"]
 
     tx_stack = [ (5.0, int(2 * it["sample_rate"])) ]
     rx_stack = [ (5.5, int(it["sample_count"])) ]
@@ -41,7 +40,8 @@ def test(it, data):
     try:
         vsnk = engine.manual_tune_run(channels, it["wave_freq"],
                                     it["sample_rate"], it["sample_rate"],
-                                    it["center_freq"], rx_tune_request,
+                                    it["center_freq"], None,
+                                    it["center_freq"], rx_lo_offset,
                                     it["tx_gain"], it["rx_gain"],
                                     tx_stack, rx_stack, targs.addr)
     except Exception as err:
