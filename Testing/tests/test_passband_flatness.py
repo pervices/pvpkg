@@ -1,4 +1,3 @@
-from gnuradio import uhd
 from common import sigproc
 from common import engine
 from common import generator as gen

@@ -5,9 +5,6 @@ from common import engine
 from common import generator as gen
 from common import log
 
-#GNU radio
-from gnuradio import uhd
-
 #Basic imports
 import time, datetime
 import os
