@@ -150,7 +150,7 @@ def run_rx(csrc, channels, stack, sample_rate, _vsnk, timeout_occured):
 
 # Multiprocess is needed for the ability to terminate, but tx and rx must be in the same process as each other
 # run_helper is run as it's own process, which then spawns tx and rx threads
-def run_helper(channels, wave_freq, tx_gain, rx_gain, tx_stack, rx_stack, tx_duration, rx_duration, tx_sample_rate, rx_sample_rate, tx_center_freq, rx_center_freq, sink_arr, addr):
+def run_helper(channels, wave_freq, tx_gain, rx_gain, tx_stack, rx_stack, tx_duration, rx_duration, tx_sample_rate, rx_sample_rate, tx_center_freq, rx_center_freq, sink_arr, addr, tx_lo_offset=None, rx_lo_offset=None):
     from . import crimson
 
     rx_timeout_occured = threading.Event()
@@ -161,11 +161,11 @@ def run_helper(channels, wave_freq, tx_gain, rx_gain, tx_stack, rx_stack, tx_dur
 
     # Prepare thread
     if tx_stack != None:
-        csnk = crimson.get_snk_s(channels, tx_sample_rate, tx_center_freq, tx_gain, addr)
+        csnk = crimson.get_snk_s(channels, tx_sample_rate, tx_center_freq, tx_gain, addr, tx_lo_offset)
         tx_thread = threading.Thread(target = run_tx, args = (csnk, channels, tx_stack, tx_sample_rate, wave_freq))
 
     if rx_stack != None:
-        csrc = crimson.get_src_c(channels, rx_sample_rate, rx_center_freq, rx_gain, addr)
+        csrc = crimson.get_src_c(channels, rx_sample_rate, rx_center_freq, rx_gain, addr, rx_lo_offset)
         rx_thread = threading.Thread(target = run_rx, args = (csrc, channels, rx_stack, rx_sample_rate, vsnk, rx_timeout_occured))
   
     # Start threads
@@ -285,16 +285,16 @@ def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stac
         raise Exception ("Unexpected error")
 
 
-def manual_tune_run(channels, wave_freq, tx_sample_rate, rx_sample_rate, tx_tune_request, rx_tune_request, tx_gain, rx_gain, tx_stack, rx_stack, addr):
+def manual_tune_run(channels, wave_freq, tx_sample_rate, rx_sample_rate, tx_center_freq, tx_lo_offset, rx_center_freq, rx_lo_offset, tx_gain, rx_gain, tx_stack, rx_stack, addr):
     # Create SharedSink object for each channel to hold all the samples in shared memory between processes
     vsnk=[SharedSink(rx_stack) for _ in channels]
     # Expected tx duration = start time of last burst + (length of last burst / sample rate)
     tx_duration = tx_stack[-1][0] + (tx_stack[-1][1] / tx_sample_rate)
     rx_duration = rx_stack[-1][0] + (rx_stack[-1][1] / rx_sample_rate)
-    
+
     ctx = multiprocessing.get_context("fork")
     # Start helper process to manage tx/rx threads
-    helper_process = ctx.Process(target = run_helper, kwargs = { 
+    helper_process = ctx.Process(target = run_helper, kwargs = {
         "channels": channels,
         "wave_freq": wave_freq,
         "tx_gain": tx_gain,
@@ -305,8 +305,10 @@ def manual_tune_run(channels, wave_freq, tx_sample_rate, rx_sample_rate, tx_tune
         "rx_duration": rx_duration,
         "tx_sample_rate": tx_sample_rate,
         "rx_sample_rate": rx_sample_rate,
-        "tx_center_freq": tx_tune_request,
-        "rx_center_freq": rx_tune_request,
+        "tx_center_freq": tx_center_freq,
+        "rx_center_freq": rx_center_freq,
+        "tx_lo_offset": tx_lo_offset,
+        "rx_lo_offset": rx_lo_offset,
         "sink_arr": vsnk,
         "addr": addr,
     })
