@@ -1,7 +1,11 @@
-from gnuradio import uhd
 import time
 
+# "from gnuradio import uhd" intializes logging, however logging breaks across forks (multiprocessing)
+# To ensure logging works correctly only import uhd from within functions that are called in the forks
+# Adding "from gnuradio import uhd" would break UHD_LOG_*
+
 def calibrate(end, channels, sample_rate, center_freq, gain):
+    from gnuradio import uhd
 
     end.set_samp_rate(sample_rate)
     end.set_clock_source("internal")
@@ -14,6 +18,7 @@ def calibrate(end, channels, sample_rate, center_freq, gain):
 
 
 def get_snk_s(channels, sample_rate, center_freq, gain, addr):
+    from gnuradio import uhd
 
     snk = uhd.usrp_sink(f"crimson,addr={addr}", uhd.stream_args(cpu_format="sc16", otw_format="sc16", channels=channels))
     calibrate(snk, channels, sample_rate, center_freq, gain)
@@ -21,6 +26,7 @@ def get_snk_s(channels, sample_rate, center_freq, gain, addr):
 
 
 def get_src_c(channels, sample_rate, center_freq, gain, addr):
+    from gnuradio import uhd
 
     src = uhd.usrp_source(f"crimson,addr={addr}", uhd.stream_args(cpu_format="fc32", otw_format="sc16", channels=channels), False)
     calibrate(src, channels, sample_rate, center_freq, gain)

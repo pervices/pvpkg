@@ -1,4 +1,3 @@
-from gnuradio import analog
 from gnuradio import blocks
 from gnuradio import uhd
 from gnuradio import gr
@@ -14,6 +13,12 @@ import time
 import subprocess
 import sys
 import datetime
+
+# UHD IMPORT NOTE:
+# "from gnuradio import uhd" intializes logging, however logging breaks across forks (multiprocessing)
+# To ensure logging works correctly only import uhd from within functions that are called in the forks
+# Adding "from gnuradio import uhd" would break UHD_LOG_*
+# Other comments mention "UHD IMPORT NOTE" make sure they get updated if the heading changes
 
 # Manage shared memory for vsnk samples in multiproc.-friendly way
 class SharedSink:
@@ -50,6 +55,9 @@ def run_tx(csnk, channels, stack, sample_rate, wave_freq):
     +---------+   +---------+   +---------+   |      csnk |
                                               +-----------+
     """
+    # See "UHD IMPORT NOTE" for why uhd is imported here
+    from gnuradio import uhd
+
     for frame in stack: #in fund_freq.py this is tx_stack
 
         # Connect.
@@ -94,6 +102,8 @@ def run_rx(csrc, channels, stack, sample_rate, _vsnk, timeout_occured):
     | csrc      |   +---------+
     +-----------+
     """
+    # See "UHD IMPORT NOTE" for why uhd is imported here
+    from gnuradio import uhd
 
     # Connect.
     vsnk = [blocks.vector_sink_c() for ch in channels]
@@ -145,6 +155,8 @@ def run_rx(csrc, channels, stack, sample_rate, _vsnk, timeout_occured):
 # Multiprocess is needed for the ability to terminate, but tx and rx must be in the same process as each other
 # run_helper is run as it's own process, which then spawns tx and rx threads
 def run_helper(channels, wave_freq, tx_gain, rx_gain, tx_stack, rx_stack, tx_duration, rx_duration, tx_sample_rate, rx_sample_rate, tx_center_freq, rx_center_freq, sink_arr, addr):
+    from . import crimson
+
     rx_timeout_occured = threading.Event()
 
     vsnk = [] # Will be extended when using stacked commands.
