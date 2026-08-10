@@ -15,7 +15,6 @@ import matplotlib.pyplot as plt
 import sys
 
 from gnuradio import blocks
-from gnuradio import uhd
 from gnuradio import gr
 from common import sigproc
 from common import engine

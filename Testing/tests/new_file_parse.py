@@ -7,7 +7,6 @@ Created on Mon Aug  1 19:24:42 2022
 """
 #Libraries and modules
 from gnuradio import blocks
-from gnuradio import uhd
 from gnuradio import gr
 from common import sigproc
 from common import engine
