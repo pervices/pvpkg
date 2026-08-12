@@ -817,7 +817,27 @@ def main(iterations):
 
         log.pvpkg_log_info("SHIPTEST", "Started data collection for run " + str(counter))
 
-        vsnk = engine.run(it["channels"], it["wave_freq"], it["sample_rate"], it["center_freq"], it["tx_gain"], it["rx_gain"], tx_stack, rx_stack)
+        # offset RX LO by 200MHz so RX and TX have different LO frequencies
+        
+        
+        if (it["center_freq"] == 9000000000):
+            rx_tune_request = uhd.tune_request(it["center_freq"], 9000000000 - 200000000)
+
+            vsnk = engine.manual_tune_run(it["channels"], it["wave_freq"],
+                                        it["sample_rate"], it["sample_rate"],
+                                        it["center_freq"], rx_tune_request,
+                                        it["tx_gain"], it["rx_gain"],
+                                        tx_stack, rx_stack)
+        elif (it["center_freq"] == 17000000000):
+            rx_tune_request = uhd.tune_request(it["center_freq"], 17000000000 - 200000000)
+
+            vsnk = engine.manual_tune_run(it["channels"], it["wave_freq"],
+                                        it["sample_rate"], it["sample_rate"],
+                                        it["center_freq"], rx_tune_request,
+                                        it["tx_gain"], it["rx_gain"],
+                                        tx_stack, rx_stack)
+        else:
+            vsnk = engine.run(it["channels"], it["wave_freq"], it["sample_rate"], it["center_freq"], it["tx_gain"], it["rx_gain"], tx_stack, rx_stack)
 
         log.pvpkg_log_info("SHIPTEST", "Completed data collection for run " + str(counter))
 
