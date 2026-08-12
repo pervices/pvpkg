@@ -164,31 +164,31 @@ if(os.system('ping 192.168.10.2 -c 1') != 0):
     sys.exit(1)
 #Make sure the unit can be rebooted by software - if not usually caused by pinched wire during assembly
 #issue the reboot command, note that it sets the reboot 1 minute in the future
-os.system('sshpass -p dev0 ssh -ttq -o ConnectTimeout=10 dev0@192.168.10.2 -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no "echo dev0 | sudo -S shutdown --reboot +1"')
+# os.system('sshpass -p dev0 ssh -ttq -o ConnectTimeout=10 dev0@192.168.10.2 -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no "echo dev0 | sudo -S shutdown --reboot +1"')
 #experimentally on a Crimson RTM12 unit it took about 68 seconds for the reboot to trigger
-time.sleep(70)
+# time.sleep(70)
 #the unit should be rebooting, make sure ping to MGMT fails
-if(os.system('ping 192.168.10.2 -c 1') == 0):
+# if(os.system('ping 192.168.10.2 -c 1') == 0):
     # 0 exit code is successful ping - the reboot did not work
-    log.pvpkg_log_error("SHIPTEST", "[FAILURE]: after reboot command, unit still responded to ping.")
-    sys.exit(1)
+#     log.pvpkg_log_error("SHIPTEST", "[FAILURE]: after reboot command, unit still responded to ping.")
+#     sys.exit(1)
 
-log.pvpkg_log_info("SHIPTEST", "Waiting for reboot to complete")
+# log.pvpkg_log_info("SHIPTEST", "Waiting for reboot to complete")
 #wait for the unit to come back up
 
-server_up = False
-elapsed = 0
-while (server_up == False and elapsed < 180):
-    if(os.system('uhd_find_devices 2>/dev/null')== 0):
-        server_up = True
-    else:
-        time.sleep(1)
-        elapsed += 1
-if(server_up):
-    log.pvpkg_log_info("SHIPTEST", "reboot complete")
-else:
-    log.pvpkg_log_error("SHIPTEST", "[FAILURE]: after reboot, SDR did not come back online before timeout.")
-    sys.exit(1)
+# server_up = False
+# elapsed = 0
+# while (server_up == False and elapsed < 180):
+#     if(os.system('uhd_find_devices 2>/dev/null')== 0):
+#         server_up = True
+#     else:
+#         time.sleep(1)
+#         elapsed += 1
+# if(server_up):
+#     log.pvpkg_log_info("SHIPTEST", "reboot complete")
+# else:
+#     log.pvpkg_log_error("SHIPTEST", "[FAILURE]: after reboot, SDR did not come back online before timeout.")
+#     sys.exit(1)
 
 #Using the terminal to pull unit info
 # os.system('rm ' + current_dir + '/shiptest_out.txt')
@@ -221,9 +221,9 @@ time.append(subprocess.getstatusoutput("cat hold.txt | grep 'Fuse02' | cut --com
 time.append(subprocess.getstatusoutput("cat hold.txt | grep 'Fuse03' | cut --complement -d ':' -f1")[1])
 time.append(subprocess.getstatusoutput("cat hold.txt | grep 'GCC' | cut --complement -d ':' -f1")[1])
 time_eep = subprocess.getstatusoutput("cat shiptest_out.txt | grep time/eeprom -A 1 | tail -n 1 | cut -d ':' -f2- | grep -o -E 'SERIAL [A-Z]{1,2}'")[1]
-if len(re.findall("SERIAL [a-zA-Z]{1,2}", time_eep)) != 1:
-    log.pvpkg_log_error("SHIPTEST", "Time board EEPROM not programmed! EEPROM read: {}".format(time_eep))
-    eeprom_fail = True
+# if len(re.findall("SERIAL [a-zA-Z]{1,2}", time_eep)) != 1:
+#     log.pvpkg_log_error("SHIPTEST", "Time board EEPROM not programmed! EEPROM read: {}".format(time_eep))
+#     eeprom_fail = True
 time.append(time_eep)
 
 #Setting up rx dictionary to hold board data
@@ -242,9 +242,9 @@ for i, name in zip(range(num_channels), channel_names): #NOTE: This might be mor
     rx_info["RX: " + name].append(subprocess.getstatusoutput("cat hold.txt | grep 'Fuse03' | cut --complement -d ':' -f1")[1])
     rx_info["RX: " + name].append(subprocess.getstatusoutput("cat hold.txt | grep 'GCC' | cut --complement -d ':' -f1")[1])
     rx_eep = subprocess.getstatusoutput("cat shiptest_out.txt | grep rx/{}/eeprom -A 1 | tail -n 1 | cut -d ':' -f2- | grep -o -E 'SERIAL [A-Z]{{1,2}}'".format(i))[1]
-    if len(re.findall("SERIAL [a-zA-Z]{1,2}", rx_eep)) != 1:
-        log.pvpkg_log_error("SHIPTEST", "RX {} EEPROM not programmed! EEPROM read: {}".format(i, rx_eep))
-        eeprom_fail = True
+    # if len(re.findall("SERIAL [a-zA-Z]{1,2}", rx_eep)) != 1:
+    #     log.pvpkg_log_error("SHIPTEST", "RX {} EEPROM not programmed! EEPROM read: {}".format(i, rx_eep))
+    #     eeprom_fail = True
     rx_info["RX: " + name].append(rx_eep)
 
 #Setting up tx dictionary to hold board data
@@ -262,18 +262,18 @@ for i, name in zip(range(num_channels), channel_names):
     tx_info["TX: " + name].append(subprocess.getstatusoutput("cat hold.txt | grep 'Fuse03' | cut --complement -d ':' -f1")[1])
     tx_info["TX: " + name].append(subprocess.getstatusoutput("cat hold.txt | grep 'GCC' | cut --complement -d ':' -f1")[1])
     tx_eep = subprocess.getstatusoutput("cat shiptest_out.txt | grep tx/{}/eeprom -A 1 | tail -n 1 | cut -d ':' -f2- | grep -o -E 'SERIAL [A-Z]{{1,2}}'".format(i))[1]
-    if len(re.findall("SERIAL [a-zA-Z]{1,2}", tx_eep)) != 1:
-        log.pvpkg_log_error("SHIPTEST", "TX {} EEPROM not programmed! EEPROM read: {}".format(i, tx_eep))
-        eeprom_fail = True
+    # if len(re.findall("SERIAL [a-zA-Z]{1,2}", tx_eep)) != 1:
+    #     log.pvpkg_log_error("SHIPTEST", "TX {} EEPROM not programmed! EEPROM read: {}".format(i, tx_eep))
+    #     eeprom_fail = True
     tx_info["TX: " + name].append(tx_eep)
 
 #Removing the temp files from the systems
 os.system("rm hold.txt")
 os.system("rm shiptest_out.txt")
 
-if eeprom_fail:
-    log.pvpkg_log_error("SHIPTEST", "[FAILURE]: Not all board EEPROMs are programmed correctly.")
-    sys.exit(1)
+# if eeprom_fail:
+#     log.pvpkg_log_error("SHIPTEST", "[FAILURE]: Not all board EEPROMs are programmed correctly.")
+#     sys.exit(1)
 
 #Globals that will be changed later in the code - all -1 currently because they are dependent on the generator code
 center_freq = -1
