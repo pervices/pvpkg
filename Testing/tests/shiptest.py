@@ -64,6 +64,7 @@ parser.add_argument('-a', '--serial', required=True, help="Serial number of the 
 parser.add_argument('-p', '--product', required=True, help="The product to be tested. v for Vaunt, a for Avery, t for Tate, l for Lily")
 parser.add_argument('-c', '--num_channels', default = 4, type=int,  help="The number of channels to test. Will test ch a, ch b, ...")
 parser.add_argument('-b', '--strict', default = False, type=bool,  help="Exit the test as soon as any test fails")
+parser.add_argument('-i', '--addr', default = "192.168.10.2", type=str,  help="The IP address of the device to test")
 
 args = parser.parse_args()
 
@@ -101,6 +102,8 @@ gain_check_threshold = args.gain_threshold
 serial_num = args.serial
 
 strict_mode = args.strict
+
+device_ip = args.addr
 
 #Making file and doc title
 date = datetime.datetime.now()
@@ -155,17 +158,17 @@ elif(product == 'l'):
 elif(product == 'b'):
     generate = gen.ship_test_cyanbaseband(num_channels)
 
-if(os.system('ping 192.168.10.2 -c 1') != 0):
+if(os.system(f'ping {device_ip} -c 1') != 0):
     # 0 exit code is successful ping - the reboot did not work
     log.pvpkg_log_error("SHIPTEST", "[FAILURE]: unit did not respond to ping.")
     sys.exit(1)
 #Make sure the unit can be rebooted by software - if not usually caused by pinched wire during assembly
 #issue the reboot command, note that it sets the reboot 1 minute in the future
-os.system('sshpass -p dev0 ssh -ttq -o ConnectTimeout=10 dev0@192.168.10.2 -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no "echo dev0 | sudo -S shutdown --reboot +1"')
+os.system(f'sshpass -p dev0 ssh -ttq -o ConnectTimeout=10 dev0@{device_ip} -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no "echo dev0 | sudo -S shutdown --reboot +1"')
 #experimentally on a Crimson RTM12 unit it took about 68 seconds for the reboot to trigger
 time.sleep(70)
 #the unit should be rebooting, make sure ping to MGMT fails
-if(os.system('ping 192.168.10.2 -c 1') == 0):
+if(os.system(f'ping {device_ip} -c 1') == 0):
     # 0 exit code is successful ping - the reboot did not work
     log.pvpkg_log_error("SHIPTEST", "[FAILURE]: after reboot command, unit still responded to ping.")
     sys.exit(1)
@@ -814,7 +817,7 @@ def main(iterations):
 
         log.pvpkg_log_info("SHIPTEST", "Started data collection for run " + str(counter))
 
-        vsnk = engine.run(it["channels"], it["wave_freq"], it["sample_rate"], it["center_freq"], it["tx_gain"], it["rx_gain"], tx_stack, rx_stack)
+        vsnk = engine.run(it["channels"], it["wave_freq"], it["sample_rate"], it["center_freq"], it["tx_gain"], it["rx_gain"], tx_stack, rx_stack, device_ip)
 
         log.pvpkg_log_info("SHIPTEST", "Completed data collection for run " + str(counter))
 
