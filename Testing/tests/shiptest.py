@@ -821,7 +821,7 @@ def main(iterations):
         
         
         if (it["center_freq"] == 9000000000):
-            rx_tune_request = uhd.tune_request(it["center_freq"], 9000000000 - 200000000)
+            rx_tune_request = uhd.tune_request(it["center_freq"], -200000000)
 
             vsnk = engine.manual_tune_run(it["channels"], it["wave_freq"],
                                         it["sample_rate"], it["sample_rate"],
@@ -829,7 +829,7 @@ def main(iterations):
                                         it["tx_gain"], it["rx_gain"],
                                         tx_stack, rx_stack)
         elif (it["center_freq"] == 17000000000):
-            rx_tune_request = uhd.tune_request(it["center_freq"], 17000000000 - 200000000)
+            rx_tune_request = uhd.tune_request(it["center_freq"],  -200000000)
 
             vsnk = engine.manual_tune_run(it["channels"], it["wave_freq"],
                                         it["sample_rate"], it["sample_rate"],
