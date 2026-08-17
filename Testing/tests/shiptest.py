@@ -164,31 +164,32 @@ if(os.system('ping 192.168.10.2 -c 1') != 0):
     sys.exit(1)
 #Make sure the unit can be rebooted by software - if not usually caused by pinched wire during assembly
 #issue the reboot command, note that it sets the reboot 1 minute in the future
-# os.system('sshpass -p dev0 ssh -ttq -o ConnectTimeout=10 dev0@192.168.10.2 -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no "echo dev0 | sudo -S shutdown --reboot +1"')
+os.system('sshpass -p dev0 ssh -ttq -o ConnectTimeout=10 dev0@192.168.10.2 -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no "echo dev0 | sudo -S shutdown --reboot +1"')
 #experimentally on a Crimson RTM12 unit it took about 68 seconds for the reboot to trigger
-# time.sleep(70)
+time.sleep(70)
 #the unit should be rebooting, make sure ping to MGMT fails
-# if(os.system('ping 192.168.10.2 -c 1') == 0):
+if(os.system('ping 192.168.10.2 -c 1') == 0):
     # 0 exit code is successful ping - the reboot did not work
-#     log.pvpkg_log_error("SHIPTEST", "[FAILURE]: after reboot command, unit still responded to ping.")
-#     sys.exit(1)
+    log.pvpkg_log_error("SHIPTEST", "[FAILURE]: after reboot command, unit still responded to ping.")
+    sys.exit(1)
 
-# log.pvpkg_log_info("SHIPTEST", "Waiting for reboot to complete")
+log.pvpkg_log_info("SHIPTEST", "Waiting for reboot to complete")
 #wait for the unit to come back up
 
-# server_up = False
-# elapsed = 0
-# while (server_up == False and elapsed < 180):
-#     if(os.system('uhd_find_devices 2>/dev/null')== 0):
-#         server_up = True
-#     else:
-#         time.sleep(1)
-#         elapsed += 1
-# if(server_up):
-#     log.pvpkg_log_info("SHIPTEST", "reboot complete")
-# else:
-#     log.pvpkg_log_error("SHIPTEST", "[FAILURE]: after reboot, SDR did not come back online before timeout.")
-#     sys.exit(1)
+server_up = False
+elapsed = 0
+while (server_up == False and elapsed < 180):
+    if(os.system('uhd_find_devices 2>/dev/null')== 0):
+        server_up = True
+    else:
+        time.sleep(1)
+        elapsed += 1
+if(server_up):
+    log.pvpkg_log_info("SHIPTEST", "reboot complete")
+else:
+    log.pvpkg_log_error("SHIPTEST", "[FAILURE]: after reboot, SDR did not come back online before timeout.")
+    sys.exit(1)
+
 
 #Using the terminal to pull unit info
 # os.system('rm ' + current_dir + '/shiptest_out.txt')
