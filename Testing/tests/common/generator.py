@@ -77,26 +77,6 @@ def ship_test_chestnut(channels):
     for tx_gain, rx_gain, center_freq in zip(tx_gains, rx_gains, center_freqs):
         yield locals()
 
-import os
-
-_uhd_output = None
-_crimson_output = None
-
-def get_uhd_output(addr=None):
-    global _uhd_output
-    if _uhd_output is None:
-        args_flag = f'--args="addr={addr}"' if addr else ""
-        stream = os.popen(f'uhd_find_devices {args_flag}')
-        _uhd_output = stream.read()
-    return _uhd_output
-
-def get_crimson_output(addr=None):
-    global _crimson_output
-    if _crimson_output is None:
-        args_flag = f'--args="addr={addr}"' if addr else ""
-        stream = os.popen(f'uhd_usrp_info {args_flag} -v')
-        _crimson_output = stream.read()
-    return _crimson_output
 
 def tx_trigger():
     log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
