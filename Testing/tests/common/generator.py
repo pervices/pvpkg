@@ -1,6 +1,6 @@
 import sys
-import subprocess
 from . import log
+import re
 
 def ship_test_crimson(channels):
 
@@ -98,35 +98,29 @@ def get_crimson_output(addr=None):
         _crimson_output = stream.read()
     return _crimson_output
 
-
-def tx_trigger():
-    log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
-    center_freq = 0
-    sample_rate = 10156250
-    tx_gain = 20
-    sample_count = 480
-    period = 20
-    setpoint = 1000
-    start_time = 5.25
-    num_trigger = 20
-    yield locals()
-
 def dump(iteration):
     log.pvpkg_log_info("GENERATOR", "Using configuration:")
     for key, value in iteration.items():
         if key != "self":
             log.pvpkg_log("%20s : %r" % (key, value))
 
+# Since Crimson supports multiple system sample rates, detect and store the system rate to be used for calculating appropriate values for tests.
 class crimson_properties:
     def __init__(self):
         # Need to support Crimson tests for 300msps and 325msps
         valid_system_rates = [300e6, 325e6]
         # The unit sample rate. Used to calculate appropriate values for both 300msps and 325msps tests.
-        # TODO: Move this out of class and use for all products? Then it would be clearer where the values come from
-        # TODO: Use _crimson_output instead?
-        system_rate = int(float(subprocess.check_output("uhd_usrp_info -f | grep 'System sample rate:' | cut --complement -d ':' -f1", shell=True)))
+        system_rate = None
+
+        rate_match = re.search(r"System sample rate: ([0-9]+)", get_crimson_output())
+        if rate_match:
+            system_rate = int(rate_match.group(1))
+
         # Default to 325msps if any unexpected value was returned
         if system_rate not in valid_system_rates:
+            log.pvpkg_log_warning("GENERATOR",
+                "Detected system sample rate of '{}' which does not match any of the supported rates: {}\nTests will run for 325MSps instead."
+                    .format(system_rate, valid_system_rates))
             system_rate = 325e6
         
         self.system_rate = system_rate
@@ -230,8 +224,12 @@ class crimson:
 
         def tx_trigger(self):
             log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
-            # sample_rate = 
-            # sample_count =
+            # Data was generated for SR=10156250, so use closest SR possible that's >= 10156250
+            if self.system_rate == 300e6:
+                sample_rate = 10344828
+            else:
+                sample_rate = 10156250
+            sample_count = 480
             tx_gain = 20
             center_freq = 0
             period = 20
@@ -303,7 +301,7 @@ class crimson:
             log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
             channels = list(range(4))
             sample_rate = 25e6
-            sample_count = int(round(sample_rate/10e3))
+            sample_count = int(round(sample_rate / 10e3))
             tx_gain = 25
             rx_gain = 25
             center_freq = 1e9
@@ -314,7 +312,7 @@ class crimson:
             log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
             channels = list(range(4))
             sample_rate = int(self.system_rate / 33)
-            sample_count = int((round(sample_rate/1000)))
+            sample_count = int((round(sample_rate / 1000)))
             tx_gain = 25
             rx_gain = 25
             center_freq = 1e9
@@ -378,7 +376,6 @@ class crimson:
             rx_lo = 2.25e9
             for center_freq in [ (rx_lo - 2e6), rx_lo, (rx_lo + 2e6) ]: # 3 cases for dsp (pos, zero, neg).
                 yield locals()
-
 
 class calamine:
     class lo_band: # 0-6GHz is lowband
