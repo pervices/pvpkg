@@ -150,8 +150,8 @@ def build_report():
 
 ## SCRIPT LOGIC ##
 if(targs.product == "Vaunt"):
-    main(gen.lo_band_basic(), "Low Band")
-    main(gen.hi_band_basic(), "High Band")
+    main(gen.crimson.lo_band().basic(), "Low Band")
+    main(gen.crimson.hi_band().basic(), "High Band")
 elif(targs.product == "Avery"):
     main(gen.calamine.lo_band.basic(), "Low Band")
     main(gen.calamine.mid_band.basic(), "Mid Band")

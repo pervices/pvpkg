@@ -191,7 +191,7 @@ def main(iterations):
 
 ## SCRIPT LOGIC ##
 if(targs.product == "Vaunt"):
-    main(gen.tx_trigger())
+    main(gen.crimson.lo_band().tx_trigger())
 elif(targs.product == "Avery"):
     main(gen.calamine.lo_band.tx_trigger())
 elif(targs.product == "Lily"):

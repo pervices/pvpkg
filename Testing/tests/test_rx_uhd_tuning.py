@@ -154,7 +154,7 @@ def build_report():
 
 ## SCRIPT LOGIC ##
 if(targs.product == "Vaunt"):
-    main(gen.rx_uhd_tune(), "")
+    main(gen.crimson.hi_band().rx_uhd_tune(), "")
 elif(targs.product == "Avery"):
     main(gen.calamine.mid_band.rx_uhd_tune(), "")
 elif(targs.product == "Tate" or targs.product == "BasebandTate"):

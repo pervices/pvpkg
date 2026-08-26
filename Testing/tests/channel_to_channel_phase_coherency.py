@@ -52,5 +52,5 @@ def main(iterations):
     for it in iterations:
         test(it)
 
-main(gen.lo_band_wave_sweep())
+main(gen.crimson.lo_band().wave_sweep())
 #main(gen.hi_band_wave_sweep())
