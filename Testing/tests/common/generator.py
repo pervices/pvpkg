@@ -77,6 +77,27 @@ def ship_test_chestnut(channels):
     for tx_gain, rx_gain, center_freq in zip(tx_gains, rx_gains, center_freqs):
         yield locals()
 
+import os
+
+_uhd_output = None
+_crimson_output = None
+
+def get_uhd_output(addr=None):
+    global _uhd_output
+    if _uhd_output is None:
+        args_flag = f'--args="addr={addr}"' if addr else ""
+        stream = os.popen(f'uhd_find_devices {args_flag}')
+        _uhd_output = stream.read()
+    return _uhd_output
+
+def get_crimson_output(addr=None):
+    global _crimson_output
+    if _crimson_output is None:
+        args_flag = f'--args="addr={addr}"' if addr else ""
+        stream = os.popen(f'uhd_usrp_info {args_flag} -v')
+        _crimson_output = stream.read()
+    return _crimson_output
+
 
 def tx_trigger():
     log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
@@ -102,6 +123,7 @@ class crimson_properties:
         valid_system_rates = [300e6, 325e6]
         # The unit sample rate. Used to calculate appropriate values for both 300msps and 325msps tests.
         # TODO: Move this out of class and use for all products? Then it would be clearer where the values come from
+        # TODO: Use _crimson_output instead?
         system_rate = int(float(subprocess.check_output("uhd_usrp_info -f | grep 'System sample rate:' | cut --complement -d ':' -f1", shell=True)))
         # Default to 325msps if any unexpected value was returned
         if system_rate not in valid_system_rates:
