@@ -18,9 +18,9 @@ report = pdf_report.ClassicShipTestReport(
 
 test_fail = 0
 
-def test(iterations) -> int:
+def test(it) -> int:
     global test_fail
-    gen.dump(iterations)
+    gen.dump(it)
 
     # If the channels argument was set, it will override the channels specified in the generator.
     # If neither the channels arg or the generator specified the channels, fallback to four channels
@@ -32,11 +32,11 @@ def test(iterations) -> int:
         channels = [0,1,2,3]
 
     command = "/usr/lib/uhd/examples/benchmark_rate --tx_rate={} --rx_rate={} --tx_channels={} --rx_channels={} --duration={}".format(
-        iterations["sample_rate"], 
-        iterations["sample_rate"],
+        it["sample_rate"], 
+        it["sample_rate"],
         str(channels)[1:-1].replace(" ", ""),
         str(channels)[1:-1].replace(" ", ""),
-        iterations["duration"],
+        it["duration"],
     )
 
     report.buffer_put("text_large", "Test Summary")
@@ -72,10 +72,10 @@ def test(iterations) -> int:
         "Duration",
         ],
     [
-        str(iterations["sample_rate"] / 1000000) + " Msps",
+        str(it["sample_rate"] / 1000000) + " Msps",
         actual_receive_rate,
         actual_transmit_rate,
-        str(iterations["duration"]) + " second(s)",
+        str(it["duration"]) + " second(s)",
         ]
     ]
 

@@ -105,7 +105,7 @@ def main():
         # Need to support Crimson tests for 300msps and 325msps
         valid_system_rates = [300e6, 325e6]
         # The unit sample rate. Used to calculate appropriate values for both 300msps and 325msps tests.
-        system_rate = subprocess.check_output("uhd_usrp_info -f | grep 'System sample rate:' | cut --complement -d ': ' -f1")
+        system_rate = subprocess.check_output("uhd_usrp_info -f | grep 'System sample rate:' | cut --complement -d ': ' -f1", shell=True)
         # Default to 325msps if any unexpected value was returned
         if system_rate not in valid_system_rates:
             system_rate = 325e6
