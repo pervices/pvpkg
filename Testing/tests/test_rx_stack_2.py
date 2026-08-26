@@ -9,7 +9,7 @@ import time
 import math
 import numpy as np
 import sys
-import os
+import subprocess
 
 # This test does not use the engine as it only tests the RX
 
@@ -59,7 +59,15 @@ def main():
         else:
             channels = np.array([0,1,2,3])
 
-        sample_rate = 20312500
+        # Need to support Crimson tests for 300msps and 325msps
+        valid_system_rates = [300e6, 325e6]
+        # The unit sample rate. Used to calculate appropriate values for both 300msps and 325msps tests.
+        system_rate = int(float(subprocess.check_output("uhd_usrp_info -f | grep 'System sample rate:' | cut --complement -d ':' -f1", shell=True)))
+        # Default to 325msps if any unexpected value was returned
+        if system_rate not in valid_system_rates:
+            system_rate = 325e6
+
+        sample_rate = int(system_rate / 16)
         sample_count = 4096
 
         # Crimson TNG acts as a source by providing complex float samples.
