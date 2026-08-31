@@ -42,7 +42,7 @@ def ship_test_cyan(channels):
     sample_count = int(sample_rate/ 10)
     # The highest frequency uses a higher gain because the signal begins to roll off as the frequency gets higher
     rx_gains = [15, 15, 5, 20, 30, 30, 40, 50, 40]
-    tx_gains = [20, 5, 10, 10, 5, 20, 20, 30, 30]
+    tx_gains = [15, 5, 10, 10, 5, 20, 20, 30, 30]
     center_freqs = [5000000, 15000000, 200000000, 600000000, 1200000000, 2700000000, 4000000000, 9000000000, 17000000000]
     for tx_gain, rx_gain, center_freq in zip(tx_gains, rx_gains, center_freqs):
         yield locals()
