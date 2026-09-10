@@ -5,8 +5,7 @@ After=network-online.target network.target system-netctl.service
 
 [Service]
 Type=oneshot
-EnvironmentFile=/etc/conf.d/setmtu
-ExecStart=/usr/bin/ip link set dev %i mtu ${%i}
+ExecStart=/bin/confpvsdrnetadapter.sh %i
 
 [Install]
 WantedBy=multi-user.target
