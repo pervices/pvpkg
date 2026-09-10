@@ -5,8 +5,13 @@ ARG OBS_LINK_RELEASE=https://download.opensuse.org/repositories/home:/pervices:/
 ARG OBS_LINK_DEVELOP=https://download.opensuse.org/repositories/home:/pervices:/develop/Arch/x86_64
 ARG OS_VER=default
 
+# Create an alternative pacman config more resistant to network issues but slower than default
+RUN cp /etc/pacman.conf /etc/pacman_alternate.conf
+RUN echo 'XferCommand = /usr/bin/curl --silent -w "%{method} %{url_effective} (Code %{response_code}). %{errormsg}\n" --speed-time 30 --retry 3 --retry-delay 60 -L -C - -f -o %o %u' | tee -a /etc/pacman_alternate.conf
+
 # Installing required binaries
-RUN pacman -Sy --noconfirm git xorg-xauth fakeroot binutils sudo cmake make gcc vim wget patch debugedit xorg-xclock lftp curl jq
+RUN pacman -Syu --noconfirm git xorg-xauth fakeroot binutils sudo cmake make gcc vim wget patch debugedit xorg-xclock lftp curl jq python-ruamel-yaml diffutils || \
+    pacman -Syyu --noconfirm --config /etc/pacman_alternate.conf git xorg-xauth fakeroot binutils sudo cmake make gcc vim wget patch debugedit xorg-xclock lftp curl jq python-ruamel-yaml diffutils
 
 # Creating users and groups
 RUN groupadd "$DOCKER_USER" && \
@@ -16,20 +21,57 @@ RUN groupadd "$DOCKER_USER" && \
     echo "$DOCKER_USER ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
 # Granting access to openSUSE OBS
-RUN pacman-key --init && wget -qO - https://download.opensuse.org/repositories/openSUSE:/Tools/Arch/x86_64/openSUSE_Tools_Arch.key | sudo pacman-key --add - && \
-    pacman-key --lsign-key openSUSE:Tools@build.opensuse.org && echo "" >> /etc/pacman.conf && echo "[openSUSE_Tools_Arch]" >> /etc/pacman.conf && \
-    echo 'Server = https://download.opensuse.org/repositories/openSUSE:/Tools/Arch/$arch' >> /etc/pacman.conf && pacman -Sy --noconfirm osc build
-    
+RUN <<EOF
+set -xe
+pacman-key --init 
+wget -qO - https://download.opensuse.org/repositories/openSUSE:/Tools/Arch/x86_64/openSUSE_Tools_Arch.key | sudo pacman-key --add -
+pacman-key --lsign-key openSUSE:Tools@build.opensuse.org
+# Add repo to pacman config file
+echo "" >> /etc/pacman.conf && echo "[openSUSE_Tools_Arch]" >> /etc/pacman.conf
+echo 'Server = https://download.opensuse.org/repositories/openSUSE:/Tools/Arch/$arch' >> /etc/pacman.conf
+# Add repo to alternate config file
+echo "" >> /etc/pacman_alternate.conf && echo "[openSUSE_Tools_Arch]" >> /etc/pacman_alternate.conf
+echo 'Server = https://download.opensuse.org/repositories/openSUSE:/Tools/Arch/$arch' >> /etc/pacman_alternate.conf
+# Install openSUSE build. Use alternate pacman config if it fails
+pacman -Sy --noconfirm build || sudo pacman -U --noconfirm https://download.opensuse.org/repositories/openSUSE:/Tools/Arch/$(uname -m)/build-$(sudo pacman -Ss build| grep openSUSE_Tools_Arch/build | cut -d " " -f2)-$(uname -m).pkg.tar.zst || \
+pacman -Sy --config /etc/pacman_alternate.conf --noconfirm build || sudo pacman -U --config /etc/pacman_alternate.conf --noconfirm https://download.opensuse.org/repositories/openSUSE:/Tools/Arch/$(uname -m)/build-$(sudo pacman -Ss build| grep openSUSE_Tools_Arch/build | cut -d " " -f2)-$(uname -m).pkg.tar.zst
+# Install openSUSE osc. Use alternate pacman config if it fails
+pacman -Sy --noconfirm osc || sudo pacman -U --noconfirm https://download.opensuse.org/repositories/openSUSE:/Tools/Arch/$(uname -m)/osc-$(sudo pacman -Ss osc| grep openSUSE_Tools_Arch/osc | cut -d " " -f2)-$(uname -m).pkg.tar.zst || \
+pacman -Sy --config /etc/pacman_alternate.conf --noconfirm osc || sudo pacman -U --config /etc/pacman_alternate.conf --noconfirm https://download.opensuse.org/repositories/openSUSE:/Tools/Arch/$(uname -m)/osc-$(sudo pacman -Ss osc| grep openSUSE_Tools_Arch/osc | cut -d " " -f2)-$(uname -m).pkg.tar.zst
+EOF
+
 # Granting access to Per Vices OBS develop
-RUN pacman-key --init && wget -qO - https://download.opensuse.org/repositories/home:/pervices:/develop/Arch/x86_64/home_pervices_develop_Arch.key | sudo pacman-key --add - && \
-    pacman-key --lsign-key home:pervices@build.opensuse.org && echo "" >> /etc/pacman.conf && echo "[home_pervices_develop_Arch]" >> /etc/pacman.conf && \
-    echo "Server = https://download.opensuse.org/repositories/home:/pervices:/develop/Arch/\$arch" >> /etc/pacman.conf && pacman -Sy
-    
+RUN <<EOF
+set -xe
+pacman-key --init 
+wget -qO - https://download.opensuse.org/repositories/home:/pervices:/develop/Arch/x86_64/home_pervices_develop_Arch.key | sudo pacman-key --add -
+pacman-key --lsign-key home:pervices@build.opensuse.org
+# Add repo to pacman config
+echo "" >> /etc/pacman.conf && echo "[home_pervices_develop_Arch]" >> /etc/pacman.conf
+echo "Server = https://download.opensuse.org/repositories/home:/pervices:/develop/Arch/\$arch" >> /etc/pacman.conf
+# Add repo to the alternate config 
+echo "" >> /etc/pacman_alternate.conf && echo "[home_pervices_develop_Arch]" >> /etc/pacman_alternate.conf 
+echo "Server = https://download.opensuse.org/repositories/home:/pervices:/develop/Arch/\$arch" >> /etc/pacman_alternate.conf
+# Sync using alternate config if default fails
+pacman -Sy || pacman -Sy --config /etc/pacman_alternate.conf
+EOF
+
 # Granting access to Per Vices OBS release
-RUN pacman-key --init && wget -qO - https://download.opensuse.org/repositories/home:/pervices:/release/Arch/x86_64/home_pervices_release_Arch.key | sudo pacman-key --add - && \
-    pacman-key --lsign-key home:pervices@build.opensuse.org && echo "" >> /etc/pacman.conf && echo "[home_pervices_release_Arch]" >> /etc/pacman.conf && \
-    echo "Server = https://download.opensuse.org/repositories/home:/pervices:/release/Arch/\$arch" >> /etc/pacman.conf && pacman -Sy
-    
+RUN <<EOF
+set -xe
+pacman-key --init 
+wget -qO - https://download.opensuse.org/repositories/home:/pervices:/release/Arch/x86_64/home_pervices_release_Arch.key | sudo pacman-key --add -
+pacman-key --lsign-key home:pervices@build.opensuse.org 
+# Add repo to pacman config
+echo "" >> /etc/pacman.conf && echo "[home_pervices_release_Arch]" >> /etc/pacman.conf 
+echo "Server = https://download.opensuse.org/repositories/home:/pervices:/release/Arch/\$arch" >> /etc/pacman.conf
+# Add repo to alternate config
+echo "" >> /etc/pacman_alternate.conf && echo "[home_pervices_release_Arch]" >> /etc/pacman_alternate.conf 
+echo "Server = https://download.opensuse.org/repositories/home:/pervices:/release/Arch/\$arch" >> /etc/pacman_alternate.conf
+# Sync using alternate config if default fails
+pacman -Sy || pacman -Sy --config /etc/pacman_alternate.conf
+EOF
+
 # Changing user
 USER $DOCKER_USER
 
@@ -41,32 +83,78 @@ USER $DOCKER_USER
 WORKDIR /home/$DOCKER_USER
 RUN git clone https://github.com/ncopa/su-exec.git su-exec && cd su-exec && make && sudo install -m 0755 su-exec /usr/bin/
 
-ARG GRC=false
-# Installing GNU Radio and test dependencies based on the GRC flag
-RUN if [ "$GRC" = "true" ]; then \
-        sudo pacman -Sy --noconfirm gnuradiopv || \
-        sudo pacman -U --noconfirm $OBS_LINK_RELEASE/gnuradiopv-$(sudo pacman -Ss gnuradiopv | head -1 | cut -d " " -f2)-$(uname -m).pkg.tar.zst && \
-        sudo pacman -Sy --noconfirm inetutils net-tools python-reportlab python-retrying ; \
-    fi
+# Install obs-scm-bridge to work locally with OBS packages that sync with git like gnuradiopv
+RUN sudo pacman -Sy --noconfirm obs-scm-bridge
 
 ARG PKG=base
 # Building or downloading UHD based on the PKG flag
-RUN if [ "$PKG" = "internal" ]; then \
-        wget https://raw.githubusercontent.com/pervices/uhd/master/host/cmake/pkg-pv/PKGBUILD && \
-        wget https://raw.githubusercontent.com/pervices/uhd/master/host/cmake/pkg-pv/libuhdpv.install && \
-        sed -i s#master#$UHD_BRANCH#g PKGBUILD && \
-        makepkg --noconfirm --syncdeps --rmdeps --clean --needed && sudo pacman -U --noconfirm *.zst ; \
-    elif [ "$PKG" = "release" ]; then \
-        sudo pacman -Sy --noconfirm libuhdpv || \
-        sudo pacman -U --noconfirm $OBS_LINK_RELEASE/libuhdpv-$(sudo pacman -Ss libuhdpv | head -1 | cut -d " " -f2)-$(uname -m).pkg.tar.zst ; \
-    elif [ "$PKG" = "nightly" ]; then \
-        sudo pacman -Sy --noconfirm libuhdpv-nightly || \
-        sudo pacman -U --noconfirm $OBS_LINK_DEVELOP/libuhdpv-nightly-$(sudo pacman -Ss libuhdpv-nightly | head -1 | cut -d " " -f2)-$(uname -m).pkg.tar.zst ; \
-    elif [ "$PKG" = "base" ]; then \
-        echo "Building base image.." ; \
-    else \
-        exit 1 ; \
-    fi
+RUN <<EOF
+set -xe
+if [ "$PKG" = "internal" ]; then
+    wget https://raw.githubusercontent.com/pervices/uhd/master/host/cmake/pkg-pv/PKGBUILD
+    wget https://raw.githubusercontent.com/pervices/uhd/master/host/cmake/pkg-pv/libuhdpv.install
+    sed -i s#master#$UHD_BRANCH#g PKGBUILD
+    makepkg --noconfirm --syncdeps --rmdeps --clean --needed
+    # If pacman fails, try again with alternative config
+    sudo pacman -U --noconfirm *.zst || sudo pacman -U --config /etc/pacman_alternate.conf --noconfirm *.zst
+elif [ "$PKG" = "release" ]; then
+    sudo pacman -Sy --noconfirm libuhdpv || \
+    sudo pacman -U --noconfirm $OBS_LINK_RELEASE/libuhdpv-$(sudo pacman -Ss libuhdpv | head -1 | cut -d " " -f2)-$(uname -m).pkg.tar.zst || \
+    sudo pacman -Sy --config /etc/pacman_alternate.conf --noconfirm libuhdpv || \
+    sudo pacman -U --config /etc/pacman_alternate.conf --noconfirm $OBS_LINK_RELEASE/libuhdpv-$(sudo pacman -Ss libuhdpv | head -1 | cut -d " " -f2)-$(uname -m).pkg.tar.zst
+elif [ "$PKG" = "nightly" ]; then
+    sudo pacman -Sy --noconfirm libuhdpv-nightly || \
+    sudo pacman -U --noconfirm $OBS_LINK_DEVELOP/libuhdpv-nightly-$(sudo pacman -Ss libuhdpv-nightly | head -1 | cut -d " " -f2)-$(uname -m).pkg.tar.zst || \
+    sudo pacman -Sy --config /etc/pacman_alternate.conf --noconfirm libuhdpv-nightly || \
+    sudo pacman -U --config /etc/pacman_alternate.conf --noconfirm $OBS_LINK_DEVELOP/libuhdpv-nightly-$(sudo pacman -Ss libuhdpv-nightly | head -1 | cut -d " " -f2)-$(uname -m).pkg.tar.zst
+elif [ "$PKG" = "base" ]; then 
+    echo "Building base image.."
+else
+    exit 1
+fi
+EOF
+
+ARG GRC=false
+# Installing GNU Radio, and other dependencies for CI tests based on the GRC flag
+RUN <<EOF
+set -xe
+if [ "$GRC" = "true" ]; then
+    # Install gnuradio using alternative pacman config if default fails
+    sudo pacman -Sy --noconfirm gnuradiopv || \
+    sudo pacman -U --noconfirm $OBS_LINK_RELEASE/gnuradiopv-$(sudo pacman -Ss gnuradiopv | head -1 | cut -d " " -f2)-$(uname -m).pkg.tar.zst || \
+    sudo pacman -Sy --config /etc/pacman_alternate.conf --noconfirm gnuradiopv || \
+    sudo pacman -U --config /etc/pacman_alternate.conf --noconfirm $OBS_LINK_RELEASE/gnuradiopv-$(sudo pacman -Ss gnuradiopv | head -1 | cut -d " " -f2)-$(uname -m).pkg.tar.zst
+    # Install other test dependencies using alternative pacman config if default fails
+    sudo pacman -Sy --noconfirm inetutils net-tools || \
+    sudo pacman -Sy --config /etc/pacman_alternate.conf --noconfirm inetutils net-tools
+
+    # Python gnuradio packages should already be installed for the system but download and extract to the home directory so we can easily add to the venv.
+    # Doing it this way instead of just straight from system site-packages since gnuradio also installs the pmt package.
+    # This way, if any other packages are included in the future, we do not have to update this to copy them since it just copies all python packages that would be installed.
+    wget -O python-gnuradio.pkg.tar.zst $OBS_LINK_RELEASE/gnuradiopv-$(sudo pacman -Ss gnuradiopv | head -1 | cut -d " " -f2)-$(uname -m).pkg.tar.zst
+    # Including the python<version> parent dir to make sure a venv with an incompatible Python version will not use it
+    tar --wildcards --one-top-level=python-gnuradio --strip-components=2 -xf python-gnuradio.pkg.tar.zst usr/lib/python*
+fi
+EOF
+
+# Create Python venv based off of master
+# ci-test should use a venv based off on requirements.txt in the pvpkg version specified by the user.
+# However, that requires that it be redownloaded every test slowing things down a lot
+# To speed up tests using master pvpkg's requirements.txt we will create a venv here
+ARG PVPKG_BRANCH=master
+WORKDIR /home/$DOCKER_USER
+RUN <<EOF
+set -euxo pipefail
+python3 -m venv master_venv
+wget -O master_requirements.txt https://raw.githubusercontent.com/pervices/pvpkg/refs/heads/$PVPKG_BRANCH/Testing/tests/requirements/requirements_archlinux.txt
+source master_venv/bin/activate
+pip3 install -r master_requirements.txt
+
+# Copy gnuradio python packages to the venv
+if [ "$GRC" = "true" ]; then
+    cp -r python-gnuradio/python* master_venv/lib/
+fi
+EOF
 
 # Finishing up
 WORKDIR /home/$DOCKER_USER

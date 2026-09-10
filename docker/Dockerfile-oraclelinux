@@ -4,10 +4,17 @@ FROM oraclelinux:$OS_VER
 ARG DOCKER_USER=docker
 ARG UHD_BRANCH=master
 ARG GRC_BRANCH=maint-3.10
+ARG PVPKG_BRANCH=master
+
+# Change timeout and minimum acceptable rate when downloading packages to be more forgiving of temporary network issues
+RUN echo 'timeout=120' | tee -a /etc/dnf/dnf.conf
+RUN echo 'minrate=1' | tee -a /etc/dnf/dnf.conf
 
 RUN yum update --refresh && yum install -y dnf-plugins-core oracle-epel-release-el8
 RUN dnf config-manager --set-enabled ol8_codeready_builder
-RUN yum install -y sudo make cmake git rpm-build rpmdevtools vim wget xorg-x11-xauth xorg-x11-apps gcc-toolset-13 lftp curl jq
+RUN yum install -y sudo make cmake git rpm-build rpmdevtools vim wget xorg-x11-xauth xorg-x11-apps gcc-toolset-13 lftp curl jq python3 python3.11-pip
+# Use Python 3.11 instead of default 3.9
+RUN sudo alternatives --set python3 /usr/bin/python3.11
 
 RUN git clone https://github.com/ncopa/su-exec.git  /usr/src/su-exec
 WORKDIR /usr/src/su-exec
@@ -27,20 +34,29 @@ USER $DOCKER_USER
 WORKDIR /home/$DOCKER_USER
 
 ARG GRC=false
-# Installing GNU Radio and test dependencies based on the GRC flag
-RUN if [ "$GRC" = "true" ]; then \
-        sudo yum install -y gnuradiopv && \
-        sudo yum install -y python3.11-pip && \
-        sudo alternatives --set python3 /usr/bin/python3.11 && \
-        sudo pip-3.11 install reportlab retrying matplotlib ; \
-    fi
+# Installing GNU Radio, and other dependencies for CI tests based on the GRC flag
+RUN <<EOF
+set -xe
+if [ "$GRC" = "true" ]; then
+    sudo yum install -y gnuradiopv;
+
+    # Python gnuradio packages should already be installed for the system but download and extract to the home directory so we can easily add to the venv.
+    # Doing it this way instead of just straight from system site-packages since gnuradio also installs the pmt package.
+    # This way, if any other packages are included in the future, we do not have to update this to copy them since it just copies all python packages that would be installed.
+    sudo yum download python*-gnuradiopv
+    mkdir python-gnuradio
+    rpm2cpio python*-gnuradiopv-*.rpm | cpio -D python-gnuradio -dium ./usr/lib64/python*
+    # Do not care about /usr parent dir so make lib64 top level instead but rename to lib since the venv lib64 is just a symlink to lib
+    mv python-gnuradio/usr/lib64/python* python-gnuradio
+    rm -rf python-gnuradio/usr
+fi
+EOF
 
 ARG PKG=base
 # Building or downloading UHD based on the PKG flag
 RUN if [ "$PKG" = "internal" ]; then \
-        wget https://raw.githubusercontent.com/pervices/uhd/master/host/cmake/rpm-pv/libuhdpv.spec && \
-        sudo dnf builddep -y libuhdpv.spec && \
         git clone -b $UHD_BRANCH https://github.com/pervices/uhd.git && \
+        sudo dnf builddep -y uhd/host/cmake/rpm-pv/libuhdpv.spec && \
         mkdir -p uhd/host/build && cd uhd/host/build && \
         source /opt/rh/gcc-toolset-13/enable && \
         cmake -DCMAKE_INSTALL_PREFIX="/usr" \
@@ -64,8 +80,8 @@ RUN if [ "$PKG" = "internal" ]; then \
               -DENABLE_USB="OFF" \
               -DENABLE_TESTS="OFF" \
               -DENABLE_EXAMPLES="ON" \
-              -DENABLE_UTILS="ON" \  
-              -DENABLE_DPDK="OFF" \     
+              -DENABLE_UTILS="ON" \
+              -DENABLE_DPDK="OFF" \
               -DPYTHON_EXECUTABLE=/usr/bin/python3.11 \
               .. && \
         make -j$(nproc) && sudo make install ; \
@@ -83,6 +99,25 @@ RUN if [ "$PKG" = "internal" ]; then \
     else \
         exit 1 ; \
     fi
+
+# Create Python venv based off of master
+# ci-test should use a venv based off on requirements.txt in the pvpkg version specified by the user.
+# However, that requires that it be redownloaded every test slowing things down a lot
+# To speed up tests using master pvpkg's requirements.txt we will create a venv here
+ARG PVPKG_BRANCH=master
+WORKDIR /home/$DOCKER_USER
+RUN <<EOF
+set -euxo pipefail
+python3 -m venv master_venv
+wget -O master_requirements.txt https://raw.githubusercontent.com/pervices/pvpkg/refs/heads/$PVPKG_BRANCH/Testing/tests/requirements/requirements_oraclelinux8.txt
+source master_venv/bin/activate
+pip3 install -r master_requirements.txt
+
+# Copy gnuradio python packages to the venv
+if [ "$GRC" = "true" ]; then
+    cp -r python-gnuradio/python* master_venv/lib/
+fi
+EOF
 
 # Finishing up
 WORKDIR /home/$DOCKER_USER

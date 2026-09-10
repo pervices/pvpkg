@@ -5,17 +5,54 @@ FROM ubuntu:$OS_VER
 ARG DEBIAN_FRONTEND=noninteractive
 ARG DOCKER_USER=docker
 ARG UHD_BRANCH=master
+ARG PVPKG_BRANCH=master
 ARG PPA_USER=pervices
+ARG ACNG_SERVER=localhost
+
+COPY <<EOF /etc/apt/apt.conf.d/01-robust
+Acquire {
+    Retries "10" {
+        Delay "true" {
+            Maximum "60";
+        };
+    };
+    http {
+        Timeout "120";
+    };
+    https {
+        Timeout "120";
+    };
+};
+EOF
+
+# Use curl to detect working apt-cacher-ng server
+RUN apt-get update && apt-get install -yq curl
+COPY <<EOF /usr/local/bin/apt-proxy-autodetect.sh
+#!/bin/sh
+rc=0
+response=$(curl -sI $ACNG_SERVER:3142 -o /dev/null -w '%{http_code}') || rc=\$?
+if [ \$rc -ne 0 ] || ([ \$response -ge 400 ] && [ \$response -ne 406 ]); then
+    echo -n DIRECT
+else
+    echo -n "http://$ACNG_SERVER:3142"
+fi
+EOF
+RUN chmod +x /usr/local/bin/apt-proxy-autodetect.sh
+
+# Configure apt to autodetect acng server and increase pipeline depth to reduce number of connection requests
+RUN echo 'Acquire::http::Proxy-Auto-Detect "/usr/local/bin/apt-proxy-autodetect.sh";' | tee -a /etc/apt/apt.conf.d/proxy
+RUN echo 'Acquire::http::Pipeline-Depth "10";' | tee -a /etc/apt/apt.conf.d/proxy
 
 # Getting essential build tools
 RUN apt-get update && \
-    apt-get install -yq sudo git vim software-properties-common locales tzdata xauth gosu make cmake lftp curl jq \
-    build-essential ccache clang curl abi-dumper ninja-build debootstrap devscripts pbuilder debhelper x11-apps
+    apt-get install -yq sudo git vim software-properties-common locales tzdata xauth gosu make cmake lftp jq \
+    build-essential ccache clang abi-dumper ninja-build debootstrap devscripts pbuilder debhelper x11-apps \
+    python3-venv
 
 # Setting up locales
 RUN echo "en_US.UTF-8 UTF-8" > /etc/locale.gen && locale-gen && ln -sf /usr/share/zoneinfo/UTC /etc/localtime
 
-ENV LANG en_US.utf8
+ENV LANG=en_US.utf8
         
 # Adding Per Vices PPA and setting up source package, this way we can fetch build dependencies easily
 # RUN add-apt-repository --yes ppa:$PPA_USER/release && add-apt-repository --yes ppa:$PPA_USER/develop && \
@@ -29,12 +66,21 @@ RUN if [ "$OS_VER" != "24.04" ]; then \
 
 # Adding pbuilder configuration file
 RUN echo "APTCONFDIR=/etc/apt" | tee -a /root/.pbuilderrc
+RUN echo "BINDMOUNTS=\"/usr/local/bin/apt-proxy-autodetect.sh\"" | tee -a /root/.pbuilderrc
+
+# The Ubuntu 24 base image introduced a "ubuntu" user with the uid/gid=1000
+# Since we usually run containers expecting $(id -g) to be that of the "docker" user,
+# Ubuntu 24 ends up running as the wrong user and we cannot access the /home/docker/ directory.
+# Solve this by removing the ubuntu user before creating the docker user since we don't need it
+RUN if [ "$OS_VER" == "24.04" ]; then \
+        userdel -r ubuntu; \
+    fi
 
 # Adding docker user
 RUN addgroup "$DOCKER_USER" && useradd -ms /bin/bash -g $DOCKER_USER -G sudo $DOCKER_USER && \
     echo "${DOCKER_USER}:${DOCKER_USER}" | chpasswd && echo "${DOCKER_USER} ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
-RUN git clone https://github.com/ncopa/su-exec.git  /usr/src/su-exec
+RUN git clone https://github.com/ncopa/su-exec.git /usr/src/su-exec
 WORKDIR /usr/src/su-exec
 RUN make && install -m 0755 su-exec /usr/bin/
 
@@ -44,22 +90,42 @@ WORKDIR /home/$DOCKER_USER
 ARG OS_VER=20.04
 ARG PKG=base
 ARG GRC=false
-# Installing GNU Radio and test dependencies based on the GRC flag
-RUN if [ "$GRC" = "true" ]; then \
-        if [ "$PKG" = "nightly" ]; then \
-            sudo add-apt-repository --yes -s ppa:$PPA_USER/nightly && \
-            sudo apt update && sudo apt install -y --no-install-recommends --no-install-suggests gnuradiopv-nightly gnuradiopv-dev-nightly ; \
-        else \
-            sudo add-apt-repository --yes -s ppa:$PPA_USER/release && \
-            sudo apt update && sudo apt install -y --no-install-recommends --no-install-suggests gnuradiopv gnuradiopv-dev ; \
-        fi && \
-        sudo apt update && sudo apt install -y iproute2 iputils-ping python3-scipy python3-retrying python3-matplotlib ; \
-        if [ "$OS_VER" != "24.04" ]; then \
-            sudo apt install -y python3-pip && sudo pip3 install reportlab ; \
-        else \
-            sudo apt install -y python3-reportlab ; \
-        fi ; \
+
+RUN if [ "$PKG" = "nightly" ]; then \
+        sudo add-apt-repository --yes -s ppa:$PPA_USER/nightly && sudo apt-get update; \
+    else \
+        sudo add-apt-repository --yes -s ppa:$PPA_USER/release && sudo apt-get update; \
     fi
+
+RUN sudo sed -i s/https:/http:/ /etc/apt/sources.list.d/pervices-ubuntu-*
+
+# Installing GNU Radio, and dependencies for CI tests based on the GRC flag
+RUN <<EOF
+set -xe
+if [ "$GRC" = "true" ]; then
+    if [ "$PKG" = "nightly" ]; then
+        sudo apt update && sudo apt install -y --no-install-recommends --no-install-suggests gnuradiopv-nightly gnuradiopv-dev-nightly
+        # Python gnuradio packages should already be installed for the system but download and extract to the home directory so we can easily add to the venv.
+        # Doing it this way instead of just straight from system site-packages since gnuradio also installs the pmt package.
+        # This way, if any other packages are included in the future, we do not have to update this to copy them since it just copies all python packages that would be installed.
+        apt download gnuradiopv-nightly
+        dpkg --fsys-tarfile gnuradiopv-nightly_*.deb | tar --wildcards --one-top-level=python-gnuradio --strip-components=3 -x ./usr/lib/python*
+    else
+        sudo apt update && sudo apt install -y --no-install-recommends --no-install-suggests gnuradiopv gnuradiopv-dev
+        # Download gnuradio package for to extract the python packages for the venv
+        apt download gnuradiopv
+        dpkg --fsys-tarfile gnuradiopv_*.deb | tar --wildcards --one-top-level=python-gnuradio --strip-components=3 -x ./usr/lib*/python*
+    fi
+    sudo apt update && sudo apt install -y iproute2 iputils-ping
+    if [ "$OS_VER" = "20.04" ]; then
+        sudo apt install -y python3.8-venv
+    elif [ "$OS_VER" = "22.04" ]; then
+        sudo apt install -y python3.10-venv
+    elif [ "$OS_VER" = "24.04" ]; then
+        sudo apt install -y python3.12-venv
+    fi
+fi
+EOF
 
 # ARG PKG=base
 # Building or downloading UHD based on the PKG flag
@@ -73,6 +139,12 @@ RUN if [ "$PKG" = "internal" ]; then \
               -DCMAKE_INSTALL_PREFIX="/usr" \
               -DPKG_LIB_DIR="/usr/lib/uhd" \
               -DENABLE_CRIMSON_TNG="ON" \
+              -DENABLE_CYAN_4R4T="ON" \
+              -DENABLE_CYAN_8R="ON" \
+              -DENABLE_CYAN_16T="ON" \
+              -DENABLE_CYAN_64T="OFF" \
+              -DENABLE_CYAN_P1HDR16T="ON" \
+              -DENABLE_CYAN_P1HDR32T="ON" \
               -DENABLE_N300="OFF" \
               -DENABLE_E320="OFF" \
               -DENABLE_USRP1="OFF" \
@@ -87,9 +159,6 @@ RUN if [ "$PKG" = "internal" ]; then \
               -DENABLE_EXAMPLES="ON" \
               -DENABLE_UTILS="ON" \
               -DENABLE_DPDK="OFF" \
-              -DENABLE_LIBURING="OFF" \
-              -DENABLE_PYMOD_UTILS="OFF" \
-              -DENABLE_PYTHON_API="ON" \
               -DPYTHON_EXECUTABLE=/usr/bin/python3 \
               .. && \
         make -j$(nproc) && sudo make install ; \
@@ -105,9 +174,43 @@ RUN if [ "$PKG" = "internal" ]; then \
         exit 1 ; \
     fi
 
+# Create Python venv based off of master
+# ci-test should use a venv based off on requirements.txt in the pvpkg version specified by the user.
+# However, that requires that it be redownloaded every test slowing things down a lot
+# To speed up tests using master pvpkg's requirements.txt we will create a venv here
+ARG PVPKG_BRANCH=master
+WORKDIR /home/$DOCKER_USER
+RUN <<EOF
+#!/bin/bash
+set -eux
+python3 -m venv master_venv
+if [ "$OS_VER" = "24.04" ]; then
+    wget -O master_requirements.txt https://raw.githubusercontent.com/pervices/pvpkg/refs/heads/$PVPKG_BRANCH/Testing/tests/requirements/requirements_ubuntu2404.txt
+elif [ "$OS_VER" = "22.04" ]; then
+    wget -O master_requirements.txt https://raw.githubusercontent.com/pervices/pvpkg/refs/heads/$PVPKG_BRANCH/Testing/tests/requirements/requirements_ubuntu2204.txt
+elif [ "$OS_VER" = "20.04" ]; then
+    wget -O master_requirements.txt https://raw.githubusercontent.com/pervices/pvpkg/refs/heads/$PVPKG_BRANCH/Testing/tests/requirements/requirements_ubuntu2004.txt
+else
+    echo "ERROR: unrecognized OS_VER: $OS_VER"
+    exit 1
+fi
+source master_venv/bin/activate
+pip3 install -r master_requirements.txt
+
+# Copy gnuradio python packages to the venv
+if [ "$GRC" = "true" ]; then
+    cp -r python-gnuradio/python* master_venv/lib/
+fi
+EOF
+
 # Finishing up
 WORKDIR /home/$DOCKER_USER
 COPY SimpleShipTest.grc SimpleShipTest.grc
+# For some reason sudo make install creates files owned by root in the build folder, this corrects ownership to be owned by the user account
+# Ideally make install wouldn't create files owned by root at uhd/host/build/utils/rfnoc-newmod but figuring out that issue requires a lot of time learning how the system works
+RUN if [ "$PKG" = "internal" ]; then \
+    sudo chown -R $DOCKER_USER uhd/ ; \
+    fi
 RUN rm -rf uhd && touch .Xauthority
 USER root
 COPY rev-dkr /usr/local/sbin/
