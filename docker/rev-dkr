@@ -1,0 +1,24 @@
+#! /bin/bash -e
+
+DOCKER_HASH=$1
+LIST=("archlinux" "oraclinux" "ubuntu")
+for OS in "${LIST[@]}"
+do
+    MOVE_ON=false
+    for i in {1..1000}
+    do
+        curl -s "https://registry.hub.docker.com/v2/repositories/pvtesting/$OS/tags/?page=$i" | jq '.results[] | select(.["images"][]["digest"] == "sha256:'$DOCKER_HASH'")' &> /dev/null || MOVE_ON=true
+        if [[ $MOVE_ON == 'true' ]]; then
+            break
+        fi
+        NAME=$(curl -s "https://registry.hub.docker.com/v2/repositories/pvtesting/$OS/tags/?page=$i" | jq '.results[] | select(.["images"][]["digest"] == "sha256:'$DOCKER_HASH'")' \
+        | grep \"name\" | sed s/\"//g | cut -d ':' -f2 | sed s/\ //g | sed s/,//g)
+        if [[ -n $NAME ]]; then
+            echo "$1"
+            echo "pvtesting/$OS"
+            echo "$NAME"
+            exit 0
+        fi
+    done
+done
+echo "Could not identify $1"
