@@ -1,0 +1,15 @@
+Use the Makefile to automatically create the venv and determine syntax:
+
+make report
+
+Will set up the venv. After it is configured and set up, you can subsequently activate it with:
+
+make activate
+
+To clean the report directory run
+
+make clean
+
+To reset everything, including the venv, run:
+
+make dist-clean
