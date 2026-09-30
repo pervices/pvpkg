@@ -1,6 +1,7 @@
 # Generate single page PDF reports
 
 import datetime
+from zoneinfo import ZoneInfo
 import os
 import subprocess
 #PDF IMPORTS
@@ -21,7 +22,7 @@ from . import log
 class ClassicShipTestReport:
     c = None            # The Canvas
     w, h = letter       # 612, 792
-    date = datetime.datetime.now() #current date and time
+    date = datetime.datetime.now(tz=ZoneInfo("UTC")) #current UTC date and time
     iso_time = date.strftime("%Y%m%d%H%M%S.%f")
     formattedDate = iso_time
 
@@ -516,21 +517,44 @@ class ClassicShipTestReport:
         # Update actual pdf filename with unit name
         self.c._filename = self.filename
 
-        self.insert_text("Hostname: " + hostname)
-        self.insert_text("Operating System: " + operating_sys)
+        test_env_info = [
+	    ["Report Date:", self.date.isoformat("-", "minutes")],
+	    ["Operating System:", operating_sys],
+	    ["Hostname:", hostname],
+	    ["Product Name:", unit_name],
+        ]
+
+        if "crimson" not in unit_name and "calamine" not in unit_name:
+            test_env_info += [ ["RTM:", unit_rtm, "FPGA DDR:", fpga_ddr] ]
+        else:
+            test_env_info += [ ["RTM:", unit_rtm ] ]
+
+        test_env_info += [
+            ["Unit Time:", unit_time],
+            ["UHD Version:", UHD_ver],
+            ["Server Version:", server_ver, "FPGA Version:", fpga_ver],
+            ["pvpkg Version:", pvpkg_commit, "pvpkg Branch:", pvpkg_branch],
+        ]
+
         if self.docker_sha != None:
             self.insert_text("Docker SHA: " + self.docker_sha)
-        self.insert_text("Computer Date: " + self.date.isoformat("-", "minutes"))
-        self.insert_text("UHD Version : " + UHD_ver)
-        self.insert_text("pvpkg Version : " + pvpkg_commit)
-        self.insert_text("pvpkg Branch : " + pvpkg_branch)
-        self.insert_text("RTM : " + unit_rtm)
-        self.insert_text("Server Version: " + server_ver)
-        self.insert_text("FPGA Version: " + fpga_ver)
-        if "crimson" not in unit_name and "calamine" not in unit_name:
-            self.insert_text(fpga_ddr)
-        self.insert_text("Unit Time: " + unit_time)
-        self.insert_text("Unit Name: " + unit_name)
+
+        table = Table(test_env_info, colWidths=[100, 180, 100, 180])
+
+        table.setStyle(TableStyle([
+	    ("FONTNAME", (0, 0), (-1, -1), "Helvetica"),
+	    ("FONTSIZE", (0, 0), (-1, -1), 10),
+	    ("VALIGN", (0, 0), (-1, -1), "TOP"),
+	    ("LEFTPADDING", (0, 0), (-1, -1), 0),
+	    ("RIGHTPADDING", (0, 0), (-1, -1), 5),
+	    ("TOPPADDING", (0, 0), (-1, -1), 2),
+	    ("BOTTOMPADDING", (0, 0), (-1, -1), 2),
+        ]))
+
+        table.wrapOn(self.c, 500, 500)
+        table.drawOn(self.c, 50, self.cursor_y - table._height)
+        self.cursor_y -= table._height + 10
+
 
     def insert_unit_table(self):
         # This is copied from shiptest.py
