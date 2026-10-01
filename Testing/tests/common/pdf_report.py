@@ -1,7 +1,11 @@
 # Generate single page PDF reports
 
 import datetime
-from zoneinfo import ZoneInfo
+# zoneinfo wasn't added until Python 3.9, so use backport if Python version is older than that
+try:
+    from zoneinfo import ZoneInfo
+except ImportError:
+    from backports.zoneinfo import ZoneInfo
 import os
 import subprocess
 #PDF IMPORTS
