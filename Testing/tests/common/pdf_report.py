@@ -519,8 +519,7 @@ class ClassicShipTestReport:
 
         test_env_info = [
 	    ["Report Date:", self.date.isoformat("-", "minutes")],
-	    ["Operating System:", operating_sys],
-	    ["Hostname:", hostname],
+        ["Operating System:", operating_sys, "Hostname:", hostname],
 	    ["Product Name:", unit_name],
         ]
 
