@@ -539,7 +539,7 @@ class ClassicShipTestReport:
         if self.docker_sha != None:
             self.insert_text("Docker SHA: " + self.docker_sha)
 
-        table = Table(test_env_info, colWidths=[100, 180, 100, 180])
+        table = Table(test_env_info, colWidths=[100, 210, 80, 180])
 
         table.setStyle(TableStyle([
 	    ("FONTNAME", (0, 0), (-1, -1), "Helvetica"),
