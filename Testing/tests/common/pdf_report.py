@@ -509,7 +509,7 @@ class ClassicShipTestReport:
         operating_sys = subprocess.run(["cat /etc/os-release | grep PRETTY_NAME | cut -d '=' -f2 | tr -d '\"' | tr -d '\n' "], shell=True, capture_output=True, text=True).stdout
         pvpkg_commit = subprocess.run(["git describe --abbrev=8 --dirty --always --long | tr -d '\n' "], shell=True, capture_output=True, text=True).stdout
         pvpkg_branch = subprocess.run(["git rev-parse --abbrev-ref HEAD | tr -d '\n' "], shell=True, capture_output=True, text=True).stdout
-        fpga_ddr = subprocess.run([f"uhd_usrp_info {uhd_args_flag} --all | grep DDR | tr -d '\n' "], shell=True, capture_output=True, text=True).stdout
+        fpga_ddr = subprocess.run([f"uhd_usrp_info {uhd_args_flag} --all | grep DDR | cut --complement -d ':' -f1 | tr -d [:blank:] | tr -d '\n' "], shell=True, capture_output=True, text=True).stdout
 
         os.system('rm shiptest_out.txt')
 
@@ -522,10 +522,13 @@ class ClassicShipTestReport:
         self.c._filename = self.filename
 
         test_env_info = [
-	    ["Report Date:", self.date.isoformat("-", "minutes")],
-        ["Operating System:", operating_sys, "Hostname:", hostname],
-	    ["Product Name:", unit_name],
+            ["Report Date:", self.date.isoformat("-", "minutes")],
+            ["Operating System:", operating_sys, "Hostname:", hostname],
+            ["Product Name:", unit_name],
         ]
+
+        if self.docker_sha != None:
+            test_env_info.insert(0, ["Docker SHA:", self.docker_sha])
 
         if "crimson" not in unit_name and "calamine" not in unit_name:
             test_env_info += [ ["RTM:", unit_rtm, "FPGA DDR:", fpga_ddr] ]
@@ -538,9 +541,6 @@ class ClassicShipTestReport:
             ["Server Version:", server_ver, "FPGA Version:", fpga_ver],
             ["pvpkg Version:", pvpkg_commit, "pvpkg Branch:", pvpkg_branch],
         ]
-
-        if self.docker_sha != None:
-            self.insert_text("Docker SHA: " + self.docker_sha)
 
         table = Table(test_env_info, colWidths=[100, 210, 80, 180])
 
