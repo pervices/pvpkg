@@ -38,7 +38,8 @@ class SharedSink:
         return self.samples
 
     def set_data(self, data):
-        self.samples[:] = data
+        n = len(self.samples)
+        self.samples[:] = data[:n]
 
 def run_tx(csnk, channels, stack, sample_rate, wave_freq):
 
