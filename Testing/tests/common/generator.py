@@ -216,8 +216,8 @@ class crimson:
             log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
             sample_rate = 25e6
             sample_count = int(sample_rate/1000)
-            tx_gain = 25
-            rx_gain = 25
+            tx_gain = 15
+            rx_gain = 15
             center_freq = 10e6
             wave_freq = 500e3
             yield locals()
