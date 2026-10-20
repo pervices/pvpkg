@@ -215,9 +215,9 @@ def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stac
     network_logger = network_debug.NetworkDebug()
 
     # Debug since nothing is being detected
-    print(network_logger.interfaces)          # expect your SFP NICs, not []
-    print(network_logger.netstat_stats)       # expect non-empty dicts
-    print(len(network_logger.ethtool_stats[0]))  # expect dozens of statistics
+    print(test.interfaces)          # expect your SFP NICs, not []
+    print(test.netstat_stats)       # expect non-empty dicts
+    print(len(test.ethtool_stats[0]))  # expect dozens of statistics
 
     vsnk = []
     tx_duration = 0
