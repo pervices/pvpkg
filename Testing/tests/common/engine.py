@@ -214,11 +214,6 @@ def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stac
     # It is hard coded for manamgent A/B, and SFP A-D.
     network_logger = network_debug.NetworkDebug()
 
-    # Debug since nothing is being detected
-    print(test.interfaces)          # expect your SFP NICs, not []
-    print(test.netstat_stats)       # expect non-empty dicts
-    print(len(test.ethtool_stats[0]))  # expect dozens of statistics
-
     vsnk = []
     tx_duration = 0
     rx_duration = 0
