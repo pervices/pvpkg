@@ -13,6 +13,7 @@ import time
 import subprocess
 import sys
 import datetime
+from . import network_debug
 
 # UHD IMPORT NOTE:
 # "from gnuradio import uhd" intializes logging, however logging breaks across forks (multiprocessing)
@@ -171,7 +172,7 @@ def run_helper(channels, wave_freq, tx_gain, rx_gain, tx_stack, rx_stack, tx_dur
     if rx_stack != None:
         csrc = crimson.get_src_c(channels, rx_sample_rate, rx_center_freq, rx_gain, addr, rx_lo_offset)
         rx_thread = threading.Thread(target = run_rx, args = (csrc, channels, rx_stack, rx_sample_rate, vsnk, rx_timeout_occured))
-  
+
     # Start threads
     if(tx_thread != None):
         tx_thread.start()
@@ -209,6 +210,10 @@ def run_helper(channels, wave_freq, tx_gain, rx_gain, tx_stack, rx_stack, tx_dur
 
 
 def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stack, rx_stack, addr):
+    # Collect initial values for network interfaces
+    # It is hard coded for manamgent A/B, and SFP A-D.
+    network_logger = network_debug.NetworkDebug()
+
     vsnk = []
     tx_duration = 0
     rx_duration = 0
@@ -226,7 +231,7 @@ def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stac
 
     ctx = multiprocessing.get_context("fork")
     # Start process to run tx and rx
-    helper_process = ctx.Process(target = run_helper, kwargs = { 
+    helper_process = ctx.Process(target = run_helper, kwargs = {
         "channels": channels,
         "wave_freq": wave_freq,
         "tx_gain": tx_gain,
@@ -247,6 +252,9 @@ def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stac
     # Wait for helper process to finish or timeout
     time_limit = max(tx_duration, rx_duration) + 30
     helper_process.join(time_limit)
+
+    # Print the difference between netstat -i and ethtool -S for the relevant interfaces after running the test
+    network_logger.compare_to_present()
 
     flowgraph_timeout = False
     # If the process has finished
@@ -340,7 +348,7 @@ def manual_tune_run(channels, wave_freq, tx_sample_rate, rx_sample_rate, tx_cent
         helper_process.terminate()
         # Wait for process to close
         helper_process.join(30)
-        
+
     flow_sigterm_timeout = False
     if(helper_process.is_alive()):
         log.pvpkg_log_error("ENGINE", "Flowgraph still hanging after issuing SIGTERM. Issuing SIGKILL")
