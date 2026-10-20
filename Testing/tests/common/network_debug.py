@@ -168,7 +168,7 @@ class NetworkDebug:
         stats = []
         for iface in self.interfaces:
             stats.append(self._parse_ethtool_s(iface))
-    return stats
+        return stats
 
     # ---- comparison -------------------------------------------------------
 
