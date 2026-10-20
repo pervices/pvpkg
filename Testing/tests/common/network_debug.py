@@ -22,9 +22,20 @@ import sys
 
 def _run(cmd):
     """Run a command (list of args, like execvp's argv) and return stdout as
-    a string. Raises subprocess.CalledProcessError on non-zero exit."""
-    # check=True -> raise on non-zero exit; text=True -> decode bytes to str.
-    result = subprocess.run(cmd, check=True, capture_output=True, text=True)
+    a string. On non-zero exit, prints the failing command and exit code,
+    then re-raises subprocess.CalledProcessError."""
+    try:
+        # check=True -> raise on non-zero exit; text=True -> decode bytes
+        # to str.
+        result = subprocess.run(cmd, check=True, capture_output=True,
+                                text=True)
+    except subprocess.CalledProcessError as e:
+        # " ".join(list) concatenates the args with spaces between them.
+        print(f'"{" ".join(cmd)}" failed with exit code "{e.returncode}"',
+              file=sys.stderr)
+        # A bare `raise` rethrows the current exception unchanged, like
+        # `throw;` inside a C++ catch block.
+        raise
     return result.stdout
 
 
@@ -113,9 +124,8 @@ class NetworkDebug:
         """Run `ethtool -S iface` and return {counter: value}."""
         try:
             out = _run(["ethtool", "-S", iface])
-        except subprocess.CalledProcessError as e:
-            print(f"Warning: ethtool -S {iface} failed: {e.stderr.strip()}",
-                  file=sys.stderr)
+        except subprocess.CalledProcessError:
+            # _run already reported the failure; treat as "no counters".
             return {}
 
         # Output looks like:
