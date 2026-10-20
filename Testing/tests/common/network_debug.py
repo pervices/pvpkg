@@ -88,6 +88,12 @@ class NetworkDebug:
             if iface not in self.interfaces:
                 self.interfaces.append(iface)
 
+        # Without interfaces there is nothing to compare later, which would
+        # otherwise look like a clean result.
+        if not self.interfaces:
+            print("Warning: none of the target IPs are assigned on this host; "
+                  "no interfaces will be checked.", file=sys.stderr)
+
         # Store initial netstat -i info
         self.netstat_stats = self._collect_netstat()
         # Store initial ethtool -S info
@@ -161,6 +167,10 @@ class NetworkDebug:
             if sep:
                 # Add an entry to the dict with whitespace removed
                 stats[name.strip()] = value.strip()
+
+        # ethtool succeeded but reported nothing usable (failures are reported above).
+        if not stats:
+            print(f"Warning: ethtool -S {iface} returned no statistics", file=sys.stderr)
         return stats
 
     def _collect_ethtool(self):
@@ -203,7 +213,17 @@ class NetworkDebug:
         """Print changes between old_list and new_list.
         label is the source of the list. (i.e. netstat)"""
         any_change = False
+        # Without this the loop below runs zero times and prints nothing.
+        if not self.interfaces:
+            print(f"Warning: {label} not compared; no interfaces to check", file=sys.stderr)
+            return
         for iface, old, new in zip(self.interfaces, old_list, new_list):
+            # Both snapshots empty means the stats couldn't be read, not that
+            # nothing changed.
+            if not old and not new:
+                print(f"Warning: {label} not compared for {iface}; no statistics "
+                      "in either snapshot", file=sys.stderr)
+                continue
             # Get the difference's for this interface's dict.
             changes = self._diff(old, new)
             if changes:
