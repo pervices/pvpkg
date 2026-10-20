@@ -37,7 +37,7 @@ def _run(cmd):
 class NetworkDebug:
     # Constant list of IPs whose interface should be inspected
     # Management A, B, SFP A, B, C, D
-    TARGET_IPS = ["192.168.10.2", "192.168.11.2", "10.10.10.10", "10.10.11.10", "10.10.12.10", "10.10.13.10"]
+    TARGET_IPS = ["192.168.10.10", "192.168.11.10", "10.10.10.10", "10.10.11.10", "10.10.12.10", "10.10.13.10"]
 
     @staticmethod
     def get_interface_for_ip(ip):
