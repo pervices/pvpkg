@@ -130,20 +130,27 @@ def run_rx(csrc, channels, stack, sample_rate, _vsnk, timeout_occured):
     expected_duration = stack[0][0] + (stack[0][1]/sample_rate) #stack[0][0] is start and stack[0][1] is the sample count
     timeout_time = time.clock_gettime(time.CLOCK_MONOTONIC) + expected_duration + 10
 
-    #print("total sample count is:", total_sample_count)
-    while len(vsnk[0].data()) < total_sample_count:
-        time.sleep(0.1)
-        if (time.clock_gettime(time.CLOCK_MONOTONIC) > timeout_time):
-            frameinfo = getframeinfo(currentframe())
-            hostname = subprocess.run(["cat /proc/sys/kernel/hostname | tr -d '\n' "], shell=True, capture_output=True, text=True).stdout
-            uptime = subprocess.run(["cat /proc/uptime"], shell=True, capture_output=True, text=True).stdout
-            date = datetime.datetime.now() #current date and time
-            iso_time = date.strftime("%Y%m%dT%H%M%S.%fZ")
-            component = "{}:{}".format(frameinfo.filename, frameinfo.lineno)
-            errmsg = "UHD failed to provide expected number of samples before RX timeout - HOSTNAME:{} - TIME:{} - UPTIME:{} - SAMPS RECEIVED:{} - SAMPS EXPECTED:{}".format(hostname, iso_time, uptime, str(len(vsnk[0].data())), str(total_sample_count))
-            log.pvpkg_log_error(component, errmsg)
-            timeout_occured.set()
-            break
+    # Usually, all vsnks will be finished at the same time so we can just check vsnk[0], but sometimes the others are slightly behind.
+    # Make sure all channels have finished or timeout if not enough samples on any of them.
+    vsnk_iter=0
+    vsnk_full=False
+    while not vsnk_full:
+        if len(vsnk[vsnk_iter].data()) < total_sample_count:
+            # Throw error if we've exceeded the timeout. Otherwise, continue waiting for the samples.
+            if (time.clock_gettime(time.CLOCK_MONOTONIC) > timeout_time):
+                log.pvpkg_log_error("ENGINE",
+                    "UHD failed to provide the expected number of samples before Rx timeout. SAMPS RECEIVED: {}, SAMPS EXPECTED: {}"
+                        .format(str(len(vsnk[vsnk_iter].data())), str(total_sample_count)))
+                timeout_occured.set()
+                break
+            else:
+                time.sleep(0.1)
+        else:
+            # If the last vsnk has all samples at this point they all do
+            if vsnk_iter == (len(vsnk) - 1):
+                vsnk_full=True
+            # Increment the vsnk_iter to check if the next channel has all samples
+            vsnk_iter = vsnk_iter + 1
 
     flowgraph.stop()
     flowgraph.wait()
