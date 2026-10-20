@@ -258,6 +258,9 @@ def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stac
     time_limit = max(tx_duration, rx_duration) + 30
     helper_process.join(time_limit)
 
+    # Print the difference between netstat -i and ethtool -S for the relevant interfaces after running the test
+    network_logger.compare_to_present()
+
     flowgraph_timeout = False
     # If the process has finished
     if(not helper_process.is_alive()):
@@ -284,9 +287,6 @@ def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stac
         flow_sigterm_timeout = True
         # Wait for process to close
         helper_process.join(30)
-
-    # Print the difference between netstat -i and ethtool -S for the relevant interfaces
-    network_logger.compare_to_present()
 
     if(helper_process.is_alive()):
         log.pvpkg_log_error("ENGINE", "Flowgraph still hanging after issuing SIGKILL")
