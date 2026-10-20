@@ -13,7 +13,7 @@ import time
 import subprocess
 import sys
 import datetime
-import network_debug
+from . import network_debug
 
 # UHD IMPORT NOTE:
 # "from gnuradio import uhd" intializes logging, however logging breaks across forks (multiprocessing)
