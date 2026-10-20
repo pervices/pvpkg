@@ -35,9 +35,8 @@ def _run(cmd):
 
 
 class NetworkDebug:
-    # Constant list of IPs whose interface should be inspected
-    # Management A, B, SFP A, B, C, D
-    TARGET_IPS = ["192.168.10.10", "192.168.11.10", "10.10.10.10", "10.10.11.10", "10.10.12.10", "10.10.13.10"]
+    # Constant list of IPs/netmasks to check
+    TARGET_IPS = ["192.168.10.0/24", "192.168.11.0/24", "10.10.10.0/24", "10.10.11.0/24", "10.10.12.0/24", "10.10.13.0/24"]
 
     @staticmethod
     def get_interface_for_ip(ip):
@@ -82,7 +81,7 @@ class NetworkDebug:
             # Get the interface
             iface = self.get_interface_for_ip(ip)
             if iface is None:
-                print(f"{ip} is not detect on this host, skipping.")
+                print(f"No interface on this host has an address matching {ip}, skipping.")
                 continue
             # Add interface to the list of interfaces to check if it is not already in the list (avoid duplicates)
             if iface not in self.interfaces:
