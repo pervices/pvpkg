@@ -212,7 +212,7 @@ def run_helper(channels, wave_freq, tx_gain, rx_gain, tx_stack, rx_stack, tx_dur
 def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stack, rx_stack, addr):
     # Collect initial values for network interfaces
     # It is hard coded for manamgent A/B, and SFP A-D.
-    network_logger = NetworkDebug()
+    network_logger = network_debug.NetworkDebug()
 
     vsnk = []
     tx_duration = 0
