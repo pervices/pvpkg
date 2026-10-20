@@ -45,21 +45,26 @@ class NetworkDebug:
 
     @staticmethod
     def get_interface_for_ip(ip):
-        """Return the name of the interface the kernel would use to reach
-        `ip`, or None if there is no route."""
+        """Return the name of the interface on this host that has `ip`
+        assigned, or None if no interface has it."""
+        # `ip -o addr show to <ip>` lists only interfaces that own exactly
+        # that address, one per line (-o). It exits 0 with empty output when
+        # nothing matches, so "not on this host" is an empty string, not an
+        # error.
         try:
-            out = _run(["ip", "route", "get", ip])
+            out = _run(["ip", "-o", "addr", "show", "to", ip])
         except subprocess.CalledProcessError:
             return None
 
         # Output looks like:
-        #   10.10.10.10 dev eth0 src 10.10.10.1 uid 0
-        # The interface name is the token following "dev".
-        tokens = out.split()
-        if "dev" in tokens:
-            idx = tokens.index("dev")
-            if idx + 1 < len(tokens):
-                return tokens[idx + 1]
+        #   3: eth0    inet 10.10.10.10/24 brd 10.10.10.255 scope global eth0 ...
+        # The interface name is the second whitespace-separated field.
+        for line in out.splitlines():
+            fields = line.split()
+            if len(fields) >= 2:
+                # VLAN/macvlan names show as "eth0.100@eth0"; keep the part
+                # before '@', which is the name ethtool/netstat expect.
+                return fields[1].split("@")[0]
         return None
 
     def __init__(self):
@@ -69,7 +74,8 @@ class NetworkDebug:
         for ip in self.TARGET_IPS:
             iface = self.get_interface_for_ip(ip)
             if iface is None:
-                print(f"Warning: no route to {ip}, skipping", file=sys.stderr)
+                print(f"{ip} is not detect on this host, skipping.",
+                      file=sys.stderr)
                 continue
             if iface not in self.interfaces:
                 self.interfaces.append(iface)
