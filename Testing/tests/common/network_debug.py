@@ -34,9 +34,82 @@ def _run(cmd):
     return result.stdout
 
 
+# Per-queue statistics have the queue number in their name (rx-11.packets).
+# Queues numbered at or above this are not in the ignore list, so they print.
+_MAX_QUEUES = 256
+
+
+def _build_ignored_stats():
+    """Return the set of statistic names that only measure traffic volume.
+    A name must match an entry exactly to be ignored; anything not listed,
+    including counters added by a new driver or firmware, is always printed."""
+    ignored = set()
+
+    # netstat -i statistics to ignore ----------
+
+    # packets transferred successfully.
+    ignored.update(["RX-OK", "TX-OK"])
+
+    # ethtool -S statistics to ignore ----------
+
+    # ethtool -S totals, shared by most drivers. "port." versions are the
+    # ice driver's physical-port totals.
+
+    # "" is the stats for the logical interface seen by the kernel
+    # port is from the ice driver and refers to physical port
+    for prefix in ["", "port."]:
+        for direction in ["rx", "tx"]:
+            # bytes: how many bytes were in successfully sent packets
+            # packets: how many packets were successfull sent
+            # unicats: how many packets were addressed to a specific MAC address
+            # multicast: how many packets were addressed to a multicast group MAX address
+            # broadcast: how many packets were addressed to every host on the segment
+            for kind in ["bytes", "packets", "unicast", "multicast", "broadcast"]:
+                ignored.add(f"{prefix}{direction}_{kind}")
+
+    # ixgbe: NIC hardware totals.
+    for direction in ["rx", "tx"]:
+        for kind in ["pkts", "bytes"]:
+            ignored.add(f"{direction}_{kind}_nic")
+
+    # ixgbe: received packet types (ixgbe does not include the rx_ prefix).
+    ignored.update(["broadcast", "multicast"])
+
+    # ixgbe: Flow Director filter hits/misses. A miss is routed by RSS, not dropped.
+    # fdir_overflow is not excluded because it shouldn't happen
+    ignored.update(["fdir_match", "fdir_miss"])
+
+    # ixgbe: jumbo frames span multiple receive buffers; each non-final one counts.
+    ignored.add("non_eop_descs")
+
+    # ice: How many ethernet frames were received/sent by the ice driver where size[n-1] < x <= size[n].
+    for direction in ["rx", "tx"]:
+        for size in ["64", "127", "255", "511", "1023", "1522", "big"]:
+            ignored.add(f"port.{direction}_size_{size}")
+
+    # Duplicate of rx_bytes on 64 bit systems.
+    ignored.add("rx_long_byte_count")
+
+    # Number of receive buffers recycled in the ice driver
+    ignored.add("rx_cache_reuse")
+
+    # Per-queue byte/packet totals.
+    for n in range(_MAX_QUEUES):
+        for direction in ["rx", "tx"]:
+            for kind in ["bytes", "packets"]:
+                ignored.add(f"{direction}-{n}.{kind}")          # ice
+                ignored.add(f"{direction}_queue_{n}_{kind}")    # igb
+
+    # frozenset is an immutable set, so the list can't be modified by accident.
+    return frozenset(ignored)
+
+
 class NetworkDebug:
     # Constant list of IPs/netmasks to check
     TARGET_IPS = ["192.168.10.0/24", "192.168.11.0/24", "10.10.10.0/24", "10.10.11.0/24", "10.10.12.0/24", "10.10.13.0/24"]
+
+    # Statistics whose changes are expected during a test and are not printed.
+    IGNORED_STATS = _build_ignored_stats()
 
     @staticmethod
     def get_interface_for_ip(ip):
@@ -209,34 +282,56 @@ class NetworkDebug:
             return f"  {key}: {a} -> {b}"
 
     def _report(self, label, old_list, new_list):
-        """Print changes between old_list and new_list.
-        label is the source of the list. (i.e. netstat)"""
-        any_change = False
-        # Print a warning if the orginal check was empty to avoid looking clean
-        if not self.interfaces:
-            print(f"Warning: {label} not compared; no interfaces to check", file=sys.stderr)
-            return
+        """Print changes between old_list and new_list, except for statistics
+        in IGNORED_STATS. label is the source of the list. (i.e. netstat)
+        Returns a tuple (total changes, unexpected changes printed)."""
+        total_changes = 0
+        unexpected_changes = 0
 
         for iface, old, new in zip(self.interfaces, old_list, new_list):
             # Get the difference's for this interface's dict.
             changes = self._diff(old, new)
-            if changes:
-                any_change = True
+            total_changes += len(changes)
+
+            # Keep only the changes that aren't known traffic-volume stats.
+            unexpected = []
+            for key, a, b in changes:
+                if key not in self.IGNORED_STATS:
+                    unexpected.append((key, a, b))
+
+            # Print changes that might indicate something going wrong
+            if unexpected:
+                unexpected_changes += len(unexpected)
                 print(f"{label} changes on {iface}:")
-                for key, a, b in changes:
+                for key, a, b in unexpected:
                     print(self._format_change(key, a, b))
-            else:
-                print(f"{label} No change in {iface}")
+
+        return total_changes, unexpected_changes
 
     def compare_to_present(self):
         """Print the differences between the original values returned by netstat -i ethtool -S and
-        their current value."""
+        their current value, skipping expected traffic-volume statistics."""
+
+        # Print a warning no matching network interfaces were found to avoid looking clean
+        if not self.interfaces:
+            print("Warning: network statistics not compared; no interfaces to check", file=sys.stderr)
+            return
+
         # Get the new values of netstat -i and ethtool -S
         new_netstat = self._collect_netstat()
         new_ethtool = self._collect_ethtool()
         # Print the comparison
-        self._report("netstat -i", self.netstat_stats, new_netstat)
-        self._report("ethtool -S", self.ethtool_stats, new_ethtool)
+        netstat_total, netstat_unexpected = self._report("netstat -i", self.netstat_stats, new_netstat)
+        ethtool_total, ethtool_unexpected = self._report("ethtool -S", self.ethtool_stats, new_ethtool)
+
+        # Nothing changed at all, not even traffic counters: no traffic reached
+        # these interfaces, so a clean result would be meaningless.
+        if netstat_total + ethtool_total == 0:
+            print("Warning: no network statistics changed on any interface; "
+                  "no traffic was detected", file=sys.stderr)
+
+        if netstat_unexpected + ethtool_unexpected == 0:
+            print("No unexpected changes in network statistics detected")
 
 
 # If this script is called directly
