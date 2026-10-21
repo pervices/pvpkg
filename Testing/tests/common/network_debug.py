@@ -15,7 +15,11 @@ root on some drivers.
 """
 
 import subprocess
-import sys
+
+from . import log
+
+# Component name shown in log output: [WARNING] [NETWORK_DEBUG] ...
+_COMPONENT = "NETWORK_DEBUG"
 
 
 def _run(cmd):
@@ -28,7 +32,7 @@ def _run(cmd):
         result = subprocess.run(cmd, check=True, capture_output=True, text=True)
     except subprocess.CalledProcessError as e:
         # " ".join(list) concatenates the list cmd with " " between it's elements
-        print(f'"{" ".join(cmd)}" failed with exit code "{e.returncode}"', file=sys.stderr)
+        log.pvpkg_log_error(_COMPONENT, f'"{" ".join(cmd)}" failed with exit code "{e.returncode}"')
         # Reraise the error so the caller needs to handle it
         raise
     return result.stdout
@@ -126,10 +130,10 @@ class NetworkDebug:
 
         # Multiple devices have the target IP, which indicates a configuration error.
         if len(devs) > 1:
-            #
-            raise RuntimeError(
-                f"ERROR: multiple devices ({', '.join(devs)}) own {ip}. "
-                "IPs should not be owned by multiple network interfaces.")
+            msg = (f"multiple devices ({', '.join(devs)}) own {ip}. "
+                   "IPs should not be owned by multiple network interfaces.")
+            log.pvpkg_log_error(_COMPONENT, msg)
+            raise RuntimeError(msg)
         return devs[0]
 
 
@@ -139,7 +143,7 @@ class NetworkDebug:
             # Get the interface
             iface = self.get_interface_for_ip(ip)
             if iface is None:
-                print(f"No interface on this host has an address matching {ip}, skipping.")
+                log.pvpkg_log_info(_COMPONENT, f"No interface on this host has an address matching {ip}, skipping collecting diagnostic info for it.")
                 continue
             # Add interface to the list of interfaces to check if it is not already in the list (avoid duplicates)
             if iface not in self.interfaces:
@@ -147,8 +151,8 @@ class NetworkDebug:
 
         # Print a warning if no interfaces are detected, otherwise the output would look clean
         if not self.interfaces:
-            print("Warning: none of the target IPs are assigned on this host; "
-                  "no interfaces will be checked.", file=sys.stderr)
+            log.pvpkg_log_warning(_COMPONENT, "none of the target IPs are assigned on this host; "
+                                  "no interfaces will be checked.")
 
         # Store initial netstat -i info
         self.netstat_stats = self._collect_netstat()
@@ -195,7 +199,7 @@ class NetworkDebug:
             # Get the values returns by netstat for the given relevant interface.
             row = table.get(iface)
             if row is None:
-                print(f"Warning: {iface} not found in netstat -i output", file=sys.stderr)
+                log.pvpkg_log_warning(_COMPONENT, f"{iface} not found in netstat -i output")
                 row = {}
             # Add the stats for the relevant interface to the dict to return.
             stats.append(row)
@@ -207,7 +211,7 @@ class NetworkDebug:
         try:
             out = _run(["ethtool", "-S", iface])
         except subprocess.CalledProcessError:
-            print(f"ERROR: unable to run ethtool for {iface}.", file=sys.stderr)
+            log.pvpkg_log_error(_COMPONENT, f"unable to run ethtool for {iface}.")
             # Treat failed ethtool -S as if the interface does not support any statistics.
             return {}
 
@@ -227,7 +231,7 @@ class NetworkDebug:
         # ethtool succeeded but reported no parsable statistics
         # Print a warning to avoid looking clean
         if not stats:
-            print(f"Warning: ethtool -S {iface} returned no statistics", file=sys.stderr)
+            log.pvpkg_log_warning(_COMPONENT, f"ethtool -S {iface} returned no statistics")
         return stats
 
     def _collect_ethtool(self):
@@ -287,9 +291,10 @@ class NetworkDebug:
             # Print changes that might indicate something going wrong
             if unexpected:
                 unexpected_changes += len(unexpected)
-                print(f"{label} changes on {iface}:")
+                log.pvpkg_log_warning(_COMPONENT, f"{label} changes on {iface}:")
                 for key, a, b in unexpected:
-                    print(self._format_change(key, a, b))
+                    # Log without prefix since we are indented below the previous message
+                    log.pvpkg_log(self._format_change(key, a, b), level=log.WARNING)
 
         return total_changes, unexpected_changes
 
@@ -299,7 +304,7 @@ class NetworkDebug:
 
         # Print a warning no matching network interfaces were found to avoid looking clean
         if not self.interfaces:
-            print("Warning: network statistics not compared; no interfaces to check", file=sys.stderr)
+            log.pvpkg_log_warning(_COMPONENT, "network statistics not compared; no interfaces to check")
             return
 
         # Get the new values of netstat -i and ethtool -S
@@ -312,18 +317,18 @@ class NetworkDebug:
         # Nothing changed at all, not even traffic counters: no traffic reached
         # these interfaces, so a clean result would be meaningless.
         if netstat_total + ethtool_total == 0:
-            print("Warning: no network statistics changed on any interface; "
-                  "no traffic was detected", file=sys.stderr)
+            log.pvpkg_log_warning(_COMPONENT, "no network statistics changed on any interface; "
+                                  "no traffic was detected")
 
         if netstat_unexpected + ethtool_unexpected == 0:
-            print("No unexpected changes in network statistics detected")
+            log.pvpkg_log_info(_COMPONENT, "No unexpected changes in network statistics detected")
 
 
 # If this script is called directly
 if __name__ == "__main__":
     # Capture initial values
     nd = NetworkDebug()
-    print("Interfaces:", ", ".join(nd.interfaces) or "(none)")
+    log.pvpkg_log_info(_COMPONENT, "Interfaces: " + (", ".join(nd.interfaces) or "(none)"))
     # Wait for the user to hit enter
     input("Baseline captured. Press Enter to compare...")
     # Check the new values and print them if they differ
