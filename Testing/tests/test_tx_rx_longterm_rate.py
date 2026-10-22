@@ -2,6 +2,7 @@ from common import generator as gen
 from common import pdf_report
 from common import test_args
 from common import log
+from common import network_debug
 import sys
 import time
 import subprocess
@@ -32,7 +33,7 @@ def test(it) -> int:
         channels = [0,1,2,3]
 
     command = "/usr/lib/uhd/examples/benchmark_rate --tx_rate={} --rx_rate={} --tx_channels={} --rx_channels={} --duration={}".format(
-        it["sample_rate"], 
+        it["sample_rate"],
         it["sample_rate"],
         str(channels)[1:-1].replace(" ", ""),
         str(channels)[1:-1].replace(" ", ""),
@@ -41,10 +42,13 @@ def test(it) -> int:
 
     report.buffer_put("text_large", "Test Summary")
     report.buffer_put("text", " ")
-        
+
     log.pvpkg_log_info("TX_RX_LONGTERM_RATE", "Running command: " + command)
-    
-    try: 
+
+    # Collect initial values for network interfaces
+    network_logger = network_debug.NetworkDebug()
+
+    try:
         result = subprocess.check_output(command, shell=True, text=True)
     except subprocess.CalledProcessError as e: # Return is not 0
         log.pvpkg_log_error("TX_RX_LONGTERM_RATE", "Error running command")
@@ -57,7 +61,10 @@ def test(it) -> int:
         # report.save()
         # print("PDF report saved at " + report.get_filename())
         # sys.exit(1)
-    
+
+    # Print the difference between netstat -i and ethtool -S for the relevant interfaces after running the test
+    network_logger.compare_to_present()
+
     # result = result.split("Done!\n", 1)[1]
     log.pvpkg_log_info("TX_RX_LONGTERM_RATE", "Results:" + result)
 
@@ -84,12 +91,12 @@ def test(it) -> int:
 
     over_underflow_count = [["Channel", "Overflow", "Underflow"]]
     individual_lines = result.split("\n")
-    for line in individual_lines: 
+    for line in individual_lines:
         if ("CH" not in line):
             continue
         ch_name = line.split("CH ",1)[1][0]
         over_underflow_count.append([ch_name, re.findall('\\d+', line)[0], re.findall('\\d+', line)[1]])
-           
+
     report.buffer_put("table", over_underflow_count, "Results")
     report.buffer_put("text", " ")
 
@@ -107,15 +114,15 @@ def test(it) -> int:
 
     report.buffer_put("table", benchmark_rate_summary, "Benchmark Rate Summary")
     report.buffer_put("text", " ")
-    
+
     for row in over_underflow_count[1:]:
         if (int(row[1]) > 0 or int(row[2]) > 0):
             test_fail = 1
-            
-    if (test_fail): 
+
+    if (test_fail):
         report.buffer_put("text", "Test failed")
     else:
-        report.buffer_put("text", "Test passed") 
+        report.buffer_put("text", "Test passed")
 
 
 def build_report():

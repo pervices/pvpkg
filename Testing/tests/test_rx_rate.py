@@ -3,6 +3,8 @@ from common import pdf_report
 from common import generator as gen
 from common import test_args
 from common import log
+from common import network_debug
+
 import sys
 import time
 
@@ -41,6 +43,9 @@ def test(it):
     # Error code for this iteration
     iteration_result = 0
 
+    # Collect initial values for network interfaces
+    network_logger = network_debug.NetworkDebug()
+
     # Call cpp program to run the benchmark since it is much faster and reliable
     # rx only
     if(len(rx_channels) != 0):
@@ -50,6 +55,9 @@ def test(it):
     else:
         log.pvpkg_log_warning("RX_RATE", "No rx channels on this device. Skipping rx rate test")
         return
+
+    # Print the difference between netstat -i and ethtool -S for the relevant interfaces after running the test
+    network_logger.compare_to_present()
 
     # Set test_fail to the return code of the first failed iteration
     if(iteration_result and not test_fail):

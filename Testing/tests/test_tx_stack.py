@@ -9,6 +9,7 @@ from common import crimson
 from common import pdf_report
 from common import test_args
 from common import log
+from common import network_debug
 
 #Setup argument parsing
 targs = test_args.TestArgs(testDesc="Tx Stack Test")
@@ -96,6 +97,9 @@ def main():
     c2ss = [blocks.complex_to_interleaved_short(True)
         for ch in channels]
 
+    # Collect initial values for network interfaces
+    network_logger = network_debug.NetworkDebug()
+
     test_info = [["Center Freq", "Wave Freq", "Wave Ampl", "Sample Rate", "Sample Count", "Result"]]
     try:
         # Takes interleaved shorts and outputs to Crimson/Cyan.
@@ -140,6 +144,9 @@ def main():
         err_table = [["Error Message"], [err]]
         test_info.append([wave_center, wave_freq, wave_ampl, sample_rate, sample_count, "Fail"])
         test_fail = 1
+
+    # Print the difference between netstat -i and ethtool -S for the relevant interfaces after running the test
+    network_logger.compare_to_present()
 
     report.buffer_put("text_large", "Test Summary")
     report.buffer_put("table", test_info, "")

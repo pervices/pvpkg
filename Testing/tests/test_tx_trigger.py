@@ -3,6 +3,7 @@ from common import pdf_report
 from common import generator as gen
 from common import test_args
 from common import log
+from common import network_debug
 import sys
 
 
@@ -25,6 +26,8 @@ def test(it):
     else:
         channels = [0,1,2,3]
 
+    # Collect initial values for network interfaces
+    network_logger = network_debug.NetworkDebug()
 
     # os.system("/home/notroot/libuhd/examples/test_tx_trigger.cpp > %s" % name)
     # TODO: Check if the following file exists; if it doesn't, throw and error and
@@ -32,6 +35,9 @@ def test(it):
     # Using invokation from tx_trig pkg
     channels_str = ','.join(str(x) for x in channels)
     test_fail = test_fail | os.system("/usr/lib/uhd/examples/test_tx_trigger --channels={} --path ./test_tx_trig_files/data.txt --start_time={} --period={} --tx_rate={} --tx_center_freq={} --tx_gain={} --setpoint={} --samples={} --num_trigger={} --gating=dsp > {}".format(channels_str, it["start_time"], it["period"], it["sample_rate"], it["center_freq"], it["tx_gain"], it["setpoint"], it["sample_count"], it["num_trigger"], name))
+
+    # Print the difference between netstat -i and ethtool -S for the relevant interfaces after running the test
+    network_logger.compare_to_present()
 
     # Flag to indicate that triggers failed to activate
     # Technically this could be caused by anything that returns an error code in UHD, but the trigger failing in time is most likely

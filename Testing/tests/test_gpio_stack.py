@@ -3,6 +3,8 @@ from common import crimson
 from common import pdf_report
 from common import test_args
 from common import log
+from common import network_debug
+
 import sys
 import subprocess
 
@@ -52,6 +54,9 @@ def main():
         channels = targs.channels
     else:
         channels = [0,1,2,3]
+
+    # Collect initial values for network interfaces
+    network_logger = network_debug.NetworkDebug()
 
     if(targs.product == 'Tate'):
         report.insert_title_page("Cyan Stacked GPIO Commands Test")
@@ -147,6 +152,9 @@ def main():
             report.insert_text("Test successfully completed")
         else:
             report.insert_text("Test failed")
+
+    # Print the difference between netstat -i and ethtool -S for the relevant interfaces after running the test
+    network_logger.compare_to_present()
 
     report.save()
     log.pvpkg_log_info("GPIO_STACK", "PDF report saved at " + report.get_filename())

@@ -6,6 +6,8 @@ from common import crimson
 from common import pdf_report
 from common import test_args
 from common import log
+from common import network_debug
+
 import time, sys, subprocess
 import numpy as np
 
@@ -111,6 +113,10 @@ def main():
     | csrc      |   +---------+
     +-----------+
     """
+
+    # Collect initial values for network interfaces
+    network_logger = network_debug.NetworkDebug()
+
     flowgraph = gr.top_block()
     for ch in range(len(channels)):
         flowgraph.connect((csrc, ch), vsnk[ch])
@@ -147,6 +153,9 @@ def main():
     # Cleanup and validate.
     flowgraph.stop()
     flowgraph.wait()
+
+    # Print the difference between netstat -i and ethtool -S for the relevant interfaces after running the test
+    network_logger.compare_to_present()
 
     #Test 1: assure length of all Rx samples received are as expected
     for ch, channel in enumerate(channels):
