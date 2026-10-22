@@ -211,7 +211,6 @@ def run_helper(channels, wave_freq, tx_gain, rx_gain, tx_stack, rx_stack, tx_dur
 
 def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stack, rx_stack, addr):
     # Collect initial values for network interfaces
-    # It is hard coded for manamgent A/B, and SFP A-D.
     network_logger = network_debug.NetworkDebug()
 
     vsnk = []
@@ -298,6 +297,9 @@ def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stac
 
 
 def manual_tune_run(channels, wave_freq, tx_sample_rate, rx_sample_rate, tx_center_freq, tx_lo_offset, rx_center_freq, rx_lo_offset, tx_gain, rx_gain, tx_stack, rx_stack, addr):
+    # Collect initial values for network interfaces
+    network_logger = network_debug.NetworkDebug()
+
     # Create SharedSink object for each channel to hold all the samples in shared memory between processes
     vsnk=[SharedSink(rx_stack) for _ in channels]
     # Expected tx duration = start time of last burst + (length of last burst / sample rate)
@@ -329,6 +331,9 @@ def manual_tune_run(channels, wave_freq, tx_sample_rate, rx_sample_rate, tx_cent
     # Wait for helper process to finish or timeout
     time_limit = max(tx_duration, rx_duration) + 30
     helper_process.join(time_limit)
+
+    # Print the difference between netstat -i and ethtool -S for the relevant interfaces after running the test
+    network_logger.compare_to_present()
 
     flowgraph_timeout = False
     # If the process has finished

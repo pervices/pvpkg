@@ -5,6 +5,7 @@ from common import pdf_report
 from common import crimson
 from common import test_args
 from common import log
+from common import network_debug
 import time
 import math
 import numpy as np
@@ -92,6 +93,8 @@ def main():
         log.pvpkg_log_error("RX_STACK_2", "Unrecognized product argument")
         test_fail = 1
 
+    # Collect initial values for network interfaces
+    network_logger = network_debug.NetworkDebug()
 
     # Crimson TNG acts as a source by providing complex float samples.
     csrc = crimson.get_src_c(channels, sample_rate, 15e6, 5.0, targs.addr)
@@ -175,6 +178,9 @@ def main():
 
         while(time.perf_counter() - start_time < interval):
             pass
+
+    # Print the difference between netstat -i and ethtool -S for the relevant interfaces after running the test
+    network_logger.compare_to_present()
 
     # Print sample count for each channel
     ch_actual_arrays = [np.asarray(ch_array) for ch_array in ch_arrays]
