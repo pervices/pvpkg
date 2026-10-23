@@ -151,23 +151,43 @@ class NetworkDebug:
             raise RuntimeError(msg)
         return devs[0]
 
+    @staticmethod
+    def has_carrier(iface):
+        """Return True if iface has a link (carrier detected), False otherwise."""
+        try:
+            with open(f"/sys/class/net/{iface}/carrier") as f:
+                # Return true if the interface has a carrier
+                return f.read().strip() == "1"
+        except OSError:
+            # Reading it on an interface that is down fails with  EINVAL; a missing interface fails with ENOENT
+            # Treat both failures are no carrier
+            return False
 
     def __init__(self):
         self.interfaces = []
+        # Interfaces that matched a target IP but had no link at baseline time.
+        skipped_no_carrier = []
         for ip in self.TARGET_IPS:
             # Get the interface
             iface = self.get_interface_for_ip(ip)
             if iface is None:
                 log.pvpkg_log_info(_COMPONENT, f"No interface on this host has an address matching {ip}, skipping collecting diagnostic info for it.")
                 continue
-            # Add interface to the list of interfaces to check if it is not already in the list (avoid duplicates)
-            if iface not in self.interfaces:
-                self.interfaces.append(iface)
+            # Skip no carrier check if the interface has already been checked
+            if iface in self.interfaces or iface in skipped_no_carrier:
+                continue
+
+            # Exclude interfaces with no carrier from the check since they will irrelevant failures reported
+            if not self.has_carrier(iface):
+                log.pvpkg_log_info(_COMPONENT, f"{iface} ({ip}) has no link (no carrier), skipping collecting diagnostic info for it.")
+                skipped_no_carrier.append(iface)
+                continue
+            self.interfaces.append(iface)
 
         # Print a warning if no interfaces are detected, otherwise the output would look clean
         if not self.interfaces:
-            log.pvpkg_log_warning(_COMPONENT, "none of the target IPs are assigned on this host; "
-                                  "no interfaces will be checked.")
+            log.pvpkg_log_warning(_COMPONENT, "none of the target IPs are assigned to an interface with a link "
+                                  "on this host; no interfaces will be checked.")
 
         # Store initial netstat -i info
         self.netstat_stats = self._collect_netstat()
