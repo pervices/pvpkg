@@ -64,9 +64,9 @@ def _build_ignored_stats():
     for prefix in ["", "port."]:
         for direction in ["rx", "tx"]:
             # bytes: how many bytes were in successfully sent packets
-            # packets: how many packets were successfull sent
-            # unicats: how many packets were addressed to a specific MAC address
-            # multicast: how many packets were addressed to a multicast group MAX address
+            # packets: how many packets were successfully sent
+            # unicast: how many packets were addressed to a specific MAC address
+            # multicast: how many packets were addressed to a multicast group MAC address
             # broadcast: how many packets were addressed to every host on the segment
             for kind in ["bytes", "packets", "unicast", "multicast", "broadcast"]:
                 ignored.add(f"{prefix}{direction}_{kind}")
@@ -76,8 +76,8 @@ def _build_ignored_stats():
         for kind in ["pkts", "bytes"]:
             ignored.add(f"{direction}_{kind}_nic")
 
-    # ixgbe: received packet types (ixgbe does not include the rx_ prefix).
-    ignored.update(["broadcast", "multicast"])
+    # ixgbe/r8169: received packet types (they do not include the rx_ prefix).
+    ignored.update(["unicast", "broadcast", "multicast"])
 
     # ixgbe: Flow Director filter hits/misses. A miss is routed by RSS, not dropped.
     # fdir_overflow is not excluded because it shouldn't happen
@@ -103,6 +103,46 @@ def _build_ignored_stats():
             for kind in ["bytes", "packets"]:
                 ignored.add(f"{direction}-{n}.{kind}")          # ice
                 ignored.add(f"{direction}_queue_{n}_{kind}")    # igb
+
+    # mlx5 (Mellanox/NVIDIA ConnectX) ----------
+
+    for direction in ["rx", "tx"]:
+        # Physical-port totals.
+        for kind in ["packets", "bytes", "unicast", "multicast", "broadcast"]:
+            ignored.add(f"{direction}_{kind}_phy")
+        # Per-priority (QoS class) totals.
+        for prio in range(8):
+            for kind in ["bytes", "packets"]:
+                ignored.add(f"{direction}_prio{prio}_{kind}")
+        # Totals for this host's virtual port on the NIC.
+        for cast in ["unicast", "multicast", "broadcast"]:
+            for kind in ["bytes", "packets"]:
+                ignored.add(f"{direction}_vport_{cast}_{kind}")
+
+    # Received frame-size buckets.
+    for size in ["64", "65_to_127", "128_to_255", "256_to_511", "512_to_1023",
+                 "1024_to_1518", "1519_to_2047", "2048_to_4095", "4096_to_8191",
+                 "8192_to_10239"]:
+        ignored.add(f"rx_{size}_bytes_phy")
+
+    # Per-channel/ring stats
+    rings = [""] + [str(n) for n in range(_MAX_QUEUES)]
+    for n in rings:
+        # Interrupt bookkeeping (NAPI): re-armed, completion events, poll calls.
+        for kind in ["arm", "events", "poll"]:
+            ignored.add(f"ch{n}_{kind}")
+        # csum_*: counters for how many packets when through various parts of hardware checksums offloading
+        # mpwqe_filler_*: space skipped at the end of a multi-packet receive buffer.
+        # pp_alloc_fast and pp_recycle_cached are counters for fast methods of managing pages to rx buffer
+        # Other pp_* indicate the system got overloaded and fell back to slower methods
+        for kind in ["bytes", "packets", "csum_complete", "csum_unnecessary",
+                     "mpwqe_filler_cqes", "mpwqe_filler_strides",
+                     "pp_alloc_fast", "pp_recycle_cached"]:
+            ignored.add(f"rx{n}_{kind}")
+        # cqes: send-completion notifications. mpwqe_*: transmit batching.
+        for kind in ["bytes", "packets", "cqes", "csum_partial", "csum_none",
+                     "mpwqe_blks", "mpwqe_pkts"]:
+            ignored.add(f"tx{n}_{kind}")
 
     # frozenset is an immutable set, so the list can't be modified by accident.
     return frozenset(ignored)
