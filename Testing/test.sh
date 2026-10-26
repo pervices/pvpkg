@@ -104,9 +104,10 @@ if [ -z $TEST_LIST ]; then
 		echo ":: Executing ${TEST_NAMES[$i]} test" | tee -a log.txt
 		pwd
 
-		python3 -u ${TEST_FILES[$i]}.py -p $PRODUCT -s $serial_number -o $REPORT_DIR -d $DOCKER_SHA
+		#python3 -u ${TEST_FILES[$i]}.py -p $PRODUCT -s $serial_number -o $REPORT_DIR -d $DOCKER_SHA
 
-		rv=$?
+		#rv=$?
+		rv=1
 		if [ $rv -eq 0 ]; then
 			PASSED_TESTS=$((PASSED_TESTS+1))
 			echo "${TEST_NAMES[$i]} test PASSED" | tee -a log.txt
@@ -126,9 +127,10 @@ else
 		echo ":: Executing ${TEST_NAMES[$idx]} test" | tee -a log.txt
 		pwd
 
-		python3 -u ${TEST_FILES[$idx]}.py -p $PRODUCT -s $serial_number -o $REPORT_DIR -d $DOCKER_SHA
+		#python3 -u ${TEST_FILES[$idx]}.py -p $PRODUCT -s $serial_number -o $REPORT_DIR -d $DOCKER_SHA
 
-		rv=$?
+		#rv=$?
+		rv=1
 		if [ $rv -eq 0 ]; then
 			PASSED_TESTS=$((PASSED_TESTS+1))
 			echo "${TEST_NAMES[$idx]} test PASSED" | tee -a log.txt
