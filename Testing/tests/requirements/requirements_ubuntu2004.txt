@@ -23,3 +23,5 @@ pyqt5~=5.14.1
 # Install zoneinfo backport since it was introduced in Python 3.9 (Focal uses 3.8)
 # Lets us use the IANA time zone database as recommended
 backports.zoneinfo~=0.2.1;python_version < '3.9'
+# Used to save and manipulate svg images
+svglib~=1.5.1

@@ -30,14 +30,15 @@ from reportlab.platypus import Image, Paragraph, Table, Frame, TableStyle
 
 #Plot and Data imports
 import matplotlib.pyplot as plt
-from PIL import Image
 from io import BytesIO
 
 from scipy.signal.windows import blackman
 from scipy.fft import fft, fftfreq, fftshift
 from scipy import signal
 from scipy.optimize import curve_fit
-from reportlab.lib.utils import ImageReader
+from reportlab.graphics import renderPDF
+from reportlab.graphics.shapes import Drawing
+from svglib.svglib import svg2rlg
 from scipy.signal import find_peaks
 
 import traceback
@@ -114,9 +115,7 @@ doc_title = "ship_report_" + serial_num + "_" + formattedDate
 #SETTING UP PATH DIRECTORIES
 current_dir = os.getcwd()
 output_dir = current_dir + "/ship_reports"
-plots_dir = output_dir + "/plots_" + formattedDate
 os.makedirs(output_dir, exist_ok=True)
-os.makedirs(plots_dir, exist_ok=True)
 
 #Asking what test to run and how many channels to run
 #NOTE: I think this could be expanded to just choosing which channels on the unit to test
@@ -293,8 +292,11 @@ page_total = ((2*pages_per_superplot)+2)*(8*(product == 'v') + 8*(product == 'a'
 
 
 #Adding logo - more efficent to just initialize at beginning
-h_img_data = open(current_dir + "/pervices-logo.png", "rb")
-header_img = ImageReader(h_img_data)
+logo_path = current_dir + "/pervices-logo.svg"
+header_img = svg2rlg(logo_path) if os.path.isfile(logo_path) else None
+if header_img is None:
+    log.pvpkg_log_error("SHIPTEST", "Could not load logo " + logo_path)
+    sys.exit(1)
 
 #Formatting Variables - just so they're easily accessible
 python_to_inch = 72
@@ -302,6 +304,48 @@ font = "Times-Roman"
 gen_font_size = 12
 bold_font = "Times-Bold"
 rcParams['agg.path.chunksize'] = 115
+# Keep plot text as real text when matplotlib writes SVG. The default ('path')
+# draws every glyph as a vector outline, which makes each plot several times
+# larger in the PDF.
+rcParams['svg.fonttype'] = 'none'
+
+'''Draws a vector Drawing (from svg2rlg) scaled into the box at (x, y) with size w x h.
+Raster images are rejected so they can't silently bloat the PDF.
+PARAMS: pdf, image, x, y, w, h
+RETURNS: NONE'''
+def drawVector(pdf, image, x, y, w, h):
+    if not isinstance(image, Drawing):
+        raise TypeError("shiptest only accepts vector images (reportlab Drawing), got {}"
+                        .format(type(image).__name__))
+    # saveState/restoreState push/pop the canvas transform, like a matrix
+    # stack, so the translate/scale don't leak into later drawing.
+    pdf.saveState()
+    pdf.translate(x, y)
+    pdf.scale(w / image.width, h / image.height)
+    renderPDF.draw(image, pdf, 0, 0)
+    pdf.restoreState()
+
+# The logo is stored once in the PDF as a form XObject (a reusable chunk of
+# drawing commands) and referenced from each page, instead of repeating its
+# paths on every page. Forms are per-canvas, so track which canvas has it.
+logo_form_canvas = None
+
+'''Draws the logo into the box at (x, y) with size w x h
+PARAMS: pdf, x, y, w, h
+RETURNS: NONE'''
+def drawLogo(pdf, x, y, w, h):
+    global logo_form_canvas
+    if logo_form_canvas is not pdf:
+        # Build the form at the logo's native size, origin (0, 0)
+        pdf.beginForm("pervices_logo")
+        renderPDF.draw(header_img, pdf, 0, 0)
+        pdf.endForm()
+        logo_form_canvas = pdf
+    pdf.saveState()
+    pdf.translate(x, y)
+    pdf.scale(w / header_img.width, h / header_img.height)
+    pdf.doForm("pervices_logo")
+    pdf.restoreState()
 
 '''Creates Title Page with board info, title, and unit info
 PARAMS: pdf
@@ -370,7 +414,7 @@ def titlePage(pdf):
     pdf.drawText(unitList)
 
     #Drawing Logo
-    pdf.drawImage(header_img, logo_x, logo_y, logo_width, logo_height)
+    drawLogo(pdf, logo_x, logo_y, logo_width, logo_height)
 
     #Adding the time, tx, rx board info in a table
     board_styles = ([('GRID', (0,0), (num_channels+1, 10), 1, colors.black),
@@ -385,7 +429,7 @@ def titlePage(pdf):
     page_count += 1
     pdf.showPage() #Page break on pdf
     pdf.drawText(title)
-    pdf.drawImage(header_img, logo_x, logo_y, logo_width, logo_height)
+    drawLogo(pdf, logo_x, logo_y, logo_width, logo_height)
     pg_x, pg_y = 650,10
     pg_num = pdf.beginText()
     pg_num.setTextOrigin(pg_x, pg_y)
@@ -410,7 +454,7 @@ def titlePage(pdf):
             page_count += 1
             pdf.showPage() #Page break on pdf
             pdf.drawText(title)
-            pdf.drawImage(header_img, logo_x, logo_y, logo_width, logo_height)
+            drawLogo(pdf, logo_x, logo_y, logo_width, logo_height)
             pg_x, pg_y = 650,10
             pg_num = pdf.beginText()
             pg_num.setTextOrigin(pg_x, pg_y)
@@ -478,7 +522,7 @@ def topOfPage(pdf, it):
     pdf.drawText(header)
 
     #Drawing logo
-    pdf.drawImage(header_img, logo_x, logo_y, logo_width, logo_height)
+    drawLogo(pdf, logo_x, logo_y, logo_width, logo_height)
 
     #Page Number
     pg_num = pdf.beginText()
@@ -596,20 +640,23 @@ def fftValues(channel, x, real, imag, fft_xs, fft_ys):
 
     return
 
-'''Turning the plot figure into a rasterized image and saving it to the directory
-PARAMS: plot, title, counter, pdf
-RETURNS: NONE'''
+'''Renders the current plot figure as an SVG in memory and loads it as a
+vector Drawing for the pdf
+PARAMS: title, counter (only used to identify the plot in error messages)
+RETURNS: Drawing'''
 def plotToPdf(title, counter):
 
-    #Saving plot to proper directory and converting to png
-    os.chdir(plots_dir) #ensuring in right directory
     plt.gcf().set_size_inches(8, 5)
 
-    plt.savefig((title + "_" + str(counter)), format='png', dpi=300)
+    #Write the svg into an in-memory buffer instead of a file
+    stream = BytesIO()
+    plt.savefig(stream, format="svg")
+    stream.seek(0) #rewind to the start before reading it back
 
-    #Opening file as io bits, then translating them to image reader
-    img_data = open(plots_dir + "/" + title + "_" + str(counter), "rb")
-    img = ImageReader(img_data)
+    #Parse the svg into vector shapes reportlab can draw
+    img = svg2rlg(stream)
+    if img is None:
+        raise ValueError("Could not parse plot " + title + "_" + str(counter))
 
     return img
 
@@ -1027,7 +1074,7 @@ def main(iterations):
 
         #Rasterizes the plot/figures and converts to png)
         tgth_plt_img = plotToPdf(("TogetherPlots_" + formattedDate), counter)
-        pdf.drawImage(tgth_plt_img, tgth_x, tgth_y, tgth_width, tgth_height)
+        drawVector(pdf, tgth_plt_img, tgth_x, tgth_y, tgth_width, tgth_height)
         plt.clf()
         plt.close()
 
@@ -1047,7 +1094,7 @@ def main(iterations):
             #Splits the plots up to maximum 4 per page
             start, end = z*4,min((z*4)+4,num_channels)
 
-            pdf.drawImage(IQ_plt_img[z], plot_img_pos_x, plot_img_pos_y, plot_img_width, plot_img_height)
+            drawVector(pdf, IQ_plt_img[z], plot_img_pos_x, plot_img_pos_y, plot_img_width, plot_img_height)
 
             #Table of IQ info
             IQ_table_info = [["IQ Data: "],["Channel"], ["Ampl I (fractional)"], ["Ampl Q (fractional)"]]
@@ -1078,7 +1125,7 @@ def main(iterations):
             topOfPage(pdf, str(counter))
             #Splits the plots up to maximum 4 per page
             start, end = z*4,min((z*4)+4,num_channels)
-            pdf.drawImage(FFT_plt_img[z], fft_pos_x, fft_pos_y, fft_width, fft_height)
+            drawVector(pdf, FFT_plt_img[z], fft_pos_x, fft_pos_y, fft_width, fft_height)
 
             #Tables stuff
             max_peak_table_info = [["Top Peaks (Frequencty, Amplitude):"], ["Channel"], ["Highest Peak"], ["Second Highest"], ["Third Highest"], ["Fourth Heighest"]]
@@ -1220,7 +1267,7 @@ def main(iterations):
     pdf.drawText(header)
 
     #Drawing logo
-    pdf.drawImage(header_img, logo_x, logo_y, logo_width, logo_height)
+    drawLogo(pdf, logo_x, logo_y, logo_width, logo_height)
 
     #Page Number
     pg_num = pdf.beginText()
@@ -1258,6 +1305,7 @@ def main(iterations):
     summary.drawOn(pdf, summary_x, summary_y)
 
     os.chdir(output_dir) #Ensuring we are saving in the output directory
+    log.pvpkg_log_info("SHIPTEST", "Saving PDF report to " + output_dir + "/" + file_title)
     pdf.save() #saving the pdf
 
 main(generate)
