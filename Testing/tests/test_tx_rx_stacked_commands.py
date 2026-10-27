@@ -44,7 +44,7 @@ def test(it, data):
         vsnk = engine.run(channels, it["wave_freq"], it["sample_rate"], it["center_freq"], it["tx_gain"], it["rx_gain"], tx_stack, rx_stack, targs.addr)
     except Exception as err:
         # Show user whenever engine.run fails and mark test as failed even if it will retry
-        log.pvpkg_log_error("TX_RX_STACKED_COMMANDS", 
+        log.pvpkg_log_error("TX_RX_STACKED_COMMANDS",
             "Exception occured while streaming.\nIteration {}\nException: {}\nTest will continue but be marked as failed."
             .format(str(it), str(err)))
         test_fail = 1
@@ -56,7 +56,7 @@ def test(it, data):
             # If we have exceeded the max attempts, mark this iteration as DNF
             log.pvpkg_log_error("TX_RX_STACKED_COMMANDS", "Reached max number of retries without getting any data. Missing data will be marked as DNF and the test will continue.")
             test_dnf = True
-            
+
     center_freq = "{:.1e}".format(it["center_freq"])
     wave_freq = "{:.1e}".format(it["wave_freq"])
     title_line1 = "Center freq: {}, Wave freq: {},".format(center_freq, wave_freq)

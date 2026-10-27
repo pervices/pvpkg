@@ -32,7 +32,7 @@ mkdir -p pkg-archive && touch 1.xz && mv *.xz pkg-archive/ && sync &&
 echo $USER"@"$HOST | sudo -S rm -fv /usr/bin/usrp2_card_burner /usr/lib/uhd/utils/usrp2_card_burner.py /usr/lib/uhd/utils/usrp2_recovery.py &&
 makepkg &&
 echo $USER"@"$HOST | sudo -S pacman -U --noconfirm *.pkg.tar.xz &&
-cp src/uhd/host/build/examples/test_tx_trigger tests/ && 
+cp src/uhd/host/build/examples/test_tx_trigger tests/ &&
 mv *.pkg.tar.xz pkg-archive/ && sync && cd scripts &&
 
 

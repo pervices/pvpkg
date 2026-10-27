@@ -46,7 +46,7 @@ def test(it, data):
                                     tx_stack, rx_stack, targs.addr)
     except Exception as err:
         # Test will be marked as failed with DNF for missing data but still continue to next iterations.
-        log.pvpkg_log_error("TX_UHD_TUNING", 
+        log.pvpkg_log_error("TX_UHD_TUNING",
             "Exception occured while streaming.\nIteration {}\nException: {}\nTest will continue but be marked as failed with DNF for missing data."
             .format(str(it), str(err)))
         # Mark iteration as DNF
@@ -67,7 +67,7 @@ def test(it, data):
     if iteration_dnf:
         for ch in channels:
             data.append([str(tx_dsp_sci) , str(tx_lo), str(center_freq), str(wave_freq), str(ch), "DNF", "DNF", "fail"])
-        
+
         # Put DNF in report instead of plots
         report.buffer_put("text_large", title)
         report.buffer_put("table_wide", test_info, "")

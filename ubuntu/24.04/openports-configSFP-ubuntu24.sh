@@ -106,10 +106,10 @@ network:
       # It is for a direct data connection.
       mtu: 9000
 EOF
-    
+
     echo "Applying new network configuration..."
     netplan apply
-    
+
     # Set secure permissions for the netplan config file.
     chmod 600 "$NETPLAN_FILE"
 
@@ -124,7 +124,7 @@ EOF
     MAX_RX=$(ethtool -g "${IFACE_NAME}" | awk '$1 == "RX:" {print $2; exit}')
     MAX_TX=$(ethtool -g "${IFACE_NAME}" | awk '$1 == "TX:" {print $2; exit}')
     echo "Max RX found: ${MAX_RX}, Max TX found: ${MAX_TX}"
-    
+
     echo -e "\n Creating systemd service for persistent ring buffer settings..."
     cat <<EOF > "$SERVICE_FILE"
 [Unit]

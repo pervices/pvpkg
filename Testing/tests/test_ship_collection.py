@@ -38,7 +38,7 @@ def test(Shiptest_Crimson1):
     #tx_stack = [ (10.0, it["sample_count" ]) ] # One seconds worth.
     #rx_stack = [ (10.0, it["sample_count"]) ]
     for center_freq in gen.Shiptest_Crimson1.center_freq_list:
-        
+
         tx_stack = [ (10.0, gen.Shiptest_Crimson1.sample_count) ] # One seconds worth.
         rx_stack = [ (10.0, int(gen.Shiptest_Crimson1.sample_count) ) ]
         vsnk = engine.run(gen.Shiptest_Crimson1.channels, gen.Shiptest_Crimson1.wave_freq, gen.Shiptest_Crimson1.sample_rate, center_freq, gen.Shiptest_Crimson1.tx_gain, gen.Shiptest_Crimson1.rx_gain, tx_stack, rx_stack)
@@ -50,21 +50,21 @@ def test(Shiptest_Crimson1):
         imags = []
         #i=0
         for ch, channel in enumerate(vsnk):
-        
+
             real = [datum.real for datum in channel.data()]
             imag = [datum.imag for datum in channel.data()]
             #print('the value of the real array is', real)
             #print('the value of the imag array is', imag)
-    
+
             reals.append(real)
             imags.append(imag)
             #print('the value of reals[0] is', reals[0])
             #print('the value of imags[0] is', imags[0])
-            
-    
+
+
             sigproc.dump_file_shiptest(vsnk, gen.Shiptest_Crimson1.wave_freq, center_freq, gen.Shiptest_Crimson1.sample_rate, gen.Shiptest_Crimson1.tx_gain, gen.Shiptest_Crimson1.sample_count)
-            
-    
+
+
 
 def main(iterations):
 

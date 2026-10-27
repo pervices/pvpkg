@@ -110,7 +110,7 @@ while [ $ping_status -eq 0 ]; do
         print_diagnostics
         exit 1
     fi
-    
+
     # Ping all channels
     for ch in ${!CHANNEL_IPS[@]}; do
         ch_ip=${CHANNEL_IPS[$ch]}
@@ -123,5 +123,5 @@ while [ $ping_status -eq 0 ]; do
         fi
     done
 
-    
+
 done

@@ -25,7 +25,7 @@ class TestArgs:
         parser.add_argument('-d', '--docker', required=False, default=None, help="Docker SHA")
         parser.add_argument('-a', '--addr', required=False, default=None, help="Management IP address of the unit, e.g. 192.168.10.2. Skips network discovery when provided.")
         args = parser.parse_args()
-        
+
         self.serial = args.serial
         if args.channels != None:
             if len(args.channels) > 8 or len(args.channels) < 1:
@@ -39,7 +39,7 @@ class TestArgs:
                 log.pvpkg_log_error(component, "Channels list must contain unique elements.")
             else:
                 self.channels = args.channels
-        
+
         if args.product == 'v':
             self.product = "Vaunt"
         elif args.product == 'a':

@@ -39,8 +39,8 @@ std_ratio = 4  #number std gets multiplied by for checks, normalized to a sample
 std_ratio_phase = 8  #number std gets multiplied by for checks, normalized to a sample size of 10
                      #This value is adjusted later depending on the number of runs.
 
-# Criteria  
-freq_std_thresh = 0.6    
+# Criteria
+freq_std_thresh = 0.6
 ampl_std_thresh = 0.001
 phase_mean_thresh = 0.0349066 #rad bound
 phase_std_thresh = 0.002
@@ -48,7 +48,7 @@ phase_std_thresh = 0.002
 # Number of test runs per frequency
 num_runs = 15
 
-now = datetime.now() 
+now = datetime.now()
 iso_time = now.strftime("%Y%m%d%H%M%S.%f")
 
 #Setting up directories for plots
@@ -109,9 +109,9 @@ def bestFit(x, y, wave_freq):
     while fit_phase >= (2*math.pi):
         fit_phase -= (2*math.pi)
     fit_offset = param[3]
-    best_fit = waveEquation(x, fit_amp, fit_freq, fit_phase, fit_offset) 
+    best_fit = waveEquation(x, fit_amp, fit_freq, fit_phase, fit_offset)
 
-    return (best_fit, fit_offset), (fit_amp, fit_freq, fit_phase) 
+    return (best_fit, fit_offset), (fit_amp, fit_freq, fit_phase)
 
 def makePlots(x_time, real_data, best_fit_data, offset_data, wave_freq, sample_rate):
     plotted_samples = int(round(1/(int(wave_freq)/sample_rate))*num_output_waves)
@@ -153,7 +153,7 @@ def makePlots(x_time, real_data, best_fit_data, offset_data, wave_freq, sample_r
         img1 = report.get_image_from_io_stream(s1)
         plt.clf()
 
-        #Layout of the combined plot 
+        #Layout of the combined plot
         fig = plt.figure("Amplitude vs Time All Channels")
         plt.title("Amplitude versus Samples: All Channels for Run {}".format(run))
         plt.xlabel("Time")
@@ -262,7 +262,7 @@ def main():
                 vsnk = engine.run(channels, it["wave_freq"], sample_rate, it["center_freq"], it["tx_gain"], it["rx_gain"], tx_stack, rx_stack, targs.addr)
             except Exception as err:
                 # Test will be marked as failed with DNF for missing data but still continue to next iterations.
-                log.pvpkg_log_error("RX_PHASE_2", 
+                log.pvpkg_log_error("RX_PHASE_2",
                     "Exception occured while streaming.\nIteration {}\nException: {}\nTest will continue but be marked as failed with DNF for missing data."
                     .format(str(it), str(err)))
                 # Set data for this run to numpy NaN since it will be ignored for calculations like max/min and setting it as a string "DNF" would break functions that expect numbers.
@@ -276,7 +276,7 @@ def main():
                 offsets.append(dnf_data)
                 # Mark test as failed and continue to next run of iteration
                 fail_flag = 1
-                continue                
+                continue
 
             # Number of waves to cutoff before starting analysis
             begin_cutoff = int(round((1/(wave_freq/sample_rate))*begin_cutoff_waves))
@@ -290,7 +290,7 @@ def main():
             best = []
             ch_real_data = []
 
-            for ch, channel in enumerate(vsnk): 
+            for ch, channel in enumerate(vsnk):
                 real = [datum.real for datum in channel.data()]
 
                 if len(real) == 0:
@@ -338,7 +338,7 @@ def main():
         ampl_df = pd.DataFrame(columns=channel_list, data=ampl_delta_matrix)
         phase_df = pd.DataFrame(columns=channel_list, data=phase_delta_matrix)
         offset_df = pd.DataFrame(columns=channel_list, data=offset_delta_matrix)
-        
+
         # Add summary statistics to the dataframes
         freq_df = pd.concat([freq_df.describe().loc[['min', 'max', 'mean', 'std']], freq_df])
         ampl_df = pd.concat([ampl_df.describe().loc[['min', 'max', 'mean', 'std']], ampl_df])
@@ -359,7 +359,7 @@ def main():
             log.pvpkg_log_info("RX_PHASE_2", "Replacing old std_ratio_phase (=" + str(std_ratio) + ") with updated std_ratio_phase (="+ str(alt_std_ratio) + ") due to iteration count.")
             std_ratio_phase = alt_std_ratio
 
-        # Basic test to check if signal is present on our baseline channel. 
+        # Basic test to check if signal is present on our baseline channel.
         if wave_freq - (std_ratio * freq_std_thresh) < freq_df.loc['mean'][channel_list[0]] < wave_freq + (std_ratio * freq_std_thresh):
             frameinfo = getframeinfo(currentframe())
             component = "{}:{}".format(frameinfo.filename, frameinfo.lineno)
@@ -386,7 +386,7 @@ def main():
             ampl_res.at['min', ch] = boolToWord(ampl_df.loc['min'][ch] > (ampl_df.loc['mean'][ch] - 4*ampl_df.loc['std'][ch]))
             ampl_res.at['max', ch] = boolToWord(ampl_df.loc['max'][ch] < (ampl_df.loc['mean'][ch] + 4*ampl_df.loc['std'][ch]))
             ampl_res.at['std', ch] = boolToWord(ampl_df.loc['std'][ch] < ampl_std_thresh)
-        
+
         phase_res = pd.DataFrame(columns=result_cols)
         phase_res['Test'] = ['min', 'max', 'std']
         phase_res['Criteria'] = ['> mean - 4*std', '< mean + 4*std', "< " + str(ampl_std_thresh)]
@@ -448,12 +448,12 @@ def main():
         report.buffer_put("text", " ")
         report.buffer_put("table_wide", [tuple(' ') + tuple(offset_df.columns.tolist())] + offset_df.fillna("DNF").to_records(index=True).tolist(), "Offset Data:")
         report.buffer_put("pagebreak")
-    
+
     # Add overall summary table
     report.insert_text_large("Test Overview:")
     report.insert_table(summary_table, 20)
     report.new_page()
-    
+
     # get back outside to save
     os.chdir(parent_dir)
     report.draw_from_buffer()

@@ -81,7 +81,7 @@ def dump_file_shiptest_bin(vsnk, wave_freq, center_freq, sample_rate, tx_gain, s
             #Or, try this - this should just store the array.
             f.write(binary_format)
     return None
-    
+
 
 def fundamental(real_wave, sample_rate):
 

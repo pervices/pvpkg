@@ -857,7 +857,7 @@ def main(iterations):
             fft_threads[-1].start()
 
 
-        
+
         # Determines the range of the y axis to plot
         # TODO: get max and min of the displayed range, currently it gets the max and min of everything
         amplYTop = max(reals.max(), imags.max()) * 1.1
@@ -914,10 +914,10 @@ def main(iterations):
             #The actual plotting of the graphs
             for i, title in zip(range(start, end), channel_names[start:end]):
                 axis.append(plt.subplot(fig[0:1, ax_st:ax_end])) #Each run will add the next plot area to the axis
-                
+
                 # Sets the y axis of each of the individual plots to be the same
                 axis[-1].set_ylim(bottom = amplYBottom, top = amplYTop, auto = False)
-                
+
                 IQ_plots.append(subPlotIQs(x_time[0:plotted_samples], reals[i][0:plotted_samples], imags[i][0:plotted_samples], best_fit_reals[i][0:plotted_samples], best_fit_imags[i][0:plotted_samples], offset_reals[i], offset_imags[i], axis[i], title, period_samples))
                 ax_st = ax_end + 2
                 ax_end = ax_st + 15
@@ -978,7 +978,7 @@ def main(iterations):
 
             for i, title in zip(range(start, end), channel_names[start:end]):
                 axis.append(plt.subplot(fig[0:1, ax_st:ax_end]))
-                
+
                 # Sets the y axis of each of the individual plots to be the same
                 axis[-1].set_ylim(bottom = amplYBottom, top = amplYTop, auto = False)
 

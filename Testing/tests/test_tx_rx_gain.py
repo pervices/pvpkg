@@ -38,7 +38,7 @@ def main(iterations, title="TX RX Gain Test") -> int:
             vsnk = engine.run(channels, it["wave_freq"], it["sample_rate"], it["center_freq"], it["tx_gain"], it["rx_gain"], tx_stack, rx_stack, targs.addr)
         except Exception as err:
             # Test will be marked as failed with DNF for missing data but still continue to next iterations.
-            log.pvpkg_log_error("TX_RX_GAIN", 
+            log.pvpkg_log_error("TX_RX_GAIN",
                 "Exception occured while streaming.\nIteration {}\nException: {}\nTest will continue but be marked as failed with DNF for missing data."
                 .format(str(it), str(err)))
             iteration_areas.append("DNF")

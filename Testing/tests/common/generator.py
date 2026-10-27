@@ -122,7 +122,7 @@ class crimson_properties:
                 "Detected system sample rate of '{}' which does not match any of the supported rates: {}\nTests will run for 325MSps instead."
                     .format(system_rate, valid_system_rates))
             system_rate = 325e6
-        
+
         self.system_rate = system_rate
 
 class crimson:
@@ -464,7 +464,7 @@ class calamine:
         @staticmethod
         def phaseCoherency():
             log.pvpkg_log_info("GENERATOR", sys._getframe().f_code.co_name)
-            sample_rate = 25000000      # 25MSps  
+            sample_rate = 25000000      # 25MSps
             sample_count = int(round(sample_rate/1000))
             tx_gain = 5
             rx_gain = 5

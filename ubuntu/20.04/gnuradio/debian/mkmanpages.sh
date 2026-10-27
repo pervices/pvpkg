@@ -36,32 +36,32 @@ usrp_rx_hrpt_nogui \
 exit 0
 
 W: gnuradio: binary-without-manpage usr/bin/create-gnuradio-out-of-tree-project
-N: 
+N:
 N:    Each binary in /usr/bin, /usr/sbin, /bin, /sbin or /usr/games should
 N:    have a manual page
-N:    
+N:
 N:    Note that though the man program has the capability to check for several
 N:    program names in the NAMES section, each of these programs should have
 N:    its own manual page (a symbolic link to the appropriate manual page is
 N:    sufficient) because other manual page viewers such as xman or tkman
 N:    don't support this.
-N:    
+N:
 N:    If the name of the man page differs from the binary by case, man may be
 N:    able to find it anyway; however, it is still best practice to make the
 N:    case of the man page match the case of the binary.
-N:    
+N:
 N:    If the man pages are provided by another package on which this package
 N:    depends, lintian may not be able to determine that man pages are
 N:    available. In this case, after confirming that all binaries do have man
 N:    pages after this package and its dependencies are installed, please add
 N:    a lintian override.
-N:    
+N:
 N:    Refer to Debian Policy Manual section 12.1 (Manual pages) for details.
-N:    
+N:
 N:    Severity: normal, Certainty: possible
-N:    
+N:
 N:    Check: manpages, Type: binary
-N: 
+N:
 W: gnuradio: binary-without-manpage usr/bin/file_rx_hrpt
 W: gnuradio: binary-without-manpage usr/bin/gnuradio-companion
 W: gnuradio: binary-without-manpage usr/bin/gnuradio-config-info

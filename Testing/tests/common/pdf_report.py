@@ -52,7 +52,7 @@ class ClassicShipTestReport:
         self.output_dir = output_dir
         self.doc_title  = self.formattedDate + "-" + doc_title + "-" + serial_num
         self.file_title = self.doc_title
-        #NOTE: We later update the doc_title, file_title, and filename with unit_name 
+        #NOTE: We later update the doc_title, file_title, and filename with unit_name
         #      from the unit
         self.filename = self.output_dir + "/" + self.doc_title + ".pdf"
 
@@ -163,7 +163,7 @@ class ClassicShipTestReport:
     """
         Insert two images side-by-side with the image height adjusted
         based on the number of 93.5pt rows specified.
-        This allows different sized images. For example, 
+        This allows different sized images. For example,
         num_rows=[1,2] would give the second image twice the height of the first.
 
         num_rows defaults to [2, 2]
@@ -179,7 +179,7 @@ class ClassicShipTestReport:
         # Move to new page if there is not enough y space for the tallest image
         if self.cursor_y < (row_height*max(rows) + 16):
             self.new_page()
-        
+
         if desc != None:
             self.insert_text(desc)
 

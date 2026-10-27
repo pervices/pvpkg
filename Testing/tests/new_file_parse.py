@@ -23,7 +23,7 @@ import glob
 import re
 from scipy.signal import find_peaks
 import scipy.fftpack
-import glob   
+import glob
 import os
 import calendar
 from datetime import date
@@ -59,13 +59,13 @@ def  numerical_sort(value):
 
 # for infile in sorted(glob.glob('*.dat'), key=numerical_sort):
 #     print("the infile being processed is:", infile)
-    
+
 os.chdir(path)
 files = filter(os.path.isfile, os.listdir(path))
 files = [os.path.join(path, f) for f in files] # add path to each file
 
 #print(sorted(files))
-chan=gen.Shiptest_Crimson1.channels 
+chan=gen.Shiptest_Crimson1.channels
 for i in range(len(CF_table)):
     for file in sorted(files):
         if file.endswith(".dat") and CF_table[i] in file:
@@ -74,7 +74,7 @@ for i in range(len(CF_table)):
             I,Q=np.loadtxt(file, unpack=True)
             I_array.append(I)
             Q_array.append(Q)
-   
+
             #generator parameters parsed from file name
             wave_freq=re.findall("_WF_(\d+)_",file)
             center_freq=re.findall("_CF_(\d+)_",file)
@@ -89,21 +89,21 @@ for i in range(len(CF_table)):
             center_freq_array.append(center_freq)
             gain=int(gain[0])
             sample_count=int(len(sample_count[0]))
-            
+
             channel=re.findall("CH_(\d+)", file)
-            
+
             channel=int(channel[0])
             channels_array.append(channel)
             sample_count=np.linspace(0,2560,2560)
-            
-            
+
+
             I_arr=np.asarray(I_array)  #converted lists to numpy array
             Q_arr=np.asarray(Q_array)
             #IQ_array=[]
             IQ= I_arr + 1j*Q_arr
             IQ_array.append(IQ)
-        
-            
+
+
         I_array_2=[] #8 arrays of I grouped in 4 Channels of same center frequency
         Q_array_2=[] #8 arrays of Q grouped in 4 Channels of same center frequency
         IQ_array_2=[]
@@ -115,35 +115,35 @@ for i in range(len(CF_table)):
             #print(new_I_array)
             x+=1
             I_array_2.append(new_I_array)
-            
 
-        x=0   
+
+        x=0
         for v in range(0,len(Q_array),4): #creates array Q samples for channel 0,1,2,3 for each CF
             new_Q_array=Q_array[len(chan)*x:len(chan)*x+len(chan)]
             x+=1
             Q_array_2.append(new_Q_array)
-            
-        x=0    
+
+        x=0
         for q in range(0,len(IQ_array), 4): #creates array of IQ complex samples for channel 0,1,2,3 for each CF
             new_IQ_array=IQ_array[len(chan)*x:len(chan)*x+len(chan)]
             x+=1
             IQ_array_2.append(new_IQ_array)
-            
+
         x=0
         for c in range(0, len(channels_array),4): #creates array of channels for each CF
             new_chan=channels_array[len(chan)*x:len(chan)*x+len(chan)]
             #print(new_chan)
             x+=1
             channels_array_2.append(new_chan)
-            
+
         x=0
-        for f in range(0, len(center_freq_array),4): 
+        for f in range(0, len(center_freq_array),4):
             new_cf=center_freq_array[len(chan)*x:len(chan)*x+len(chan)]
             x+=1
             center_freq_array_2.append(new_cf)
-            
 
-# #####----------------------------TIME, SAMPLE AND FFT PLOTS--------------------------------------------------------------------####       
+
+# #####----------------------------TIME, SAMPLE AND FFT PLOTS--------------------------------------------------------------------####
 
 output_path1=path +'/samp_vs_time'
 os.makedirs(output_path1, exist_ok=True)
@@ -157,12 +157,12 @@ for I, Q in zip(I_array_2, Q_array_2):
     log.pvpkg_log("{} {}".format(center_freq_array_2[x][0],center_freq_array_2[x][1]))
     log.pvpkg_log("{} {}".format(channels_array_2[x][0],channels_array_2[x][1]))
     #print(c,f)
-    
+
     plt.figure(1)
     fig1, axis= plt.subplots(2,2, figsize=(6,6))
     #plt.title("Amp vs. Sample Plot of center freq of {}".format(center_freq), loc='center')
     plt.figtext(0.1 ,0,("wave_Freq=",wave_freq, "center_freq=", center_freq_array_2[x][1], "sample rate=", sample_rate,"gain=",gain))
-    
+
     axis[0,0].plot(sample_count[0:100], I[0][0:100], label='in-phase')
     axis[0,0].plot(sample_count[0:100],Q[0][0:100], label='quadrature')
     axis[0,1].plot(sample_count[0:100], I[1][0:100], label='in-phase')
@@ -179,7 +179,7 @@ for I, Q in zip(I_array_2, Q_array_2):
     x+=1
     plt.savefig("samp_vs_time_{}.png".format(x))
     plt.show()
-    
+
 
 
 #FFTs of 4 CH in each center freq
@@ -195,8 +195,8 @@ for vec in IQ_array_2:
         d=1/sample_rate # sample spacing
         bin_size=sample_rate/n
         w=blackman(n)
-    
-        
+
+
         ywf=fft(IQ*w)
         ywf_array.append(ywf)
         xf=fftfreq(n,d)
@@ -223,7 +223,7 @@ for Fx, Fy in zip(xf_array_2, ywf_array_2):
     fig2, axis= plt.subplots(2,2, figsize=(6,6))
     # plt.title("Amp vs. Sample Plot of center freq of {}".format(center_freq), loc='center')
     plt.figtext(0.1 ,0,("wave_Freq=",wave_freq, "center_freq=", center_freq_array[x], "sample rate=", sample_rate,"gain=",gain))
-    
+
     axis[0,0].plot(scipy.fftpack.fftshift(Fx[0]), scipy.fftpack.fftshift(np.abs(Fy[0])))
     axis[0,1].plot(scipy.fftpack.fftshift(Fx[1]), scipy.fftpack.fftshift(np.abs(Fy[1])))
     axis[1,0].plot(scipy.fftpack.fftshift(Fx[2]), scipy.fftpack.fftshift(np.abs(Fy[2])))
@@ -236,7 +236,7 @@ for Fx, Fy in zip(xf_array_2, ywf_array_2):
     x+=1
     plt.show()
 
-#converting to dB 
+#converting to dB
 ywf_array_normalized=[]
 for Fy in ywf_array_2:
     max_amp_new=20*np.log(2**16)
@@ -244,13 +244,13 @@ for Fy in ywf_array_2:
     amp_dB_fs_new=amp_dB_new - max_amp_new
     ywf_array_normalized.append(amp_dB_fs_new)
 
-    
+
 #peak finding using scipy
 #determining the height - 50dB will be the threshold for peak finding
 max_peaks=[]
 for h in ywf_array_normalized:
     for h_2 in h:
-        height_max=max(h_2) 
+        height_max=max(h_2)
         max_peaks.append(height_max)
 
 height= np.array(max_peaks) - 50
@@ -261,9 +261,9 @@ for x in range(0,len(CF_table),1):
     height_array.append(new_height_array)
 
 
-#peaks_fx=[] 
+#peaks_fx=[]
 peaks_fy=[] #xy-coordinate of peaks of the normalized FFT in grouped 4 channels/center freq
-peaks_fx=[] 
+peaks_fx=[]
 max_fy=[]
 for ywf in ywf_array_normalized:
     for y in ywf:
@@ -279,7 +279,7 @@ peaks_fx_array=[]
 x=0
 for x in range(0,len(CF_table),1):
     new_fx=peaks_fx[len(chan)*x:len(chan)*x+len(chan)]
-    peaks_fx_array.append(new_fx) 
+    peaks_fx_array.append(new_fx)
     x+=1
 
 
@@ -288,7 +288,7 @@ for x in range(0,len(CF_table),1):
     new_fy=peaks_fy[len(chan)*x:len(chan)*x+len(chan)]
     peaks_fy_array.append(new_fy)
     x+=1
-        
+
 max_fy_array=np.array(max_fy)
 max_fy_peaks=[]
 for y in range(0, len(CF_table),1):
@@ -305,10 +305,10 @@ for yf in ywf_array_normalized:
         sum_fft_bins=np.sum(ywf)
         avg=np.real(sum_fft_bins/len(ywf))
         avg_array=np.full([len(ywf)], avg)
-        average_NF.append(avg_array)       
+        average_NF.append(avg_array)
 
 
-#putting average noise floor array 
+#putting average noise floor array
 avg_noise_floor_array=[]
 x=0
 for NF in range(0,len(CF_table),1):
@@ -336,7 +336,7 @@ peaks_fx_array_np=np.asarray(peaks_fx_array)
 
 #x-y coordinates of peaks
 peak_x=[]
-peak_y=[] 
+peak_y=[]
 for i, j in zip(peaks_fx_array, peaks_fy_array):
     #print('value issss', i, j)
     for a, b in zip(i,j):
@@ -345,8 +345,8 @@ for i, j in zip(peaks_fx_array, peaks_fy_array):
         log.pvpkg_log('the value 0 is'+str(a[index])+maxim)
         peak_x.append(np.ndarray.item((a[index])))
         peak_y.append(maxim)
-        
-        
+
+
 peak_x_array_2=[]
 x=0
 for c in range(0, len(CF_table),1):
@@ -360,7 +360,7 @@ for d in range(0, len(CF_table),1):
     new_peak=peak_y[len(chan)*x:len(chan)*x+len(chan)]
     x+=1
     peak_y_array_2.append(new_peak)
-    
+
 #sorting top 5 peaks highest to lowest
 x=0
 top_5_peaks=[]
@@ -382,14 +382,14 @@ for peak in range(0,len(CF_table),1):
         top_5_peaks.append(ranked2)
         top_5_peaks.append(ranked3)
     x+=1
-    
+
 top_5_peaks_by_CF=[]
 x=0
 for i in range(0, len(CF_table),1):
     new_peak=top_5_peaks[len(chan)*x:len(chan)*x+len(chan)]
     x+=1
     top_5_peaks_by_CF.append(new_peak)
-    
+
 #Dynamic Range of top 5 peaks
 dynamic_range_array=[]
 for p,NF in zip(top_5_peaks_by_CF, avg_noise_floor_array):
@@ -397,7 +397,7 @@ for p,NF in zip(top_5_peaks_by_CF, avg_noise_floor_array):
         #print("the value of dynamic range is", p, NF[0:5])
         dynamic_range=abs(np.subtract(i,j[0:5]))
         dynamic_range_array.append(dynamic_range)
-        
+
 dynamic_range_by_CF=[]
 x=0
 for i in range(0, len(CF_table),1):
@@ -414,19 +414,19 @@ for Fx, Fy, NF, xf,yf  in zip(xf_array_2, ywf_array_normalized, avg_noise_floor_
     #print("the value of xf,yf is:", xf[1],yf[1])
 
     plt.figure(3)
-    fig3, axis= plt.subplots(2,2, figsize=(6,6))    
-    #plt.figtext(0.1 ,0,("wave_Freq=",wave_freq, "center_freq=",center_freq_array[x], "sample rate=", sample_rate,"gain=",gain))        
-    #fig4, axis= plt.subplots(2,2, figsize=(20,15)) 
+    fig3, axis= plt.subplots(2,2, figsize=(6,6))
+    #plt.figtext(0.1 ,0,("wave_Freq=",wave_freq, "center_freq=",center_freq_array[x], "sample rate=", sample_rate,"gain=",gain))
+    #fig4, axis= plt.subplots(2,2, figsize=(20,15))
     axis[0,0].plot(scipy.fftpack.fftshift(Fx[0]), scipy.fftpack.fftshift(Fy[0]))
     axis[0,1].plot(scipy.fftpack.fftshift(Fx[1]), scipy.fftpack.fftshift(Fy[1]))
     axis[1,0].plot(scipy.fftpack.fftshift(Fx[2]), scipy.fftpack.fftshift(Fy[2]))
     axis[1,1].plot(scipy.fftpack.fftshift(Fx[3]), scipy.fftpack.fftshift(Fy[3]))
-        
+
     axis[0,0].set_title("Channel {}".format(channels_array_2[x][0], loc='center'))
     axis[0,1].set_title("Channel {}".format(channels_array_2[x][1], loc='center'))
     axis[1,0].set_title("Channel {}".format(channels_array_2[x][2], loc='center'))
     axis[1,1].set_title("Channel {}".format(channels_array_2[x][3], loc='center'))
-        
+
     axis[0,0].plot(scipy.fftpack.fftshift(Fx[0]), NF[0], label='NF= {} dB'.format(round(NF[0][0])))
     axis[0,1].plot(scipy.fftpack.fftshift(Fx[1]), NF[1], label='NF= {} dB'.format(round(NF[1][0])))
     axis[1,0].plot(scipy.fftpack.fftshift(Fx[2]), NF[2],label='NF= {} dB'.format(round(NF[2][0])))
@@ -447,7 +447,7 @@ for Fx, Fy, NF, xf,yf  in zip(xf_array_2, ywf_array_normalized, avg_noise_floor_
     plt.savefig("FFT_plot{}.png".format(x))
     x+=1
 
-#####----------------------------Table of Peaks, Dynamic range, SDR Info, and Testing PASS/FAIL--------------------------------------------------------------------####  
+#####----------------------------Table of Peaks, Dynamic range, SDR Info, and Testing PASS/FAIL--------------------------------------------------------------------####
 
 #Tables of 5 peaks, dynamic range
 output_path3=path +'/peaks_table'
@@ -459,7 +459,7 @@ for i in range(0,len(CF_table),1):
     cols=8
     ax.set_ylim(-1, rows + 1)
     ax.set_xlim(0, cols + .5)
-    
+
     data=[{'freq': None,                                'channel': chan[0], 'Highest Peak': round(top_5_peaks_by_CF[i][0][0]), 'Dynamic Range':round(dynamic_range_by_CF[i][0][0]),  '2nd Highest Peak': round(top_5_peaks_by_CF[i][0][1]), '3rd Highest Peak': round(top_5_peaks_by_CF[i][0][2]), '4th Highest Peak':round(top_5_peaks_by_CF[i][0][3]),'5th Highest Peak': round(top_5_peaks_by_CF[i][0][4])},
           {'freq': None,                                'channel': chan[1], 'Highest Peak': round(top_5_peaks_by_CF[i][1][0]), 'Dynamic Range':round(dynamic_range_by_CF[i][1][0]),'2nd Highest Peak': round(top_5_peaks_by_CF[i][1][1]), '3rd Highest Peak': round(top_5_peaks_by_CF[i][1][2]), '4th Highest Peak': round(top_5_peaks_by_CF[i][1][3]),'5th Highest Peak': round(top_5_peaks_by_CF[i][1][4])},
           {'freq': None,                                'channel': chan[2], 'Highest Peak': round(top_5_peaks_by_CF[i][2][0]), 'Dynamic Range':round(dynamic_range_by_CF[i][2][0]),'2nd Highest Peak': round(top_5_peaks_by_CF[i][2][1]), '3rd Highest Peak': round(top_5_peaks_by_CF[i][2][2]), '4th Highest Peak': round(top_5_peaks_by_CF[i][2][3]),'5th Highest Peak': round(top_5_peaks_by_CF[i][2][4])},
@@ -503,7 +503,7 @@ for i in range(0,len(CF_table),1):
         plt.savefig("Top_5_peaks_table{}.png".format(i))
         #plt.show()
 
-#image of uhd_usrp_info -v command 
+#image of uhd_usrp_info -v command
 output_path4=path +'/version_info'
 os.makedirs(output_path4, exist_ok=True)
 os.chdir(output_path4)
@@ -515,13 +515,13 @@ plt.text(0,1, output)
 plt.savefig('crimson_versions.png')
 plt.show()
 
-        
+
 #Test that all channels at the frequency have equivalent gain (within 5dB of eachother)
 test_info=[]
 for i in max_fy_peaks:
     max_fy=np.real(max(i))
     min_fy=np.real(min(i))
-    
+
     #test_info=[]
     if np.logical_and(i <= min_fy + 5, i >= max_fy - 5).all():
         test_out_pass=("Center Peaks= {}. \n FFT peak of all channels are within 5dB of one another, PASS".format(np.real(i)))
@@ -532,25 +532,25 @@ for i in max_fy_peaks:
         test_out_fail=("Center Peaks= {}.FFT peak of all channels are NOT within 5dB of one another, FAIL".format(np.real(i)))
         test_info.append(test_out_fail)
         log.pvpkg_log_info("NEW_FILE_PARSE", str(test_out_fail))
-            
+
 output_path5=path +'/version_info'
 os.makedirs(output_path5, exist_ok=True)
-os.chdir(output_path5)            
+os.chdir(output_path5)
 #testing info
 fig, ax=plt.subplots(figsize=(14,10))
 output= str(test_info)
 plt.text(0.2,1, output)
 plt.axis('off')
 plt.savefig('testing.png')
-plt.show()        
-            
-#####----------------------------Report Generation--------------------------------------------------------------------####  
+plt.show()
+
+#####----------------------------Report Generation--------------------------------------------------------------------####
 from PIL import Image
 
 #report directory
 output_path6=path +'/report'
 os.makedirs(output_path6, exist_ok=True)
-os.chdir(output_path6)   
+os.chdir(output_path6)
 
 # set font
 plt.rcParams['font.family'] = 'sans-serif'
@@ -565,7 +565,7 @@ imagebox1 = OffsetImage(logo, zoom=1)
 a = AnnotationBbox(imagebox1, (0.5, 0.6),frameon=False)
 ax.add_artist(a)
 ax.set_facecolor('white')
-plt.axis('off')   
+plt.axis('off')
 Header = 'CRIMSON TNG:\n SHIPTEST REPORT'
 Contact = 'Date: {}'.format(date.today())
 page = 'Page 1'
@@ -640,7 +640,7 @@ for file in sorted(files):
     imagebox1 = OffsetImage(samp_time_plot_1, zoom=1)
     a1 = AnnotationBbox(imagebox1, (0.48, 0.5),frameon=False)
     ax.add_artist(a1)
-    Header = 'Time Plot for Center Frequency {} MHz'.format(gen.Shiptest_Crimson1.center_freq_list[i]/1e6) 
+    Header = 'Time Plot for Center Frequency {} MHz'.format(gen.Shiptest_Crimson1.center_freq_list[i]/1e6)
     page= 'Page {}'.format(4 + i)
     # add text
     plt.annotate(Header, (.1,.85), weight='regular', fontsize=20, alpha=1)
@@ -669,7 +669,7 @@ for file in sorted(files):
     imagebox2 = OffsetImage(FFT_plot_1, zoom=1)
     a2 = AnnotationBbox(imagebox2, (0.48, 0.5),frameon=False)
     ax.add_artist(a2)
-    Header = 'FFT for Center Frequency {} MHz'.format((gen.Shiptest_Crimson1.center_freq_list[i]/1e6)) 
+    Header = 'FFT for Center Frequency {} MHz'.format((gen.Shiptest_Crimson1.center_freq_list[i]/1e6))
     page= 'Page {}'.format(11+i)
     # add text
     plt.annotate(Header, (.1,.85), weight='regular', fontsize=20, alpha=1 )
@@ -705,8 +705,7 @@ for file in sorted(files):
     plt.savefig('/home/jade/Desktop/dump_20220805153333.187244/report/page_{}'.format(20+i), dpi=300, bbox_inches='tight')
     i+=1
 
-            
-            
-            
-            
- 
+
+
+
+

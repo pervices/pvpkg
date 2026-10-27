@@ -46,7 +46,7 @@ def test(it):
 
         log.pvpkg_log("channel %2d: real coherency %f" % (ch, real_coherency))
         log.pvpkg_log("channel %2d: imag coherency %f" % (ch, imag_coherency))
-        
+
 def main(iterations):
 
     for it in iterations:
