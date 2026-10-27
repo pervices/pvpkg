@@ -17,9 +17,15 @@ from reportlab.lib.pagesizes import letter, landscape
 from reportlab.lib.enums import TA_LEFT
 from reportlab.platypus import Image, Paragraph, Table, Frame, TableStyle
 
-from PIL import Image
 from io import BytesIO
-from reportlab.lib.utils import ImageReader
+from reportlab.graphics import renderPDF
+from reportlab.graphics.shapes import Drawing
+from svglib.svglib import svg2rlg
+import matplotlib
+
+# Keep plot text as real text when matplotlib writes SVG. The default ('path') draws every glyph as a vectors
+# rcParams is process-wide
+matplotlib.rcParams['svg.fonttype'] = 'none'
 
 from . import log
 
@@ -42,6 +48,8 @@ class ClassicShipTestReport:
     channel_names = ["Channel A", "Channel B", "Channel C", "Channel D"]
     # This stores the elements temporarily before calling draw all
     buffer = []
+    # XObject used to store the logo so it only needs to be stored once per PDF
+    logo_form = None
 
     def __init__(self, doc_title, serial_num = "SERIAL", output_dir = None, docker_sha = None, addr = None):
         self.serial_num = serial_num
@@ -120,6 +128,24 @@ class ClassicShipTestReport:
                 log.pvpkg_log_error("PDF_REPORT", "Wrong element type in report buffer")
 
     """
+        Draw a vector Drawing into the box at (x, y) with size w x h.
+        Raster images are rejected to keep the PDF size small.
+    """
+    def _draw_image(self, image, x, y, w, h):
+        if not isinstance(image, Drawing):
+            raise TypeError("pdf_report only accepts vector images (reportlab Drawing, "
+                            "e.g. from get_drawing_from_svg_io_stream()), got {}"
+                            .format(type(image).__name__))
+        # Save current state so we can restore it later
+        self.c.saveState()
+        # Translate, scale, then draw the SVG
+        self.c.translate(x, y)
+        self.c.scale(w / image.width, h / image.height)
+        renderPDF.draw(image, self.c, 0, 0)
+        # Restore the previous state to avoid size effects
+        self.c.restoreState()
+
+    """
         Insert an image that spans the width of a page
     """
     def insert_image(self, image, desc=None):
@@ -134,7 +160,7 @@ class ClassicShipTestReport:
         # Get enough space
         self.move_cursor(0, 274 + 5)
 
-        self.c.drawImage(image, 122, self.cursor_y, 367, 274)
+        self._draw_image(image, 122, self.cursor_y, 367, 274)
 
     """
         Insert two images side by side
@@ -152,11 +178,11 @@ class ClassicShipTestReport:
         self.move_cursor(0, 187 + 3)
 
         try:
-            self.c.drawImage(images[0], 50, self.cursor_y, 250, 187)
+            self._draw_image(images[0], 50, self.cursor_y, 250, 187)
         except:
             log.pvpkg_log_error("PDF_REPORT", "Left image not found")
         try:
-            self.c.drawImage(images[1], 312, self.cursor_y, 250, 187)
+            self._draw_image(images[1], 312, self.cursor_y, 250, 187)
         except:
             log.pvpkg_log_error("PDF_REPORT", "Right image not found")
 
@@ -189,12 +215,12 @@ class ClassicShipTestReport:
 
         # Draw the images with the specified heights. The y value is calculated so they are top-aligned.
         try:
-            self.c.drawImage(images[0], 50, self.cursor_y + (max_height - row_height*rows[0]), 250, row_height*rows[0])
+            self._draw_image(images[0], 50, self.cursor_y + (max_height - row_height*rows[0]), 250, row_height*rows[0])
         except:
             log.pvpkg_log_error("PDF_REPORT", "Left image not found")
 
         try:
-            self.c.drawImage(images[1], 312, self.cursor_y + (max_height - row_height*rows[1]), 250, row_height*rows[1])
+            self._draw_image(images[1], 312, self.cursor_y + (max_height - row_height*rows[1]), 250, row_height*rows[1])
         except:
             log.pvpkg_log_error("PDF_REPORT", "Right image not found")
 
@@ -214,10 +240,10 @@ class ClassicShipTestReport:
         self.move_cursor(0, 374 + 3)
 
         # Draw 4 image, each of size 250*187
-        self.c.drawImage(images[0], 50, self.cursor_y + 187, 250, 187)
-        self.c.drawImage(images[1], 312, self.cursor_y + 187, 250, 187)
-        self.c.drawImage(images[2], 50, self.cursor_y, 250, 187)
-        self.c.drawImage(images[3], 312, self.cursor_y, 250, 187)
+        self._draw_image(images[0], 50, self.cursor_y + 187, 250, 187)
+        self._draw_image(images[1], 312, self.cursor_y + 187, 250, 187)
+        self._draw_image(images[2], 50, self.cursor_y, 250, 187)
+        self._draw_image(images[3], 312, self.cursor_y, 250, 187)
 
     """
         Insert an array of eight images
@@ -234,14 +260,14 @@ class ClassicShipTestReport:
         self.move_cursor(0, 719)
 
         # Draw 8 image, each of size 250*187
-        self.c.drawImage(images[0], 50, self.cursor_y + 180*3, 240, 180)
-        self.c.drawImage(images[1], 332, self.cursor_y + 180*3, 240, 180)
-        self.c.drawImage(images[2], 50, self.cursor_y + 180*2, 240, 180)
-        self.c.drawImage(images[3], 332, self.cursor_y + 180*2, 240, 180)
-        self.c.drawImage(images[4], 50, self.cursor_y + 180, 240, 180)
-        self.c.drawImage(images[5], 332, self.cursor_y + 180, 240, 180)
-        self.c.drawImage(images[6], 50, self.cursor_y, 240, 180)
-        self.c.drawImage(images[7], 332, self.cursor_y, 240, 180)
+        self._draw_image(images[0], 50, self.cursor_y + 180*3, 240, 180)
+        self._draw_image(images[1], 332, self.cursor_y + 180*3, 240, 180)
+        self._draw_image(images[2], 50, self.cursor_y + 180*2, 240, 180)
+        self._draw_image(images[3], 332, self.cursor_y + 180*2, 240, 180)
+        self._draw_image(images[4], 50, self.cursor_y + 180, 240, 180)
+        self._draw_image(images[5], 332, self.cursor_y + 180, 240, 180)
+        self._draw_image(images[6], 50, self.cursor_y, 240, 180)
+        self._draw_image(images[7], 332, self.cursor_y, 240, 180)
 
     def insert_image_list_dynamic(self, images, desc=None):
         image_height = 187
@@ -265,7 +291,7 @@ class ClassicShipTestReport:
             y_coord = self.cursor_y - (image_height*int(y_i/2))
             x_coord = left_x_coord if x_i % 2 == 0 else right_x_coord
 
-            self.c.drawImage(image, x_coord, y_coord, image_width, image_height)
+            self._draw_image(image, x_coord, y_coord, image_width, image_height)
 
             y_i+=1
             x_i+=1
@@ -286,21 +312,27 @@ class ClassicShipTestReport:
         return stream
 
     """
-        Read and insert an image from a BytesIO stream
+        Read an SVG from a BytesIO stream and insert it as a full-width image
     """
     def insert_image_from_io_stream(self, stream: BytesIO, desc=None):
-        stream.seek(0)
-        image = ImageReader(stream)
-        self.insert_image(image, desc)
+        self.insert_image(self.get_drawing_from_svg_io_stream(stream), desc)
 
     """
-        Read and return an image from a BytesIO stream
+        Read an SVG from a BytesIO stream and return it as a vector Drawing.
+        Raises ValueError if the stream is not SVG (e.g. a PNG).
     """
     @staticmethod
-    def get_image_from_io_stream(stream: BytesIO):
+    def get_drawing_from_svg_io_stream(stream: BytesIO):
         stream.seek(0)
-        image = ImageReader(stream)
-        return image
+        drawing = None
+        try:
+            drawing = svg2rlg(stream)
+        except Exception:
+            pass    # svglib raises for some malformed input, returns None for others
+        if drawing is None:
+            raise ValueError("Image stream is not a valid SVG; only vector images are supported "
+                             "(use plt.savefig(stream, format='svg'))")
+        return drawing
 
     """
         Draw regular text
@@ -379,32 +411,40 @@ class ClassicShipTestReport:
         Find and put the logo at the top right corner of page
     """
     def insert_logo(self):
-        try:
-            logo_img_data = open(os.getcwd() + "/pervices-logo.png", "rb")
-            logo_img = ImageReader(logo_img_data)
-            self.c.drawImage(logo_img, 476, self.h - 23, 43, 15)
-        except:
-            try:
-                tmp_dir = os.getcwd()
-                os.chdir("../")
-                logo_img_data = open(os.getcwd() + "/pervices-logo.png", "rb")
-                logo_img = ImageReader(logo_img_data)
-                self.c.drawImage(logo_img, 476, self.h - 23, 43, 15)
-                os.chdir(tmp_dir)
-            except:
-                try:
-                    tmp_dir2 = os.getcwd()
-                    os.chdir("../")
-                    logo_img_data = open(os.getcwd() + "/pervices-logo.png", "rb")
-                    logo_img = ImageReader(logo_img_data)
-                    self.c.drawImage(logo_img, 476, self.h - 23, 43, 15)
-                    os.chdir(tmp_dir2)
-                except:
-                    t = self.c.beginText()
-                    t.setTextOrigin(476, self.h - 23)
-                    t.setFont("Helvetica", 12)
-                    t.textLine("Per Vices Corp.")
-                    self.c.drawText(t)
+        # Build the logo once as a PDF form XObject if not initialized already
+        # Using an XObject let's us store it once and reference it on every page
+        if self.logo_form is None:
+            self.logo_form = ""
+            # Look in the current directory, then up to two parent directories
+            searched = [os.path.join(os.getcwd(), d, "pervices-logo.svg")
+                        for d in (".", "..", "../..")]
+            path = next((p for p in searched if os.path.isfile(p)), None)
+            # If unable to find the logo
+            if path is None:
+                log.pvpkg_log_error("PDF_REPORT", "pervices-logo.svg not found, searched: "
+                                    + ", ".join(searched) + ". Using text instead.")
+            # If the logo is corrupted
+            else:
+                logo = svg2rlg(path)
+                if logo is None:
+                    log.pvpkg_log_error("PDF_REPORT", "Could not parse " + path
+                                        + ". Using text instead.")
+                else:
+                    self.c.beginForm("pervices_logo")
+                    self._draw_image(logo, 476, self.h - 23, 43, 15)
+                    self.c.endForm()
+                    self.logo_form = "pervices_logo"
+
+        # Add an instance of the logo
+        if self.logo_form:
+            self.c.doForm(self.logo_form)
+        # Fallback text if including the logo failed
+        else:
+            t = self.c.beginText()
+            t.setTextOrigin(476, self.h - 23)
+            t.setFont("Helvetica", 12)
+            t.textLine("Per Vices Corp.")
+            self.c.drawText(t)
 
     """
         Insert a table from an 2D array
@@ -703,12 +743,16 @@ if __name__ == "__main__":
         report.insert_text("in culpa qui officia deserunt mollit anim id est laborum.")
         report.insert_text(" ")
 
-    try:
-        test_pic_data = open(os.getcwd() + "/test-picture.png", "rb")
-        test_pic = ImageReader(test_pic_data)
-    except:
-        log.pvpkg_log_error("PDF_REPORT", "cannot find " + os.getcwd() + "/test-picture.png")
-        pass
+    # Generate a sample vector plot to exercise the image layouts
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+    plt.figure()
+    plt.plot([0, 1, 0, 1, 0])
+    stream = report.get_image_io_stream()
+    plt.savefig(stream, format='svg')
+    plt.close()
+    test_pic = report.get_drawing_from_svg_io_stream(stream)
 
     try:
         two_pictures = [test_pic, test_pic]
@@ -730,7 +774,7 @@ if __name__ == "__main__":
 
     try:
         eight_pictures = [test_pic, test_pic, test_pic, test_pic, test_pic, test_pic, test_pic, test_pic]
-        report.buffer_put("image_list_dynamic", eight_pics, desc="Dynamic image list - 8")
+        report.buffer_put("image_list_dynamic", eight_pictures, desc="Dynamic image list - 8")
     except:
         log.pvpkg_log_error("PDF_REPORT", "Can't draw dynamic image list pictues")
 

@@ -94,9 +94,9 @@ def test(it, data):
         plt.plot(imag[0:300],label='imag')
 
         s = report.get_image_io_stream()
-        plt.savefig(s, format='png')
+        plt.savefig(s, format='svg')
         plt.close()
-        img = report.get_image_from_io_stream(s)
+        img = report.get_drawing_from_svg_io_stream(s)
         images.append(img)
 
         res = ""

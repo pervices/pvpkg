@@ -149,8 +149,8 @@ def makePlots(x_time, real_data, best_fit_data, offset_data, wave_freq, sample_r
         os.chdir(test_plots)
         fig.savefig(("run{}_indiv".format(ch) + ".svg"))
         s1 = report.get_image_io_stream()
-        fig.savefig(s1, format="png", dpi=300)
-        img1 = report.get_image_from_io_stream(s1)
+        fig.savefig(s1, format="svg")
+        img1 = report.get_drawing_from_svg_io_stream(s1)
         plt.clf()
 
         #Layout of the combined plot
@@ -171,8 +171,8 @@ def makePlots(x_time, real_data, best_fit_data, offset_data, wave_freq, sample_r
 
         fig.savefig(("run{}_together".format(run) + ".svg"))
         s2 = report.get_image_io_stream()
-        fig.savefig(s2, format="png", dpi=300)
-        img2 = report.get_image_from_io_stream(s2)
+        fig.savefig(s2, format="svg")
+        img2 = report.get_drawing_from_svg_io_stream(s2)
 
         report.buffer_put("image_double_rows", [[img1, img2], [num_subplot_rows, None]], "Run " + str(run))
         log.pvpkg_log_info("RX_PHASE_2", "Run figure has been put in buffer")
