@@ -11,6 +11,11 @@ import matplotlib.pyplot as plt
 import sys
 import subprocess
 
+# Keep plot text as real text in the SVG output. matplotlib's default ('path')
+# draws every glyph as a vector outline, which makes each plot several times
+# larger in the PDF than the original PNG was.
+plt.rcParams['svg.fonttype'] = 'none'
+
 
 targs = test_args.TestArgs(testDesc="Tx Rx Fundamental Frequency Test")
 report = pdf_report.ClassicShipTestReport("tx_rx_fundamental_frequency", targs.serial, targs.report_dir, targs.docker_sha, targs.addr)

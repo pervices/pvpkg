@@ -20,7 +20,8 @@ from reportlab.platypus import Image, Paragraph, Table, Frame, TableStyle
 from PIL import Image
 from io import BytesIO
 from reportlab.lib.utils import ImageReader
-
+from reportlab.graphics import renderPDF
+from reportlab.graphics.shapes import Drawing
 from svglib.svglib import svg2rlg
 
 from . import log
@@ -122,6 +123,23 @@ class ClassicShipTestReport:
                 log.pvpkg_log_error("PDF_REPORT", "Wrong element type in report buffer")
 
     """
+        Draw either a raster image (ImageReader) or a vector Drawing
+        into the box at (x, y) with size w x h.
+    """
+    def _draw_image(self, image, x, y, w, h):
+        if not isinstance(image, Drawing):
+            self.c.drawImage(image, x, y, w, h)
+            return
+        # A Drawing has its own native size (from the SVG), so scale it to fit
+        # the box. saveState/restoreState push/pop the canvas transform, like a
+        # matrix stack, so the translate/scale don't leak into later drawing.
+        self.c.saveState()
+        self.c.translate(x, y)
+        self.c.scale(w / image.width, h / image.height)
+        renderPDF.draw(image, self.c, 0, 0)
+        self.c.restoreState()
+
+    """
         Insert an image that spans the width of a page
     """
     def insert_image(self, image, desc=None):
@@ -136,7 +154,7 @@ class ClassicShipTestReport:
         # Get enough space
         self.move_cursor(0, 274 + 5)
 
-        self.c.drawImage(image, 122, self.cursor_y, 367, 274)
+        self._draw_image(image, 122, self.cursor_y, 367, 274)
 
     """
         Insert two images side by side
@@ -154,11 +172,11 @@ class ClassicShipTestReport:
         self.move_cursor(0, 187 + 3)
 
         try:
-            self.c.drawImage(images[0], 50, self.cursor_y, 250, 187)
+            self._draw_image(images[0], 50, self.cursor_y, 250, 187)
         except:
             log.pvpkg_log_error("PDF_REPORT", "Left image not found")
         try:
-            self.c.drawImage(images[1], 312, self.cursor_y, 250, 187)
+            self._draw_image(images[1], 312, self.cursor_y, 250, 187)
         except:
             log.pvpkg_log_error("PDF_REPORT", "Right image not found")
 
@@ -191,12 +209,12 @@ class ClassicShipTestReport:
 
         # Draw the images with the specified heights. The y value is calculated so they are top-aligned.
         try:
-            self.c.drawImage(images[0], 50, self.cursor_y + (max_height - row_height*rows[0]), 250, row_height*rows[0])
+            self._draw_image(images[0], 50, self.cursor_y + (max_height - row_height*rows[0]), 250, row_height*rows[0])
         except:
             log.pvpkg_log_error("PDF_REPORT", "Left image not found")
 
         try:
-            self.c.drawImage(images[1], 312, self.cursor_y + (max_height - row_height*rows[1]), 250, row_height*rows[1])
+            self._draw_image(images[1], 312, self.cursor_y + (max_height - row_height*rows[1]), 250, row_height*rows[1])
         except:
             log.pvpkg_log_error("PDF_REPORT", "Right image not found")
 
@@ -216,10 +234,10 @@ class ClassicShipTestReport:
         self.move_cursor(0, 374 + 3)
 
         # Draw 4 image, each of size 250*187
-        self.c.drawImage(images[0], 50, self.cursor_y + 187, 250, 187)
-        self.c.drawImage(images[1], 312, self.cursor_y + 187, 250, 187)
-        self.c.drawImage(images[2], 50, self.cursor_y, 250, 187)
-        self.c.drawImage(images[3], 312, self.cursor_y, 250, 187)
+        self._draw_image(images[0], 50, self.cursor_y + 187, 250, 187)
+        self._draw_image(images[1], 312, self.cursor_y + 187, 250, 187)
+        self._draw_image(images[2], 50, self.cursor_y, 250, 187)
+        self._draw_image(images[3], 312, self.cursor_y, 250, 187)
 
     """
         Insert an array of eight images
@@ -236,14 +254,14 @@ class ClassicShipTestReport:
         self.move_cursor(0, 719)
 
         # Draw 8 image, each of size 250*187
-        self.c.drawImage(images[0], 50, self.cursor_y + 180*3, 240, 180)
-        self.c.drawImage(images[1], 332, self.cursor_y + 180*3, 240, 180)
-        self.c.drawImage(images[2], 50, self.cursor_y + 180*2, 240, 180)
-        self.c.drawImage(images[3], 332, self.cursor_y + 180*2, 240, 180)
-        self.c.drawImage(images[4], 50, self.cursor_y + 180, 240, 180)
-        self.c.drawImage(images[5], 332, self.cursor_y + 180, 240, 180)
-        self.c.drawImage(images[6], 50, self.cursor_y, 240, 180)
-        self.c.drawImage(images[7], 332, self.cursor_y, 240, 180)
+        self._draw_image(images[0], 50, self.cursor_y + 180*3, 240, 180)
+        self._draw_image(images[1], 332, self.cursor_y + 180*3, 240, 180)
+        self._draw_image(images[2], 50, self.cursor_y + 180*2, 240, 180)
+        self._draw_image(images[3], 332, self.cursor_y + 180*2, 240, 180)
+        self._draw_image(images[4], 50, self.cursor_y + 180, 240, 180)
+        self._draw_image(images[5], 332, self.cursor_y + 180, 240, 180)
+        self._draw_image(images[6], 50, self.cursor_y, 240, 180)
+        self._draw_image(images[7], 332, self.cursor_y, 240, 180)
 
     def insert_image_list_dynamic(self, images, desc=None):
         image_height = 187
@@ -267,7 +285,7 @@ class ClassicShipTestReport:
             y_coord = self.cursor_y - (image_height*int(y_i/2))
             x_coord = left_x_coord if x_i % 2 == 0 else right_x_coord
 
-            self.c.drawImage(image, x_coord, y_coord, image_width, image_height)
+            self._draw_image(image, x_coord, y_coord, image_width, image_height)
 
             y_i+=1
             x_i+=1
