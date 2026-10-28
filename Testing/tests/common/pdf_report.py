@@ -21,6 +21,8 @@ from PIL import Image
 from io import BytesIO
 from reportlab.lib.utils import ImageReader
 
+from svglib.svglib import svg2rlg
+
 from . import log
 
 class ClassicShipTestReport:
@@ -301,6 +303,14 @@ class ClassicShipTestReport:
         stream.seek(0)
         image = ImageReader(stream)
         return image
+
+    """
+        Read an SVG from a BytesIO stream and return it as a vector Drawing
+    """
+    @staticmethod
+    def get_drawing_from_svg_stream(stream: BytesIO):
+        stream.seek(0)
+        return svg2rlg(stream)
 
     """
         Draw regular text
