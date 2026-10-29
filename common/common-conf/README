@@ -13,6 +13,10 @@ depending on whether you are using netctl or network manager.
 Additionally, you SHALL have to modify the configuration files 
 to get them working properly. In particular;
 
+common-conf/etc/default/cpupower-service.conf
+    Configures CPU frequency scaling with systemd cpupower.service.
+    Performance governor is recommended for use with UHD.
+
 common-conf/etc/conf.d/setmtu
     Change the contents of this file to reflect the adapter 
     names.
