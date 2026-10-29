@@ -306,9 +306,8 @@ font = "Times-Roman"
 gen_font_size = 12
 bold_font = "Times-Bold"
 rcParams['agg.path.chunksize'] = 115
-# Keep plot text as real text when matplotlib writes SVG. The default ('path')
-# draws every glyph as a vector outline, which makes each plot several times
-# larger in the PDF.
+# Keep plot text as real text when matplotlib writes SVG.
+# The default ('path') draws every glyph as a vector outline
 rcParams['svg.fonttype'] = 'none'
 
 '''Draws a vector Drawing (from svg2rlg) scaled into the box at (x, y) with size w x h.
@@ -319,8 +318,8 @@ def drawVector(pdf, image, x, y, w, h):
     if not isinstance(image, Drawing):
         raise TypeError("shiptest only accepts vector images (reportlab Drawing), got {}"
                         .format(type(image).__name__))
-    # saveState/restoreState push/pop the canvas transform, like a matrix
-    # stack, so the translate/scale don't leak into later drawing.
+    # saveState/restoreState push/pop the canvas transform,
+    # so the translate/scale don't leak into later drawing.
     pdf.saveState()
     pdf.translate(x, y)
     pdf.scale(w / image.width, h / image.height)
