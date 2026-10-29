@@ -1305,6 +1305,7 @@ def main(iterations):
     summary.drawOn(pdf, summary_x, summary_y)
 
     os.chdir(output_dir) #Ensuring we are saving in the output directory
+    log.pvpkg_log_info("SHIPTEST", "Saving PDF report to " + output_dir + "/" + file_title)
     pdf.save() #saving the pdf
 
 main(generate)
