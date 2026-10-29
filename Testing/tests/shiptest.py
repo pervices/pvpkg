@@ -115,9 +115,7 @@ doc_title = "ship_report_" + serial_num + "_" + formattedDate
 #SETTING UP PATH DIRECTORIES
 current_dir = os.getcwd()
 output_dir = current_dir + "/ship_reports"
-plots_dir = output_dir + "/plots_" + formattedDate
 os.makedirs(output_dir, exist_ok=True)
-os.makedirs(plots_dir, exist_ok=True)
 
 #Asking what test to run and how many channels to run
 #NOTE: I think this could be expanded to just choosing which channels on the unit to test
@@ -306,8 +304,9 @@ font = "Times-Roman"
 gen_font_size = 12
 bold_font = "Times-Bold"
 rcParams['agg.path.chunksize'] = 115
-# Keep plot text as real text when matplotlib writes SVG.
-# The default ('path') draws every glyph as a vector outline
+# Keep plot text as real text when matplotlib writes SVG. The default ('path')
+# draws every glyph as a vector outline, which makes each plot several times
+# larger in the PDF.
 rcParams['svg.fonttype'] = 'none'
 
 '''Draws a vector Drawing (from svg2rlg) scaled into the box at (x, y) with size w x h.
@@ -318,8 +317,8 @@ def drawVector(pdf, image, x, y, w, h):
     if not isinstance(image, Drawing):
         raise TypeError("shiptest only accepts vector images (reportlab Drawing), got {}"
                         .format(type(image).__name__))
-    # saveState/restoreState push/pop the canvas transform,
-    # so the translate/scale don't leak into later drawing.
+    # saveState/restoreState push/pop the canvas transform, like a matrix
+    # stack, so the translate/scale don't leak into later drawing.
     pdf.saveState()
     pdf.translate(x, y)
     pdf.scale(w / image.width, h / image.height)
@@ -641,23 +640,23 @@ def fftValues(channel, x, real, imag, fft_xs, fft_ys):
 
     return
 
-'''Saves the current plot figure as an SVG in the plots directory and loads it
-as a vector Drawing for the pdf
-PARAMS: title, counter
+'''Renders the current plot figure as an SVG in memory and loads it as a
+vector Drawing for the pdf
+PARAMS: title, counter (only used to identify the plot in error messages)
 RETURNS: Drawing'''
 def plotToPdf(title, counter):
 
-    #Saving plot to proper directory as svg
-    os.chdir(plots_dir) #ensuring in right directory
     plt.gcf().set_size_inches(8, 5)
 
-    svg_path = plots_dir + "/" + title + "_" + str(counter) + ".svg"
-    plt.savefig(svg_path, format="svg")
+    #Write the svg into an in-memory buffer instead of a file
+    stream = BytesIO()
+    plt.savefig(stream, format="svg")
+    stream.seek(0) #rewind to the start before reading it back
 
     #Parse the svg into vector shapes reportlab can draw
-    img = svg2rlg(svg_path)
+    img = svg2rlg(stream)
     if img is None:
-        raise ValueError("Could not parse plot " + svg_path)
+        raise ValueError("Could not parse plot " + title + "_" + str(counter))
 
     return img
 
