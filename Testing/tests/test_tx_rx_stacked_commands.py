@@ -117,7 +117,7 @@ def test(it, data):
         s = report.get_image_io_stream()
         plt.savefig(s, format="svg")
         plt.close()
-        img = report.get_image_from_io_stream(s)
+        img = get_drawing_from_svg_io_stream(s)
         images.append(img)
         data.append([str(center_freq), str(wave_freq), it["sample_rate"], str(channels[ch]), frame_results[1], frame_results[2], frame_results[3], attempt_num, res])
 

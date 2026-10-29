@@ -74,7 +74,7 @@ def main(iterations, title="TX RX Gain Test") -> int:
             s = report.get_image_io_stream()
             plt.savefig(s, format='svg')
             plt.close()     # remember to close or you'll use up all the memory
-            img = report.get_image_from_io_stream(s)
+            img = get_drawing_from_svg_io_stream(s)
             images.append(img)
 
         iteration_areas.append(channel_areas)
