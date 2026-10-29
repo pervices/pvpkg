@@ -21,6 +21,13 @@ from io import BytesIO
 from reportlab.graphics import renderPDF
 from reportlab.graphics.shapes import Drawing
 from svglib.svglib import svg2rlg
+import matplotlib
+
+# Keep plot text as real text when matplotlib writes SVG. The default ('path')
+# draws every glyph as a vector outline, which makes each plot several times
+# larger in the PDF. rcParams is process-wide, so setting it here applies to
+# every test script that imports this module.
+matplotlib.rcParams['svg.fonttype'] = 'none'
 
 from . import log
 
@@ -737,7 +744,6 @@ if __name__ == "__main__":
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
-    plt.rcParams['svg.fonttype'] = 'none'
     plt.figure()
     plt.plot([0, 1, 0, 1, 0])
     stream = report.get_image_io_stream()
