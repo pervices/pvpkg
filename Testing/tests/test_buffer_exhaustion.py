@@ -86,7 +86,7 @@ def test(it, data):
         s = report.get_image_io_stream()
         plt.savefig(s, format="svg")
         plt.close()
-        img = report.get_image_from_io_stream(s)
+        img = report.get_drawing_from_svg_io_stream(s)
         images.append(img)
 
         res = ""
