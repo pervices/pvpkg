@@ -1284,7 +1284,7 @@ def main(iterations):
     title_font_size = 26
     title_x, title_y = 2, 575
     summary_width, summary_height = 250, 150
-    summary_x, summary_y = 10, title_y - summary_height - 30
+    summary_x = 10
     snr_x=  summary_x
 
     #Setting up title
@@ -1304,7 +1304,9 @@ def main(iterations):
     summary = Table(summary_table_info, style=[('GRID', (0,1), (4, counter+1), 1, colors.black),
                                 ('BACKGROUND', (0,1), (2,1), '#D5D6D5')])
 
-    summary.wrapOn(pdf, summary_width, summary_height)
+    # drawOn() positions the table by its bottom-left corner so subtract the table height
+    _, table_height = summary.wrapOn(pdf, summary_width, summary_height)
+    summary_y = title_y - 30 - table_height
     summary.drawOn(pdf, summary_x, summary_y)
 
     os.chdir(output_dir) #Ensuring we are saving in the output directory
