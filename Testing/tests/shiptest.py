@@ -871,7 +871,16 @@ def main(iterations):
 
         log.pvpkg_log_info("SHIPTEST", "Started data collection for run " + str(counter))
 
-        vsnk = engine.run(it["channels"], it["wave_freq"], it["sample_rate"], it["center_freq"], it["tx_gain"], it["rx_gain"], tx_stack, rx_stack, device_ip)
+        # offset RX LO by 200MHz so RX and TX have different LO frequencies
+        if it["center_freq"] == 9000000000 or it["center_freq"] == 17000000000:
+            vsnk = engine.manual_tune_run(it["channels"], it["wave_freq"],
+                                        it["sample_rate"], it["sample_rate"],
+                                        it["center_freq"], None,
+                                        it["center_freq"], -200000000,
+                                        it["tx_gain"], it["rx_gain"],
+                                        tx_stack, rx_stack, device_ip)
+        else:
+            vsnk = engine.run(it["channels"], it["wave_freq"], it["sample_rate"], it["center_freq"], it["tx_gain"], it["rx_gain"], tx_stack, rx_stack, device_ip)
 
         log.pvpkg_log_info("SHIPTEST", "Completed data collection for run " + str(counter))
 
