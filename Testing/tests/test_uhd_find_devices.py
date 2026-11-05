@@ -37,7 +37,7 @@ def test() -> int:
     log.pvpkg_log_info("UHD_DEVICE_TYPE_CHECK", "Running command: " + command)
 
     try:
-        result = subprocess.check_output(command, shell=True, text=True,) #stderr=subprocess.STDOUT)
+        result = subprocess.check_output(command, shell=True, text=True,stderr=subprocess.STDOUT)
     except subprocess.CalledProcessError as e:
         log.pvpkg_log_error("UHD_DEVICE_TYPE_CHECK", "Error running command")
         result = str(e.output)
