@@ -271,8 +271,12 @@ os.system("rm hold.txt")
 os.system("rm shiptest_out.txt")
 
 if eeprom_fail:
-    log.pvpkg_log_error("SHIPTEST", "[FAILURE]: Not all board EEPROMs are programmed correctly.")
-    sys.exit(1)
+    if product == 't' and int(unit_rtm) <= 4:
+        # Skip EEPROM check as RTM4 does not have all EEPROM programmed with serial numbers.
+        log.pvpkg_log_info("SHIPTEST", "Tate RTM4 and below does not have all EEPROM info programmed, EEPROM check overrided.")
+    else:
+        log.pvpkg_log_error("SHIPTEST", "[FAILURE]: Not all board EEPROMs are programmed correctly.")
+        sys.exit(1)
 
 #Globals that will be changed later in the code - all -1 currently because they are dependent on the generator code
 center_freq = -1
