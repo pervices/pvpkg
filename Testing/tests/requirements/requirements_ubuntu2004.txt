@@ -24,4 +24,4 @@ pyqt5~=5.14.1
 # Lets us use the IANA time zone database as recommended
 backports.zoneinfo~=0.2.1;python_version < '3.9'
 # Used to save and manipulate svg images
-svglib~=1.5.1
+svglib~=0.9.0b0
