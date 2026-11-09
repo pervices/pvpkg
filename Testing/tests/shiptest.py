@@ -66,10 +66,13 @@ parser.add_argument('-p', '--product', required=True, help="The product to be te
 parser.add_argument('-c', '--num_channels', default = 4, type=int,  help="The number of channels to test. Will test ch a, ch b, ...")
 parser.add_argument('-b', '--strict', default = False, type=bool,  help="Exit the test as soon as any test fails")
 parser.add_argument('-i', '--addr', default = "192.168.10.2", type=str,  help="The IP address of the device to test")
+#Setup argument to disable EEPROM check
+parser.add_argument('-e', '--disable_eeprom_check', action='store_true', help="Disable EEPROM check")
 
 args = parser.parse_args()
 
 num_output_waves = args.displayed_waves
+disable_eeprom_check=args.disable_eeprom_check
 
 #Validates num_output_waves
 try:
@@ -220,7 +223,7 @@ time.append(subprocess.getstatusoutput("cat hold.txt | grep 'Fuse02' | cut --com
 time.append(subprocess.getstatusoutput("cat hold.txt | grep 'Fuse03' | cut --complement -d ':' -f1")[1])
 time.append(subprocess.getstatusoutput("cat hold.txt | grep 'GCC' | cut --complement -d ':' -f1")[1])
 time_eep = subprocess.getstatusoutput("cat shiptest_out.txt | grep time/eeprom -A 1 | tail -n 1 | cut -d ':' -f2- | grep -o -E 'SERIAL [A-Z]{1,2}'")[1]
-if len(re.findall("SERIAL [a-zA-Z]{1,2}", time_eep)) != 1:
+if len(re.findall("SERIAL [a-zA-Z]{1,2}", time_eep)) != 1 and not disable_eeprom_check:
     log.pvpkg_log_error("SHIPTEST", "Time board EEPROM not programmed! EEPROM read: {}".format(time_eep))
     eeprom_fail = True
 time.append(time_eep)
@@ -241,7 +244,7 @@ for i, name in zip(range(num_channels), channel_names): #NOTE: This might be mor
     rx_info["RX: " + name].append(subprocess.getstatusoutput("cat hold.txt | grep 'Fuse03' | cut --complement -d ':' -f1")[1])
     rx_info["RX: " + name].append(subprocess.getstatusoutput("cat hold.txt | grep 'GCC' | cut --complement -d ':' -f1")[1])
     rx_eep = subprocess.getstatusoutput("cat shiptest_out.txt | grep rx/{}/eeprom -A 1 | tail -n 1 | cut -d ':' -f2- | grep -o -E 'SERIAL [A-Z]{{1,2}}'".format(i))[1]
-    if len(re.findall("SERIAL [a-zA-Z]{1,2}", rx_eep)) != 1:
+    if len(re.findall("SERIAL [a-zA-Z]{1,2}", rx_eep)) != 1 and not disable_eeprom_check:
         log.pvpkg_log_error("SHIPTEST", "RX {} EEPROM not programmed! EEPROM read: {}".format(i, rx_eep))
         eeprom_fail = True
     rx_info["RX: " + name].append(rx_eep)
@@ -261,7 +264,7 @@ for i, name in zip(range(num_channels), channel_names):
     tx_info["TX: " + name].append(subprocess.getstatusoutput("cat hold.txt | grep 'Fuse03' | cut --complement -d ':' -f1")[1])
     tx_info["TX: " + name].append(subprocess.getstatusoutput("cat hold.txt | grep 'GCC' | cut --complement -d ':' -f1")[1])
     tx_eep = subprocess.getstatusoutput("cat shiptest_out.txt | grep tx/{}/eeprom -A 1 | tail -n 1 | cut -d ':' -f2- | grep -o -E 'SERIAL [A-Z]{{1,2}}'".format(i))[1]
-    if len(re.findall("SERIAL [a-zA-Z]{1,2}", tx_eep)) != 1:
+    if len(re.findall("SERIAL [a-zA-Z]{1,2}", tx_eep)) != 1 and not disable_eeprom_check:
         log.pvpkg_log_error("SHIPTEST", "TX {} EEPROM not programmed! EEPROM read: {}".format(i, tx_eep))
         eeprom_fail = True
     tx_info["TX: " + name].append(tx_eep)
