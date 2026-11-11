@@ -59,7 +59,7 @@ gain_check_threshold = 5 #The maximum allowable difference in gain between chann
 
 strict_mode = False
 
-num_channels = 4 #The number of channels to test. Default set to 4. Will test ch a, ch b, ...
+#num_channels = 4 #The number of channels to test. Default set to 4. Will test ch a, ch b, ...
 
 
 targs = test_args.TestArgs(testDesc="A basic loopback test verifying gain/frequency tuning works")
@@ -69,9 +69,6 @@ np.set_printoptions(legacy='1.25')
 
 #USER SET VARIABLES
 channel_names = []
-
-#TODO: Check below-This is number of channels however -c in test_args.py is a list of channels
-#parser.add_argument('-c', '--num_channels', default = 4, type=int,  help="The number of channels to test. Will test ch a, ch b, ...")
 
 #TODO: add this to test_args.py
 #Setup argument to disable EEPROM check
@@ -113,7 +110,7 @@ os.makedirs(output_dir, exist_ok=True)
 
 #Asking what test to run and how many channels to run
 #NOTE: I think this could be expanded to just choosing which channels on the unit to test
-product = NEED TO GET FROM TEST_ARGS.PY -a #UPDATE HERE
+product = targs.product #UPDATE HERE
 try:
     if (product != "Tate" and product != "Vaunt" and product != "Avery" and product != "Lily" and product != "BasebandTate"):
         raise(ValueError)
@@ -121,6 +118,7 @@ except:
     sys.exit("Invalid product. Only v (Vaunt), t (Tate), l (Lily), a (Avery) and b (BasebandTate) are supported")
 
 channel_names = ["Channel A", "Channel B", "Channel C", "Channel D", "Channel E", "Channel F", "Channel G", "Channel H"]
+
 if(product == "Vaunt"):
     max_channels = 4
 elif(product == "Avery"):
@@ -132,12 +130,28 @@ elif(product == "Lily"):
 elif(product == "BasebandTate"):
     max_channels = 4
 
+if targs.channels != None:
+    channel_list = targs.channels # Channel list used for testing. Example [2 4]
+    num_channels= len(channel_list) # The number of channels to test. 
+else: 
+    num_channels=max_channels 
+
 try:
     assert 1 <= num_channels <= max_channels
 except AssertionError:
     sys.exit("Invalid number of channels selected")
 
-channel_names = channel_names[0:num_channels]
+
+if channel_list != None:
+    channel_names = [channel_names[c] for c in channel_list]
+else:
+    channel_names = channel_names[0:num_channels]
+
+#channel_names = channel_names[0:num_channels]
+#UPDATE HERE Change this so channel names depend on indexes provided in channel list
+
+    # If the channels argument was set, it will override the channels specified in the generator.
+    # If neither the channels arg or the generator specified the channels, fallback to four channels
 
 if(product == "Vaunt"):
     generate = gen.ship_test_crimson(num_channels)
