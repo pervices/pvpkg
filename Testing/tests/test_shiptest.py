@@ -4,6 +4,8 @@ from common import sigproc
 from common import engine
 from common import generator as gen
 from common import log
+from common import pdf_report
+from common import test_args
 
 #Basic imports
 import time, datetime
@@ -44,35 +46,41 @@ from scipy.signal import find_peaks
 import traceback
 
 begin_cutoff_waves = 20 #how many waves to cut off before tracking data
+num_output_waves = 2 #Number of waves to print on the graphs
+snr_min_check = 20 #Minimum signal to noise ratio in dBc
+sigfigs = 3 #Number of significant digits to display
+
+#Frequency offset threshold
+freq_check_threshold = 1 #Allowable difference in wave frequency from the target
+
+spur_check_threshold = 20 #Minimum acceptable difference between the desired signal and the strongest spur
+
+gain_check_threshold = 5 #The maximum allowable difference in gain between channels
+
+strict_mode = False
+
+num_channels = 4 #The number of channels to test. Default set to 4. Will test ch a, ch b, ...
+
+
+targs = test_args.TestArgs(testDesc="A basic loopback test verifying gain/frequency tuning works")
+#report = pdf_report.ClassicShipTestReport("tx_rx_fundamental_frequency", targs.serial, targs.report_dir, targs.docker_sha, targs.addr) UPDATE HERE
 
 np.set_printoptions(legacy='1.25')
 
 #USER SET VARIABLES
 channel_names = []
 
-#Setup argument parsing
-parser = argparse.ArgumentParser(description = "A basic loopback test verifying gain/frequency tuning works")
+#TODO: Check below-This is number of channels however -c in test_args.py is a list of channels
+#parser.add_argument('-c', '--num_channels', default = 4, type=int,  help="The number of channels to test. Will test ch a, ch b, ...")
 
-parser.add_argument('-d', '--displayed_waves', default=2, type=int, help="Number of wave to print on the graphs")
-parser.add_argument('-s', '--sigfigs', default=3, type=int, help="Number of significant digits to display")
-#TODO: verify this is a reasonable default value
-parser.add_argument('-n', '--snr', default=20, type=int, help="Minimum signal to noise ratio in dBc")
-#TODO: verify this is a reasonable default value
-parser.add_argument('-o', '--freq_threshold', default=1, type=int, help="Allowable difference in wave frequency from the target")
-parser.add_argument('-q', '--spur_threshold', default=20, type=int, help="Minimum acceptable difference between the desired signal and the strongest spur")
-parser.add_argument('-g', '--gain_threshold', default = 5, type=int,  help="The maximum allowable difference in gain between channels")
-parser.add_argument('-a', '--serial', required=True, help="Serial number of the unit")
-parser.add_argument('-p', '--product', required=True, help="The product to be tested. v for Vaunt, a for Avery, t for Tate, l for Lily")
-parser.add_argument('-c', '--num_channels', default = 4, type=int,  help="The number of channels to test. Will test ch a, ch b, ...")
-parser.add_argument('-b', '--strict', default = False, type=bool,  help="Exit the test as soon as any test fails")
-parser.add_argument('-i', '--addr', default = "192.168.10.2", type=str,  help="The IP address of the device to test")
+#TODO: add this to test_args.py
 #Setup argument to disable EEPROM check
-parser.add_argument('-e', '--disable_eeprom_check', action='store_true', help="Disable EEPROM check")
+#parser.add_argument('-e', '--disable_eeprom_check', action='store_true', help="Disable EEPROM check") #UPDATE HERE
 
-args = parser.parse_args()
+serial_num = targs.serial #UPDATE HERE
+device_ip = targs.addr #UPDATE HERE default in this file used to be 192.168.10.2 but since we are using test_args.py now default is set to none
 
-num_output_waves = args.displayed_waves
-disable_eeprom_check=args.disable_eeprom_check
+disable_eeprom_check=targs.disable_eeprom_check #UPDATE HERE
 
 #Validates num_output_waves
 try:
@@ -84,8 +92,6 @@ except ValueError:
     log.pvpkg_log_error("SHIPTEST", "Please only input integers. Try again: ")
     num_output_waves = int(input("How many waves do you want shown on IQ graphs? "))
 
-sigfigs = args.sigfigs
-
 # Validate number of sigfigs
 try:
     assert 1 <= sigfigs <= 5
@@ -93,21 +99,6 @@ except ValueError:
     sys.exit("ERROR: Please only input integers. Try again: ")
 except AssertionError:
     sys.exit("ERROR: For formatting, please input a value within 1 to 5. Try again:")
-
-snr_min_check = args.snr
-
-#Frequency offset threshold
-freq_check_threshold = args.freq_threshold
-
-spur_check_threshold = args.spur_threshold
-
-gain_check_threshold = args.gain_threshold
-
-serial_num = args.serial
-
-strict_mode = args.strict
-
-device_ip = args.addr
 
 #Making file and doc title
 date = datetime.datetime.now()
@@ -122,24 +113,23 @@ os.makedirs(output_dir, exist_ok=True)
 
 #Asking what test to run and how many channels to run
 #NOTE: I think this could be expanded to just choosing which channels on the unit to test
-product = args.product
+product = NEED TO GET FROM TEST_ARGS.PY -a #UPDATE HERE
 try:
-    if (product != 't' and product != 'v' and product != 'a' and product != 'l' and product != 'b'):
+    if (product != "Tate" and product != "Vaunt" and product != "Avery" and product != "Lily" and product != "BasebandTate"):
         raise(ValueError)
 except:
-    sys.exit("Invalid product. Only v (Vaunt), t (Tate), and l (Lily) are supported")
+    sys.exit("Invalid product. Only v (Vaunt), t (Tate), l (Lily), a (Avery) and b (BasebandTate) are supported")
 
-num_channels = args.num_channels
 channel_names = ["Channel A", "Channel B", "Channel C", "Channel D", "Channel E", "Channel F", "Channel G", "Channel H"]
-if(product == 'v'):
+if(product == "Vaunt"):
     max_channels = 4
-elif(product == 'a'):
+elif(product == "Avery"):
     max_channels = 4
-elif(product == 't'):
+elif(product == "Tate"):
     max_channels = 8
-elif(product == 'l'):
+elif(product == "Lily"):
     max_channels = 4
-elif(product == 'b'):
+elif(product == "BasebandTate"):
     max_channels = 4
 
 try:
@@ -149,15 +139,15 @@ except AssertionError:
 
 channel_names = channel_names[0:num_channels]
 
-if(product == 'v'):
+if(product == "Vaunt"):
     generate = gen.ship_test_crimson(num_channels)
-elif(product == 'a'):
+elif(product == "Avery"):
     generate = gen.ship_test_calamine(num_channels)
-elif(product == 't'):
+elif(product == "Tate"):
     generate = gen.ship_test_cyan(num_channels)
-elif(product == 'l'):
+elif(product == "Lily"):
     generate = gen.ship_test_chestnut(num_channels)
-elif(product == 'b'):
+elif(product == "BasebandTate"):
     generate = gen.ship_test_cyanbaseband(num_channels)
 
 if(os.system(f'ping {device_ip} -c 1') != 0):
@@ -291,7 +281,7 @@ page_count = 1
 pages_per_superplot = int(np.ceil(num_channels/4))
 multi = (pages_per_superplot > 1)
 #Page total based on the unit you're testing
-page_total = ((2*pages_per_superplot)+2)*(8*(product == 'v') + 8*(product == 'a') + 6*(product == 't') + 6*(product == 'l')) + 6*(product == 'b') + pages_per_superplot
+page_total = ((2*pages_per_superplot)+2)*(8*(product == "Vaunt") + 8*(product == "Avery") + 6*(product == "Tate") + 6*(product == "Lily")) + 6*(product == "BasebandTate") + pages_per_superplot
 
 
 #Adding logo - more efficent to just initialize at beginning
