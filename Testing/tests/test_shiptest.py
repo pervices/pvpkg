@@ -70,10 +70,6 @@ np.set_printoptions(legacy='1.25')
 #USER SET VARIABLES
 channel_names = []
 
-#TODO: add this to test_args.py
-#Setup argument to disable EEPROM check
-#parser.add_argument('-e', '--disable_eeprom_check', action='store_true', help="Disable EEPROM check") #UPDATE HERE
-
 serial_num = targs.serial #UPDATE HERE
 device_ip = targs.addr #UPDATE HERE default in this file used to be 192.168.10.2 but since we are using test_args.py now default is set to none
 
