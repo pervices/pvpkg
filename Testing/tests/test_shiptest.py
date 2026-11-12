@@ -471,7 +471,6 @@ def titlePage(pdf):
         start, end = z*4, min((z*4)+4,num_channels) #only have to be calculated once
 
         #Adding Tx Board Table
-        print("DEBUG before TX board:", channel_list, channel_names)
         board_info = [["TX Board Information: "], ["Board"], ["Branch"], ["Revision"], ["Date"], ["MCU Serial"], ["Fuse 00"], ["Fuse 02"], ["Fuse 03"], ["GCC"], ["Board Serial"]]
         for i, name in zip(range(start, end), channel_names[start:end]):
             board_info[0].append(chr(65+i))
