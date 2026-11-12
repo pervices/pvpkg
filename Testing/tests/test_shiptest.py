@@ -871,12 +871,17 @@ def main(iterations):
 
         log.pvpkg_log_info("SHIPTEST", "Started data collection for run " + str(counter))
 
+        print(channel_list)
+        print(targs.channels)
+
         if targs.channels != None:
             channel_list = targs.channels
         elif "channels" in it:
             channel_list = it["channels"]
         else:
             channel_list = [0,1,2,3]
+
+        print(channel_list)
         
         vsnk = engine.run(channel_list, it["wave_freq"], it["sample_rate"], it["center_freq"], it["tx_gain"], it["rx_gain"], tx_stack, rx_stack, device_ip)
 
