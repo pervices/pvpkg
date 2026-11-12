@@ -24,8 +24,7 @@ class TestArgs:
         parser.add_argument('-o', '--output', required=False, default=None, help="Report output directory")
         parser.add_argument('-d', '--docker', required=False, default=None, help="Docker SHA")
         parser.add_argument('-a', '--addr', required=False, default=None, help="Management IP address of the unit, e.g. 192.168.10.2. Skips network discovery when provided.")
-        #Argument to disable EEPROM check-- will be helpful for running tests on older SDRs that do not have EEPROM
-        parser.add_argument('-e', '--disable_eeprom_check', action='store_true', help="Disable EEPROM check") 
+        parser.add_argument('-e', '--disable_eeprom_check', default=False, action='store_true', help="Disable EEPROM check") 
         args = parser.parse_args()
 
         self.serial = args.serial
@@ -56,6 +55,7 @@ class TestArgs:
             log.pvpkg_log_error("TEST_ARGS", "Value of product argument must either be 'v' for vaunt, 'a' for avery, 't'for tate, 'b' for baseband tate, or 'l' for lily")
             sys.exit(1)
 
+        self.disable_eeprom_check=args.disable_eeprom_check
         self.report_dir = args.output
         self.docker_sha = args.docker
         self.addr = args.addr
