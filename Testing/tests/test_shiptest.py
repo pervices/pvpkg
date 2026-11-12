@@ -130,6 +130,7 @@ if targs.channels != None:
     channel_list = targs.channels # Channel list used for testing. Example [2 4]
     num_channels= len(channel_list) # The number of channels to test. 
 else: 
+    channel_list=None
     num_channels=max_channels 
 
 try:
