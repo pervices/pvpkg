@@ -874,6 +874,8 @@ def main(iterations):
 
         log.pvpkg_log_info("SHIPTEST", "Started data collection for run " + str(counter))
 
+        print(targs.channels)
+
         if targs.channels != None:
             channel_list = targs.channels
         elif "channels" in it:
