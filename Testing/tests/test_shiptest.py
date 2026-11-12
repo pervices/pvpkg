@@ -471,6 +471,7 @@ def titlePage(pdf):
         start, end = z*4, min((z*4)+4,num_channels) #only have to be calculated once
 
         #Adding Tx Board Table
+        print("DEBUG before TX board:", channel_list, channel_names)
         board_info = [["TX Board Information: "], ["Board"], ["Branch"], ["Revision"], ["Date"], ["MCU Serial"], ["Fuse 00"], ["Fuse 02"], ["Fuse 03"], ["GCC"], ["Board Serial"]]
         for i, name in zip(range(start, end), channel_names[start:end]):
             board_info[0].append(chr(65+i))
@@ -1232,26 +1233,26 @@ def main(iterations):
         # Checking if this iteration passed SNR
         snr_bools.append(checkSNRs(fft_snr))
         if strict_mode and not snr_bools[-1]:
-            log.pvpkg_log_error("SHIPTEST", "SNR test failed on iteraion " + str(counter) + ". Ending test early")
+            log.pvpkg_log_error("SHIPTEST", "SNR test failed on iteration " + str(counter) + ". Ending test early")
             strict_failed = True
 
 
         # Checking if this iteration passed the frequency check
         freq_bools.append(checkFreq(max_fours[:,0,0]))
         if strict_mode and not freq_bools[-1]:
-            log.pvpkg_log_error("SHIPTEST", "Freq test failed on iteraion " + str(counter) + ". Ending test early")
+            log.pvpkg_log_error("SHIPTEST", "Freq test failed on iteration " + str(counter) + ". Ending test early")
             strict_failed = True
 
         # Checking if this iteration passed the spur check
         spur_bools.append(checkSpur(max_fours, spur_check_threshold))
         if strict_mode and not spur_bools[-1]:
-            log.pvpkg_log_error("SHIPTEST", "Spur test failed on iteraion " + str(counter) + ". Ending test early")
+            log.pvpkg_log_error("SHIPTEST", "Spur test failed on iteration " + str(counter) + ". Ending test early")
             strict_failed = True
 
         # Checking if this iteration passed the relative gain check
         gain_bools.append(checkGainRelative(max_fours, gain_check_threshold))
         if strict_mode and not gain_bools[-1]:
-            log.pvpkg_log_error("SHIPTEST", "Relative gain test failed on iteraion " + str(counter) + ". Ending test early")
+            log.pvpkg_log_error("SHIPTEST", "Relative gain test failed on iteration " + str(counter) + ". Ending test early")
             strict_failed = True
 
         if(strict_failed):
