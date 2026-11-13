@@ -64,8 +64,16 @@ strict_mode = False
 
 targs = test_args.TestArgs(testDesc="A basic loopback test verifying gain/frequency tuning works")
 #report = pdf_report.ClassicShipTestReport("tx_rx_fundamental_frequency", targs.serial, targs.report_dir, targs.docker_sha, targs.addr) UPDATE HERE
+report= pdf_report.ClassicShipTestReport(
+    "shiptest",
+    targs.serail,
+    targs.report_dir,
+    targs.docker_sha,
+    targs.addr
+)
 
 np.set_printoptions(legacy='1.25')
+matplotlib.rcParams['svg.fonttype'] = 'none'
 
 #USER SET VARIABLES
 channel_names = []
@@ -133,22 +141,19 @@ else:
     channel_list=None
     num_channels=max_channels 
 
+report.num_channels=num_channels
+
 try:
     assert 1 <= num_channels <= max_channels
 except AssertionError:
     sys.exit("Invalid number of channels selected")
-
 
 if channel_list != None:
     channel_names = [channel_names[c] for c in channel_list]
 else:
     channel_names = channel_names[0:num_channels]
 
-#channel_names = channel_names[0:num_channels]
-#UPDATE HERE Change this so channel names depend on indexes provided in channel list
-
-    # If the channels argument was set, it will override the channels specified in the generator.
-    # If neither the channels arg or the generator specified the channels, fallback to four channels
+report.channel_names= channel_names
 
 if(product == "Vaunt"):
     generate = gen.ship_test_crimson(num_channels)
@@ -353,204 +358,260 @@ def drawLogo(pdf, x, y, w, h):
     pdf.restoreState()
 
 '''Creates Title Page with board info, title, and unit info
-PARAMS: pdf
+PARAMS: report
 RETURNS: NONE'''
-def titlePage(pdf):
+# def titlePage(pdf):
 
-    #Positional Values
-    title_font_size = 26
-    title_x = 100
-    title_y = 575
-    list_font_size = 14
-    list_x = title_x - 5
-    list_y = title_y - 20
-    logo_x, logo_y = 550, 450
-    logo_width, logo_height = 200, 100
-    board_width, board_height = 100, 100
-    colWidth, rowHeight = (1.5*inch), (0.2*inch)
-    board_x, board_y = 3, list_y - rowHeight*16.25
+#     #Positional Values
+#     title_font_size = 26
+#     title_x = 100
+#     title_y = 575
+#     list_font_size = 14
+#     list_x = title_x - 5
+#     list_y = title_y - 20
+#     logo_x, logo_y = 550, 450
+#     logo_width, logo_height = 200, 100
+#     board_width, board_height = 100, 100
+#     colWidth, rowHeight = (1.5*inch), (0.2*inch)
+#     board_x, board_y = 3, list_y - rowHeight*16.25
 
-    #Setting up title on Title Page
-    title = pdf.beginText()
-    title.setTextOrigin(title_x, title_y)
-    title.setFont(font, title_font_size)
-    title.textLine(text=("Ship Test Report: " + unit_name + " - Serial Number: " + serial_num))
-    pdf.drawText(title)
+#     #Setting up title on Title Page
+#     title = pdf.beginText()
+#     title.setTextOrigin(title_x, title_y)
+#     title.setFont(font, title_font_size)
+#     title.textLine(text=("Ship Test Report: " + unit_name + " - Serial Number: " + serial_num))
+#     pdf.drawText(title)
 
-    #Printing out Important Details regarding the Machine
-    #everything will be attached to unitList text object
-    unitList = pdf.beginText(list_x, list_y)
+#     #Printing out Important Details regarding the Machine
+#     #everything will be attached to unitList text object
+#     unitList = pdf.beginText(list_x, list_y)
 
-    #Writing Date and Time Version
-    unitList.setFont(bold_font, list_font_size)
-    unitList.textOut("Computer Date: ")
-    unitList.setFont(font, list_font_size)
-    unitList.textLine(formattedDate)
+#     #Writing Date and Time Version
+#     unitList.setFont(bold_font, list_font_size)
+#     unitList.textOut("Computer Date: ")
+#     unitList.setFont(font, list_font_size)
+#     unitList.textLine(formattedDate)
 
-    #Writing UHD Version
-    unitList.setFont(bold_font, list_font_size)
-    unitList.textOut("UHD Version: ")
-    unitList.setFont(font, list_font_size)
-    unitList.textLine(UHD_ver)
+#     #Writing UHD Version
+#     unitList.setFont(bold_font, list_font_size)
+#     unitList.textOut("UHD Version: ")
+#     unitList.setFont(font, list_font_size)
+#     unitList.textLine(UHD_ver)
 
-    #writing rtm Version
-    unitList.setFont(bold_font, list_font_size)
-    unitList.textOut("RTM: ")
-    unitList.setFont(font, list_font_size)
-    unitList.textLine(unit_rtm)
+#     #writing rtm Version
+#     unitList.setFont(bold_font, list_font_size)
+#     unitList.textOut("RTM: ")
+#     unitList.setFont(font, list_font_size)
+#     unitList.textLine(unit_rtm)
 
-    #writing Server Version
-    unitList.setFont(bold_font, list_font_size)
-    unitList.textOut("Server Version: ")
-    unitList.setFont(font, list_font_size)
-    unitList.textLine(server_ver)
+#     #writing Server Version
+#     unitList.setFont(bold_font, list_font_size)
+#     unitList.textOut("Server Version: ")
+#     unitList.setFont(font, list_font_size)
+#     unitList.textLine(server_ver)
 
-    #writing FPGa Version
-    unitList.setFont(bold_font, list_font_size)
-    unitList.textOut("FPGA Version: ")
-    unitList.setFont(font, list_font_size)
-    unitList.textLine(fpga_ver)
+#     #writing FPGa Version
+#     unitList.setFont(bold_font, list_font_size)
+#     unitList.textOut("FPGA Version: ")
+#     unitList.setFont(font, list_font_size)
+#     unitList.textLine(fpga_ver)
 
-    #writing Unit time
-    unitList.setFont(bold_font, list_font_size)
-    unitList.textOut("Unit Time: ")
-    unitList.setFont(font, list_font_size)
-    unitList.textLine(unit_time)
-    pdf.drawText(unitList)
+#     #writing Unit time
+#     unitList.setFont(bold_font, list_font_size)
+#     unitList.textOut("Unit Time: ")
+#     unitList.setFont(font, list_font_size)
+#     unitList.textLine(unit_time)
+#     pdf.drawText(unitList)
 
-    #Drawing Logo
-    drawLogo(pdf, logo_x, logo_y, logo_width, logo_height)
+#     #Drawing Logo
+#     drawLogo(pdf, logo_x, logo_y, logo_width, logo_height)
 
-    #Adding the time, tx, rx board info in a table
-    board_styles = ([('GRID', (0,0), (num_channels+1, 10), 1, colors.black),
-                    ('FONTSIZE', (1,4), (num_channels+1, 5),7.8),
-                    ('BACKGROUND', (0, 0), (num_channels+1,0), '#D5D6D5'),
-                    ('BACKGROUND', (0, 0), (0,10), '#D5D6D5')])
+#     #Adding the time, tx, rx board info in a table
+#     board_styles = ([('GRID', (0,0), (num_channels+1, 10), 1, colors.black),
+#                     ('FONTSIZE', (1,4), (num_channels+1, 5),7.8),
+#                     ('BACKGROUND', (0, 0), (num_channels+1,0), '#D5D6D5'),
+#                     ('BACKGROUND', (0, 0), (0,10), '#D5D6D5')])
 
-    #Time Board table
-    board_x, board_y = 3, list_y - rowHeight*10
-    global page_count, page_total
-    page_total +=1
-    page_count += 1
-    pdf.showPage() #Page break on pdf
-    pdf.drawText(title)
-    drawLogo(pdf, logo_x, logo_y, logo_width, logo_height)
-    pg_x, pg_y = 650,10
-    pg_num = pdf.beginText()
-    pg_num.setTextOrigin(pg_x, pg_y)
-    pg_num.setFont(font, 10)
-    pg_num.textLine(text=("Page " + str(page_count) + " of " + str(page_total)))
-    pdf.drawText(pg_num)
+#     #Time Board table
+#     board_x, board_y = 3, list_y - rowHeight*10
+#     global page_count, page_total
+#     page_total +=1
+#     page_count += 1
+#     pdf.showPage() #Page break on pdf
+#     pdf.drawText(title)
+#     drawLogo(pdf, logo_x, logo_y, logo_width, logo_height)
+#     pg_x, pg_y = 650,10
+#     pg_num = pdf.beginText()
+#     pg_num.setTextOrigin(pg_x, pg_y)
+#     pg_num.setFont(font, 10)
+#     pg_num.textLine(text=("Page " + str(page_count) + " of " + str(page_total)))
+#     pdf.drawText(pg_num)
 
-    board_info = [["Time Board Information: "], ["Board"], ["Branch"], ["Revision"], ["Date"], ["MCU Serial"], ["Fuse 00"], ["Fuse 02"], ["Fuse 03"], ["GCC"], ["Board Serial"]]
-    for z in range(len(time)):
-        board_info[z+1].append((time[z]))
+#     board_info = [["Time Board Information: "], ["Board"], ["Branch"], ["Revision"], ["Date"], ["MCU Serial"], ["Fuse 00"], ["Fuse 02"], ["Fuse 03"], ["GCC"], ["Board Serial"]]
+#     for z in range(len(time)):
+#         board_info[z+1].append((time[z]))
 
-    board_table = Table(board_info, colWidths=colWidth, rowHeights=rowHeight, style=board_styles)
-    board_table.wrapOn(pdf, board_width, board_height)
-    board_table.drawOn(pdf, board_x, board_y)
-    board_y -= rowHeight*11
+#     board_table = Table(board_info, colWidths=colWidth, rowHeights=rowHeight, style=board_styles)
+#     board_table.wrapOn(pdf, board_width, board_height)
+#     board_table.drawOn(pdf, board_x, board_y)
+#     board_y -= rowHeight*11
 
-    for z in range(pages_per_superplot): #This ensures theres columns per page
+#     for z in range(pages_per_superplot): #This ensures theres columns per page
 
-        if (z != 0): #If there are more than 4 channels, make another page for the board info
-            board_x, board_y = 3, list_y - rowHeight*10
-            page_total +=1
-            page_count += 1
-            pdf.showPage() #Page break on pdf
-            pdf.drawText(title)
-            drawLogo(pdf, logo_x, logo_y, logo_width, logo_height)
-            pg_x, pg_y = 650,10
-            pg_num = pdf.beginText()
-            pg_num.setTextOrigin(pg_x, pg_y)
-            pg_num.setFont(font, 10)
-            pg_num.textLine(text=("Page " + str(page_count) + " of " + str(page_total)))
-            pdf.drawText(pg_num)
+#         if (z != 0): #If there are more than 4 channels, make another page for the board info
+#             board_x, board_y = 3, list_y - rowHeight*10
+#             page_total +=1
+#             page_count += 1
+#             pdf.showPage() #Page break on pdf
+#             pdf.drawText(title)
+#             drawLogo(pdf, logo_x, logo_y, logo_width, logo_height)
+#             pg_x, pg_y = 650,10
+#             pg_num = pdf.beginText()
+#             pg_num.setTextOrigin(pg_x, pg_y)
+#             pg_num.setFont(font, 10)
+#             pg_num.textLine(text=("Page " + str(page_count) + " of " + str(page_total)))
+#             pdf.drawText(pg_num)
 
-        #Splits the plots up to maximum 4 per page
-        start, end = z*4, min((z*4)+4,num_channels) #only have to be calculated once
+#         #Splits the plots up to maximum 4 per page
+#         start, end = z*4, min((z*4)+4,num_channels) #only have to be calculated once
 
-        #Adding Tx Board Table
-        board_info = [["TX Board Information: "], ["Board"], ["Branch"], ["Revision"], ["Date"], ["MCU Serial"], ["Fuse 00"], ["Fuse 02"], ["Fuse 03"], ["GCC"], ["Board Serial"]]
-        for i, name in zip(range(start, end), channel_names[start:end]):
-            board_info[0].append(chr(65+i))
-            for z in range(len(tx_info["TX: " + name])):
-                board_info[z+1].append((tx_info["TX: " + name][z]))
+#         #Adding Tx Board Table
+#         board_info = [["TX Board Information: "], ["Board"], ["Branch"], ["Revision"], ["Date"], ["MCU Serial"], ["Fuse 00"], ["Fuse 02"], ["Fuse 03"], ["GCC"], ["Board Serial"]]
+#         for i, name in zip(range(start, end), channel_names[start:end]):
+#             board_info[0].append(chr(65+i))
+#             for z in range(len(tx_info["TX: " + name])):
+#                 board_info[z+1].append((tx_info["TX: " + name][z]))
 
-        board_table = Table(board_info, rowHeights=rowHeight, style=board_styles)
-        board_table.wrapOn(pdf, board_width, board_height)
-        board_table.drawOn(pdf, board_x, board_y)
-        board_y -= rowHeight*11
+#         board_table = Table(board_info, rowHeights=rowHeight, style=board_styles)
+#         board_table.wrapOn(pdf, board_width, board_height)
+#         board_table.drawOn(pdf, board_x, board_y)
+#         board_y -= rowHeight*11
 
-        #Adding Rx Board Table
-        board_info = [["RX Board Information: "], ["Board"], ["Branch"], ["Revision"], ["Date"], ["MCU Serial"], ["Fuse 00"], ["Fuse 02"], ["Fuse 03"], ["GCC"], ["Board Serial"]]
+#         #Adding Rx Board Table
+#         board_info = [["RX Board Information: "], ["Board"], ["Branch"], ["Revision"], ["Date"], ["MCU Serial"], ["Fuse 00"], ["Fuse 02"], ["Fuse 03"], ["GCC"], ["Board Serial"]]
 
-        for q, rxname in zip(range(start, end), channel_names[start:end]):
-            board_info[0].append(chr(65+q))
-            for z in range(len(rx_info["RX: " + rxname])):
-                board_info[z+1].append((rx_info["RX: " + rxname][z]))
+#         for q, rxname in zip(range(start, end), channel_names[start:end]):
+#             board_info[0].append(chr(65+q))
+#             for z in range(len(rx_info["RX: " + rxname])):
+#                 board_info[z+1].append((rx_info["RX: " + rxname][z]))
 
-        board_table = Table(board_info, colWidths=colWidth, rowHeights=rowHeight, style=board_styles)
-        board_table.wrapOn(pdf, board_width, board_height)
-        board_table.drawOn(pdf, board_x, board_y)
+#         board_table = Table(board_info, colWidths=colWidth, rowHeights=rowHeight, style=board_styles)
+#         board_table.wrapOn(pdf, board_width, board_height)
+#         board_table.drawOn(pdf, board_x, board_y)
 
+def buildTitlePage(report):
+    report.insert_text_large("Ship Test Report: " + unit_name + " - Serial Number: " + serial_num)
+    report.insert_line_separator()
+    # Inserts Report Date, OS, Hostname, Product Name, Docker SHA, RTM, FPGA DDR, Unit Time, UHD, Server, FPGA, pvpkg versions
+    report.insert_unit_list()
+    report.insert_line_separator()
+    report.new_page()
+
+    # Time Board Table (all 10 rows including Board Serial)
+    time_table = [
+        ["Time Board Information", "Value"],
+        ["Board", time[0]],
+        ["Branch", time[1]],
+        ["Revision", time[2]],
+        ["Date", time[3]],
+        ["MCU Serial", time[4]],
+        ["Fuse 00", time[5]],
+        ["Fuse 02", time[6]],
+        ["Fuse 03", time[7]],
+        ["GCC", time[8]],
+        ["Board Serial", time[9]],
+    ]
+    report.insert_table(time_table, x_offset=0, title="Time Board Information", fontsize=8)
+
+    # TX and RX Board Tables (split up to 4 channels per page, preserving Board Serial)
+    for z in range(pages_per_superplot):
+        if z != 0:
+            report.new_page()
+
+        start, end = z * 4, min((z * 4) + 4, num_channels)
+        row_labels = ["Board", "Branch", "Revision", "Date", "MCU Serial", "Fuse 00", "Fuse 02", "Fuse 03", "GCC", "Board Serial"]
+
+        # TX Board Table
+        tx_table = [["TX Board Information"] + [channel_names[i] for i in range(start, end)]]
+        for r_idx, label in enumerate(row_labels):
+            row = [label]
+            for i in range(start, end):
+                row.append(tx_info["TX: " + channel_names[i]][r_idx])
+            tx_table.append(row)
+        report.insert_table(tx_table, x_offset=0, title="TX Board Information", fontsize=8)
+
+        # RX Board Table
+        rx_table = [["RX Board Information"] + [channel_names[i] for i in range(start, end)]]
+        for r_idx, label in enumerate(row_labels):
+            row = [label]
+            for i in range(start, end):
+                row.append(rx_info["RX: " + channel_names[i]][r_idx])
+            rx_table.append(row)
+        report.insert_table(rx_table, x_offset=0, title="RX Board Information", fontsize=8)
 
 '''Creates a header for each Run Page and the page number
-PARAMS: pdf, it name
+PARAMS: report, it name
 RETURNS: None
 '''
-def topOfPage(pdf, it):
-    #Positionalgalues
-    title_font_size = 26
-    title_x, title_y = 80, 575
+# def topOfPage(pdf, it):
+#     #Positionalgalues
+#     title_font_size = 26
+#     title_x, title_y = 80, 575
 
-    #Setting up title
-    title = pdf.beginText()
-    title.setTextOrigin(title_x, title_y)
-    title.setFont(font, title_font_size)
-    title.textLine(text=("Run Number " + str(it) + " - Loopback On " + unit_name))
-    pdf.drawText(title)
+#     #Setting up title
+#     title = pdf.beginText()
+#     title.setTextOrigin(title_x, title_y)
+#     title.setFont(font, title_font_size)
+#     title.textLine(text=("Run Number " + str(it) + " - Loopback On " + unit_name))
+#     pdf.drawText(title)
 
-    #Positional Values
-    header_font_size = 10
-    header_x, header_y = 633, 584
-    logo_width, logo_height = 75, 25
-    logo_x, logo_y = header_x - logo_width - 2, header_y - 17
-    pg_x, pg_y = 650,10
+#     #Positional Values
+#     header_font_size = 10
+#     header_x, header_y = 633, 584
+#     logo_width, logo_height = 75, 25
+#     logo_x, logo_y = header_x - logo_width - 2, header_y - 17
+#     pg_x, pg_y = 650,10
 
-    #Header Writing
-    header = pdf.beginText()
-    header.setTextOrigin(header_x, header_y)
-    header.setFont(font, header_font_size)
-    header.textLine(text=("Unit Number: " + serial_num))
-    header.textLine(text=(formattedDate))
-    pdf.drawText(header)
+#     #Header Writing
+#     header = pdf.beginText()
+#     header.setTextOrigin(header_x, header_y)
+#     header.setFont(font, header_font_size)
+#     header.textLine(text=("Unit Number: " + serial_num))
+#     header.textLine(text=(formattedDate))
+#     pdf.drawText(header)
 
-    #Drawing logo
-    drawLogo(pdf, logo_x, logo_y, logo_width, logo_height)
+#     #Drawing logo
+#     drawLogo(pdf, logo_x, logo_y, logo_width, logo_height)
 
-    #Page Number
-    pg_num = pdf.beginText()
-    pg_num.setTextOrigin(pg_x, pg_y)
-    pg_num.setFont(font, header_font_size)
-    pg_num.textLine(text=("Page " + str(page_count) + " of " + str(page_total)))
-    pdf.drawText(pg_num)
+#     #Page Number
+#     pg_num = pdf.beginText()
+#     pg_num.setTextOrigin(pg_x, pg_y)
+#     pg_num.setFont(font, header_font_size)
+#     pg_num.textLine(text=("Page " + str(page_count) + " of " + str(page_total)))
+#     pdf.drawText(pg_num)
 
-    #positional values
-    table_width = 400
-    table_height = 50
-    table_x = title_x - 5
-    table_y = title_y - table_height
+#     #positional values
+#     table_width = 400
+#     table_height = 50
+#     table_x = title_x - 5
+#     table_y = title_y - table_height
 
-    #Table of input data
-    data = [["Center Frequency (Hz)", "Wave Frequency (Hz)", "Sample Rate (SPS)", "Sample Count", "TX Gain (dB)", "RX Gain (dB)"],
-            [center_freq, wave_freq, sample_rate, sample_count, tx_gain, rx_gain]]
+#     #Table of input data
+#     data = [["Center Frequency (Hz)", "Wave Frequency (Hz)", "Sample Rate (SPS)", "Sample Count", "TX Gain (dB)", "RX Gain (dB)"],
+#             [center_freq, wave_freq, sample_rate, sample_count, tx_gain, rx_gain]]
 
-    #Making and styling the table
-    inputs = Table(data, style=[('GRID', (0,0), (6,1), 1, colors.black),
-                                ('BACKGROUND', (0,0), (6,0), '#D5D6D5')])
-    inputs.wrapOn(pdf, table_width, table_height)
-    inputs.drawOn(pdf, table_x, table_y)
+#     #Making and styling the table
+#     inputs = Table(data, style=[('GRID', (0,0), (6,1), 1, colors.black),
+#                                 ('BACKGROUND', (0,0), (6,0), '#D5D6D5')])
+#     inputs.wrapOn(pdf, table_width, table_height)
+#     inputs.drawOn(pdf, table_x, table_y)
+def addRunHeader(report, it):
+    report.insert_text_large("Run Number " + str(it) + " - Loopback On " + unit_name)
+    data = [
+        ["Center Freq (Hz)", "Wave Freq (Hz)", "Sample Rate (SPS)", "Sample Count", "TX Gain (dB)", "RX Gain (dB)"],
+        [center_freq, wave_freq, sample_rate, sample_count, tx_gain, rx_gain]
+    ]
+    report.insert_table(data, x_offset=0, fontsize=8)
 
 '''Plots the FFT subplots all in the same format
 PARAMS: x, y, ax, imag, title
@@ -649,23 +710,14 @@ def fftValues(channel, x, real, imag, fft_xs, fft_ys):
 vector Drawing for the pdf
 PARAMS: title, counter (only used to identify the plot in error messages)
 RETURNS: Drawing'''
-def plotToPdf(title, counter):
+def plotToPdf(report):
 
     plt.gcf().set_size_inches(8, 5)
 
-    #Write the svg into an in-memory buffer instead of a file
-    stream = BytesIO()
+    stream = report.get_image_io_stream()#BytesIO()
     plt.savefig(stream, format="svg")
 
-    # Rewind to read the stream from the start
-    stream.seek(0)
-
-    #Parse the svg into vector shapes reportlab can draw
-    img = svg2rlg(stream)
-    if img is None:
-        raise ValueError("Could not parse plot " + title + "_" + str(counter))
-
-    return img
+    return report.get_drawing_from_svg_io_stream(stream)
 
 '''Finding the top peaks
 PARAMS: y
@@ -806,11 +858,12 @@ def main(iterations):
     matplotlib.use('PDF')
 
     #Create the PDF
-    pdf = canvas.Canvas(file_title, pagesize=landscape(letter)) #Setting the page layout and file name
-    pdf.setTitle(doc_title)
+    #pdf = canvas.Canvas(file_title, pagesize=landscape(letter)) #Setting the page layout and file name
+    #pdf.setTitle(doc_title)
 
-    #Make title page
-    titlePage(pdf)
+    Make title page
+    #titlePage(pdf)
+    buildTitlePage(report)
 
     # Stores a list containing the 4 peaks from each fft
     # Dimmensions:
@@ -984,7 +1037,7 @@ def main(iterations):
                 ax_end = ax_st + 15
 
             #Gets the byte data for the pdf images
-            IQ_plt_img.append(plotToPdf(("IQPlots_" + formattedDate), counter))
+            IQ_plt_img.append(plotToPdf(report))
             plt.clf()
 
         IQ_plots = np.asarray(IQ_plots)
@@ -1048,185 +1101,299 @@ def main(iterations):
                 ax_end = ax_st + 15
 
                 #Rasterizes the plot/figures and converts to png)
-            FFT_plt_img.append(plotToPdf(("FFTPlots_" + formattedDate), counter))
+            FFT_plt_img.append(plotToPdf(report))
             plt.clf()
 
         FFT_plots = np.asarray(FFT_plots)
 
-        #MAKING THE ACTUAL PDF
-        #SECTION ONE OF RUNS: Merged Plots
-        pdf.showPage()
-        global page_count
-        page_count += 1
-        topOfPage(pdf, str(counter))
+        # #MAKING THE ACTUAL PDF
+        # #SECTION ONE OF RUNS: Merged Plots
+        # pdf.showPage()
+        # global page_count
+        # page_count += 1
+        # topOfPage(pdf, str(counter))
 
-        tgth_width, tgth_height = 700, 450
-        tgth_x, tgth_y = 2, 30
+        # tgth_width, tgth_height = 700, 450
+        # tgth_x, tgth_y = 2, 30
 
-        #Setting the plot
+        # #Setting the plot
+        # fig = plt.GridSpec(17, 45, wspace=10)
+        # ax1 = plt.subplot(fig[0:17, 0:20])
+        # ax2 = plt.subplot(fig[0:17, 20:40])
+
+        # colours = ['royalblue', 'maroon', 'darkolivegreen', 'mediumvioletred']
+
+        # #plotting them all by pulling previous data
+        # for i, colour in zip(range(num_channels), colours):
+        #     # Combined amplitude plot
+        #     ax1.set_title("All Channels - Real Data")
+        #     ax1.set_xlabel("Time (nS)")
+        #     ax1.set_ylabel("Amplitude(fraction of max)")
+        #     ax1.plot(IQ_plots[i].get_xdata(), IQ_plots[i].get_ydata(), '-', color=colour, markersize=0.2, label="Channel {}".format(i))
+
+        #     # Combined frequency plot
+        #     ax2.set_title("All Channels - FFT Graphs")
+        #     ax2.set_xlabel("Frequency (MHz)")
+        #     ax2.set_ylabel("Magnitude (dB)")
+        #     ax2.plot(FFT_plots[i].get_xdata(), FFT_plots[i].get_ydata(), '-', color=colour, markersize=0.2, label="Channel {}".format(i))
+
+        # ax2.legend(loc='upper left', bbox_to_anchor=(1,0.5))
+
+        # #Rasterizes the plot/figures and converts to png)
+        # tgth_plt_img = plotToPdf(("TogetherPlots_" + formattedDate), counter)
+        # drawVector(pdf, tgth_plt_img, tgth_x, tgth_y, tgth_width, tgth_height)
+        # plt.clf()
+        # plt.close()
+
+        # #SECTION TWO OF RUN: Plotting the Amplitude vs Time
+        # #Positional Values
+
+        # plot_img_width, plot_img_height = 700, 450
+        # plot_img_pos_x,  plot_img_pos_y = 2, 60
+        # IQ_width, IQ_height = 250, 105
+        # IQ_table_x, IQ_table_y = 5,5
+
+        # #graphs and table dependent on number of channels
+        # for z in range(pages_per_superplot):
+        #     pdf.showPage() #Page break on pdf
+        #     page_count += 1
+        #     topOfPage(pdf, str(counter))
+        #     #Splits the plots up to maximum 4 per page
+        #     start, end = z*4,min((z*4)+4,num_channels)
+
+        #     drawVector(pdf, IQ_plt_img[z], plot_img_pos_x, plot_img_pos_y, plot_img_width, plot_img_height)
+
+        #     #Table of IQ info
+        #     IQ_table_info = [["IQ Data: "],["Channel"], ["Ampl I (fractional)"], ["Ampl Q (fractional)"]]
+
+        #     for i in range(start, end):
+        #         IQ_table_info[1].append((chr(65+i)))
+        #         IQ_table_info[2].append(sig(ampl_reals[i], sigfigs=sigfigs))
+        #         IQ_table_info[3].append(sig(ampl_imags[i], sigfigs=sigfigs))
+
+        #         IQ_table = Table(IQ_table_info, style=[('GRID', (0,1), (num_channels+1,4), 1, colors.black),
+        #                                             ('BACKGROUND', (0, 1), (num_channels+1,1), '#D5D6D5')])
+
+        #     IQ_table.wrapOn(pdf, IQ_width, IQ_height)
+        #     IQ_table.drawOn(pdf, IQ_table_x, IQ_table_y)
+
+
+        # #SECTION THREE OF RUN: Plotting Amplitude vs Frequency
+        # #Positional
+        # fft_pos_x, fft_pos_y = 10, 100
+        # fft_width, fft_height = 700, 420
+        # max_peak_width, max_peak_height = 80, 50
+        # max_peak_x, max_peak_y = 2, 5
+
+        # #making graphs and table dependent on number of channels
+        # for z in range(pages_per_superplot):
+        #     pdf.showPage()
+        #     page_count += 1
+        #     topOfPage(pdf, str(counter))
+        #     #Splits the plots up to maximum 4 per page
+        #     start, end = z*4,min((z*4)+4,num_channels)
+        #     drawVector(pdf, FFT_plt_img[z], fft_pos_x, fft_pos_y, fft_width, fft_height)
+
+        #     #Tables stuff
+        #     max_peak_table_info = [["Top Peaks (Frequencty, Amplitude):"], ["Channel"], ["Highest Peak"], ["Second Highest"], ["Third Highest"], ["Fourth Heighest"]]
+        #     for i in range(start, end):
+        #         max_peak_table_info[2].append(str((sig(max_fours[i][0][0], sigfigs=sigfigs), sig(max_fours[i][0][1], sigfigs=sigfigs))))
+        #         max_peak_table_info[3].append(str((sig(max_fours[i][1][0], sigfigs=sigfigs), sig(max_fours[i][1][1], sigfigs=sigfigs))))
+        #         max_peak_table_info[4].append(str((sig(max_fours[i][2][0], sigfigs=sigfigs), sig(max_fours[i][2][1], sigfigs=sigfigs))))
+        #         max_peak_table_info[5].append(str((sig(max_fours[i][3][0], sigfigs=sigfigs), sig(max_fours[i][3][1], sigfigs=sigfigs))))
+        #         max_peak_table_info[1].append((chr(65+i)))
+
+        #     peak_table = Table(max_peak_table_info, style=[('GRID', (0,1), (num_channels+1,5), 1, colors.black),
+        #                             ('BACKGROUND', (0,1), (num_channels+1,1), '#D5D6D5')])
+        #     peak_table.wrapOn(pdf, max_peak_width, max_peak_height)
+        #     peak_table.drawOn(pdf, max_peak_x, max_peak_y)
+
+        # ##SECTION FOUR OF RUNS: SUMMARY PAGE
+        # pdf.showPage()
+        # page_count += 1
+        # topOfPage(pdf, str(counter))
+
+        # #NF stuff
+        # nf_table_width, nf_table_height = 80, 500
+        # nf_x, nf_y = 10, 400
+
+        # #SNR DATA
+        # snr_width, snr_height = 100, 100
+        # fft_snr = []
+        # for i in range(num_channels):
+        #     fft_snr.append(toSNR(noise_floor[i][1], max_fours[i][0][1]))
+
+        # fft_snr = np.asarray(fft_snr)
+
+        # #At this point, the snr shoud be in order of max peak
+        # summary_info.append((max_fours[0][0][0], max_fours[0][0][1], fft_snr[0]))
+
+        # #Sorting according to SNR
+        # max_top = []
+        # for first_max in max_fours:
+        #     max_top.append((first_max[0][0], first_max[0][1]))
+
+        # #Tables stuff
+        # for z in range(pages_per_superplot):
+        #     snr_x, snr_y = nf_x, nf_y - snr_height
+        #     #Splits the plots up to maximum 4 per page
+        #     start, end = z*4,min((z*4)+4,num_channels)
+        #     nf_table_info = [["All Noise Floor Data :"], ["Channel"],["Maximum"], ["Minimum"], ["Mean"], ["Diff to A"], ["STD"]]
+        #     mean_a = np.mean(noise_floor[0][1])
+        #     snr_table_info = [["Top Peak Information", "(Based on Highest SNR):"], ["Channel"], ["Location (Hz)"], ["Amplitude (dB)"], ["SNR (dBc)"]]
+        #     snr_style = []
+
+        #     for i in range(start, end):
+        #         #Calculations for Noisefloor
+        #         max_loc = np.argmax(noise_floor[i][1])
+        #         min_loc = np.argmin(noise_floor[i][1])
+        #         mean = np.mean(noise_floor[i][1])
+
+        #         #Inputting data into noise floor table
+        #         nf_table_info[1].append((chr(65+i)))
+        #         nf_table_info[2].append(str((sig(noise_floor[i][0][max_loc], sigfigs=sigfigs), sig(noise_floor[i][1][max_loc], sigfigs=sigfigs))))
+        #         nf_table_info[3].append(str((sig(noise_floor[i][0][min_loc], sigfigs=sigfigs), sig(noise_floor[i][1][min_loc], sigfigs=sigfigs))))
+        #         nf_table_info[4].append(str(sig(mean, sigfigs=sigfigs)))
+        #         nf_table_info[5].append(str(sig(mean - mean_a, sigfigs=sigfigs)))
+        #         nf_table_info[6].append(str(sig(np.std(noise_floor[i][1]), sigfigs=sigfigs)))
+
+        #         #Inputting data into the snr table
+        #         snr_table_info[1].append((chr(65+i)))
+        #         snr_table_info[2].append(str(sig(max_top[i][0], sigfigs=sigfigs)))
+        #         snr_table_info[3].append(str(sig(max_top[i][1], sigfigs=sigfigs)))
+        #         snr_table_info[4].append(str(sig(fft_snr[i], sigfigs=sigfigs)))
+
+        #     #making and placing NF table
+        #     nf_table = Table(nf_table_info, style=[('GRID', (0,1), (num_channels+1,6), 1, colors.black),
+        #                             ('BACKGROUND', (0,1), (num_channels+1,1), '#D5D6D5')])
+        #     nf_table.wrapOn(pdf, nf_table_width, nf_table_height)
+        #     nf_table.drawOn(pdf, nf_x, nf_y)
+
+        #     #making and placing SNR table
+        #     snr_table = Table(snr_table_info, style=[('GRID', (0,1), (num_channels+1,4), 1, colors.black),
+        #                             ('BACKGROUND', (0,1), (num_channels+1,1), '#D5D6D5')])
+        #     snr_table.wrapOn(pdf, snr_width, snr_height)
+        #     snr_table.drawOn(pdf, snr_x, snr_y)
+
+        #     if (multi):
+        #         nf_y -=230
+        #         snr_y -=230
+        #     else:
+        #         break
+        # MAKING THE ACTUAL PDF
+        # SECTION ONE OF RUNS: Merged Plots
+        report.new_page()
+        addRunHeader(report, str(counter))
+
         fig = plt.GridSpec(17, 45, wspace=10)
         ax1 = plt.subplot(fig[0:17, 0:20])
         ax2 = plt.subplot(fig[0:17, 20:40])
 
         colours = ['royalblue', 'maroon', 'darkolivegreen', 'mediumvioletred']
 
-        #plotting them all by pulling previous data
+        # Plotting them all by pulling previous data
         for i, colour in zip(range(num_channels), colours):
-            # Combined amplitude plot
             ax1.set_title("All Channels - Real Data")
             ax1.set_xlabel("Time (nS)")
             ax1.set_ylabel("Amplitude(fraction of max)")
-            ax1.plot(IQ_plots[i].get_xdata(), IQ_plots[i].get_ydata(), '-', color=colour, markersize=0.2, label="Channel {}".format(i))
+            ax1.plot(IQ_plots[i].get_xdata(), IQ_plots[i].get_ydata(), '-', color=colour, markersize=0.2, label="Channel {}".format(channel_names[i]))
 
-            # Combined frequency plot
             ax2.set_title("All Channels - FFT Graphs")
             ax2.set_xlabel("Frequency (MHz)")
             ax2.set_ylabel("Magnitude (dB)")
-            ax2.plot(FFT_plots[i].get_xdata(), FFT_plots[i].get_ydata(), '-', color=colour, markersize=0.2, label="Channel {}".format(i))
+            ax2.plot(FFT_plots[i].get_xdata(), FFT_plots[i].get_ydata(), '-', color=colour, markersize=0.2, label="Channel {}".format(channel_names[i]))
 
-        ax2.legend(loc='upper left', bbox_to_anchor=(1,0.5))
+        ax2.legend(loc='upper left', bbox_to_anchor=(1, 0.5))
 
-        #Rasterizes the plot/figures and converts to png)
-        tgth_plt_img = plotToPdf(("TogetherPlots_" + formattedDate), counter)
-        drawVector(pdf, tgth_plt_img, tgth_x, tgth_y, tgth_width, tgth_height)
+        tgth_plt_img = plotToPdf(report)
+        report.insert_image(tgth_plt_img, desc="Combined Real & FFT Plots - Run " + str(counter))
         plt.clf()
         plt.close()
 
-        #SECTION TWO OF RUN: Plotting the Amplitude vs Time
-        #Positional Values
-
-        plot_img_width, plot_img_height = 700, 450
-        plot_img_pos_x,  plot_img_pos_y = 2, 60
-        IQ_width, IQ_height = 250, 105
-        IQ_table_x, IQ_table_y = 5,5
-
-        #graphs and table dependent on number of channels
+        # SECTION TWO OF RUN: Plotting the Amplitude vs Time
         for z in range(pages_per_superplot):
-            pdf.showPage() #Page break on pdf
-            page_count += 1
-            topOfPage(pdf, str(counter))
-            #Splits the plots up to maximum 4 per page
-            start, end = z*4,min((z*4)+4,num_channels)
+            report.new_page()
+            addRunHeader(report, str(counter))
+            start, end = z * 4, min((z * 4) + 4, num_channels)
 
-            drawVector(pdf, IQ_plt_img[z], plot_img_pos_x, plot_img_pos_y, plot_img_width, plot_img_height)
+            report.insert_image(IQ_plt_img[z], desc="Individual Channels' Amplitude vs Time")
 
-            #Table of IQ info
-            IQ_table_info = [["IQ Data: "],["Channel"], ["Ampl I (fractional)"], ["Ampl Q (fractional)"]]
+            IQ_table_info = [
+                ["Channel"] + [channel_names[i] for i in range(start, end)],
+                ["Ampl I (fractional)"] + [sig(ampl_reals[i], sigfigs=sigfigs) for i in range(start, end)],
+                ["Ampl Q (fractional)"] + [sig(ampl_imags[i], sigfigs=sigfigs) for i in range(start, end)]
+            ]
+            report.insert_table(IQ_table_info, x_offset=20, title="IQ Data", fontsize=10)
 
-            for i in range(start, end):
-                IQ_table_info[1].append((chr(65+i)))
-                IQ_table_info[2].append(sig(ampl_reals[i], sigfigs=sigfigs))
-                IQ_table_info[3].append(sig(ampl_imags[i], sigfigs=sigfigs))
-
-                IQ_table = Table(IQ_table_info, style=[('GRID', (0,1), (num_channels+1,4), 1, colors.black),
-                                                    ('BACKGROUND', (0, 1), (num_channels+1,1), '#D5D6D5')])
-
-            IQ_table.wrapOn(pdf, IQ_width, IQ_height)
-            IQ_table.drawOn(pdf, IQ_table_x, IQ_table_y)
-
-
-        #SECTION THREE OF RUN: Plotting Amplitude vs Frequency
-        #Positional
-        fft_pos_x, fft_pos_y = 10, 100
-        fft_width, fft_height = 700, 420
-        max_peak_width, max_peak_height = 80, 50
-        max_peak_x, max_peak_y = 2, 5
-
-        #making graphs and table dependent on number of channels
+        # SECTION THREE OF RUN: Plotting Amplitude vs Frequency
         for z in range(pages_per_superplot):
-            pdf.showPage()
-            page_count += 1
-            topOfPage(pdf, str(counter))
-            #Splits the plots up to maximum 4 per page
-            start, end = z*4,min((z*4)+4,num_channels)
-            drawVector(pdf, FFT_plt_img[z], fft_pos_x, fft_pos_y, fft_width, fft_height)
+            report.new_page()
+            addRunHeader(report, str(counter))
+            start, end = z * 4, min((z * 4) + 4, num_channels)
 
-            #Tables stuff
-            max_peak_table_info = [["Top Peaks (Frequencty, Amplitude):"], ["Channel"], ["Highest Peak"], ["Second Highest"], ["Third Highest"], ["Fourth Heighest"]]
-            for i in range(start, end):
-                max_peak_table_info[2].append(str((sig(max_fours[i][0][0], sigfigs=sigfigs), sig(max_fours[i][0][1], sigfigs=sigfigs))))
-                max_peak_table_info[3].append(str((sig(max_fours[i][1][0], sigfigs=sigfigs), sig(max_fours[i][1][1], sigfigs=sigfigs))))
-                max_peak_table_info[4].append(str((sig(max_fours[i][2][0], sigfigs=sigfigs), sig(max_fours[i][2][1], sigfigs=sigfigs))))
-                max_peak_table_info[5].append(str((sig(max_fours[i][3][0], sigfigs=sigfigs), sig(max_fours[i][3][1], sigfigs=sigfigs))))
-                max_peak_table_info[1].append((chr(65+i)))
+            report.insert_image(FFT_plt_img[z], desc="Individual Channels' FFTs")
 
-            peak_table = Table(max_peak_table_info, style=[('GRID', (0,1), (num_channels+1,5), 1, colors.black),
-                                    ('BACKGROUND', (0,1), (num_channels+1,1), '#D5D6D5')])
-            peak_table.wrapOn(pdf, max_peak_width, max_peak_height)
-            peak_table.drawOn(pdf, max_peak_x, max_peak_y)
+            max_peak_table_info = [
+                ["Channel"] + [channel_names[i] for i in range(start, end)],
+                ["Highest Peak"] + [str((sig(max_fours[i][0][0], sigfigs=sigfigs), sig(max_fours[i][0][1], sigfigs=sigfigs))) for i in range(start, end)],
+                ["Second Highest"] + [str((sig(max_fours[i][1][0], sigfigs=sigfigs), sig(max_fours[i][1][1], sigfigs=sigfigs))) for i in range(start, end)],
+                ["Third Highest"] + [str((sig(max_fours[i][2][0], sigfigs=sigfigs), sig(max_fours[i][2][1], sigfigs=sigfigs))) for i in range(start, end)],
+                ["Fourth Highest"] + [str((sig(max_fours[i][3][0], sigfigs=sigfigs), sig(max_fours[i][3][1], sigfigs=sigfigs))) for i in range(start, end)]
+            ]
+            report.insert_table(max_peak_table_info, x_offset=0, title="Top Peaks (Frequency, Amplitude)", fontsize=8)
 
-        ##SECTION FOUR OF RUNS: SUMMARY PAGE
-        pdf.showPage()
-        page_count += 1
-        topOfPage(pdf, str(counter))
+        # SECTION FOUR OF RUNS: SUMMARY PAGE
+        report.new_page()
+        addRunHeader(report, str(counter))
 
-        #NF stuff
-        nf_table_width, nf_table_height = 80, 500
-        nf_x, nf_y = 10, 400
-
-        #SNR DATA
-        snr_width, snr_height = 100, 100
         fft_snr = []
         for i in range(num_channels):
             fft_snr.append(toSNR(noise_floor[i][1], max_fours[i][0][1]))
-
         fft_snr = np.asarray(fft_snr)
 
-        #At this point, the snr shoud be in order of max peak
         summary_info.append((max_fours[0][0][0], max_fours[0][0][1], fft_snr[0]))
 
-        #Sorting according to SNR
         max_top = []
         for first_max in max_fours:
             max_top.append((first_max[0][0], first_max[0][1]))
 
-        #Tables stuff
         for z in range(pages_per_superplot):
-            snr_x, snr_y = nf_x, nf_y - snr_height
-            #Splits the plots up to maximum 4 per page
-            start, end = z*4,min((z*4)+4,num_channels)
-            nf_table_info = [["All Noise Floor Data :"], ["Channel"],["Maximum"], ["Minimum"], ["Mean"], ["Diff to A"], ["STD"]]
+            start, end = z * 4, min((z * 4) + 4, num_channels)
             mean_a = np.mean(noise_floor[0][1])
-            snr_table_info = [["Top Peak Information", "(Based on Highest SNR):"], ["Channel"], ["Location (Hz)"], ["Amplitude (dB)"], ["SNR (dBc)"]]
-            snr_style = []
+
+            nf_table_info = [
+                ["Channel"] + [channel_names[i] for i in range(start, end)],
+                ["Maximum"],
+                ["Minimum"],
+                ["Mean"],
+                ["Diff to " + channel_names[0]],
+                ["STD"]
+            ]
+            snr_table_info = [
+                ["Channel"] + [channel_names[i] for i in range(start, end)],
+                ["Location (Hz)"],
+                ["Amplitude (dB)"],
+                ["SNR (dBc)"]
+            ]
 
             for i in range(start, end):
-                #Calculations for Noisefloor
                 max_loc = np.argmax(noise_floor[i][1])
                 min_loc = np.argmin(noise_floor[i][1])
                 mean = np.mean(noise_floor[i][1])
 
-                #Inputting data into noise floor table
-                nf_table_info[1].append((chr(65+i)))
-                nf_table_info[2].append(str((sig(noise_floor[i][0][max_loc], sigfigs=sigfigs), sig(noise_floor[i][1][max_loc], sigfigs=sigfigs))))
-                nf_table_info[3].append(str((sig(noise_floor[i][0][min_loc], sigfigs=sigfigs), sig(noise_floor[i][1][min_loc], sigfigs=sigfigs))))
-                nf_table_info[4].append(str(sig(mean, sigfigs=sigfigs)))
-                nf_table_info[5].append(str(sig(mean - mean_a, sigfigs=sigfigs)))
-                nf_table_info[6].append(str(sig(np.std(noise_floor[i][1]), sigfigs=sigfigs)))
+                nf_table_info[1].append(str((sig(noise_floor[i][0][max_loc], sigfigs=sigfigs), sig(noise_floor[i][1][max_loc], sigfigs=sigfigs))))
+                nf_table_info[2].append(str((sig(noise_floor[i][0][min_loc], sigfigs=sigfigs), sig(noise_floor[i][1][min_loc], sigfigs=sigfigs))))
+                nf_table_info[3].append(str(sig(mean, sigfigs=sigfigs)))
+                nf_table_info[4].append(str(sig(mean - mean_a, sigfigs=sigfigs)))
+                nf_table_info[5].append(str(sig(np.std(noise_floor[i][1]), sigfigs=sigfigs)))
 
-                #Inputting data into the snr table
-                snr_table_info[1].append((chr(65+i)))
-                snr_table_info[2].append(str(sig(max_top[i][0], sigfigs=sigfigs)))
-                snr_table_info[3].append(str(sig(max_top[i][1], sigfigs=sigfigs)))
-                snr_table_info[4].append(str(sig(fft_snr[i], sigfigs=sigfigs)))
+                snr_table_info[1].append(str(sig(max_top[i][0], sigfigs=sigfigs)))
+                snr_table_info[2].append(str(sig(max_top[i][1], sigfigs=sigfigs)))
+                snr_table_info[3].append(str(sig(fft_snr[i], sigfigs=sigfigs)))
 
-            #making and placing NF table
-            nf_table = Table(nf_table_info, style=[('GRID', (0,1), (num_channels+1,6), 1, colors.black),
-                                    ('BACKGROUND', (0,1), (num_channels+1,1), '#D5D6D5')])
-            nf_table.wrapOn(pdf, nf_table_width, nf_table_height)
-            nf_table.drawOn(pdf, nf_x, nf_y)
+            report.insert_table(nf_table_info, x_offset=0, title="All Noise Floor Data", fontsize=8)
+            report.insert_table(snr_table_info, x_offset=0, title="Top Peak Information (Based on Highest SNR)", fontsize=8)
 
-            #making and placing SNR table
-            snr_table = Table(snr_table_info, style=[('GRID', (0,1), (num_channels+1,4), 1, colors.black),
-                                    ('BACKGROUND', (0,1), (num_channels+1,1), '#D5D6D5')])
-            snr_table.wrapOn(pdf, snr_width, snr_height)
-            snr_table.drawOn(pdf, snr_x, snr_y)
-
-            if (multi):
-                nf_y -=230
-                snr_y -=230
-            else:
-                break
 
         strict_failed = False
         # Checking if this iteration passed SNR
@@ -1258,71 +1425,88 @@ def main(iterations):
             break
 
 
+    # log.pvpkg_log_info("SHIPTEST", "Data collection complete")
+
+    # #Pass/Fail final page
+    # pdf.showPage()
+    # page_count += 1
+
+    # #Only sections of the header, so coded seperately
+    # #Positional Values
+    # header_font_size = 10
+    # header_x, header_y = 633, 584
+    # logo_width, logo_height = 75, 25
+    # logo_x, logo_y = header_x - logo_width - 2, header_y - 17
+    # pg_x, pg_y = 650,10
+
+    # #Header Writing
+    # header = pdf.beginText()
+    # header.setTextOrigin(header_x, header_y)
+    # header.setFont(font, header_font_size*0.6)
+    # header.textLine(text=("Unit Number: " + serial_num))
+    # header.textLine(text=(formattedDate))
+    # pdf.drawText(header)
+
+    # #Drawing logo
+    # drawLogo(pdf, logo_x, logo_y, logo_width, logo_height)
+
+    # #Page Number
+    # pg_num = pdf.beginText()
+    # pg_num.setTextOrigin(pg_x, pg_y)
+    # pg_num.setFont(font, header_font_size)
+    # pg_num.textLine(text=("Page " + str(page_count) + " of " + str(page_total)))
+    # pdf.drawText(pg_num)
+
+
+    # #Positional values
+    # title_font_size = 26
+    # title_x, title_y = 2, 575
+    # summary_width, summary_height = 250, 150
+    # summary_x = 10
+    # snr_x=  summary_x
+
+    # #Setting up title
+    # title = pdf.beginText()
+    # title.setTextOrigin(title_x, title_y)
+    # title.setFont(font, title_font_size)
+    # title.textLine(text=("Summary Page for: " + unit_name + " - " + formattedDate))
+    # pdf.drawText(title)
+
+    # summary_nump = np.asarray(summary_info)
+
+    # summary_table_info = [["Summary Table: "], ["Run", "SNR check", "Frequency check", "Spur check", "Gain variation check"]]
+
+    # for i, snr, freq, spur, gain in zip(range(counter), snr_bools, freq_bools, spur_bools, gain_bools):
+    #     summary_table_info.append([str(i+1), isPass(snr), isPass(freq), isPass(spur), isPass(gain)])
+
+    # summary = Table(summary_table_info, style=[('GRID', (0,1), (4, counter+1), 1, colors.black),
+    #                             ('BACKGROUND', (0,1), (2,1), '#D5D6D5')])
+
+    # # drawOn() positions the table by its bottom-left corner so subtract the table height
+    # _, table_height = summary.wrapOn(pdf, summary_width, summary_height)
+    # summary_y = title_y - 30 - table_height
+    # summary.drawOn(pdf, summary_x, summary_y)
+
+    # os.chdir(output_dir) #Ensuring we are saving in the output directory
+    # log.pvpkg_log_info("SHIPTEST", "Saving PDF report to " + output_dir + "/" + file_title)
+    # pdf.save() #saving the pdf
+
     log.pvpkg_log_info("SHIPTEST", "Data collection complete")
 
-    #Pass/Fail final page
-    pdf.showPage()
-    page_count += 1
+    # Pass/Fail final page
+    report.new_page()
+    report.insert_text_large("Summary Page for: " + unit_name + " - " + formattedDate)
+    report.insert_line_separator()
 
-    #Only sections of the header, so coded seperately
-    #Positional Values
-    header_font_size = 10
-    header_x, header_y = 633, 584
-    logo_width, logo_height = 75, 25
-    logo_x, logo_y = header_x - logo_width - 2, header_y - 17
-    pg_x, pg_y = 650,10
-
-    #Header Writing
-    header = pdf.beginText()
-    header.setTextOrigin(header_x, header_y)
-    header.setFont(font, header_font_size*0.6)
-    header.textLine(text=("Unit Number: " + serial_num))
-    header.textLine(text=(formattedDate))
-    pdf.drawText(header)
-
-    #Drawing logo
-    drawLogo(pdf, logo_x, logo_y, logo_width, logo_height)
-
-    #Page Number
-    pg_num = pdf.beginText()
-    pg_num.setTextOrigin(pg_x, pg_y)
-    pg_num.setFont(font, header_font_size)
-    pg_num.textLine(text=("Page " + str(page_count) + " of " + str(page_total)))
-    pdf.drawText(pg_num)
-
-
-    #Positional values
-    title_font_size = 26
-    title_x, title_y = 2, 575
-    summary_width, summary_height = 250, 150
-    summary_x = 10
-    snr_x=  summary_x
-
-    #Setting up title
-    title = pdf.beginText()
-    title.setTextOrigin(title_x, title_y)
-    title.setFont(font, title_font_size)
-    title.textLine(text=("Summary Page for: " + unit_name + " - " + formattedDate))
-    pdf.drawText(title)
-
-    summary_nump = np.asarray(summary_info)
-
-    summary_table_info = [["Summary Table: "], ["Run", "SNR check", "Frequency check", "Spur check", "Gain variation check"]]
-
+    summary_table_info = [["Run", "SNR check", "Frequency check", "Spur check", "Gain variation check"]]
     for i, snr, freq, spur, gain in zip(range(counter), snr_bools, freq_bools, spur_bools, gain_bools):
-        summary_table_info.append([str(i+1), isPass(snr), isPass(freq), isPass(spur), isPass(gain)])
+        summary_table_info.append([str(i + 1), isPass(snr), isPass(freq), isPass(spur), isPass(gain)])
 
-    summary = Table(summary_table_info, style=[('GRID', (0,1), (4, counter+1), 1, colors.black),
-                                ('BACKGROUND', (0,1), (2,1), '#D5D6D5')])
+    report.insert_table(summary_table_info, x_offset=0, title="Summary Table", fontsize=9)
 
-    # drawOn() positions the table by its bottom-left corner so subtract the table height
-    _, table_height = summary.wrapOn(pdf, summary_width, summary_height)
-    summary_y = title_y - 30 - table_height
-    summary.drawOn(pdf, summary_x, summary_y)
-
-    os.chdir(output_dir) #Ensuring we are saving in the output directory
-    log.pvpkg_log_info("SHIPTEST", "Saving PDF report to " + output_dir + "/" + file_title)
-    pdf.save() #saving the pdf
+    os.makedirs(report.output_dir, exist_ok=True)
+    log.pvpkg_log_info("SHIPTEST", "Saving PDF report to " + report.get_filename())
+    report.save()
 
 main(generate)
 
