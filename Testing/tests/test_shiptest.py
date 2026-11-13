@@ -66,7 +66,7 @@ targs = test_args.TestArgs(testDesc="A basic loopback test verifying gain/freque
 #report = pdf_report.ClassicShipTestReport("tx_rx_fundamental_frequency", targs.serial, targs.report_dir, targs.docker_sha, targs.addr) UPDATE HERE
 report= pdf_report.ClassicShipTestReport(
     "shiptest",
-    targs.serail,
+    targs.serial,
     targs.report_dir,
     targs.docker_sha,
     targs.addr
