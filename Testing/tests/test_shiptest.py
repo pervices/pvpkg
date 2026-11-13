@@ -861,7 +861,7 @@ def main(iterations):
     #pdf = canvas.Canvas(file_title, pagesize=landscape(letter)) #Setting the page layout and file name
     #pdf.setTitle(doc_title)
 
-    Make title page
+    #Make title page
     #titlePage(pdf)
     buildTitlePage(report)
 
@@ -1394,7 +1394,6 @@ def main(iterations):
             report.insert_table(nf_table_info, x_offset=0, title="All Noise Floor Data", fontsize=8)
             report.insert_table(snr_table_info, x_offset=0, title="Top Peak Information (Based on Highest SNR)", fontsize=8)
 
-
         strict_failed = False
         # Checking if this iteration passed SNR
         snr_bools.append(checkSNRs(fft_snr))
@@ -1423,8 +1422,7 @@ def main(iterations):
 
         if(strict_failed):
             break
-
-
+        
     # log.pvpkg_log_info("SHIPTEST", "Data collection complete")
 
     # #Pass/Fail final page
