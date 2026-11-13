@@ -94,7 +94,7 @@ except AssertionError:
     sys.exit("ERROR: For formatting, please input a value within 1 to 5. Try again:")
 
 #Making file and doc title
-date = datetime.datetime.now()
+date = datetime.datetime.now() 
 formattedDate = date.isoformat("-", "minutes").replace(':',"-")
 file_title = "ship_report_" + serial_num + "_" + formattedDate + ".pdf"
 doc_title = "ship_report_" + serial_num + "_" + formattedDate
@@ -132,9 +132,6 @@ if targs.channels != None:
 else: 
     channel_list=None
     num_channels=max_channels 
-
-print(targs.channels)
-print(channel_list)
 
 try:
     assert 1 <= num_channels <= max_channels
@@ -874,17 +871,12 @@ def main(iterations):
 
         log.pvpkg_log_info("SHIPTEST", "Started data collection for run " + str(counter))
 
-        print(targs.channels)
-
         if targs.channels != None:
             channel_list = targs.channels
         elif "channels" in it:
             channel_list = it["channels"]
         else:
             channel_list = [0,1,2,3]
-
-        print(targs.channels)
-        print(channel_list)
         
         vsnk = engine.run(channel_list, it["wave_freq"], it["sample_rate"], it["center_freq"], it["tx_gain"], it["rx_gain"], tx_stack, rx_stack, device_ip)
 
