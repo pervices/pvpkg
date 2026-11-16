@@ -855,7 +855,7 @@ def main(iterations):
     matplotlib.use('PDF')
 
     report= pdf_report.ClassicShipTestReport(
-    "Ship Test Report: " + unit_name + " - " + serial_num,
+    "shiptest",
     targs.serial,
     targs.report_dir,
     targs.docker_sha,
