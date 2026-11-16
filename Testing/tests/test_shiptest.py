@@ -496,7 +496,9 @@ def buildTitlePage(report):
     # Inserts Report Date, OS, Hostname, Product Name, Docker SHA, RTM, FPGA DDR, Unit Time, UHD, Server, FPGA, pvpkg versions
     report.insert_unit_list()
     report.insert_line_separator()
-    #report.new_page()
+
+    # Using a smaller font size so Time, TX, and RX tables all fit on 1st page
+    table_font_size = 6.5 
 
     # Time Board Table (all 10 rows including Board Serial)
     time_table = [
@@ -512,9 +514,8 @@ def buildTitlePage(report):
         ["GCC", time[8]],
         ["Board Serial", time[9]],
     ]
-    report.insert_table(time_table, x_offset=0, title=None, fontsize=8)
+    report.insert_table(time_table, x_offset=0, title=None, fontsize=table_font_size)
 
-    # TX and RX Board Tables (split up to 4 channels per page, preserving Board Serial)
     for z in range(pages_per_superplot):
         if z != 0:
             report.new_page()
@@ -529,7 +530,7 @@ def buildTitlePage(report):
             for i in range(start, end):
                 row.append(tx_info["TX: " + channel_names[i]][r_idx])
             tx_table.append(row)
-        report.insert_table(tx_table, x_offset=0, title=None, fontsize=8)
+        report.insert_table(tx_table, x_offset=0, title=None, fontsize=table_font_size)
 
         # RX Board Table
         rx_table = [["RX Board Information"] + [channel_names[i] for i in range(start, end)]]
@@ -538,7 +539,8 @@ def buildTitlePage(report):
             for i in range(start, end):
                 row.append(rx_info["RX: " + channel_names[i]][r_idx])
             rx_table.append(row)
-        report.insert_table(rx_table, x_offset=0, title=None, fontsize=8)
+        report.insert_table(rx_table, x_offset=0, title=None, fontsize=table_font_size)
+
 
 '''Creates a header for each Run Page and the page number
 PARAMS: report, it name
