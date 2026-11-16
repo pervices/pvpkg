@@ -1101,6 +1101,7 @@ def main(iterations):
             # Plotting IQ Data
         IQ_plots = []
         IQ_plt_img = []
+        axis = []
         for z in range(pages_per_superplot):
             start, end = z * 4, min((z * 4) + 4, num_channels)
             cols_on_page = end - start
@@ -1122,6 +1123,37 @@ def main(iterations):
 
             IQ_plt_img.append(plotToPdf(report))
             plt.close(fig)
+
+        # Four highest points in the fft for each channel
+        max_fours = []
+        # noise of each channel
+        noise_floor = []
+
+        #Plotting FFT Data (not putting on page)
+        #Calculating the x and y fft and finding the 5 maxs
+        std = []
+
+        fft_x = np.asarray(fft_x)
+        fft_y = np.asarray(fft_y)
+
+        for i in range(num_channels):
+            max_fours.append(numPeaks(fft_x[i], fft_y[i], ampl_vec[i], 4))
+            #Noise Floor and std- in db
+            noise_floor.append(noiseFloor(fft_x[i], fft_y[i], ampl_vec[i]))
+        max_fours = np.asarray(max_fours)
+        peaks_list.append(max_fours)
+        noise_floor = np.asarray(noise_floor)
+        std = np.asarray(std)
+
+        # Determines the range of the y axis to plot
+        amplYTop = 1
+        amplYBottom = -1
+        try:
+            amplYTop = fft_y[np.isfinite(fft_y)].max() * 1.1
+            amplYBottom = fft_y[np.isfinite(fft_y)].min() * 1.1
+        except:
+            amplYTop = 1
+            amplYBottom = -1
 
         # Plotting FFT Data
         FFT_plots = []
@@ -1353,7 +1385,7 @@ def main(iterations):
     log.pvpkg_log_info("SHIPTEST", "Data collection complete")
 
     # Pass/Fail final page
-    
+
     # report.new_page()
     # report.insert_text_large("Summary Page for: " + unit_name + " - " + formattedDate)
     # report.insert_line_separator()
