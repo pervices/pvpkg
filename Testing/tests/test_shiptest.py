@@ -860,7 +860,10 @@ def main(iterations):
 
     #Make title page
     #titlePage(pdf)
-    buildTitlePage(report)
+    #buildTitlePage(report)
+    report.insert_title_page("shiptest")
+
+
 
     # Stores a list containing the 4 peaks from each fft
     # Dimmensions:
