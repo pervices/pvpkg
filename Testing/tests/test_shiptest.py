@@ -491,7 +491,7 @@ RETURNS: NONE'''
 #         board_table.drawOn(pdf, board_x, board_y)
 
 def buildTitlePage(report):
-    report.insert_text_large("Ship Test Report: " + unit_name + " - Serial Number: " + serial_num)
+    report.insert_text_large("Ship Test Report: " + unit_name + " - " + serial_num)
     report.insert_line_separator()
     # Inserts Report Date, OS, Hostname, Product Name, Docker SHA, RTM, FPGA DDR, Unit Time, UHD, Server, FPGA, pvpkg versions
     report.insert_unit_list()
