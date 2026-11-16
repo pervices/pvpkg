@@ -112,7 +112,7 @@ try:
 except:
     sys.exit("Invalid product. Only v (Vaunt), t (Tate), l (Lily), a (Avery) and b (BasebandTate) are supported")
 
-channel_names = ["Channel A", "Channel B", "Channel C", "Channel D", "Channel E", "Channel F", "Channel G", "Channel H"]
+channel_names = ["A", "B", "C", "D", "E", "F", "G", "H"]
 
 if(product == "Vaunt"):
     max_channels = 4
@@ -1297,7 +1297,7 @@ def main(iterations):
         ax2.legend(loc='upper left', bbox_to_anchor=(1, 0.5))
 
         tgth_plt_img = plotToPdf(report)
-        report.insert_image(tgth_plt_img, desc="Combined Real & FFT Plots - Run " + str(counter))
+        report.insert_image(tgth_plt_img, desc=None)
         plt.clf()
         plt.close()
 
@@ -1307,7 +1307,7 @@ def main(iterations):
             addRunHeader(report, str(counter))
             start, end = z * 4, min((z * 4) + 4, num_channels)
 
-            report.insert_image(IQ_plt_img[z], desc="Individual Channels' Amplitude vs Time")
+            report.insert_image(IQ_plt_img[z], desc=None)
 
             IQ_table_info = [
                 ["Channel"] + [channel_names[i] for i in range(start, end)],
@@ -1322,7 +1322,7 @@ def main(iterations):
             addRunHeader(report, str(counter))
             start, end = z * 4, min((z * 4) + 4, num_channels)
 
-            report.insert_image(FFT_plt_img[z], desc="Individual Channels' FFTs")
+            report.insert_image(FFT_plt_img[z], desc=None)
 
             max_peak_table_info = [
                 ["Channel"] + [channel_names[i] for i in range(start, end)],
