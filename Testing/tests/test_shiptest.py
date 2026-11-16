@@ -1194,7 +1194,7 @@ def main(iterations):
 
         # MAKING THE ACTUAL PDF
         # SECTION ONE OF RUNS: Merged Plots
-        report.new_page()
+        #report.new_page()
         addRunHeader(report, str(counter))
 
         fig, (ax1, ax2) = plt.subplots(1, 2)
