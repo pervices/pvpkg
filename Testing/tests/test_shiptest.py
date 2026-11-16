@@ -597,7 +597,9 @@ RETURNS: None
 #     inputs.wrapOn(pdf, table_width, table_height)
 #     inputs.drawOn(pdf, table_x, table_y)
 def addRunHeader(report, it):
-    report.insert_text_large("Run Number " + str(it) + " - Loopback On " + unit_name)
+    clean_unit= unit_name.strip()
+    report.insert_text_large(f"Run Number {it} - Loopback On {clean_unit}")
+    report.insert_text(f"Center Freq: {center_freq} Hz | Wave Freq: {wave_freq} Hz")
     data = [
         ["Center Freq (Hz)", "Wave Freq (Hz)", "Sample Rate (SPS)", "Sample Count", "TX Gain (dB)", "RX Gain (dB)"],
         [center_freq, wave_freq, sample_rate, sample_count, tx_gain, rx_gain]
@@ -702,12 +704,10 @@ vector Drawing for the pdf
 PARAMS: title, counter (only used to identify the plot in error messages)
 RETURNS: Drawing'''
 def plotToPdf(report):
-
-    plt.gcf().set_size_inches(8, 5)
-
-    stream = report.get_image_io_stream()#BytesIO()
+    plt.gcf().set_size_inches(10, 4.2)
+    plt.tight_layout(rect=[0.03, 0.04, 0.98, 0.92])
+    stream = report.get_image_io_stream()
     plt.savefig(stream, format="svg")
-
     return report.get_drawing_from_svg_io_stream(stream)
 
 '''Finding the top peaks
@@ -841,7 +841,11 @@ def waveEquation(time, ampl, freq, phase, dc_offset):
     y = ampl*np.cos((2*np.pi*freq*time + phase)) + dc_offset #model for wave equation
     return y
 
-
+def insertWidePlot(report, image):
+    if report.cursor_y < 250:
+        report.new_page()
+    report.move_cursor(0, 235)
+    report._draw_image(image, 36, report.cursor_y, 540, 230)
 
 def main(iterations):
 
@@ -997,309 +1001,175 @@ def main(iterations):
 
         #PDF PREP: Doing the plotting of FFT and IQ prior to making pdf pages to enable having the "together plot" as the first page
         #Plotting IQ Data, but not putting on pdf
+        # IQ_plots = []
+        # IQ_plt_img = []
+        # fig = plt.GridSpec(1, 68, wspace=0.3, hspace=0.3)
+        # axis = []
+        # for z in range(pages_per_superplot): #Splits the plots up to maximum 4 per page
+
+        #     plt.suptitle("Individual Channels' Amplitude versus Time for Run {}".format(counter))
+        #     # Padding is to prevent overlap with subplot (for the individual graphs) ticks
+        #     plt.xlabel("Time (nS)", labelpad = 20)
+        #     plt.ylabel("Amplitude(fractional)", labelpad = 40)
+
+        #     # Hides the axis of the holding plot used to contain the individual plots
+        #     plt.xticks([])
+        #     plt.yticks([])
+
+        #     #Variables to allow for flexibilty in the code
+        #     start, end = z*4,min((z*4)+4,num_channels)
+        #     ax_st, ax_end = 0, 15
+
+        #     #The actual plotting of the graphs
+        #     for i, title in zip(range(start, end), channel_names[start:end]):
+        #         axis.append(plt.subplot(fig[0:1, ax_st:ax_end])) #Each run will add the next plot area to the axis
+
+        #         # Sets the y axis of each of the individual plots to be the same
+        #         axis[-1].set_ylim(bottom = amplYBottom, top = amplYTop, auto = False)
+
+        #         IQ_plots.append(subPlotIQs(x_time[0:plotted_samples], reals[i][0:plotted_samples], imags[i][0:plotted_samples], best_fit_reals[i][0:plotted_samples], best_fit_imags[i][0:plotted_samples], offset_reals[i], offset_imags[i], axis[i], title, period_samples))
+        #         ax_st = ax_end + 2
+        #         ax_end = ax_st + 15
+
+        #     #Gets the byte data for the pdf images
+        #     IQ_plt_img.append(plotToPdf(report))
+        #     plt.clf()
+
+        # IQ_plots = np.asarray(IQ_plots)
+
+        # # Four highest points in the fft for each channel
+        # max_fours = []
+        # # noise of each channel
+        # noise_floor = []
+
+        # #Plotting FFT Data (not putting on page)
+        # #Calculating the x and y fft and finding the 5 maxs
+        # std = []
+
+        # fft_x = np.asarray(fft_x)
+        # fft_y = np.asarray(fft_y)
+
+        # for i in range(num_channels):
+        #     max_fours.append(numPeaks(fft_x[i], fft_y[i], ampl_vec[i], 4))
+        #     #Noise Floor and std- in db
+        #     noise_floor.append(noiseFloor(fft_x[i], fft_y[i], ampl_vec[i]))
+        # max_fours = np.asarray(max_fours)
+        # peaks_list.append(max_fours)
+        # noise_floor = np.asarray(noise_floor)
+        # std = np.asarray(std)
+
+        # # Determines the range of the y axis to plot
+        # amplYTop = 1
+        # amplYBottom = -1
+        # try:
+        #     amplYTop = fft_y[np.isfinite(fft_y)].max() * 1.1
+        #     amplYBottom = fft_y[np.isfinite(fft_y)].min() * 1.1
+        # except:
+        #     amplYTop = 1
+        #     amplYBottom = -1
+
+        # FFT_plots = []
+        # FFT_plt_img = []
+        # axis.clear()
+        # for z in range(pages_per_superplot):
+        #     #Splits the plots up to maximum 4 per page
+        #     start, end = z*4,min((z*4)+4,num_channels)
+        #     ax_st, ax_end = 0, 15
+        #     #Plotting the individual FFT Plots
+        #     plt.suptitle("Individual Channels' FFTs for Run {}".format(counter))
+        #     # Padding is to prevent overlap with subplot (for the individual graphs) ticks
+        #     plt.xlabel("Frequency (MHz)", labelpad = 20)
+        #     plt.ylabel("Magnitude (dB)", labelpad = 40)
+
+        #     # Hides the axis of the holding plot used to contain the individual plots
+        #     plt.xticks([])
+        #     plt.yticks([])
+
+        #     for i, title in zip(range(start, end), channel_names[start:end]):
+        #         axis.append(plt.subplot(fig[0:1, ax_st:ax_end]))
+
+        #         # Sets the y axis of each of the individual plots to be the same
+        #         axis[-1].set_ylim(bottom = amplYBottom, top = amplYTop, auto = False)
+
+        #         FFT_plots.append(subPlotFFTs(fft_x[i], fft_y[i], axis[i], title, max_fours[i], np.mean(noise_floor[i])))
+        #         ax_st = ax_end + 2
+        #         ax_end = ax_st + 15
+
+        #         #Rasterizes the plot/figures and converts to png)
+        #     FFT_plt_img.append(plotToPdf(report))
+        #     plt.clf()
+            # Plotting IQ Data
         IQ_plots = []
         IQ_plt_img = []
-        fig = plt.GridSpec(1, 68, wspace=0.3, hspace=0.3)
-        axis = []
-        for z in range(pages_per_superplot): #Splits the plots up to maximum 4 per page
+        for z in range(pages_per_superplot):
+            start, end = z * 4, min((z * 4) + 4, num_channels)
+            cols_on_page = end - start
 
+            fig, axes = plt.subplots(1, cols_on_page, squeeze=False)
             plt.suptitle("Individual Channels' Amplitude versus Time for Run {}".format(counter))
-            # Padding is to prevent overlap with subplot (for the individual graphs) ticks
-            plt.xlabel("Time (nS)", labelpad = 20)
-            plt.ylabel("Amplitude(fractional)", labelpad = 40)
+            fig.supxlabel("Time (nS)")
+            fig.supylabel("Amplitude (fractional)")
 
-            # Hides the axis of the holding plot used to contain the individual plots
-            plt.xticks([])
-            plt.yticks([])
+            for idx, i in enumerate(range(start, end)):
+                ax = axes[0][idx]
+                ax.set_ylim(bottom=amplYBottom, top=amplYTop, auto=False)
+                subplot_title = f"Channel {channel_list[i]}"
+                IQ_plots.append(subPlotIQs(
+                    x_time[0:plotted_samples], reals[i][0:plotted_samples], imags[i][0:plotted_samples],
+                    best_fit_reals[i][0:plotted_samples], best_fit_imags[i][0:plotted_samples],
+                    offset_reals[i], offset_imags[i], ax, subplot_title, period_samples
+                ))
 
-            #Variables to allow for flexibilty in the code
-            start, end = z*4,min((z*4)+4,num_channels)
-            ax_st, ax_end = 0, 15
-
-            #The actual plotting of the graphs
-            for i, title in zip(range(start, end), channel_names[start:end]):
-                axis.append(plt.subplot(fig[0:1, ax_st:ax_end])) #Each run will add the next plot area to the axis
-
-                # Sets the y axis of each of the individual plots to be the same
-                axis[-1].set_ylim(bottom = amplYBottom, top = amplYTop, auto = False)
-
-                IQ_plots.append(subPlotIQs(x_time[0:plotted_samples], reals[i][0:plotted_samples], imags[i][0:plotted_samples], best_fit_reals[i][0:plotted_samples], best_fit_imags[i][0:plotted_samples], offset_reals[i], offset_imags[i], axis[i], title, period_samples))
-                ax_st = ax_end + 2
-                ax_end = ax_st + 15
-
-            #Gets the byte data for the pdf images
             IQ_plt_img.append(plotToPdf(report))
-            plt.clf()
+            plt.close(fig)
 
-        IQ_plots = np.asarray(IQ_plots)
-
-        # Four highest points in the fft for each channel
-        max_fours = []
-        # noise of each channel
-        noise_floor = []
-
-        #Plotting FFT Data (not putting on page)
-        #Calculating the x and y fft and finding the 5 maxs
-        std = []
-
-        fft_x = np.asarray(fft_x)
-        fft_y = np.asarray(fft_y)
-
-        for i in range(num_channels):
-            max_fours.append(numPeaks(fft_x[i], fft_y[i], ampl_vec[i], 4))
-            #Noise Floor and std- in db
-            noise_floor.append(noiseFloor(fft_x[i], fft_y[i], ampl_vec[i]))
-        max_fours = np.asarray(max_fours)
-        peaks_list.append(max_fours)
-        noise_floor = np.asarray(noise_floor)
-        std = np.asarray(std)
-
-        # Determines the range of the y axis to plot
-        amplYTop = 1
-        amplYBottom = -1
-        try:
-            amplYTop = fft_y[np.isfinite(fft_y)].max() * 1.1
-            amplYBottom = fft_y[np.isfinite(fft_y)].min() * 1.1
-        except:
-            amplYTop = 1
-            amplYBottom = -1
-
+        # Plotting FFT Data
         FFT_plots = []
         FFT_plt_img = []
-        axis.clear()
         for z in range(pages_per_superplot):
-            #Splits the plots up to maximum 4 per page
-            start, end = z*4,min((z*4)+4,num_channels)
-            ax_st, ax_end = 0, 15
-            #Plotting the individual FFT Plots
+            start, end = z * 4, min((z * 4) + 4, num_channels)
+            cols_on_page = end - start
+
+            fig, axes = plt.subplots(1, cols_on_page, squeeze=False)
             plt.suptitle("Individual Channels' FFTs for Run {}".format(counter))
-            # Padding is to prevent overlap with subplot (for the individual graphs) ticks
-            plt.xlabel("Frequency (MHz)", labelpad = 20)
-            plt.ylabel("Magnitude (dB)", labelpad = 40)
+            fig.supxlabel("Frequency (MHz)")
+            fig.supylabel("Magnitude (dB)")
 
-            # Hides the axis of the holding plot used to contain the individual plots
-            plt.xticks([])
-            plt.yticks([])
+            for idx, i in enumerate(range(start, end)):
+                ax = axes[0][idx]
+                ax.set_ylim(bottom=amplYBottom, top=amplYTop, auto=False)
+                subplot_title = f"Channel {channel_list[i]}"
+                FFT_plots.append(subPlotFFTs(fft_x[i], fft_y[i], ax, subplot_title, max_fours[i], np.mean(noise_floor[i])))
 
-            for i, title in zip(range(start, end), channel_names[start:end]):
-                axis.append(plt.subplot(fig[0:1, ax_st:ax_end]))
-
-                # Sets the y axis of each of the individual plots to be the same
-                axis[-1].set_ylim(bottom = amplYBottom, top = amplYTop, auto = False)
-
-                FFT_plots.append(subPlotFFTs(fft_x[i], fft_y[i], axis[i], title, max_fours[i], np.mean(noise_floor[i])))
-                ax_st = ax_end + 2
-                ax_end = ax_st + 15
-
-                #Rasterizes the plot/figures and converts to png)
             FFT_plt_img.append(plotToPdf(report))
-            plt.clf()
+            plt.close(fig)
 
         FFT_plots = np.asarray(FFT_plots)
 
-        # #MAKING THE ACTUAL PDF
-        # #SECTION ONE OF RUNS: Merged Plots
-        # pdf.showPage()
-        # global page_count
-        # page_count += 1
-        # topOfPage(pdf, str(counter))
-
-        # tgth_width, tgth_height = 700, 450
-        # tgth_x, tgth_y = 2, 30
-
-        # #Setting the plot
-        # fig = plt.GridSpec(17, 45, wspace=10)
-        # ax1 = plt.subplot(fig[0:17, 0:20])
-        # ax2 = plt.subplot(fig[0:17, 20:40])
-
-        # colours = ['royalblue', 'maroon', 'darkolivegreen', 'mediumvioletred']
-
-        # #plotting them all by pulling previous data
-        # for i, colour in zip(range(num_channels), colours):
-        #     # Combined amplitude plot
-        #     ax1.set_title("All Channels - Real Data")
-        #     ax1.set_xlabel("Time (nS)")
-        #     ax1.set_ylabel("Amplitude(fraction of max)")
-        #     ax1.plot(IQ_plots[i].get_xdata(), IQ_plots[i].get_ydata(), '-', color=colour, markersize=0.2, label="Channel {}".format(i))
-
-        #     # Combined frequency plot
-        #     ax2.set_title("All Channels - FFT Graphs")
-        #     ax2.set_xlabel("Frequency (MHz)")
-        #     ax2.set_ylabel("Magnitude (dB)")
-        #     ax2.plot(FFT_plots[i].get_xdata(), FFT_plots[i].get_ydata(), '-', color=colour, markersize=0.2, label="Channel {}".format(i))
-
-        # ax2.legend(loc='upper left', bbox_to_anchor=(1,0.5))
-
-        # #Rasterizes the plot/figures and converts to png)
-        # tgth_plt_img = plotToPdf(("TogetherPlots_" + formattedDate), counter)
-        # drawVector(pdf, tgth_plt_img, tgth_x, tgth_y, tgth_width, tgth_height)
-        # plt.clf()
-        # plt.close()
-
-        # #SECTION TWO OF RUN: Plotting the Amplitude vs Time
-        # #Positional Values
-
-        # plot_img_width, plot_img_height = 700, 450
-        # plot_img_pos_x,  plot_img_pos_y = 2, 60
-        # IQ_width, IQ_height = 250, 105
-        # IQ_table_x, IQ_table_y = 5,5
-
-        # #graphs and table dependent on number of channels
-        # for z in range(pages_per_superplot):
-        #     pdf.showPage() #Page break on pdf
-        #     page_count += 1
-        #     topOfPage(pdf, str(counter))
-        #     #Splits the plots up to maximum 4 per page
-        #     start, end = z*4,min((z*4)+4,num_channels)
-
-        #     drawVector(pdf, IQ_plt_img[z], plot_img_pos_x, plot_img_pos_y, plot_img_width, plot_img_height)
-
-        #     #Table of IQ info
-        #     IQ_table_info = [["IQ Data: "],["Channel"], ["Ampl I (fractional)"], ["Ampl Q (fractional)"]]
-
-        #     for i in range(start, end):
-        #         IQ_table_info[1].append((chr(65+i)))
-        #         IQ_table_info[2].append(sig(ampl_reals[i], sigfigs=sigfigs))
-        #         IQ_table_info[3].append(sig(ampl_imags[i], sigfigs=sigfigs))
-
-        #         IQ_table = Table(IQ_table_info, style=[('GRID', (0,1), (num_channels+1,4), 1, colors.black),
-        #                                             ('BACKGROUND', (0, 1), (num_channels+1,1), '#D5D6D5')])
-
-        #     IQ_table.wrapOn(pdf, IQ_width, IQ_height)
-        #     IQ_table.drawOn(pdf, IQ_table_x, IQ_table_y)
-
-
-        # #SECTION THREE OF RUN: Plotting Amplitude vs Frequency
-        # #Positional
-        # fft_pos_x, fft_pos_y = 10, 100
-        # fft_width, fft_height = 700, 420
-        # max_peak_width, max_peak_height = 80, 50
-        # max_peak_x, max_peak_y = 2, 5
-
-        # #making graphs and table dependent on number of channels
-        # for z in range(pages_per_superplot):
-        #     pdf.showPage()
-        #     page_count += 1
-        #     topOfPage(pdf, str(counter))
-        #     #Splits the plots up to maximum 4 per page
-        #     start, end = z*4,min((z*4)+4,num_channels)
-        #     drawVector(pdf, FFT_plt_img[z], fft_pos_x, fft_pos_y, fft_width, fft_height)
-
-        #     #Tables stuff
-        #     max_peak_table_info = [["Top Peaks (Frequencty, Amplitude):"], ["Channel"], ["Highest Peak"], ["Second Highest"], ["Third Highest"], ["Fourth Heighest"]]
-        #     for i in range(start, end):
-        #         max_peak_table_info[2].append(str((sig(max_fours[i][0][0], sigfigs=sigfigs), sig(max_fours[i][0][1], sigfigs=sigfigs))))
-        #         max_peak_table_info[3].append(str((sig(max_fours[i][1][0], sigfigs=sigfigs), sig(max_fours[i][1][1], sigfigs=sigfigs))))
-        #         max_peak_table_info[4].append(str((sig(max_fours[i][2][0], sigfigs=sigfigs), sig(max_fours[i][2][1], sigfigs=sigfigs))))
-        #         max_peak_table_info[5].append(str((sig(max_fours[i][3][0], sigfigs=sigfigs), sig(max_fours[i][3][1], sigfigs=sigfigs))))
-        #         max_peak_table_info[1].append((chr(65+i)))
-
-        #     peak_table = Table(max_peak_table_info, style=[('GRID', (0,1), (num_channels+1,5), 1, colors.black),
-        #                             ('BACKGROUND', (0,1), (num_channels+1,1), '#D5D6D5')])
-        #     peak_table.wrapOn(pdf, max_peak_width, max_peak_height)
-        #     peak_table.drawOn(pdf, max_peak_x, max_peak_y)
-
-        # ##SECTION FOUR OF RUNS: SUMMARY PAGE
-        # pdf.showPage()
-        # page_count += 1
-        # topOfPage(pdf, str(counter))
-
-        # #NF stuff
-        # nf_table_width, nf_table_height = 80, 500
-        # nf_x, nf_y = 10, 400
-
-        # #SNR DATA
-        # snr_width, snr_height = 100, 100
-        # fft_snr = []
-        # for i in range(num_channels):
-        #     fft_snr.append(toSNR(noise_floor[i][1], max_fours[i][0][1]))
-
-        # fft_snr = np.asarray(fft_snr)
-
-        # #At this point, the snr shoud be in order of max peak
-        # summary_info.append((max_fours[0][0][0], max_fours[0][0][1], fft_snr[0]))
-
-        # #Sorting according to SNR
-        # max_top = []
-        # for first_max in max_fours:
-        #     max_top.append((first_max[0][0], first_max[0][1]))
-
-        # #Tables stuff
-        # for z in range(pages_per_superplot):
-        #     snr_x, snr_y = nf_x, nf_y - snr_height
-        #     #Splits the plots up to maximum 4 per page
-        #     start, end = z*4,min((z*4)+4,num_channels)
-        #     nf_table_info = [["All Noise Floor Data :"], ["Channel"],["Maximum"], ["Minimum"], ["Mean"], ["Diff to A"], ["STD"]]
-        #     mean_a = np.mean(noise_floor[0][1])
-        #     snr_table_info = [["Top Peak Information", "(Based on Highest SNR):"], ["Channel"], ["Location (Hz)"], ["Amplitude (dB)"], ["SNR (dBc)"]]
-        #     snr_style = []
-
-        #     for i in range(start, end):
-        #         #Calculations for Noisefloor
-        #         max_loc = np.argmax(noise_floor[i][1])
-        #         min_loc = np.argmin(noise_floor[i][1])
-        #         mean = np.mean(noise_floor[i][1])
-
-        #         #Inputting data into noise floor table
-        #         nf_table_info[1].append((chr(65+i)))
-        #         nf_table_info[2].append(str((sig(noise_floor[i][0][max_loc], sigfigs=sigfigs), sig(noise_floor[i][1][max_loc], sigfigs=sigfigs))))
-        #         nf_table_info[3].append(str((sig(noise_floor[i][0][min_loc], sigfigs=sigfigs), sig(noise_floor[i][1][min_loc], sigfigs=sigfigs))))
-        #         nf_table_info[4].append(str(sig(mean, sigfigs=sigfigs)))
-        #         nf_table_info[5].append(str(sig(mean - mean_a, sigfigs=sigfigs)))
-        #         nf_table_info[6].append(str(sig(np.std(noise_floor[i][1]), sigfigs=sigfigs)))
-
-        #         #Inputting data into the snr table
-        #         snr_table_info[1].append((chr(65+i)))
-        #         snr_table_info[2].append(str(sig(max_top[i][0], sigfigs=sigfigs)))
-        #         snr_table_info[3].append(str(sig(max_top[i][1], sigfigs=sigfigs)))
-        #         snr_table_info[4].append(str(sig(fft_snr[i], sigfigs=sigfigs)))
-
-        #     #making and placing NF table
-        #     nf_table = Table(nf_table_info, style=[('GRID', (0,1), (num_channels+1,6), 1, colors.black),
-        #                             ('BACKGROUND', (0,1), (num_channels+1,1), '#D5D6D5')])
-        #     nf_table.wrapOn(pdf, nf_table_width, nf_table_height)
-        #     nf_table.drawOn(pdf, nf_x, nf_y)
-
-        #     #making and placing SNR table
-        #     snr_table = Table(snr_table_info, style=[('GRID', (0,1), (num_channels+1,4), 1, colors.black),
-        #                             ('BACKGROUND', (0,1), (num_channels+1,1), '#D5D6D5')])
-        #     snr_table.wrapOn(pdf, snr_width, snr_height)
-        #     snr_table.drawOn(pdf, snr_x, snr_y)
-
-        #     if (multi):
-        #         nf_y -=230
-        #         snr_y -=230
-        #     else:
-        #         break
         # MAKING THE ACTUAL PDF
         # SECTION ONE OF RUNS: Merged Plots
         report.new_page()
         addRunHeader(report, str(counter))
 
-        fig = plt.GridSpec(17, 45, wspace=10)
-        ax1 = plt.subplot(fig[0:17, 0:20])
-        ax2 = plt.subplot(fig[0:17, 20:40])
-
+        fig, (ax1, ax2) = plt.subplots(1, 2)
         colours = ['royalblue', 'maroon', 'darkolivegreen', 'mediumvioletred']
 
-        # Plotting them all by pulling previous data
         for i, colour in zip(range(num_channels), colours):
             ax1.set_title("All Channels - Real Data")
             ax1.set_xlabel("Time (nS)")
-            ax1.set_ylabel("Amplitude(fraction of max)")
-            ax1.plot(IQ_plots[i].get_xdata(), IQ_plots[i].get_ydata(), '-', color=colour, markersize=0.2, label="Channel {}".format(channel_names[i]))
+            ax1.set_ylabel("Amplitude (fraction of max)")
+            ax1.plot(IQ_plots[i].get_xdata(), IQ_plots[i].get_ydata(), '-', color=colour, markersize=0.5, label=f"Channel {channel_list[i]}")
 
             ax2.set_title("All Channels - FFT Graphs")
             ax2.set_xlabel("Frequency (MHz)")
             ax2.set_ylabel("Magnitude (dB)")
-            ax2.plot(FFT_plots[i].get_xdata(), FFT_plots[i].get_ydata(), '-', color=colour, markersize=0.2, label="Channel {}".format(channel_names[i]))
+            ax2.plot(FFT_plots[i].get_xdata(), FFT_plots[i].get_ydata(), '-', color=colour, markersize=0.5, label=f"Channel {channel_list[i]}")
 
-        ax2.legend(loc='upper left', bbox_to_anchor=(1, 0.5))
+        ax2.legend(loc='upper left', bbox_to_anchor=(1.02, 1.0))
 
         tgth_plt_img = plotToPdf(report)
-        report.insert_image(tgth_plt_img, desc=None)
-        plt.clf()
-        plt.close()
+        insertWidePlot(report, tgth_plt_img)
+        plt.close(fig)
 
         # SECTION TWO OF RUN: Plotting the Amplitude vs Time
         for z in range(pages_per_superplot):
@@ -1307,7 +1177,7 @@ def main(iterations):
             addRunHeader(report, str(counter))
             start, end = z * 4, min((z * 4) + 4, num_channels)
 
-            report.insert_image(IQ_plt_img[z], desc=None)
+            insertWidePlot(report, IQ_plt_img[z])
 
             IQ_table_info = [
                 ["Channel"] + [channel_names[i] for i in range(start, end)],
@@ -1322,7 +1192,7 @@ def main(iterations):
             addRunHeader(report, str(counter))
             start, end = z * 4, min((z * 4) + 4, num_channels)
 
-            report.insert_image(FFT_plt_img[z], desc=None)
+            insertWidePlot(report, FFT_plt_img[z])
 
             max_peak_table_info = [
                 ["Channel"] + [channel_names[i] for i in range(start, end)],
@@ -1483,8 +1353,12 @@ def main(iterations):
     log.pvpkg_log_info("SHIPTEST", "Data collection complete")
 
     # Pass/Fail final page
+    
+    # report.new_page()
+    # report.insert_text_large("Summary Page for: " + unit_name + " - " + formattedDate)
+    # report.insert_line_separator()
     report.new_page()
-    report.insert_text_large("Summary Page for: " + unit_name + " - " + formattedDate)
+    report.insert_text_large("Testing Summary")
     report.insert_line_separator()
 
     summary_table_info = [["Run", "SNR check", "Frequency check", "Spur check", "Gain variation check"]]
