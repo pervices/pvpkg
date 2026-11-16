@@ -55,13 +55,13 @@ strict_mode = False
 
 targs = test_args.TestArgs(testDesc="A basic loopback test verifying gain/frequency tuning works")
 #report = pdf_report.ClassicShipTestReport("tx_rx_fundamental_frequency", targs.serial, targs.report_dir, targs.docker_sha, targs.addr) UPDATE HERE
-report= pdf_report.ClassicShipTestReport(
-    "shiptest",
-    targs.serial,
-    targs.report_dir,
-    targs.docker_sha,
-    targs.addr
-)
+# report= pdf_report.ClassicShipTestReport(
+#     "Ship Test Report: " + unit_name + " - " + serial_num,
+#     targs.serial,
+#     targs.report_dir,
+#     targs.docker_sha,
+#     targs.addr
+# )
 
 np.set_printoptions(legacy='1.25')
 matplotlib.rcParams['svg.fonttype'] = 'none'
@@ -132,7 +132,7 @@ else:
     channel_list=None
     num_channels=max_channels 
 
-report.num_channels=num_channels
+#report.num_channels=num_channels
 
 try:
     assert 1 <= num_channels <= max_channels
@@ -144,7 +144,7 @@ if channel_list != None:
 else:
     channel_names = channel_names[0:num_channels]
 
-report.channel_names= channel_names
+#report.channel_names= channel_names
 
 if(product == "Vaunt"):
     generate = gen.ship_test_crimson(num_channels)
@@ -854,6 +854,15 @@ def main(iterations):
     # Changes matplotlib backend. The default ktinker does not work headless
     matplotlib.use('PDF')
 
+    report= pdf_report.ClassicShipTestReport(
+    "Ship Test Report: " + unit_name + " - " + serial_num,
+    targs.serial,
+    targs.report_dir,
+    targs.docker_sha,
+    targs.addr
+)
+    report.num_channels=num_channels
+    report.channel_names=channel_names
     #Create the PDF
     #pdf = canvas.Canvas(file_title, pagesize=landscape(letter)) #Setting the page layout and file name
     #pdf.setTitle(doc_title)
@@ -861,7 +870,7 @@ def main(iterations):
     #Make title page
     #titlePage(pdf)
     #buildTitlePage(report)
-    report.insert_title_page("shiptest")
+    report.insert_title_page("Ship Test Report: " + unit_name + " - " + serial_num)
 
 
 
