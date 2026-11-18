@@ -18,7 +18,17 @@ if [ -z $DOCKER_SHA ]; then
 	echo "ERROR: Docker SHA must be specified. Usage: test-only.sh [serial] [jenkins_bn] [docker_sha]" && exit 22
 fi
 shift; shift; shift;
-TEST_LIST=("$@")
+#TEST_LIST=("$@")
+TEST_LIST=()
+EXTRA_ARGS=()
+for arg in "$@"; do
+	if [[ "$arg" == "-e" || "$arg" == "--disable_eeprom_check" ]]; then
+		EXTRA_ARGS+=("$arg")
+	else
+		TEST_LIST+=("$arg")
+	fi
+done
+
 
 if [ -z $serial_number ]; then
 	echo "ERROR: Serial must be specified. Usage: test-only.sh [serial] [jenkins_bn] [docker_sha]" && exit 22
@@ -104,7 +114,7 @@ if [ -z $TEST_LIST ]; then
 		echo ":: Executing ${TEST_NAMES[$i]} test" | tee -a log.txt
 		pwd
 
-		python3 -u ${TEST_FILES[$i]}.py -p $PRODUCT -s $serial_number -o $REPORT_DIR -d $DOCKER_SHA
+		python3 -u ${TEST_FILES[$i]}.py -p $PRODUCT -s $serial_number -o $REPORT_DIR -d $DOCKER_SHA "${EXTRA_ARGS[@]}"
 
 		rv=$?
 		if [ $rv -eq 0 ]; then
@@ -126,7 +136,7 @@ else
 		echo ":: Executing ${TEST_NAMES[$idx]} test" | tee -a log.txt
 		pwd
 
-		python3 -u ${TEST_FILES[$idx]}.py -p $PRODUCT -s $serial_number -o $REPORT_DIR -d $DOCKER_SHA
+		python3 -u ${TEST_FILES[$idx]}.py -p $PRODUCT -s $serial_number -o $REPORT_DIR -d $DOCKER_SHA "${EXTRA_ARGS[@]}"
 
 		rv=$?
 		if [ $rv -eq 0 ]; then
