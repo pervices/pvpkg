@@ -271,7 +271,7 @@ def run(channels, wave_freq, sample_rate, center_freq, tx_gain, rx_gain, tx_stac
             return vsnk
         else:
             # An error (probably rx data timeout) while running the flowgraph
-            log.pvpkg_log_error("ENGINE", "Error while running flowgraph")
+            log.pvpkg_log_error("ENGINE", "Error while running flowgraph (exitcode={helper_process.exitcode})")
             raise Exception ("flowgraph error")
     else:
         log.pvpkg_log_error("ENGINE", "Flowgraph timeout. UHD appears to be hanging forever. Issuing SIGTERM")
