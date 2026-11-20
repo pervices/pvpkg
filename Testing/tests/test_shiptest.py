@@ -114,16 +114,16 @@ except:
 
 channel_names = ["A", "B", "C", "D", "E", "F", "G", "H"]
 
-if(product == "Vaunt"):
-    max_channels = 4
-elif(product == "Avery"):
-    max_channels = 4
-elif(product == "Tate"):
-    max_channels = 8
-elif(product == "Lily"):
-    max_channels = 4
-elif(product == "BasebandTate"):
-    max_channels = 4
+ if(product == "Vaunt"):
+     max_channels = 4
+ elif(product == "Avery"):
+     max_channels = 4
+ elif(product == "Tate"):
+     max_channels = 4
+ elif(product == "Lily"):
+     max_channels = 4
+ elif(product == "BasebandTate"):
+     max_channels = 8
 
 if targs.channels != None:
     channel_list = targs.channels # Channel list used for testing. Example [2 4]
