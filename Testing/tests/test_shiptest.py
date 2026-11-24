@@ -1,5 +1,7 @@
 #IMPORTING LIBRARIES AND MODULES
 #Per Vices Imports
+from sympy import false
+
 from common import sigproc
 from common import engine
 from common import generator as gen
@@ -72,7 +74,7 @@ channel_names = []
 serial_num = targs.serial #UPDATE HERE
 device_ip = targs.addr #UPDATE HERE default in this file used to be 192.168.10.2 but since we are using test_args.py now default is set to none
 
-disable_eeprom_check=targs.disable_eeprom_check #UPDATE HERE
+#disable_eeprom_check=targs.disable_eeprom_check #UPDATE HERE
 
 #Validates num_output_waves
 try:
@@ -112,14 +114,36 @@ try:
 except:
     sys.exit("Invalid product. Only v (Vaunt), t (Tate), l (Lily), a (Avery) and b (BasebandTate) are supported")
 
+eeprom_working=True
+
 channel_names = ["A", "B", "C", "D", "E", "F", "G", "H"]
+
+rtm_version = subprocess.run(
+    ["uhd_usrp_info", "--time", "--tx"],
+    capture_output=True,
+    text=True,
+    check=True,
+)
+
+# Finding the first occurrence of "RTM: <number>"
+match = re.search(r"RTM:\s*(\d+)", rtm_version.stdout)
+
+if match:
+  rtm_version = int(match.group(1))
+  print(f"RTM Version: {rtm_version} (type: {type(rtm_version)})")
+else:
+  raise RuntimeError("Could not find RTM version in uhd_usrp_info output")
 
 if(product == "Vaunt"):
     max_channels = 4
+    if(rtm_version<8):
+        eeprom_working=False
 elif(product == "Avery"):
     max_channels = 4
 elif(product == "Tate"):
     max_channels = 4
+    if(rtm_version<3):
+        eeprom_working=False
 elif(product == "Lily"):
     max_channels = 4
 elif(product == "BasebandTate"):
@@ -133,6 +157,11 @@ else:
     num_channels=max_channels 
 
 #report.num_channels=num_channels
+
+if(eeprom_working==True):
+    disable_eeprom_check=False
+else:
+    disable_eeprom_check=True 
 
 try:
     assert 1 <= num_channels <= max_channels
