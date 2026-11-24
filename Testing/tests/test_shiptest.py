@@ -1,7 +1,5 @@
 #IMPORTING LIBRARIES AND MODULES
 #Per Vices Imports
-from sympy import false
-
 from common import sigproc
 from common import engine
 from common import generator as gen
