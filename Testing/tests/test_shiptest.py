@@ -146,6 +146,8 @@ elif(product == "Lily"):
     max_channels = 4
 elif(product == "BasebandTate"):
     max_channels = 4
+    if(rtm_version<3):
+        eeprom_working=False
 
 if targs.channels != None:
     channel_list = targs.channels # Channel list used for testing. Example [2 4]
