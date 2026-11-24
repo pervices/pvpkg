@@ -116,38 +116,16 @@ eeprom_working=True
 
 channel_names = ["A", "B", "C", "D", "E", "F", "G", "H"]
 
-rtm_version = subprocess.run(
-    ["uhd_usrp_info", "--time", "--tx"],
-    capture_output=True,
-    text=True,
-    check=True,
-)
-
-# Finding the first occurrence of "RTM: <number>"
-match = re.search(r"RTM:\s*(\d+)", rtm_version.stdout)
-
-if match:
-  rtm_version = int(match.group(1))
-  print(f"RTM Version: {rtm_version} (type: {type(rtm_version)})")
-else:
-  raise RuntimeError("Could not find RTM version in uhd_usrp_info output")
-
 if(product == "Vaunt"):
     max_channels = 4
-    if(rtm_version<8):
-        eeprom_working=False
 elif(product == "Avery"):
     max_channels = 4
 elif(product == "Tate"):
     max_channels = 4
-    if(rtm_version<3):
-        eeprom_working=False
 elif(product == "Lily"):
     max_channels = 4
 elif(product == "BasebandTate"):
     max_channels = 4
-    if(rtm_version<3):
-        eeprom_working=False
 
 if targs.channels != None:
     channel_list = targs.channels # Channel list used for testing. Example [2 4]
@@ -157,11 +135,6 @@ else:
     num_channels=max_channels 
 
 #report.num_channels=num_channels
-
-if(eeprom_working==True):
-    disable_eeprom_check=False
-else:
-    disable_eeprom_check=True 
 
 try:
     assert 1 <= num_channels <= max_channels
@@ -236,8 +209,27 @@ os.system('uhd_usrp_info --all > shiptest_out.txt')
 os.system("touch hold.txt")
 os.system("grep '0/time/fw_version' shiptest_out.txt -A 15 > hold.txt")
 
-#Setting up time array to hold board data
+#Setting up eeprom check
 eeprom_fail = False
+rtm_version=int(subprocess.getstatusoutput("grep -m 1 'RTM:' shiptest_out.txt | cut -d ':' -f2")[1].strip())
+if(product == "Vaunt"):
+    if(rtm_version<8):
+        eeprom_working=False
+elif(product == "Tate"):
+    max_channels = 4
+    if(rtm_version<3):
+        eeprom_working=False
+elif(product == "BasebandTate"):
+    max_channels = 4
+    if(rtm_version<3):
+        eeprom_working=False
+
+if(eeprom_working==True):
+    disable_eeprom_check=False
+else:
+    disable_eeprom_check=True 
+
+#Setting up time array to hold board data
 time = []
 time.append(subprocess.getstatusoutput("cat hold.txt | grep 'Board Version' | cut --complement -d ':' -f1")[1])
 time.append(subprocess.getstatusoutput("cat hold.txt | grep 'Branch' | cut --complement -d ':' -f1")[1])
