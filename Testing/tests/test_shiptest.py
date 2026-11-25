@@ -143,7 +143,7 @@ if channel_list != None:
     channel_names = [channel_names[c] for c in channel_list]
     for c in channel_list:
         try:
-            assert 0<=channel_list[c]<max_channels
+            assert 0<=c<max_channels
         except:
             sys.exit("ERROR: One of the channel numbers selected exceeds the number of channels available.")
 else:
