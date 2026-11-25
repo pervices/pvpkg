@@ -112,8 +112,6 @@ try:
 except:
     sys.exit("Invalid product. Only v (Vaunt), t (Tate), l (Lily), a (Avery) and b (BasebandTate) are supported")
 
-eeprom_working=True
-
 channel_names = ["A", "B", "C", "D", "E", "F", "G", "H"]
 
 if(product == "Vaunt"):
@@ -209,25 +207,64 @@ os.system('uhd_usrp_info --all > shiptest_out.txt')
 os.system("touch hold.txt")
 os.system("grep '0/time/fw_version' shiptest_out.txt -A 15 > hold.txt")
 
-#Setting up eeprom check
+''' Setting up eeprom check
+ EEPROM errors are detected when there is no board SERIAL identifier found.
+ There are 2 cases where EEPROM errors must not be thrown and the program should not exit:
+ Case 1: Older rtm versions that do not have EEPROM
+ Case 2: Older rtm versions that have EEPROM but do not have board SERIAL identifier set up in EEPROM
+'''
+
 eeprom_fail = False
+eeprom_supported=True
+serial_supported= True
 rtm_version=int(subprocess.getstatusoutput("grep -m 1 'RTM:' shiptest_out.txt | cut -d ':' -f2")[1].strip())
+
 if(product == "Vaunt"):
     if(rtm_version<8):
-        eeprom_working=False
-elif(product == "Tate"):
-    max_channels = 4
+        eeprom_supported=False #No EEPROM
+        serial_supported=False
+    elif(rtm_version<12):
+        serial_supported=False #EEPROM exists but no Board SERIAL identifier
+elif(product == "Tate" or product == "BasebandTate"):
     if(rtm_version<3):
-        eeprom_working=False
-elif(product == "BasebandTate"):
-    max_channels = 4
-    if(rtm_version<3):
-        eeprom_working=False
+        eeprom_supported=False #No EEPROM
+        serial_supported=False
+    elif(rtm_version<6):
+        serial_supported= False #EEPROM exists but no Board SERIAL identifier
 
-if(eeprom_working==True):
-    disable_eeprom_check=False
-else:
-    disable_eeprom_check=True 
+# if(eeprom_supported==True):
+#     disable_eeprom_check=False
+# else:
+#     disable_eeprom_check=True
+def check_eeprom(raw_eep, eeprom_supported, serial_supported):
+  """
+    Helper function to validate raw EEPROM output against rtm version
+    
+    Returns:
+        (should_throw_error, extracted_serial):
+            - should_throw_error (bool): True if the EEPROM failed validation.
+            - extracted_serial (str): "SERIAL XX" if found, otherwise "".
+    """
+  # Find serial indentifiers on RTMs that include serial numbers
+  serial_matches = re.findall(r"SERIAL [a-zA-Z]{1,2}", raw_eep)
+  extracted_serial = serial_matches[0] if len(serial_matches) == 1 else ""
+
+  # Skip check for boards that do not have EEPROMs
+  if not eeprom_supported:
+    return False, extracted_serial
+
+  # Catch for unknown and unprogrammed EEPROM messages
+  is_unprogrammed = (
+      not raw_eep.strip()
+      or "UNKNOWN" in raw_eep
+      or "not programmed" in raw_eep
+  )
+
+  # Check if the SERIAL string is missing or duplicated
+  missing_serial = serial_supported and (len(serial_matches) != 1)
+
+  should_throw_error = is_unprogrammed or missing_serial
+  return should_throw_error, extracted_serial
 
 #Setting up time array to hold board data
 time = []
@@ -240,10 +277,12 @@ time.append(subprocess.getstatusoutput("cat hold.txt | grep 'Fuse00' | cut --com
 time.append(subprocess.getstatusoutput("cat hold.txt | grep 'Fuse02' | cut --complement -d ':' -f1")[1])
 time.append(subprocess.getstatusoutput("cat hold.txt | grep 'Fuse03' | cut --complement -d ':' -f1")[1])
 time.append(subprocess.getstatusoutput("cat hold.txt | grep 'GCC' | cut --complement -d ':' -f1")[1])
-time_eep = subprocess.getstatusoutput("cat shiptest_out.txt | grep time/eeprom -A 1 | tail -n 1 | cut -d ':' -f2- | grep -o -E 'SERIAL [A-Z]{1,2}'")[1]
-if len(re.findall("SERIAL [a-zA-Z]{1,2}", time_eep)) != 1 and not disable_eeprom_check:
-    log.pvpkg_log_error("SHIPTEST", "Time board EEPROM not programmed! EEPROM read: {}".format(time_eep))
-    eeprom_fail = True
+time_raw = subprocess.getstatusoutput("cat shiptest_out.txt | grep time/eeprom -A 1 | tail -n 1 | cut -d ':' -f2-")[1].strip()
+time_failed, time_eep = check_eeprom(time_raw, eeprom_supported, serial_supported)
+
+if time_failed:
+  log.pvpkg_log_error("SHIPTEST","Time board EEPROM not programmed! EEPROM read: {}".format(time_raw))
+  eeprom_fail = True
 time.append(time_eep)
 
 #Setting up rx dictionary to hold board data
@@ -261,9 +300,12 @@ for i, name in zip(range(num_channels), channel_names): #NOTE: This might be mor
     rx_info["RX: " + name].append(subprocess.getstatusoutput("cat hold.txt | grep 'Fuse02' | cut --complement -d ':' -f1")[1])
     rx_info["RX: " + name].append(subprocess.getstatusoutput("cat hold.txt | grep 'Fuse03' | cut --complement -d ':' -f1")[1])
     rx_info["RX: " + name].append(subprocess.getstatusoutput("cat hold.txt | grep 'GCC' | cut --complement -d ':' -f1")[1])
-    rx_eep = subprocess.getstatusoutput("cat shiptest_out.txt | grep rx/{}/eeprom -A 1 | tail -n 1 | cut -d ':' -f2- | grep -o -E 'SERIAL [A-Z]{{1,2}}'".format(i))[1]
-    if len(re.findall("SERIAL [a-zA-Z]{1,2}", rx_eep)) != 1 and not disable_eeprom_check:
-        log.pvpkg_log_error("SHIPTEST", "RX {} EEPROM not programmed! EEPROM read: {}".format(i, rx_eep))
+    rx_raw = subprocess.getstatusoutput("cat shiptest_out.txt | grep rx/{}/eeprom -A 1 | tail -n 1 | cut -d ':' -f2-".format(i))[1].strip()
+
+    rx_failed, rx_eep = check_eeprom(rx_raw, eeprom_supported, serial_supported)
+
+    if rx_failed:
+        log.pvpkg_log_error("SHIPTEST", "RX {} EEPROM not programmed! EEPROM read: {}".format(i, rx_raw))
         eeprom_fail = True
     rx_info["RX: " + name].append(rx_eep)
 
@@ -281,9 +323,13 @@ for i, name in zip(range(num_channels), channel_names):
     tx_info["TX: " + name].append(subprocess.getstatusoutput("cat hold.txt | grep 'Fuse02' | cut --complement -d ':' -f1")[1])
     tx_info["TX: " + name].append(subprocess.getstatusoutput("cat hold.txt | grep 'Fuse03' | cut --complement -d ':' -f1")[1])
     tx_info["TX: " + name].append(subprocess.getstatusoutput("cat hold.txt | grep 'GCC' | cut --complement -d ':' -f1")[1])
-    tx_eep = subprocess.getstatusoutput("cat shiptest_out.txt | grep tx/{}/eeprom -A 1 | tail -n 1 | cut -d ':' -f2- | grep -o -E 'SERIAL [A-Z]{{1,2}}'".format(i))[1]
-    if len(re.findall("SERIAL [a-zA-Z]{1,2}", tx_eep)) != 1 and not disable_eeprom_check:
-        log.pvpkg_log_error("SHIPTEST", "TX {} EEPROM not programmed! EEPROM read: {}".format(i, tx_eep))
+    tx_raw = subprocess.getstatusoutput("cat shiptest_out.txt | grep tx/{}/eeprom -A 1 | tail -n 1 | cut -d ':' -f2-".format(i))[1].strip()
+
+    tx_failed, tx_eep = check_eeprom(tx_raw, eeprom_supported, serial_supported)
+
+    if tx_failed:
+    # Logging tx_raw so the error message shows the actual failure (e.g."UNKNOWN: EEPROM not programmed")
+        log.pvpkg_log_error("SHIPTEST", "TX {} EEPROM not programmed! EEPROM read: {}".format(i, tx_raw))
         eeprom_fail = True
     tx_info["TX: " + name].append(tx_eep)
 
@@ -329,11 +375,12 @@ rcParams['agg.path.chunksize'] = 115
 # rcParams is process-wide
 matplotlib.rcParams['svg.fonttype'] = 'none'
 
-'''Draws a vector Drawing (from svg2rlg) scaled into the box at (x, y) with size w x h.
-Raster images are rejected so they can't silently bloat the PDF.
-PARAMS: pdf, image, x, y, w, h
-RETURNS: NONE'''
 def drawVector(pdf, image, x, y, w, h):
+    '''Draws a vector Drawing (from svg2rlg) scaled into the box at (x, y) with size w x h.
+    Raster images are rejected so they can't silently bloat the PDF.
+    PARAMS: pdf, image, x, y, w, h
+    RETURNS: NONE'''
+
     if not isinstance(image, Drawing):
         raise TypeError("shiptest only accepts vector images (reportlab Drawing), got {}"
                         .format(type(image).__name__))
@@ -349,10 +396,11 @@ def drawVector(pdf, image, x, y, w, h):
 # XObject used to store the logo so it only needs to be stored once per PDF
 logo_form_canvas = None
 
-'''Draws the logo into the box at (x, y) with size w x h
-PARAMS: pdf, x, y, w, h
-RETURNS: NONE'''
 def drawLogo(pdf, x, y, w, h):
+    '''Draws the logo into the box at (x, y) with size w x h
+    PARAMS: pdf, x, y, w, h
+    RETURNS: NONE'''
+
     global logo_form_canvas
     if logo_form_canvas is not pdf:
         # Build the form at the logo's native size, origin (0, 0)
@@ -369,11 +417,10 @@ def drawLogo(pdf, x, y, w, h):
     # Restore the previous state to avoid size effects
     pdf.restoreState()
 
-'''Creates Title Page with board info, title, and unit info
-PARAMS: report
-RETURNS: NONE'''
 # def titlePage(pdf):
-
+# '''Creates Title Page with board info, title, and unit info
+# PARAMS: report
+# RETURNS: NONE'''
 #     #Positional Values
 #     title_font_size = 26
 #     title_x = 100
@@ -512,6 +559,9 @@ RETURNS: NONE'''
 #         board_table.drawOn(pdf, board_x, board_y)
 
 def buildTitlePage(report):
+    '''Creates Title Page with board info, title, and unit info
+    PARAMS: report
+    RETURNS: NONE'''
     report.insert_text_large("Ship Test Report: " + unit_name + " - " + serial_num)
     report.insert_line_separator()
     # Inserts Report Date, OS, Hostname, Product Name, Docker SHA, RTM, FPGA DDR, Unit Time, UHD, Server, FPGA, pvpkg versions
@@ -562,12 +612,11 @@ def buildTitlePage(report):
             rx_table.append(row)
         report.insert_table(rx_table, x_offset=0, title=None, fontsize=table_font_size)
 
-
-'''Creates a header for each Run Page and the page number
-PARAMS: report, it name
-RETURNS: None
-'''
 # def topOfPage(pdf, it):
+# '''Creates a header for each Run Page and the page number
+# PARAMS: report, it name
+# RETURNS: None
+# '''
 #     #Positionalgalues
 #     title_font_size = 26
 #     title_x, title_y = 80, 575
@@ -620,6 +669,10 @@ RETURNS: None
 #     inputs.wrapOn(pdf, table_width, table_height)
 #     inputs.drawOn(pdf, table_x, table_y)
 def addRunHeader(report, it):
+    '''Creates a header for each Run Page and the page number
+    PARAMS: report, it name
+    RETURNS: None'''
+
     clean_unit= unit_name.strip()
     report.insert_text_large(f"Run Number {it} - Loopback On {clean_unit}")
     report.insert_text(f"Center Freq: {center_freq} Hz | Wave Freq: {wave_freq} Hz")
@@ -629,10 +682,10 @@ def addRunHeader(report, it):
     ]
     report.insert_table(data, x_offset=0, fontsize=8)
 
-'''Plots the FFT subplots all in the same format
-PARAMS: x, y, ax, imag, title
-RETURNS: NONE'''
 def subPlotFFTs(x, y, ax, title, max_four, nf):
+    '''Plots the FFT subplots all in the same format
+    PARAMS: x, y, ax, imag, title
+    RETURNS: NONE'''
 
     ax.set_title(title)
     ax.set_xlim(min(x), max(x))
@@ -644,10 +697,11 @@ def subPlotFFTs(x, y, ax, title, max_four, nf):
 
     return fft
 
-'''Plots the IQ subplots all in the same format
-PARAMS: x, real, ax, imag, best_fit_real, best_fit_imag, title
-RETURNS: NONE'''
 def subPlotIQs (x, real,imag, best_fit_real, best_fit_imag, offset_real, offset_imag, ax, title, period):
+    '''Plots the IQ subplots all in the same format
+    PARAMS: x, real, ax, imag, best_fit_real, best_fit_imag, title
+    RETURNS: NONE'''
+
     ax.set_title(title)
 
     ax.axhline(y = offset_imag, markersize=0.025, color='indigo', alpha=0.4, label='Imaginary Offset')
@@ -669,32 +723,33 @@ def subPlotIQs (x, real,imag, best_fit_real, best_fit_imag, offset_real, offset_
 
     return bf_r
 
-'''Calculates the magnitude of the two given values
-PARAMS: a, b
-RETURNS: ans'''
 def magnitude(a,b):
+    '''Calculates the magnitude of the two given values
+    PARAMS: a, b
+    RETURNS: ans'''
+
     ans = np.sqrt((a**2) + (b**2))
     return ans
 
-'''returns a bool value to check if the thing is 0
-PARAMS: a
-returns: a != 0'''
 def isNotZero(a):
+    '''returns a bool value to check if the thing is 0
+    PARAMS: a
+    returns: a != 0'''
     return (a != 0)
 
-'''Turns the values recieved into values for the FFT plots
-PARAMS:
-channel: the index corresponding to the channle
-x: time of the samples
-real: real part samples for 1 channel
-imag: imagninary part of samples for 1 channel
-
-# The below are used as pseudo return values
-
-fft_xs: array containing the x values for each channel. Writes the result to the channel specified
-fft_ys: array containing the y values for each channel in dB. Writes the result to the channel specified
-'''
 def fftValues(channel, x, real, imag, fft_xs, fft_ys):
+    '''Turns the values received into values for the FFT plots
+    PARAMS:
+    channel: the index corresponding to the channle
+    x: time of the samples
+    real: real part samples for 1 channel
+    imag: imaginary part of samples for 1 channel
+
+    # The below are used as pseudo return values
+
+    fft_xs: array containing the x values for each channel. Writes the result to the channel specified
+    fft_ys: array containing the y values for each channel in dB. Writes the result to the channel specified
+    '''
 
     #organizing data
     sort = np.argsort(x)
@@ -722,21 +777,22 @@ def fftValues(channel, x, real, imag, fft_xs, fft_ys):
 
     return
 
-'''Renders the current plot figure as an SVG in memory and loads it as a
-vector Drawing for the pdf
-PARAMS: title, counter (only used to identify the plot in error messages)
-RETURNS: Drawing'''
 def plotToPdf(report):
+    '''Renders the current plot figure as an SVG in memory and loads it as a
+    vector Drawing for the pdf
+    PARAMS: title, counter (only used to identify the plot in error messages)
+    RETURNS: Drawing'''
+
     plt.gcf().set_size_inches(10, 4.2)
     plt.tight_layout(rect=[0.03, 0.04, 0.98, 0.92])
     stream = report.get_image_io_stream()
     plt.savefig(stream, format="svg")
     return report.get_drawing_from_svg_io_stream(stream)
 
-'''Finding the top peaks
-PARAMS: y
-RETURNS: max_four'''
 def numPeaks(x, y, ampl, num):
+    '''Finding the top peaks
+    PARAMS: y
+    RETURNS: max_four'''
 
     peaks, properties = find_peaks(y, distance=100,width=0.1e-9) #NOTE: What should I use as the height...
     x = np.asarray(x)
@@ -755,61 +811,67 @@ def numPeaks(x, y, ampl, num):
 
     return maxs
 
-'''Intakes data to find the noise floor avge by removing top 20 peaks and averaging the rest
-PARAM: Data
-RETURNS: noise_floor_y'''
 def noiseFloor(x, y, ampl):
+    '''Intakes data to find the noise floor avge by removing top 20 peaks and averaging the rest
+    PARAM: Data
+    RETURNS: noise_floor_y'''
+
     noise_floor = numPeaks(x, y, ampl, 20)
     return noise_floor
 
-'''Squares the given values
-PARMS: V
-RETURNS: v**2'''
 def square(v):
+    '''Squares the given values
+    PARMS: V
+    RETURNS: v**2'''
+
     return v**2
 
-'''Turning the amplitudes of noise and signal and making the snr
-PARAMS:y_vals
-RETURNS: SNR in dB'''
 def toSNR(noise, signal):
+    '''Turning the amplitudes of noise and signal and making the snr
+    PARAMS:y_vals
+    RETURNS: SNR in dB'''
+
     return (signal - np.max(noise))
 
-
-'''Checks if the given is within the SNR bounds
-PARAM:
-snr_ratios: array of signal to noise ratios
-RETURN: Boolean: False if any of the snrs are below the threshold'''
 def checkSNRs(snr_ratios):
+    '''Checks if the given is within the SNR bounds
+    PARAM:
+    snr_ratios: array of signal to noise ratios
+    RETURN: Boolean: False if any of the snrs are below the threshold'''
+
     for snr_ratio in snr_ratios:
         if snr_ratio <= snr_min_check:
             return False
     return True
 
-'''Checks if the freq is within desired location
-PARAM:
-a: The difference between that actual wave frequency and the target
-RETURN: Bool'''
 def checkFreq(a):
+    '''Checks if the freq is within desired location
+    PARAM:
+    a: The difference between that actual wave frequency and the target
+    RETURN: Bool'''
+
     not_ch_result = np.any((a < -freq_check_threshold)|(a > freq_check_threshold ))
     return not (not_ch_result.all())
 
-'''Checks if the difference between the peak and the strongest spur is acceptable
-PARAM:
-desired_signal: The strength of the signal in dB
-strongest_spur: The strength of the strongest spur in dB
-RETURN: Bool'''
 def checkSpur(peak_values, fail_threshold):
+    '''Checks if the difference between the peak and the strongest spur is acceptable
+    PARAM:
+    desired_signal: The strength of the signal in dB
+    strongest_spur: The strength of the strongest spur in dB
+    RETURN: Bool'''
+
     for ch_peaks in peak_values:
         if ch_peaks[0][1] < (ch_peaks[1][1] + fail_threshold):
             return False
     return True
 
-'''Checks if the difference between channels is acceptable
-PARAM:
-desired_signal: The strength of the signal in dB
-strongest_spur: The strength of the strongest spur in dB
-RETURN: Bool'''
 def checkGainRelative(peak_values, fail_threshold):
+    '''Checks if the difference between channels is acceptable
+    PARAM:
+    desired_signal: The strength of the signal in dB
+    strongest_spur: The strength of the strongest spur in dB
+    RETURN: Bool'''
+
     min_gain = float('inf')
     max_gain = float('-inf')
     for ch_peaks in peak_values:
@@ -818,10 +880,12 @@ def checkGainRelative(peak_values, fail_threshold):
 
     return (max_gain - min_gain) <= fail_threshold
 
-'''Turns true into "Pass" and false into "fail"
-PARAM: a
-RETURN: Proper word'''
+
 def isPass(a):
+    '''Turns true into "Pass" and false into "fail"
+    PARAM: a
+    RETURN: Proper word'''
+
     if a:
         return "Pass"
     else:
