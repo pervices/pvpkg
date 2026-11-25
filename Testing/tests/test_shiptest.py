@@ -137,10 +137,15 @@ else:
 try:
     assert 1 <= num_channels <= max_channels
 except AssertionError:
-    sys.exit("Invalid number of channels selected")
+    sys.exit("ERROR: Invalid number of channels selected")
 
 if channel_list != None:
     channel_names = [channel_names[c] for c in channel_list]
+    for c in channel_list:
+        try:
+            assert 0<=channel_list[c]<max_channels
+        except:
+            sys.exit("ERROR: One of the channel numbers selected exceeds the number of channels available.")
 else:
     channel_names = channel_names[0:num_channels]
 
