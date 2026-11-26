@@ -123,7 +123,7 @@ elif(product == "Tate"):
 elif(product == "Lily"):
     max_channels = 4
 elif(product == "BasebandTate"):
-    max_channels = 4
+    max_channels = 8
 
 if targs.channels != None:
     channel_list = targs.channels # Channel list used for testing. Example [2 4]
