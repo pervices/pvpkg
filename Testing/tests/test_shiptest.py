@@ -1361,7 +1361,7 @@ def main(iterations):
         for z in range(pages_per_superplot):
             report.new_page()
             addRunHeader(report, str(counter))
-            start, end = z * 4, min((z * 4) + 4, num_channels)
+            start, end = z * 8, min((z * 8) + 8, num_channels)
 
             insertWidePlot(report, IQ_plt_img[z])
 
@@ -1370,13 +1370,13 @@ def main(iterations):
                 ["Ampl I (fractional)"] + [sig(ampl_reals[i], sigfigs=sigfigs) for i in range(start, end)],
                 ["Ampl Q (fractional)"] + [sig(ampl_imags[i], sigfigs=sigfigs) for i in range(start, end)]
             ]
-            report.insert_table(IQ_table_info, x_offset=20, title="IQ Data", fontsize=10)
+            report.insert_table(IQ_table_info, x_offset=20, title="IQ Data", fontsize=8 if num_channels > 4 else 10)
 
         # SECTION THREE OF RUN: Plotting Amplitude vs Frequency
         for z in range(pages_per_superplot):
             report.new_page()
             addRunHeader(report, str(counter))
-            start, end = z * 4, min((z * 4) + 4, num_channels)
+            start, end = z * 8, min((z * 8) + 8, num_channels)
 
             insertWidePlot(report, FFT_plt_img[z])
 
@@ -1387,7 +1387,7 @@ def main(iterations):
                 ["Third Highest"] + [str((sig(max_fours[i][2][0], sigfigs=sigfigs), sig(max_fours[i][2][1], sigfigs=sigfigs))) for i in range(start, end)],
                 ["Fourth Highest"] + [str((sig(max_fours[i][3][0], sigfigs=sigfigs), sig(max_fours[i][3][1], sigfigs=sigfigs))) for i in range(start, end)]
             ]
-            report.insert_table(max_peak_table_info, x_offset=0, title="Top Peaks (Frequency, Amplitude)", fontsize=8)
+            report.insert_table(max_peak_table_info, x_offset=0, title="Top Peaks (Frequency, Amplitude)", fontsize=6.5 if num_channels > 4 else 8)
 
         # SECTION FOUR OF RUNS: SUMMARY PAGE
         report.new_page()
@@ -1405,7 +1405,7 @@ def main(iterations):
             max_top.append((first_max[0][0], first_max[0][1]))
 
         for z in range(pages_per_superplot):
-            start, end = z * 4, min((z * 4) + 4, num_channels)
+            start, end = z * 8, min((z * 8) + 8, num_channels)
             mean_a = np.mean(noise_floor[0][1])
 
             nf_table_info = [
@@ -1438,8 +1438,8 @@ def main(iterations):
                 snr_table_info[2].append(str(sig(max_top[i][1], sigfigs=sigfigs)))
                 snr_table_info[3].append(str(sig(fft_snr[i], sigfigs=sigfigs)))
 
-            report.insert_table(nf_table_info, x_offset=0, title="All Noise Floor Data", fontsize=8)
-            report.insert_table(snr_table_info, x_offset=0, title="Top Peak Information (Based on Highest SNR)", fontsize=8)
+            report.insert_table(nf_table_info, x_offset=0, title="All Noise Floor Data", fontsize=6.5 if num_channels > 4 else 8)
+            report.insert_table(snr_table_info, x_offset=0, title="Top Peak Information (Based on Highest SNR)", fontsize=6.5 if num_channels > 4 else 8)
 
         strict_failed = False
         # Checking if this iteration passed SNR
