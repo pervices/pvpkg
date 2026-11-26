@@ -1410,8 +1410,8 @@ def main(iterations):
 
             nf_table_info = [
                 ["Channel"] + [channel_names[i] for i in range(start, end)],
-                ["Max"],
-                ["Min"],
+                ["Maximum"],
+                ["Minimum"],
                 ["Mean"],
                 ["Diff to " + channel_names[0]],
                 ["STD"]
@@ -1438,7 +1438,7 @@ def main(iterations):
                 snr_table_info[2].append(str(sig(max_top[i][1], sigfigs=sigfigs)))
                 snr_table_info[3].append(str(sig(fft_snr[i], sigfigs=sigfigs)))
 
-            report.insert_table(nf_table_info, x_offset=0, title="All Noise Floor Data", fontsize=6.5 if num_channels > 4 else 8)
+            report.insert_table(nf_table_info, x_offset=0, title="All Noise Floor Data", fontsize=(5 if num_channels==8 else 6.5) if num_channels > 4 else 8)
             report.insert_table(snr_table_info, x_offset=0, title="Top Peak Information (Based on Highest SNR)", fontsize=6.5 if num_channels > 4 else 8)
 
         strict_failed = False
