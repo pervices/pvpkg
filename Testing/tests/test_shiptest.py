@@ -1410,8 +1410,8 @@ def main(iterations):
 
             nf_table_info = [
                 ["Channel"] + [channel_names[i] for i in range(start, end)],
-                ["Maximum"],
-                ["Minimum"],
+                ["Max"],
+                ["Min"],
                 ["Mean"],
                 ["Diff to " + channel_names[0]],
                 ["STD"]
