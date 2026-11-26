@@ -357,10 +357,10 @@ summary_info = [] #[iteration][[freq][amplitude][snr]]
 
 #page variables
 page_count = 1
-pages_per_superplot = int(np.ceil(num_channels/4))
+pages_per_superplot = int(np.ceil(num_channels/8))
 multi = (pages_per_superplot > 1)
 #Page total based on the unit you're testing
-page_total = ((2*pages_per_superplot)+2)*(8*(product == "Vaunt") + 8*(product == "Avery") + 6*(product == "Tate") + 6*(product == "Lily")) + 6*(product == "BasebandTate") + pages_per_superplot
+page_total = ((2*pages_per_superplot)+2)*(8*(product == "Vaunt") + 8*(product == "Avery") + 6*(product == "Tate") + 6*(product == "Lily") + 6*(product == "BasebandTate")) + pages_per_superplot
 
 
 #Adding logo - more efficent to just initialize at beginning
@@ -925,7 +925,7 @@ def bestFit(ch, x, y_real, y_imag, expected_freq, best_fit_reals, offset_reals, 
     offset_imags[ch] = fit_offset
     ampl_imags[ch] = fit_amp
 
-    ampl_vec[ch] = np.sqrt(ampl_imags[ch]**2 + ampl_reals[len(ampl_reals)-1]**2)
+    ampl_vec[ch] = np.sqrt(ampl_imags[ch]**2 + ampl_reals[ch]**2)
 
 
 def waveEquation(time, ampl, freq, phase, dc_offset):
@@ -1028,7 +1028,7 @@ def main(iterations):
         elif "channels" in it:
             channel_list = it["channels"]
         else:
-            channel_list = [0,1,2,3]
+            channel_list = list(range(num_channels))
         
         vsnk = engine.run(channel_list, it["wave_freq"], it["sample_rate"], it["center_freq"], it["tx_gain"], it["rx_gain"], tx_stack, rx_stack, device_ip)
 
@@ -1207,26 +1207,49 @@ def main(iterations):
         IQ_plt_img = []
         axis = []
         for z in range(pages_per_superplot):
-            start, end = z * 4, min((z * 4) + 4, num_channels)
-            cols_on_page = end - start
+          start, end = z * 8, min((z * 8) + 8, num_channels)
+          cols_on_page = end - start
 
-            fig, axes = plt.subplots(1, cols_on_page, squeeze=False)
-            plt.suptitle("Individual Channels' Amplitude versus Time for Run {}".format(counter))
-            fig.supxlabel("Time (nS)")
-            fig.supylabel("Amplitude (fractional)")
+          # Use a 2x4 grid when displaying 5 to 8 channels, otherwise 1xN
+          nrows = 2 if cols_on_page > 4 else 1
+          ncols = 4 if cols_on_page > 4 else cols_on_page
 
-            for idx, i in enumerate(range(start, end)):
-                ax = axes[0][idx]
-                ax.set_ylim(bottom=amplYBottom, top=amplYTop, auto=False)
-                subplot_title = f"Channel {channel_list[i]}"
-                IQ_plots.append(subPlotIQs(
-                    x_time[0:plotted_samples], reals[i][0:plotted_samples], imags[i][0:plotted_samples],
-                    best_fit_reals[i][0:plotted_samples], best_fit_imags[i][0:plotted_samples],
-                    offset_reals[i], offset_imags[i], ax, subplot_title, period_samples
-                ))
+          fig, axes = plt.subplots(nrows, ncols, squeeze=False)
+          axes_flat = axes.flatten()
+          plt.suptitle(
+              "Individual Channels' Amplitude versus Time for Run {}".format(
+                  counter
+              )
+          )
+          fig.supxlabel("Time (nS)")
+          fig.supylabel("Amplitude (fractional)")
 
-            IQ_plt_img.append(plotToPdf(report))
-            plt.close(fig)
+          for idx, i in enumerate(range(start, end)):
+            ax = axes_flat[idx]
+            ax.set_ylim(bottom=amplYBottom, top=amplYTop, auto=False)
+            subplot_title = f"Channel {channel_list[i]}"
+            IQ_plots.append(
+                subPlotIQs(
+                    x_time[0:plotted_samples],
+                    reals[i][0:plotted_samples],
+                    imags[i][0:plotted_samples],
+                    best_fit_reals[i][0:plotted_samples],
+                    best_fit_imags[i][0:plotted_samples],
+                    offset_reals[i],
+                    offset_imags[i],
+                    ax,
+                    subplot_title,
+                    period_samples,
+                )
+            )
+
+          # Hide any unused subplot boxes (e.g., if running 6 channels in a 2x4 grid)
+          for unused in range(cols_on_page, nrows * ncols):
+            axes_flat[unused].set_visible(False)
+
+          IQ_plt_img.append(plotToPdf(report))
+          plt.close(fig)
+
 
         # Four highest points in the fft for each channel
         max_fours = []
@@ -1260,25 +1283,45 @@ def main(iterations):
             amplYBottom = -1
 
         # Plotting FFT Data
+                # Plotting FFT Data
         FFT_plots = []
         FFT_plt_img = []
         for z in range(pages_per_superplot):
-            start, end = z * 4, min((z * 4) + 4, num_channels)
-            cols_on_page = end - start
+          start, end = z * 8, min((z * 8) + 8, num_channels)
+          cols_on_page = end - start
 
-            fig, axes = plt.subplots(1, cols_on_page, squeeze=False)
-            plt.suptitle("Individual Channels' FFTs for Run {}".format(counter))
-            fig.supxlabel("Frequency (MHz)")
-            fig.supylabel("Magnitude (dB)")
+          # Use a 2x4 grid when displaying 5 to 8 channels, otherwise 1xN
+          nrows = 2 if cols_on_page > 4 else 1
+          ncols = 4 if cols_on_page > 4 else cols_on_page
 
-            for idx, i in enumerate(range(start, end)):
-                ax = axes[0][idx]
-                ax.set_ylim(bottom=amplYBottom, top=amplYTop, auto=False)
-                subplot_title = f"Channel {channel_list[i]}"
-                FFT_plots.append(subPlotFFTs(fft_x[i], fft_y[i], ax, subplot_title, max_fours[i], np.mean(noise_floor[i])))
+          fig, axes = plt.subplots(nrows, ncols, squeeze=False)
+          axes_flat = axes.flatten()
+          plt.suptitle("Individual Channels' FFTs for Run {}".format(counter))
+          fig.supxlabel("Frequency (MHz)")
+          fig.supylabel("Magnitude (dB)")
 
-            FFT_plt_img.append(plotToPdf(report))
-            plt.close(fig)
+          for idx, i in enumerate(range(start, end)):
+            ax = axes_flat[idx]
+            ax.set_ylim(bottom=amplYBottom, top=amplYTop, auto=False)
+            subplot_title = f"Channel {channel_list[i]}"
+            FFT_plots.append(
+                subPlotFFTs(
+                    fft_x[i],
+                    fft_y[i],
+                    ax,
+                    subplot_title,
+                    max_fours[i],
+                    np.mean(noise_floor[i]),
+                )
+            )
+
+          # Hide any unused subplot boxes (e.g., if running 6 channels in a 2x4 grid)
+          for unused in range(cols_on_page, nrows * ncols):
+            axes_flat[unused].set_visible(False)
+
+          FFT_plt_img.append(plotToPdf(report))
+          plt.close(fig)
+
 
         FFT_plots = np.asarray(FFT_plots)
 
@@ -1288,7 +1331,14 @@ def main(iterations):
         addRunHeader(report, str(counter))
 
         fig, (ax1, ax2) = plt.subplots(1, 2)
-        colours = ['royalblue', 'maroon', 'darkolivegreen', 'mediumvioletred']
+        colours = ['royalblue',
+                    'maroon',
+                    'darkolivegreen',
+                    'mediumvioletred',
+                    'darkorange',
+                    'teal',
+                    'slateblue',
+                    'saddlebrown']
 
         for i, colour in zip(range(num_channels), colours):
             ax1.set_title("All Channels - Real Data")
