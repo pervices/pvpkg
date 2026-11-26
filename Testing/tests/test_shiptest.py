@@ -143,7 +143,7 @@ if channel_list != None:
     channel_names = [channel_names[c] for c in channel_list]
     for c in channel_list:
         try:
-            assert 0<=c<max_channels
+            assert 0 <= c < max_channels
         except:
             sys.exit("ERROR: One of the channel numbers selected exceeds the number of channels available.")
 else:
@@ -680,7 +680,6 @@ def addRunHeader(report, it):
 
     clean_unit= unit_name.strip()
     report.insert_text_large(f"Run Number {it} - Loopback On {clean_unit}")
-    report.insert_text(f"Center Freq: {center_freq} Hz | Wave Freq: {wave_freq} Hz")
     data = [
         ["Center Freq (Hz)", "Wave Freq (Hz)", "Sample Rate (SPS)", "Sample Count", "TX Gain (dB)", "RX Gain (dB)"],
         [center_freq, wave_freq, sample_rate, sample_count, tx_gain, rx_gain]
@@ -716,15 +715,28 @@ def subPlotIQs (x, real,imag, best_fit_real, best_fit_imag, offset_real, offset_
     ax.plot(x, real, '.', markersize=3, color='crimson', label="Real")
     ax.plot(x, imag, '.', markersize=3, color='purple', label="Imaginary")
 
-
     real_peaks = find_peaks(real, distance=period)
     imag_peaks = find_peaks(imag, distance=period)
 
     for r, i in zip(real_peaks[0], imag_peaks[0]):
-        ax.axvline(x = x[r], linestyle='--', alpha=0.5, color='rosybrown', markersize=0.05)
-        ax.text(x[r], max(best_fit_real) + (0.05*max(best_fit_real)), "\u2190" + str(sig(x[r], sigfigs=sigfigs)), fontsize=7, verticalalignment='top', )
-        ax.axvline(x = x[i],  linestyle='--', alpha=0.5, color='darkslateblue',markersize=0.05)
-        ax.text(x[i], min(best_fit_imag) + (min(best_fit_imag)*0.05), "\u2190" + str(sig(x[i], sigfigs=sigfigs)), fontsize=7, verticalalignment='top')
+        ax.axvline(x=x[r], linestyle='--', alpha=0.5, color='rosybrown', linewidth=0.8)
+        ax.axvline(x=x[i], linestyle='--', alpha=0.5, color='darkslateblue', linewidth=0.8)
+
+    # Label only the first real and imaginary peak to prevent overlapping text in the middle
+    if len(real_peaks[0]) > 0:
+        r0 = real_peaks[0][0]
+        ax.text(
+            x[r0], max(best_fit_real),
+            "\u2190" + str(sig(x[r0], sigfigs=sigfigs)),
+            fontsize=6, verticalalignment='bottom', clip_on=True
+        )
+    if len(imag_peaks[0]) > 0:
+        i0 = imag_peaks[0][0]
+        ax.text(
+            x[i0], min(best_fit_imag),
+            "\u2190" + str(sig(x[i0], sigfigs=sigfigs)),
+            fontsize=6, verticalalignment='top', clip_on=True
+        )
 
     return bf_r
 
@@ -788,8 +800,17 @@ def plotToPdf(report):
     PARAMS: title, counter (only used to identify the plot in error messages)
     RETURNS: Drawing'''
 
-    plt.gcf().set_size_inches(10, 4.2)
+    fig = plt.gcf()
+    fig.set_size_inches(10, 4.2)
+
+    # Limit x-axis ticks to 3 per subplot and shrink tick font so neighbors never overlap
+    for ax in fig.get_axes():
+        ax.xaxis.set_major_locator(plt.MaxNLocator(3))
+        ax.tick_params(axis='both', labelsize=7)
+        ax.title.set_fontsize(9)
+
     plt.tight_layout(rect=[0.03, 0.04, 0.98, 0.92])
+    plt.subplots_adjust(wspace=0.35, hspace=0.45)
     stream = report.get_image_io_stream()
     plt.savefig(stream, format="svg")
     return report.get_drawing_from_svg_io_stream(stream)
@@ -894,7 +915,7 @@ def isPass(a):
     if a:
         return "Pass"
     else:
-        return "False"
+        return "Fail"
 
 
 
@@ -1327,7 +1348,8 @@ def main(iterations):
 
         # MAKING THE ACTUAL PDF
         # SECTION ONE OF RUNS: Merged Plots
-        #report.new_page()
+        if counter > 1:
+            report.new_page()
         addRunHeader(report, str(counter))
 
         fig, (ax1, ax2) = plt.subplots(1, 2)
@@ -1395,51 +1417,76 @@ def main(iterations):
 
         fft_snr = []
         for i in range(num_channels):
-            fft_snr.append(toSNR(noise_floor[i][1], max_fours[i][0][1]))
+          fft_snr.append(toSNR(noise_floor[i][1], max_fours[i][0][1]))
         fft_snr = np.asarray(fft_snr)
 
         summary_info.append((max_fours[0][0][0], max_fours[0][0][1], fft_snr[0]))
 
         max_top = []
         for first_max in max_fours:
-            max_top.append((first_max[0][0], first_max[0][1]))
+          max_top.append((first_max[0][0], first_max[0][1]))
 
-        for z in range(pages_per_superplot):
-            start, end = z * 8, min((z * 8) + 8, num_channels)
-            mean_a = np.mean(noise_floor[0][1])
+        mean_a = np.mean(noise_floor[0][1])
 
-            nf_table_info = [
-                ["Channel"] + [channel_names[i] for i in range(start, end)],
-                ["Maximum"],
-                ["Minimum"],
-                ["Mean"],
-                ["Diff to " + channel_names[0]],
-                ["STD"]
-            ]
-            snr_table_info = [
-                ["Channel"] + [channel_names[i] for i in range(start, end)],
-                ["Location (Hz)"],
-                ["Amplitude (dB)"],
-                ["SNR (dBc)"]
-            ]
+        #Split noise floor data into tables of up to 4 channels
+        for t in range(int(np.ceil(num_channels / 4))):
+          nf_start, nf_end = t * 4, min((t * 4) + 4, num_channels)
+          nf_table_info = [
+              ["Channel"] + [channel_names[i] for i in range(nf_start, nf_end)],
+              ["Maximum"],
+              ["Minimum"],
+              ["Mean"],
+              ["Diff to " + channel_names[0]],
+              ["STD"],
+          ]
 
-            for i in range(start, end):
-                max_loc = np.argmax(noise_floor[i][1])
-                min_loc = np.argmin(noise_floor[i][1])
-                mean = np.mean(noise_floor[i][1])
+          for i in range(nf_start, nf_end):
+            max_loc = np.argmax(noise_floor[i][1])
+            min_loc = np.argmin(noise_floor[i][1])
+            mean = np.mean(noise_floor[i][1])
 
-                nf_table_info[1].append(str((sig(noise_floor[i][0][max_loc], sigfigs=sigfigs), sig(noise_floor[i][1][max_loc], sigfigs=sigfigs))))
-                nf_table_info[2].append(str((sig(noise_floor[i][0][min_loc], sigfigs=sigfigs), sig(noise_floor[i][1][min_loc], sigfigs=sigfigs))))
-                nf_table_info[3].append(str(sig(mean, sigfigs=sigfigs)))
-                nf_table_info[4].append(str(sig(mean - mean_a, sigfigs=sigfigs)))
-                nf_table_info[5].append(str(sig(np.std(noise_floor[i][1]), sigfigs=sigfigs)))
+            nf_table_info[1].append(
+                str((
+                    sig(noise_floor[i][0][max_loc], sigfigs=sigfigs),
+                    sig(noise_floor[i][1][max_loc], sigfigs=sigfigs),
+                ))
+            )
+            nf_table_info[2].append(
+                str((
+                    sig(noise_floor[i][0][min_loc], sigfigs=sigfigs),
+                    sig(noise_floor[i][1][min_loc], sigfigs=sigfigs),
+                ))
+            )
+            nf_table_info[3].append(str(sig(mean, sigfigs=sigfigs)))
+            nf_table_info[4].append(str(sig(mean - mean_a, sigfigs=sigfigs)))
+            nf_table_info[5].append(
+                str(sig(np.std(noise_floor[i][1]), sigfigs=sigfigs))
+            )
 
-                snr_table_info[1].append(str(sig(max_top[i][0], sigfigs=sigfigs)))
-                snr_table_info[2].append(str(sig(max_top[i][1], sigfigs=sigfigs)))
-                snr_table_info[3].append(str(sig(fft_snr[i], sigfigs=sigfigs)))
+          report.insert_table(
+              nf_table_info,
+              x_offset=0,
+              title="All Noise Floor Data" if t == 0 else None,
+              fontsize=8,
+          )
 
-            report.insert_table(nf_table_info, x_offset=0, title="All Noise Floor Data", fontsize=(5 if num_channels==8 else 6.5) if num_channels > 4 else 8)
-            report.insert_table(snr_table_info, x_offset=0, title="Top Peak Information (Based on Highest SNR)", fontsize=6.5 if num_channels > 4 else 8)
+        snr_table_info = [
+            ["Channel"] + [channel_names[i] for i in range(num_channels)],
+            ["Location (Hz)"],
+            ["Amplitude (dB)"],
+            ["SNR (dBc)"],
+        ]
+        for i in range(num_channels):
+          snr_table_info[1].append(str(sig(max_top[i][0], sigfigs=sigfigs)))
+          snr_table_info[2].append(str(sig(max_top[i][1], sigfigs=sigfigs)))
+          snr_table_info[3].append(str(sig(fft_snr[i], sigfigs=sigfigs)))
+
+        report.insert_table(
+            snr_table_info,
+            x_offset=0,
+            title="Top Peak Information (Based on Highest SNR)",
+            fontsize=8,
+        )
 
         strict_failed = False
         # Checking if this iteration passed SNR
