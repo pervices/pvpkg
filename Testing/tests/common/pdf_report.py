@@ -681,26 +681,22 @@ class ClassicShipTestReport:
         os.system("rm shiptest_out.txt")
 
         # Using (-1, -1) so grid and header shading automatically cover all rows (including Board Serial No.)
+                # Keep full-size styling for all channel counts
         board_styles = [
             ("GRID", (0, 0), (-1, -1), 1, colors.black),
-            ("FONTSIZE", (0, 0), (-1, -1), 6.5 if is_eight_ch else 8),
-            ("FONTSIZE", (1, 4), (-1, 5), 6.0 if is_eight_ch else 7.8),
+            ("FONTSIZE", (0, 0), (-1, -1), 8),
+            ("FONTSIZE", (1, 4), (-1, 5), 7.8),
             ("BACKGROUND", (0, 0), (-1, 0), "#D5D6D5"),
             ("BACKGROUND", (0, 0), (0, -1), "#D5D6D5"),
             ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
         ]
 
-        # Positional Values
-        # When num_channels > 4 (BasebandTate 8-ch), use compact row height so Time + TX(A-D) + RX(A-D) + TX(E-H) + RX(E-H) all fit on Page 1
+        # Full-size positional values
         colWidth = 1.5 * inch
-        rowHeight = (0.125 * inch) if is_eight_ch else (0.19 * inch)
+        rowHeight = 0.19 * inch
         board_width, board_height = 100, 100
         board_x = 20
-        board_y = (
-            (self.cursor_y - rowHeight * 11)
-            if is_eight_ch
-            else (600 - rowHeight * 16.25)
-        )
+        board_y = 600 - rowHeight * 16.25
 
         row_labels = [
             ["Board"],
@@ -715,32 +711,35 @@ class ClassicShipTestReport:
             ["Board Serial No."],
         ]
 
-        # Time Board table
+        # 1. Time Board table (Page 1)
         board_info = [["Time Board Information: "]] + [
             list(r) for r in row_labels
         ]
         for r_idx in range(len(time)):
-            board_info[r_idx + 1].append(time[r_idx])
+          board_info[r_idx + 1].append(time[r_idx])
 
-        board_table = Table(board_info, colWidths=colWidth, rowHeights=rowHeight, style=board_styles)
+        board_table = Table(
+            board_info,
+            colWidths=colWidth,
+            rowHeights=rowHeight,
+            style=board_styles,
+        )
         board_table.wrapOn(self.c, board_width, board_height)
         board_table.drawOn(self.c, board_x, board_y)
-        board_y -= rowHeight * (11.5 if is_eight_ch else 12)
+        board_y -= rowHeight * 12
 
-        # 1 group of 4 for standard tests; 2 groups of 4 (A-D, then E-H) for 8-ch BasebandTate
-        num_groups = 2 if (is_eight_ch and num_channels > 4) else 1
+        num_groups = int(np.ceil(num_channels / 4))
 
+        # 2. TX Board tables (all groups stay on Page 1: TX A-D, then TX E-H)
         for g in range(num_groups):
           start, end = g * 4, min((g * 4) + 4, num_channels)
-
-          # Adding Tx Board Table
           board_info = [["TX Board Information: "]] + [
               list(r) for r in row_labels
           ]
           for ch_idx, name in zip(
               ch_indices[start:end], channel_names[start:end]
           ):
-            board_info.append(chr(65 + ch_idx))
+            board_info[0].append(chr(65 + ch_idx))
             for r_idx in range(len(tx_info["TX: " + name])):
               board_info[r_idx + 1].append(tx_info["TX: " + name][r_idx])
 
@@ -752,16 +751,23 @@ class ClassicShipTestReport:
           )
           board_table.wrapOn(self.c, board_width, board_height)
           board_table.drawOn(self.c, board_x, board_y)
-          board_y -= rowHeight * (11.5 if is_eight_ch else 12)
+          board_y -= rowHeight * 12
 
-          # Adding Rx Board Table
+        # If >4 channels, move RX tables to Page 2 so nothing gets squished
+        if num_groups > 1:
+          self.new_page()
+          board_y = self.cursor_y - rowHeight * 11.5
+
+        # 3. RX Board tables (Page 1 if <=4 ch; Page 2 if >4 ch: RX A-D, then RX E-H)
+        for g in range(num_groups):
+          start, end = g * 4, min((g * 4) + 4, num_channels)
           board_info = [["RX Board Information: "]] + [
               list(r) for r in row_labels
           ]
           for ch_idx, rxname in zip(
               ch_indices[start:end], channel_names[start:end]
           ):
-            board_info.append(chr(65 + ch_idx))
+            board_info[0].append(chr(65 + ch_idx))
             for r_idx in range(len(rx_info["RX: " + rxname])):
               board_info[r_idx + 1].append(rx_info["RX: " + rxname][r_idx])
 
@@ -773,8 +779,7 @@ class ClassicShipTestReport:
           )
           board_table.wrapOn(self.c, board_width, board_height)
           board_table.drawOn(self.c, board_x, board_y)
-          board_y -= rowHeight * 11.5
-
+          board_y -= rowHeight * 12
 
 if __name__ == "__main__":
     # Test Function
