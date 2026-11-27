@@ -709,8 +709,7 @@ class ClassicShipTestReport:
             ["Fuse 00"],
             ["Fuse 02"],
             ["Fuse 03"],
-            ["GCC"],
-            ["Board Serial No."],
+            ["GCC"]
         ]
 
         if has_board_serial:
