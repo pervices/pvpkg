@@ -646,7 +646,7 @@ class ClassicShipTestReport:
         # Setting up rx dictionary to hold board data
         rx_info = {}
         for ch_idx, name in zip(ch_indices, channel_names): #NOTE: This might be more efficent with numpy arrays
-            os.system("grep 'rx/{}/fw_version' shiptest_out.txt -A 15 > hold.txt".format(i))
+            os.system("grep 'rx/{}/fw_version' shiptest_out.txt -A 15 > hold.txt".format(ch_idx))
 
             rx_info["RX: " + name] = []
             rx_info["RX: " + name].append(subprocess.getstatusoutput("cat hold.txt | grep 'Board Version' | cut --complement -d ':' -f1")[1])
@@ -658,12 +658,12 @@ class ClassicShipTestReport:
             rx_info["RX: " + name].append(subprocess.getstatusoutput("cat hold.txt | grep 'Fuse02' | cut --complement -d ':' -f1")[1])
             rx_info["RX: " + name].append(subprocess.getstatusoutput("cat hold.txt | grep 'Fuse03' | cut --complement -d ':' -f1")[1])
             rx_info["RX: " + name].append(subprocess.getstatusoutput("cat hold.txt | grep 'GCC' | cut --complement -d ':' -f1")[1])
-            rx_info["RX: " + name].append(_get_eeprom_serial(f"rx/{i}/eeprom"))
+            rx_info["RX: " + name].append(_get_eeprom_serial(f"rx/{ch_idx}/eeprom"))
 
         # Setting up tx dictionary to hold board data
         tx_info = {}
         for ch_idx, name in zip(ch_indices, channel_names):
-            os.system("grep 'tx/{}/fw_version' shiptest_out.txt -A 15 > hold.txt".format(i))
+            os.system("grep 'tx/{}/fw_version' shiptest_out.txt -A 15 > hold.txt".format(ch_idx))
             tx_info["TX: " + name] = []
             tx_info["TX: " + name].append(subprocess.getstatusoutput("cat hold.txt | grep 'Board Version' | cut --complement -d ':' -f1")[1])
             tx_info["TX: " + name].append(subprocess.getstatusoutput("cat hold.txt | grep 'Branch' | cut --complement -d ':' -f1")[1])
@@ -674,7 +674,7 @@ class ClassicShipTestReport:
             tx_info["TX: " + name].append(subprocess.getstatusoutput("cat hold.txt | grep 'Fuse02' | cut --complement -d ':' -f1")[1])
             tx_info["TX: " + name].append(subprocess.getstatusoutput("cat hold.txt | grep 'Fuse03' | cut --complement -d ':' -f1")[1])
             tx_info["TX: " + name].append(subprocess.getstatusoutput("cat hold.txt | grep 'GCC' | cut --complement -d ':' -f1")[1])
-            tx_info["TX: " + name].append(_get_eeprom_serial(f"tx/{i}/eeprom"))
+            tx_info["TX: " + name].append(_get_eeprom_serial(f"tx/{ch_idx}/eeprom"))
 
         # Removing the temp files from the systems
         os.system("rm hold.txt")
@@ -728,7 +728,7 @@ class ClassicShipTestReport:
         board_table.drawOn(self.c, board_x, board_y)
         board_y -= rowHeight * 12
 
-        num_groups = int(np.ceil(num_channels / 4))
+        num_groups = (num_channels+3) // 4
 
         # 2. TX Board tables (all groups stay on Page 1: TX A-D, then TX E-H)
         for g in range(num_groups):
