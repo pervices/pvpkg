@@ -972,8 +972,10 @@ def main(iterations):
     targs.docker_sha,
     targs.addr
 )
-    report.num_channels=num_channels
-    report.channel_names=channel_names
+    report.num_channels = num_channels
+    report.channel_names = channel_names
+    report.eight_ch_title = (product == "BasebandTate" and num_channels > 4)
+
     #Create the PDF
     #pdf = canvas.Canvas(file_title, pagesize=landscape(letter)) #Setting the page layout and file name
     #pdf.setTitle(doc_title)

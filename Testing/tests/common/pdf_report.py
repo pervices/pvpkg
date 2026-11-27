@@ -47,6 +47,7 @@ class ClassicShipTestReport:
     # This should not be here for obvious reasons
     num_channels = 4
     channel_names = ["Channel A", "Channel B", "Channel C", "Channel D"]
+    eight_ch_title = False #This is so that 8 channels get printed in the title page only for shiptest when using 8r8t
     # This stores the elements temporarily before calling draw all
     buffer = []
     # XObject used to store the logo so it only needs to be stored once per PDF
@@ -668,6 +669,8 @@ class ClassicShipTestReport:
         os.system("rm shiptest_out.txt")
 
         is_eight_ch = num_channels > 4
+        num_channels = self.num_channels if is_eight_ch else min(self.num_channels, 4)
+        channel_names= self.channel_names[:num_channels]
 
         # Using (-1, -1) so grid and header shading automatically cover all rows (including Board Serial No.)
         board_styles = [
