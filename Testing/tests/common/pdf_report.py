@@ -698,7 +698,7 @@ class ClassicShipTestReport:
         board_x = 20
         board_y = 600 - rowHeight * 16.25
 
-        has_board_serial = bool(time or any(vals for vals in rx_info.values()) or any(vals for vals in tx_info.values()))
+        has_board_serial = bool(time[9] or any(vals[9] for vals in rx_info.values()) or any(vals[9] for vals in tx_info.values()))
 
         row_labels = [
             ["Board"],
