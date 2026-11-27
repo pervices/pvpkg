@@ -47,7 +47,8 @@ class ClassicShipTestReport:
     # This should not be here for obvious reasons
     num_channels = 4
     channel_names = ["Channel A", "Channel B", "Channel C", "Channel D"]
-    eight_ch_title = False #This is so that 8 channels get printed in the title page only for shiptest when using 8r8t
+    eight_ch_title = False # To make sure that 8 channels get printed in the title page only for shiptest when using 8r8t
+    channel_list = None # Tracks channel names that are chosen with -c flag for shiptest
     # This stores the elements temporarily before calling draw all
     buffer = []
     # XObject used to store the logo so it only needs to be stored once per PDF
@@ -628,12 +629,23 @@ class ClassicShipTestReport:
         time.append(subprocess.getstatusoutput("cat hold.txt | grep 'GCC' | cut --complement -d ':' -f1")[1])
         time.append(_get_eeprom_serial("time/eeprom"))
 
-        num_channels = self.num_channels
-        channel_names = self.channel_names
+        if self.channel_list is not None:
+            ch_indices = self.channel_list
+        else:
+            ch_indices = list(range(self.num_channels))
+
+        # Use compact 2-group layout if eight_ch_title is enabled AND either >4 channels OR any channel index >= 4
+        is_eight_ch = self.eight_ch_title and (len(ch_indices) > 4 or any(c >= 4 for c in ch_indices))
+        if not self.eight_ch_title:
+            ch_indices = ch_indices[:4]
+
+        num_channels = len(ch_indices)
+        channel_names = self.channel_names[:num_channels]
+        
 
         # Setting up rx dictionary to hold board data
         rx_info = {}
-        for i, name in zip(range(num_channels), channel_names): #NOTE: This might be more efficent with numpy arrays
+        for ch_idx, name in zip(ch_indices, channel_names): #NOTE: This might be more efficent with numpy arrays
             os.system("grep 'rx/{}/fw_version' shiptest_out.txt -A 15 > hold.txt".format(i))
 
             rx_info["RX: " + name] = []
@@ -650,7 +662,7 @@ class ClassicShipTestReport:
 
         # Setting up tx dictionary to hold board data
         tx_info = {}
-        for i, name in zip(range(num_channels), channel_names):
+        for ch_idx, name in zip(ch_indices, channel_names):
             os.system("grep 'tx/{}/fw_version' shiptest_out.txt -A 15 > hold.txt".format(i))
             tx_info["TX: " + name] = []
             tx_info["TX: " + name].append(subprocess.getstatusoutput("cat hold.txt | grep 'Board Version' | cut --complement -d ':' -f1")[1])
@@ -667,10 +679,6 @@ class ClassicShipTestReport:
         # Removing the temp files from the systems
         os.system("rm hold.txt")
         os.system("rm shiptest_out.txt")
-
-        is_eight_ch = num_channels > 4
-        num_channels = self.num_channels if is_eight_ch else min(self.num_channels, 4)
-        channel_names= self.channel_names[:num_channels]
 
         # Using (-1, -1) so grid and header shading automatically cover all rows (including Board Serial No.)
         board_styles = [
@@ -719,37 +727,53 @@ class ClassicShipTestReport:
         board_table.drawOn(self.c, board_x, board_y)
         board_y -= rowHeight * (11.5 if is_eight_ch else 12)
 
-        # 1 group of 4 for standard tests; 2 stacked groups of 4 (A-D, then E-H) for 8-ch BasebandTate
-        num_groups = 2 if is_eight_ch else 1
+        # 1 group of 4 for standard tests; 2 groups of 4 (A-D, then E-H) for 8-ch BasebandTate
+        num_groups = 2 if (is_eight_ch and num_channels > 4) else 1
 
         for g in range(num_groups):
-            start, end = g * 4, min((g * 4) + 4, num_channels)
+          start, end = g * 4, min((g * 4) + 4, num_channels)
 
-        # Adding Tx Board Table
-        board_info = [["TX Board Information: "]] + [
-            list(r) for r in row_labels
-        ]
-        for i, name in zip(range(start, end), channel_names[start:end]):
-            board_info.append(chr(65 + i))
+          # Adding Tx Board Table
+          board_info = [["TX Board Information: "]] + [
+              list(r) for r in row_labels
+          ]
+          for ch_idx, name in zip(
+              ch_indices[start:end], channel_names[start:end]
+          ):
+            board_info.append(chr(65 + ch_idx))
             for r_idx in range(len(tx_info["TX: " + name])):
-                board_info[r_idx + 1].append(tx_info["TX: " + name][r_idx])
+              board_info[r_idx + 1].append(tx_info["TX: " + name][r_idx])
 
-        board_table = Table(board_info,colWidths=colWidth,rowHeights=rowHeight,style=board_styles)
-        board_table.wrapOn(self.c, board_width, board_height)
-        board_table.drawOn(self.c, board_x, board_y)
-        board_y -= rowHeight * (11.5 if is_eight_ch else 12)
+          board_table = Table(
+              board_info,
+              colWidths=colWidth,
+              rowHeights=rowHeight,
+              style=board_styles,
+          )
+          board_table.wrapOn(self.c, board_width, board_height)
+          board_table.drawOn(self.c, board_x, board_y)
+          board_y -= rowHeight * (11.5 if is_eight_ch else 12)
 
-        # Adding Rx Board Table
-        board_info = [["RX Board Information: "]] + [list(r) for r in row_labels]
-        for q, rxname in zip(range(start, end), channel_names[start:end]):
-            board_info.append(chr(65 + q))
+          # Adding Rx Board Table
+          board_info = [["RX Board Information: "]] + [
+              list(r) for r in row_labels
+          ]
+          for ch_idx, rxname in zip(
+              ch_indices[start:end], channel_names[start:end]
+          ):
+            board_info.append(chr(65 + ch_idx))
             for r_idx in range(len(rx_info["RX: " + rxname])):
-                board_info[r_idx + 1].append(rx_info["RX: " + rxname][r_idx])
+              board_info[r_idx + 1].append(rx_info["RX: " + rxname][r_idx])
 
-        board_table = Table(board_info,colWidths=colWidth,rowHeights=rowHeight,style=board_styles)
-        board_table.wrapOn(self.c, board_width, board_height)
-        board_table.drawOn(self.c, board_x, board_y)
-        board_y -= rowHeight * 11.5
+          board_table = Table(
+              board_info,
+              colWidths=colWidth,
+              rowHeights=rowHeight,
+              style=board_styles,
+          )
+          board_table.wrapOn(self.c, board_width, board_height)
+          board_table.drawOn(self.c, board_x, board_y)
+          board_y -= rowHeight * 11.5
 
 
 if __name__ == "__main__":
