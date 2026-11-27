@@ -698,6 +698,8 @@ class ClassicShipTestReport:
         board_x = 20
         board_y = 600 - rowHeight * 16.25
 
+        has_board_serial = bool(time or any(vals for vals in rx_info.values()) or any(vals for vals in tx_info.values()))
+
         row_labels = [
             ["Board"],
             ["Branch"],
@@ -711,11 +713,15 @@ class ClassicShipTestReport:
             ["Board Serial No."],
         ]
 
+        if has_board_serial:
+            row_labels.append(["Board Serial No."])
+        num_rows = len(row_labels)
+
         # 1. Time Board table (Page 1)
         board_info = [["Time Board Information: "]] + [
             list(r) for r in row_labels
         ]
-        for r_idx in range(len(time)):
+        for r_idx in range(num_rows):
           board_info[r_idx + 1].append(time[r_idx])
 
         board_table = Table(
@@ -740,7 +746,7 @@ class ClassicShipTestReport:
               ch_indices[start:end], channel_names[start:end]
           ):
             board_info[0].append(chr(65 + ch_idx))
-            for r_idx in range(len(tx_info["TX: " + name])):
+            for r_idx in range(num_rows):
               board_info[r_idx + 1].append(tx_info["TX: " + name][r_idx])
 
           board_table = Table(
@@ -768,7 +774,7 @@ class ClassicShipTestReport:
               ch_indices[start:end], channel_names[start:end]
           ):
             board_info[0].append(chr(65 + ch_idx))
-            for r_idx in range(len(rx_info["RX: " + rxname])):
+            for r_idx in range(num_rows):
               board_info[r_idx + 1].append(rx_info["RX: " + rxname][r_idx])
 
           board_table = Table(
