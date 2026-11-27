@@ -8,6 +8,7 @@ except ImportError:
     from backports.zoneinfo import ZoneInfo
 import os
 import subprocess
+import re
 #PDF IMPORTS
 from reportlab.pdfgen import canvas
 from reportlab.lib import colors
@@ -598,19 +599,22 @@ class ClassicShipTestReport:
         table.drawOn(self.c, 50, self.cursor_y - table._height)
         self.cursor_y -= table._height + 10
 
-
     def insert_unit_table(self):
-        # This is copied from shiptest.py
-
         # Skip network discovery and query the unit directly at its known management addr
         uhd_args_flag = f'--args="addr={self.addr}"'
 
-        # organizing info in order of time, tx, and rx using gterminal grep
-        os.system(f'uhd_usrp_info {uhd_args_flag} --all > shiptest_out.txt')
+        # organizing info in order of time, tx, and rx using terminal grep
+        os.system(f"uhd_usrp_info {uhd_args_flag} --all > shiptest_out.txt")
         os.system("touch hold.txt")
         os.system("grep '0/time/fw_version' shiptest_out.txt -A 15 > hold.txt")
 
-        # Setting up time array to hold board data
+        # Helper to extract "SERIAL XX" (or "" if not programmed / not present)
+        def _get_eeprom_serial(grep_target):
+            raw = subprocess.getstatusoutput(f"cat shiptest_out.txt | grep {grep_target} -A 1 | tail -n 1 | cut -d ':' -f2-")[1].strip()
+            matches = re.findall(r"SERIAL [a-zA-Z]{1,2}", raw)
+            return matches if len(matches) == 1 else ""
+
+        # Setting up time array to hold board data (10 items including Board Serial No.)
         time = []
         time.append(subprocess.getstatusoutput("cat hold.txt | grep 'Board Version' | cut --complement -d ':' -f1")[1])
         time.append(subprocess.getstatusoutput("cat hold.txt | grep 'Branch' | cut --complement -d ':' -f1")[1])
@@ -621,6 +625,7 @@ class ClassicShipTestReport:
         time.append(subprocess.getstatusoutput("cat hold.txt | grep 'Fuse02' | cut --complement -d ':' -f1")[1])
         time.append(subprocess.getstatusoutput("cat hold.txt | grep 'Fuse03' | cut --complement -d ':' -f1")[1])
         time.append(subprocess.getstatusoutput("cat hold.txt | grep 'GCC' | cut --complement -d ':' -f1")[1])
+        time.append(_get_eeprom_serial("time/eeprom"))
 
         num_channels = self.num_channels
         channel_names = self.channel_names
@@ -640,7 +645,7 @@ class ClassicShipTestReport:
             rx_info["RX: " + name].append(subprocess.getstatusoutput("cat hold.txt | grep 'Fuse02' | cut --complement -d ':' -f1")[1])
             rx_info["RX: " + name].append(subprocess.getstatusoutput("cat hold.txt | grep 'Fuse03' | cut --complement -d ':' -f1")[1])
             rx_info["RX: " + name].append(subprocess.getstatusoutput("cat hold.txt | grep 'GCC' | cut --complement -d ':' -f1")[1])
-
+            rx_info["RX: " + name].append(_get_eeprom_serial(f"rx/{i}/eeprom"))
 
         # Setting up tx dictionary to hold board data
         tx_info = {}
@@ -656,74 +661,92 @@ class ClassicShipTestReport:
             tx_info["TX: " + name].append(subprocess.getstatusoutput("cat hold.txt | grep 'Fuse02' | cut --complement -d ':' -f1")[1])
             tx_info["TX: " + name].append(subprocess.getstatusoutput("cat hold.txt | grep 'Fuse03' | cut --complement -d ':' -f1")[1])
             tx_info["TX: " + name].append(subprocess.getstatusoutput("cat hold.txt | grep 'GCC' | cut --complement -d ':' -f1")[1])
+            tx_info["TX: " + name].append(_get_eeprom_serial(f"tx/{i}/eeprom"))
 
         # Removing the temp files from the systems
         os.system("rm hold.txt")
         os.system("rm shiptest_out.txt")
 
-        #Adding the time, tx, rx board info in a table
-        board_styles = ([
-                        ('GRID', (0,0), (self.num_channels+1, 9), 1, colors.black),
-                        ('FONTSIZE', (1,4), (self.num_channels+1, 5),7.8),
-                        ('BACKGROUND', (0, 0), (self.num_channels+1,0), '#D5D6D5'),
-                        ('BACKGROUND', (0, 0), (0,9), '#D5D6D5'),
-                        ('VALIGN', (0,0), (-1, -1), 'MIDDLE')
-                    ])
+        is_eight_ch = num_channels > 4
 
+        # Using (-1, -1) so grid and header shading automatically cover all rows (including Board Serial No.)
+        board_styles = [
+            ("GRID", (0, 0), (-1, -1), 1, colors.black),
+            ("FONTSIZE", (0, 0), (-1, -1), 6.5 if is_eight_ch else 8),
+            ("FONTSIZE", (1, 4), (-1, 5), 6.0 if is_eight_ch else 7.8),
+            ("BACKGROUND", (0, 0), (-1, 0), "#D5D6D5"),
+            ("BACKGROUND", (0, 0), (0, -1), "#D5D6D5"),
+            ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+        ]
 
-        #Positional Values
-        title_font_size = 26
-        title_x = 100
-        title_y = 700
-        list_font_size = 14
-        list_x = title_x - 5
-        list_y = title_y - 100
-        logo_x, logo_y = 550, 450
-        logo_width, logo_height = 200, 100
+        # Positional Values
+        # When num_channels > 4 (BasebandTate 8-ch), use compact row height so Time + TX(A-D) + RX(A-D) + TX(E-H) + RX(E-H) all fit on Page 1
+        colWidth = 1.5 * inch
+        rowHeight = (0.125 * inch) if is_eight_ch else (0.19 * inch)
         board_width, board_height = 100, 100
-        colWidth, rowHeight = (1.5*inch), (0.2*inch)
-        board_x, board_y = 20, list_y - rowHeight*16.25
+        board_x = 20
+        board_y = (
+            (self.cursor_y - rowHeight * 11)
+            if is_eight_ch
+            else (600 - rowHeight * 16.25)
+        )
 
-        #Time Board table
-        board_info = [["Time Board Information: "], ["Board"], ["Branch"], ["Revision"], ["Date"], ["MCU Serial"], ["Fuse 00"], ["Fuse 02"], ["Fuse 03"], ["GCC"]]
-        for z in range(len(time)):
-            board_info[z+1].append((time[z]))
+        row_labels = [
+            ["Board"],
+            ["Branch"],
+            ["Revision"],
+            ["Date"],
+            ["MCU Serial"],
+            ["Fuse 00"],
+            ["Fuse 02"],
+            ["Fuse 03"],
+            ["GCC"],
+            ["Board Serial No."],
+        ]
+
+        # Time Board table
+        board_info = [["Time Board Information: "]] + [
+            list(r) for r in row_labels
+        ]
+        for r_idx in range(len(time)):
+            board_info[r_idx + 1].append(time[r_idx])
 
         board_table = Table(board_info, colWidths=colWidth, rowHeights=rowHeight, style=board_styles)
         board_table.wrapOn(self.c, board_width, board_height)
         board_table.drawOn(self.c, board_x, board_y)
-        board_y -= rowHeight*11
+        board_y -= rowHeight * (11.5 if is_eight_ch else 12)
 
-        # graph_max = int(np.ceil(self.num_channels/4))
-        graph_max = 1
+        # 1 group of 4 for standard tests; 2 stacked groups of 4 (A-D, then E-H) for 8-ch BasebandTate
+        num_groups = 2 if is_eight_ch else 1
 
-        for z in range(graph_max): #This ensures theres columns per page
+        for g in range(num_groups):
+            start, end = g * 4, min((g * 4) + 4, num_channels)
 
-            start, end = z*4, (z*4)+4 #only have to be calculated once
+        # Adding Tx Board Table
+        board_info = [["TX Board Information: "]] + [
+            list(r) for r in row_labels
+        ]
+        for i, name in zip(range(start, end), channel_names[start:end]):
+            board_info.append(chr(65 + i))
+            for r_idx in range(len(tx_info["TX: " + name])):
+                board_info[r_idx + 1].append(tx_info["TX: " + name][r_idx])
 
-            #Adding Tx Board Table
-            board_info = [["TX Board Information: "], ["Board"], ["Branch"], ["Revision"], ["Date"], ["MCU Serial"], ["Fuse 00"], ["Fuse 02"], ["Fuse 03"], ["GCC"]]
-            for i, name in zip(range(start, end), channel_names[start:end]):
-                board_info[0].append(chr(65+i))
-                for z in range(len(tx_info["TX: " + name])):
-                    board_info[z+1].append((tx_info["TX: " + name][z]))
+        board_table = Table(board_info,colWidths=colWidth,rowHeights=rowHeight,style=board_styles)
+        board_table.wrapOn(self.c, board_width, board_height)
+        board_table.drawOn(self.c, board_x, board_y)
+        board_y -= rowHeight * (11.5 if is_eight_ch else 12)
 
-            board_table = Table(board_info, colWidths=colWidth, rowHeights=rowHeight, style=board_styles)
-            board_table.wrapOn(self.c, board_width, board_height)
-            board_table.drawOn(self.c, board_x, board_y)
-            board_y -= rowHeight*11
+        # Adding Rx Board Table
+        board_info = [["RX Board Information: "]] + [list(r) for r in row_labels]
+        for q, rxname in zip(range(start, end), channel_names[start:end]):
+            board_info.append(chr(65 + q))
+            for r_idx in range(len(rx_info["RX: " + rxname])):
+                board_info[r_idx + 1].append(rx_info["RX: " + rxname][r_idx])
 
-            #Adding Rx Board Table
-            board_info = [["RX Board Information: "], ["Board"], ["Branch"], ["Revision"], ["Date"], ["MCU Serial"], ["Fuse 00"], ["Fuse 02"], ["Fuse 03"], ["GCC"]]
-
-            for q, rxname in zip(range(start, end), channel_names[start:end]):
-                board_info[0].append(chr(65+q))
-                for z in range(len(rx_info["RX: " + rxname])):
-                    board_info[z+1].append((rx_info["RX: " + rxname][z]))
-
-            board_table = Table(board_info, colWidths=colWidth, rowHeights=rowHeight, style=board_styles)
-            board_table.wrapOn(self.c, board_width, board_height)
-            board_table.drawOn(self.c, board_x, board_y)
+        board_table = Table(board_info,colWidths=colWidth,rowHeights=rowHeight,style=board_styles)
+        board_table.wrapOn(self.c, board_width, board_height)
+        board_table.drawOn(self.c, board_x, board_y)
+        board_y -= rowHeight * 11.5
 
 
 if __name__ == "__main__":

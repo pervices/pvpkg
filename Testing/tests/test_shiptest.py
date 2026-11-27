@@ -1353,15 +1353,16 @@ def main(iterations):
         addRunHeader(report, str(counter))
 
         fig, (ax1, ax2) = plt.subplots(1, 2)
-        colours = ['royalblue',
-                    'maroon',
-                    'darkolivegreen',
-                    'mediumvioletred',
-                    'darkorange',
-                    'teal',
-                    'slateblue',
-                    'saddlebrown']
-
+        colours = [
+            '#0072B2',  # Channel A - Strong Blue
+            '#D55E00',  # Channel B - Vermilion / Red-Orange
+            '#009E73',  # Channel C - Bluish Green / Emerald
+            '#CC79A7',  # Channel D - Reddish Purple / Magenta
+            '#E69F00',  # Channel E - Amber / Gold
+            '#56B4E9',  # Channel F - Sky Blue / Cyan
+            '#000000',  # Channel G - Black
+            '#882255',  # Channel H - Deep Wine / Burgundy
+]
         for i, colour in zip(range(num_channels), colours):
             ax1.set_title("All Channels - Real Data")
             ax1.set_xlabel("Time (nS)")
