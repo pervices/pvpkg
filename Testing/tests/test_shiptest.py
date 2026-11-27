@@ -1357,14 +1357,14 @@ def main(iterations):
 
         fig, (ax1, ax2) = plt.subplots(1, 2)
         colours = [
-            '#0072B2',  # Channel A - Strong Blue
-            '#D55E00',  # Channel B - Vermilion / Red-Orange
-            '#009E73',  # Channel C - Bluish Green / Emerald
-            '#CC79A7',  # Channel D - Reddish Purple / Magenta
-            '#E69F00',  # Channel E - Amber / Gold
-            '#56B4E9',  # Channel F - Sky Blue / Cyan
-            '#000000',  # Channel G - Black
-            '#882255',  # Channel H - Deep Wine / Burgundy
+            "#035F94",  # Channel A
+            "#89E8AF",  # Channel B
+            "#ECF411",  # Channel C
+            "#E20EC2",  # Channel D
+            "#B98005",  # Channel E
+            '#56B4E9',  # Channel F
+            "#029B72",  # Channel G
+            '#882255',  # Channel H
 ]
         for i, colour in zip(range(num_channels), colours):
             ax1.set_title("All Channels - Real Data")

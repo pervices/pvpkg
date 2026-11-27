@@ -608,13 +608,13 @@ class ClassicShipTestReport:
         # organizing info in order of time, tx, and rx using terminal grep
         os.system(f"uhd_usrp_info {uhd_args_flag} --all > shiptest_out.txt")
         os.system("touch hold.txt")
-        os.system("grep '0/time/fw_version' shiptest_out.txt -A 15 > hold.txt")
+        os.system("grep '0/time/fw_version' shiptest_out.txt -A 20 > hold.txt")
 
         # Helper to extract "SERIAL XX" (or "" if not programmed / not present)
         def _get_eeprom_serial(grep_target):
             raw = subprocess.getstatusoutput(f"cat shiptest_out.txt | grep {grep_target} -A 1 | tail -n 1 | cut -d ':' -f2-")[1].strip()
             matches = re.findall(r"SERIAL [a-zA-Z]{1,2}", raw)
-            return matches if len(matches) == 1 else ""
+            return matches[0] if len(matches) == 1 else ""
 
         # Setting up time array to hold board data (10 items including Board Serial No.)
         time = []
@@ -646,7 +646,7 @@ class ClassicShipTestReport:
         # Setting up rx dictionary to hold board data
         rx_info = {}
         for ch_idx, name in zip(ch_indices, channel_names): #NOTE: This might be more efficent with numpy arrays
-            os.system("grep 'rx/{}/fw_version' shiptest_out.txt -A 15 > hold.txt".format(ch_idx))
+            os.system("grep 'rx/{}/fw_version' shiptest_out.txt -A 20 > hold.txt".format(ch_idx))
 
             rx_info["RX: " + name] = []
             rx_info["RX: " + name].append(subprocess.getstatusoutput("cat hold.txt | grep 'Board Version' | cut --complement -d ':' -f1")[1])
@@ -663,7 +663,7 @@ class ClassicShipTestReport:
         # Setting up tx dictionary to hold board data
         tx_info = {}
         for ch_idx, name in zip(ch_indices, channel_names):
-            os.system("grep 'tx/{}/fw_version' shiptest_out.txt -A 15 > hold.txt".format(ch_idx))
+            os.system("grep 'tx/{}/fw_version' shiptest_out.txt -A 20 > hold.txt".format(ch_idx))
             tx_info["TX: " + name] = []
             tx_info["TX: " + name].append(subprocess.getstatusoutput("cat hold.txt | grep 'Board Version' | cut --complement -d ':' -f1")[1])
             tx_info["TX: " + name].append(subprocess.getstatusoutput("cat hold.txt | grep 'Branch' | cut --complement -d ':' -f1")[1])
