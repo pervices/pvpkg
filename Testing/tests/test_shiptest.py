@@ -974,7 +974,7 @@ def main(iterations):
 )
     report.num_channels = num_channels
     report.channel_names = channel_names
-    report.channel_list = channel_list
+    report.channel_list = targs.channels
     report.eight_ch_title = (product == "BasebandTate" and num_channels > 4)
 
     #Create the PDF
