@@ -1593,7 +1593,6 @@ def main(iterations):
     # report.insert_line_separator()
     report.new_page()
     report.insert_text_large("Testing Summary")
-    report.insert_line_separator()
 
     summary_table_info = [["Run", "SNR check", "Frequency check", "Spur check", "Gain variation check"]]
     for i, snr, freq, spur, gain in zip(range(counter), snr_bools, freq_bools, spur_bools, gain_bools):
